@@ -1,14 +1,14 @@
 {
-  "name": "electron-quick-start",
+  "name": "ITEAM",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "description": "An Electron application",
   "main": "main.js",
   "scripts": {
     "start": "electron main.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/electron/electron-quick-start.git"
+    "url": "git+https://github.com/IteamProyecto/Iteam-Project.git"
   },
   "keywords": [
     "Electron",
@@ -17,11 +17,7 @@
     "tutorial"
   ],
   "author": "GitHub",
-  "license": "CC0-1.0",
-  "bugs": {
-    "url": "https://github.com/electron/electron-quick-start/issues"
-  },
-  "homepage": "https://github.com/electron/electron-quick-start#readme",
+  "homepage": "",
   "devDependencies": {
     "electron-prebuilt": "^0.37.0"
   }
