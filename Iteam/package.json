@@ -1,0 +1,24 @@
+{
+  "name": "ITEAM",
+  "version": "1.0.0",
+  "description": "An Electron application",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IteamProyecto/Iteam-Project.git"
+  },
+  "keywords": [
+    "Electron",
+    "quick",
+    "start",
+    "tutorial"
+  ],
+  "author": "GitHub",
+  "homepage": "",
+  "devDependencies": {
+    "electron-prebuilt": "^0.37.0"
+  }
+}
