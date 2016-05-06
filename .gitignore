@@ -14,3 +14,4 @@ public-api/.classpath
 public-api/.settings/
 *.class
 public-api/gradle/
+public-api/bin/

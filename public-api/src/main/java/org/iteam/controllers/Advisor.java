@@ -7,6 +7,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+/**
+ * Advisor that hands all the exception that occur while performing the
+ * requests.
+ *
+ */
 @ControllerAdvice
 public class Advisor {
 
