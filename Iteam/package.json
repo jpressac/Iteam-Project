@@ -20,5 +20,13 @@
   "homepage": "",
   "devDependencies": {
     "electron-prebuilt": "^0.37.0"
+  },
+  "dependencies": {
+    "lodash.assign": "^4.0.8",
+    "react": "^15.0.2",
+    "react-redux": "^4.4.5",
+    "react-tools": "^0.13.3",
+    "reactify": "^1.1.1",
+    "redux": "^3.5.2"
   }
 }
