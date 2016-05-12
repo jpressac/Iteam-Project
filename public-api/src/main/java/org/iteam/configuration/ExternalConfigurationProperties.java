@@ -10,37 +10,59 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ExternalConfigurationProperties {
 
-	@Value("${org.iteam.mongo.host}")
-	private String mongoHost;
+	@Value("${org.iteam.elasticsearch.host}")
+	private String elasticsearchHost;
 
-	@Value("${org.iteam.mongo.port}")
-	private int mongoPort;
+	@Value("${org.iteam.elasticsearch.port}")
+	private int elasticsearchPort;
 
-	@Value("${org.iteam.mongo.database.name}")
-	private String mongoDbName;
+	@Value("${org.iteam.elasticsearch.cluster.name}")
+	private String elasticsearchClusterName;
 
-	public String getMongoHost() {
-		return mongoHost;
+	@Value("${org.item.elasticsearch.index.user.name}")
+	private String elasticsearchIndexUserName;
+
+	@Value("${org.item.elasticsearch.index.user.type}")
+	private String elasticsearchIndexUserTypeName;
+
+	public String getElasticsearchHost() {
+		return elasticsearchHost;
 	}
 
-	public void setMongoHost(String mongoHost) {
-		this.mongoHost = mongoHost;
+	public void setElasticsearchHost(String elasticsearchHost) {
+		this.elasticsearchHost = elasticsearchHost;
 	}
 
-	public int getMongoPort() {
-		return mongoPort;
+	public int getElasticsearchPort() {
+		return elasticsearchPort;
 	}
 
-	public void setMongoPort(int mongoPort) {
-		this.mongoPort = mongoPort;
+	public void setElasticsearchPort(int elasticsearchPort) {
+		this.elasticsearchPort = elasticsearchPort;
 	}
 
-	public String getMongoDbName() {
-		return mongoDbName;
+	public String getElasticsearchClusterName() {
+		return elasticsearchClusterName;
 	}
 
-	public void setMongoDbName(String mongoDbName) {
-		this.mongoDbName = mongoDbName;
+	public void setElasticsearchClusterName(String elasticsearchClusterName) {
+		this.elasticsearchClusterName = elasticsearchClusterName;
+	}
+
+	public String getElasticsearchIndexUserName() {
+		return elasticsearchIndexUserName;
+	}
+
+	public void setElasticsearchIndexUserName(String elasticsearchIndexUserName) {
+		this.elasticsearchIndexUserName = elasticsearchIndexUserName;
+	}
+
+	public String getElasticsearchIndexUserTypeName() {
+		return elasticsearchIndexUserTypeName;
+	}
+
+	public void setElasticsearchIndexUserTypeName(String elasticsearchIndexUserTypeName) {
+		this.elasticsearchIndexUserTypeName = elasticsearchIndexUserTypeName;
 	}
 
 }

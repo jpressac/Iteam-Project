@@ -3,6 +3,9 @@ package org.iteam.controllers;
 import javax.validation.Valid;
 
 import org.iteam.data.model.User;
+import org.iteam.services.logging.LoggingService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -18,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @Controller
 public class LoggingController {
+
+	private LoggingService loggingServiceImpl;
 
 	/**
 	 * Request for getting the user information
@@ -35,9 +40,16 @@ public class LoggingController {
 	 * 
 	 * @return a response entity that represents the request status.
 	 */
-	@RequestMapping(value = "/user", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE, method = RequestMethod.POST)
-	public ResponseEntity<?> putUser(@RequestBody @Valid User user) {
-		return null;
+	@RequestMapping(value = "/user", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+	public ResponseEntity<?> insertUser(@RequestBody @Valid User user) {
+
+		boolean insert = loggingServiceImpl.setUser(user);
+
+		if (insert) {
+			return new ResponseEntity<>(HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	/**
@@ -60,5 +72,10 @@ public class LoggingController {
 	@RequestMapping(value = "/user/delete")
 	public ResponseEntity<?> deleteUser(@RequestParam(value = "username") String userName) {
 		return null;
+	}
+
+	@Autowired
+	private void setLoggingServiceImpl(LoggingService loggingServiceImpl) {
+		this.loggingServiceImpl = loggingServiceImpl;
 	}
 }

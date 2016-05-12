@@ -14,5 +14,7 @@ public interface LoggingService {
 	 * 
 	 * @return a user which contains all the information about him.
 	 */
-	public User getUser();
+	public User getUser(String userName);
+
+	public boolean setUser(User user);
 }
