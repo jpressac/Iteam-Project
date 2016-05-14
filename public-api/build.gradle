@@ -19,7 +19,7 @@ buildscript {
 // war 
 jar {
 	baseName = 'iteam-public-api'
-	version = '0.0.1-SNAPSHOT'
+	version = '0.0.1'
 }
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -32,14 +32,29 @@ repositories {
 dependencies {
 	compile('org.apache.commons:commons-lang3:3.4')
 	compile('org.apache.commons:commons-collections4:4.0')
-	compile('org.springframework.boot:spring-boot-starter-hateoas')
+	compile('org.springframework.boot:spring-boot-starter-hateoas'){
+		exclude module: "logback-classic"
+		exclude module: "logbak-core"
+		exclude module: "log4j-over-slf4j"
+	}
+	
 	compile("org.elasticsearch:elasticsearch:2.3.0")
-	compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+	compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}"){
+		exclude module: "logback-classic"
+		exclude module: "logbak-core"
+		exclude module: "log4j-over-slf4j"
+	}
+	
 	compile("org.apache.commons:commons-collections4:4.1")
 	compile('org.slf4j:slf4j-simple:1.6.1')
 	
 	
-	testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}")
+	testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}"){
+		exclude module: "logback-classic"
+		exclude module: "logbak-core"
+		exclude module: "log4j-over-slf4j"
+	}
+	
 	testCompile("org.assertj:assertj-core:3.3.0")
 }
 
