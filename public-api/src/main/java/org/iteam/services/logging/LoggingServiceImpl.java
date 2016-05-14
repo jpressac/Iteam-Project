@@ -1,15 +1,15 @@
 package org.iteam.services.logging;
 
-import java.io.IOException;
-
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.iteam.configuration.ExternalConfigurationProperties;
 import org.iteam.data.dal.client.ElasticsearchClient;
 import org.iteam.data.model.User;
-import org.iteam.exceptions.JsonConvertException;
+import org.iteam.exceptions.UserExistanceException;
+import org.iteam.services.utils.JSONUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,31 +28,49 @@ public class LoggingServiceImpl implements LoggingService {
 	private ExternalConfigurationProperties configuration;
 
 	@Override
-	public User getUser(String userName) {
-		QueryBuilder query = QueryBuilders.termQuery("userName", userName);
-		SearchResponse response = elasticsearchClient.search(configuration.getElasticsearchIndexUserName(),
-				configuration.getElasticsearchIndexUserTypeName(), query);
-		return null;
+	public User getUser(String userName, String password) {
+
+		if (checkUserExistance(userName)) {
+
+			BoolQueryBuilder query = QueryBuilders.boolQuery();
+			query.must(QueryBuilders.termQuery("userName", userName))
+					.must(QueryBuilders.termQuery("password", password));
+
+			SearchResponse response = elasticsearchClient.search(configuration.getElasticsearchIndexUserName(),
+					configuration.getElasticsearchIndexUserTypeName(), query);
+
+			return (User) JSONUtils.JSONToObject(response.getHits().getAt(0).getSourceAsString(), User.class);
+
+		} else {
+			throw new UserExistanceException();
+		}
 	}
 
 	@Override
 	public boolean setUser(User user) {
-		try {
-			String data = OBJECT_MAPPER.writeValueAsString(user);
+		String data = JSONUtils.ObjectToJSON(user);
 
-			IndexResponse indexResponse = elasticsearchClient.insertData(data,
-					configuration.getElasticsearchIndexUserName(), configuration.getElasticsearchIndexUserTypeName());
+		IndexResponse indexResponse = elasticsearchClient.insertData(data,
+				configuration.getElasticsearchIndexUserName(), configuration.getElasticsearchIndexUserTypeName(),
+				user.getUserName());
 
-			if (indexResponse.isCreated() && indexResponse != null) {
-				LOGGER.info("User created");
-				return true;
-			}
-		} catch (IOException e) {
-			LOGGER.error("Cannot convert User to JSON Error: '{}'", e.getMessage());
-			throw new JsonConvertException(e);
+		if (indexResponse.isCreated() && indexResponse != null) {
+			LOGGER.info("User created");
+			return true;
 		}
 
 		LOGGER.info("User cannot be created - User: '{}'", user.toString());
+		return false;
+	}
+
+	@Override
+	public boolean checkUserExistance(String userName) {
+		GetResponse response = elasticsearchClient.checkUser(configuration.getElasticsearchIndexUserName(),
+				configuration.getElasticsearchIndexUserTypeName(), userName);
+
+		if (response.isExists()) {
+			return true;
+		}
 		return false;
 	}
 
@@ -65,5 +83,4 @@ public class LoggingServiceImpl implements LoggingService {
 	private void setConfiguration(ExternalConfigurationProperties configuration) {
 		this.configuration = configuration;
 	}
-
 }

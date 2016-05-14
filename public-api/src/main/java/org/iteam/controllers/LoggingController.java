@@ -31,7 +31,8 @@ public class LoggingController {
 	 *         information.
 	 */
 	@RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
-	public ResponseEntity<?> getUser() {
+	public ResponseEntity<?> getUser(@RequestParam(value = "userName", required = true) String userName,
+			@RequestParam(value = "password", required = true) String password) {
 		return null;
 	}
 
@@ -70,8 +71,27 @@ public class LoggingController {
 	 * @return a response entity that represents the request status.
 	 */
 	@RequestMapping(value = "/user/delete")
-	public ResponseEntity<?> deleteUser(@RequestParam(value = "username") String userName) {
+	public ResponseEntity<?> deleteUser(@RequestParam(value = "username", required = true) String userName) {
 		return null;
+	}
+
+	/**
+	 * Request that check for an existing user.
+	 * 
+	 * @param userName,
+	 *            the user name to check
+	 * @return 200 OK if the user exists or 404 otherwise
+	 */
+	@RequestMapping(value = "/user/exists", method = RequestMethod.HEAD)
+	public ResponseEntity<?> checkUserIfExists(@RequestParam(value = "userName", required = true) String userName) {
+
+		boolean exists = loggingServiceImpl.checkUserExistance(userName);
+
+		if (exists) {
+			return new ResponseEntity<>(HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 	}
 
 	@Autowired

@@ -5,6 +5,7 @@ import java.net.UnknownHostException;
 
 import javax.annotation.PostConstruct;
 
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
@@ -44,8 +45,8 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
 	}
 
 	@Override
-	public IndexResponse insertData(String data, String index, String type) {
-		return client.prepareIndex(index, type).setSource(data).execute().actionGet();
+	public IndexResponse insertData(String data, String index, String type, String id) {
+		return client.prepareIndex(index, type, id).setSource(data).execute().actionGet();
 	}
 
 	@Override
@@ -56,6 +57,19 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
 	@Autowired
 	private void setConfiguration(ExternalConfigurationProperties configuration) {
 		this.configuration = configuration;
+	}
+
+	/*
+	 * curl -XHEAD --dump-header - localhost:9200/index/type/doc(non-Javadoc)
+	 * This request doesn't return a document body, just 200 or 404
+	 * 
+	 * @see
+	 * org.iteam.data.dal.client.ElasticsearchClient#checkUser(java.lang.String,
+	 * java.lang.String)
+	 */
+	@Override
+	public GetResponse checkUser(String index, String type, String userName) {
+		return client.prepareGet(index, type, userName).get();
 	}
 
 }
