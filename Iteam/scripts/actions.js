@@ -1,15 +1,28 @@
-import * as c from './constants.js';
+export const FORM_UPDATE_VALUE = 'FORM_UPDATE_VALUE';
+export const FORM_RESET = 'FORM_RESET';
+export const LOGIN = 'LOGIN';
 
-export function update(name,value) {
-  return dispatch => dispatch({
-    type: c.FORM_UPDATE_VALUE,
-    name, value
-  });
+export function updateField(fieldName, value) {
+    return {
+        type: FORM_UPDATE_VALUE,
+        payload: {
+            fieldName,
+            value
+        }
+    };
 }
 
 export function reset() {
-  return dispatch =>({
-    type: c.FORM_RESET
+    return {
+        type: FORM_RESET
+      };
 
-  });
-}
+    export function login(username, password) {
+        return {
+            type: LOGIN,
+            payload: {
+                username,
+                password
+              }
+        };
+    }
