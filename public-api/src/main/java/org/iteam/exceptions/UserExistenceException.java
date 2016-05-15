@@ -1,10 +1,10 @@
 package org.iteam.exceptions;
 
-public class UserExistanceException extends RuntimeException {
+public class UserExistenceException extends RuntimeException {
 
 	private static final long serialVersionUID = 6017007907091830026L;
 
-	public UserExistanceException() {
+	public UserExistenceException() {
 		super();
 	}
 }

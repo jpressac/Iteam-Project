@@ -1,4 +1,4 @@
-package org.iteam.services.logging;
+package org.iteam.services.user;
 
 import org.iteam.data.model.User;
 
@@ -7,7 +7,7 @@ import org.iteam.data.model.User;
  * the users
  *
  */
-public interface LoggingService {
+public interface UserService {
 
 	/**
 	 * Get the user with all his information.

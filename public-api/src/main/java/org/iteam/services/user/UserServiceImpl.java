@@ -1,4 +1,4 @@
-package org.iteam.services.logging;
+package org.iteam.services.user;
 
 import java.security.MessageDigest;
 
@@ -20,9 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class LoggingServiceImpl implements LoggingService {
+public class UserServiceImpl implements UserService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(LoggingServiceImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
 
 	private static final String SHA256_ALGORITHM = "SHA-256";
 	private static final String UTF8_ENCODING = "UTF-8";
@@ -46,7 +46,7 @@ public class LoggingServiceImpl implements LoggingService {
 		SearchResponse response = elasticsearchClient.search(configuration.getElasticsearchIndexUserName(),
 				configuration.getElasticsearchIndexUserTypeName(), query);
 
-		if (response.getHits().getTotalHits() != 0) {
+		if (response != null && response.getHits().getTotalHits() != 0) {
 			return (User) JSONUtils.JSONToObject(response.getHits().getAt(0).getSourceAsString(), User.class);
 		}
 		return null;

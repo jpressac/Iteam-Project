@@ -3,7 +3,7 @@ package org.iteam.controllers;
 import javax.validation.Valid;
 
 import org.iteam.data.model.User;
-import org.iteam.services.logging.LoggingService;
+import org.iteam.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class UserController {
 
-	private LoggingService loggingServiceImpl;
+	private UserService loggingServiceImpl;
 
 	/**
 	 * Request for getting the user information
@@ -124,7 +124,7 @@ public class UserController {
 	}
 
 	@Autowired
-	private void setLoggingServiceImpl(LoggingService loggingServiceImpl) {
+	private void setLoggingServiceImpl(UserService loggingServiceImpl) {
 		this.loggingServiceImpl = loggingServiceImpl;
 	}
 }

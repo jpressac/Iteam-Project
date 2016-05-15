@@ -2,7 +2,7 @@ package org.iteam.services.utils;
 
 import java.io.IOException;
 
-import org.iteam.exceptions.JsonConvertException;
+import org.iteam.exceptions.JsonParsingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +34,7 @@ public class JSONUtils {
 			return OBJECT_MAPPER.writeValueAsString(object);
 		} catch (Exception e) {
 			LOGGER.error("Cannot convert '{}' to JSON Error: '{}'", object.getClass(), e.getMessage());
-			throw new JsonConvertException(e);
+			throw new JsonParsingException(e);
 		}
 	}
 
@@ -49,10 +49,10 @@ public class JSONUtils {
 	 */
 	public static Object JSONToObject(String json, Class<?> objectToConvert) {
 		try {
-			return OBJECT_MAPPER.readValue(json, objectToConvert.getClass());
+			return OBJECT_MAPPER.readValue(json, objectToConvert);
 		} catch (IOException e) {
 			LOGGER.error("Cannot convert JSON to '{}' Error: '{}'", objectToConvert, e.getMessage());
-			throw new JsonConvertException(e);
+			throw new JsonParsingException(e);
 		}
 	}
 
