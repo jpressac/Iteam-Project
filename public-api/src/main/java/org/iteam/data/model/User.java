@@ -19,6 +19,7 @@ public class User {
 	private String profession;
 	private String mbtiTest;
 	private String discTest;
+	private boolean logicalDelete;
 
 	public String getUserName() {
 		return userName;
@@ -98,6 +99,14 @@ public class User {
 
 	public void setDiscTest(String discTest) {
 		this.discTest = discTest;
+	}
+
+	public boolean isLogicalDelete() {
+		return logicalDelete;
+	}
+
+	public void setLogicalDelete(boolean logicalDelete) {
+		this.logicalDelete = logicalDelete;
 	}
 
 	@Override

@@ -14,6 +14,7 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.iteam.configuration.ExternalConfigurationProperties;
+import org.iteam.exceptions.ElasticsearchClientException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,7 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
 							configuration.getElasticsearchPort()));
 		} catch (UnknownHostException e) {
 			LOGGER.error("Unexpected exception while initializing Elastic Search client: ", e);
+			throw new ElasticsearchClientException(e);
 		}
 	}
 
@@ -52,11 +54,6 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
 	@Override
 	public SearchResponse search(String index, String type, QueryBuilder queryBuilder) {
 		return client.prepareSearch(index, type).setQuery(queryBuilder).execute().actionGet();
-	}
-
-	@Autowired
-	private void setConfiguration(ExternalConfigurationProperties configuration) {
-		this.configuration = configuration;
 	}
 
 	/*
@@ -72,4 +69,18 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
 		return client.prepareGet(index, type, userName).get();
 	}
 
+	@Override
+	public IndexResponse modifyData(String data, String index, String type, String id) {
+		return insertData(data, index, type, id);
+	}
+
+	@Override
+	public IndexResponse logicalDelete(String data, String index, String type, String id) {
+		return insertData(data, index, type, id);
+	}
+
+	@Autowired
+	private void setConfiguration(ExternalConfigurationProperties configuration) {
+		this.configuration = configuration;
+	}
 }

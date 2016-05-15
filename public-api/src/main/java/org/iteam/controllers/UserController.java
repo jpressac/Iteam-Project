@@ -20,26 +20,39 @@ import org.springframework.web.bind.annotation.RequestParam;
  * existing user.
  */
 @Controller
-public class LoggingController {
+public class UserController {
 
 	private LoggingService loggingServiceImpl;
 
 	/**
 	 * Request for getting the user information
 	 * 
-	 * @return a response entity that represents the request status and the user
-	 *         information.
+	 * @param userName,
+	 *            the userName that represent the user for deleting.
+	 * @param password,
+	 *            the password of the user.
+	 * @return 200 OK and the user if it was successful or 500 if the user
+	 *         doesn't exists.
 	 */
 	@RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
 	public ResponseEntity<?> getUser(@RequestParam(value = "userName", required = true) String userName,
 			@RequestParam(value = "password", required = true) String password) {
-		return null;
+
+		User user = loggingServiceImpl.getUser(userName, password);
+
+		if (user != null) {
+			return new ResponseEntity<>(user, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 	}
 
 	/**
 	 * Request for inserting a new user to the database.
 	 * 
-	 * @return a response entity that represents the request status.
+	 * @param user,
+	 *            json representation of the user to create.
+	 * @return 200 OK if it was successfully created or 500 if it wasn't.
 	 */
 	@RequestMapping(value = "/user", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
 	public ResponseEntity<?> insertUser(@RequestBody @Valid User user) {
@@ -56,23 +69,39 @@ public class LoggingController {
 	/**
 	 * Request for modifying an specific user.
 	 * 
-	 * @return a response entity that represents the request status.
+	 * @param user,
+	 *            json representation of the user to create.
+	 * @return 200 OK if it was successfully modified or 500 if it wasn't
 	 */
-	@RequestMapping(value = "/user/modify", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
-	public ResponseEntity<?> modifyUser() {
-		return null;
+	@RequestMapping(value = "/user/modify", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
+	public ResponseEntity<?> modifyUser(@RequestBody @Valid User user) {
+
+		boolean modify = loggingServiceImpl.modifyUser(user);
+
+		if (modify) {
+			return new ResponseEntity<>(HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	/**
 	 * Request for deleting an user.
 	 * 
-	 * @param userName,
-	 *            the userName that represent the user for deleting.
-	 * @return a response entity that represents the request status.
+	 * @param user,
+	 *            json representation of the user to create.
+	 * @return 200 OK if it was successfully deleted or 500 if it wasn't
 	 */
-	@RequestMapping(value = "/user/delete")
-	public ResponseEntity<?> deleteUser(@RequestParam(value = "username", required = true) String userName) {
-		return null;
+	@RequestMapping(value = "/user/delete", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
+	public ResponseEntity<?> deleteUser(@RequestBody @Valid User user) {
+
+		boolean delete = loggingServiceImpl.logicalDelete(user);
+
+		if (delete) {
+			return new ResponseEntity<>(HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	/**

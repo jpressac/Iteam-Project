@@ -37,4 +37,22 @@ public interface LoggingService {
 	 * @return true if it exists, false otherwise
 	 */
 	public boolean checkUserExistance(String userName);
+
+	/**
+	 * Modify an existent user
+	 * 
+	 * @param user,
+	 *            the user information to modify
+	 * @return true if it was successful, false otherwise.
+	 */
+	public boolean modifyUser(User user);
+
+	/**
+	 * Logical delete of an user.
+	 * 
+	 * @param user,
+	 *            the user information to delete
+	 * @return true if it was successfully deleted, false otherwise.
+	 */
+	public boolean logicalDelete(User user);
 }
