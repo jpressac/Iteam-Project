@@ -1,4 +1,33 @@
-.activeRoute {
+.wrapper {
   font-weight: bold;
-  text-decoration: underline;
+  background-color: #428bca;
+  width: 100%;
+
+}
+.mainHeader {
+  font-weight:  normal;
+  color : #000;
+  font-style: normal;
+  font-family: sans-serif;
+  font-size: 50px;
+  text-align: left;
+
+}
+
+.navbarBright {
+	background-color:#111155;
+    color:#fff;
+    height: 100%;
+    
+
+}
+.navbarHeader {
+	line-height: 1;
+  margin-left: 20px;
+  background-color:#111155;
+}
+.navbarBrand {
+  font-size: 50px;
+  color: inherit;
+  margin-left: 20px;
 }

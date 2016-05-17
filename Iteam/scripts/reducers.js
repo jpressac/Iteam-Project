@@ -39,6 +39,7 @@ function rootReducer (state = initialState, action) {
       if(field = fieldX.username){
         return assign({}, field, {value: val});
       }
+      if(field = fieldX.password)
       return field;
 
     }

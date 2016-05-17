@@ -1,14 +1,15 @@
+
 import React from 'react'
-import DuckImage from '../assets/Duck.jpg'
+import LightBulbImage from '../assets/LightBulb.jpg'
 import classes from './HomeView.scss'
 
 export const HomeView = () => (
-  <div>
-    <h4>Welcome!</h4>
-    <img
+  <div className={classes.homeDiv}>
+    
+    <img align="center"
       alt='This is a duck, because Redux!'
-      className={classes.duck}
-      src={DuckImage} />
+      className={classes.image}
+      src={LightBulbImage} />
   </div>
 )
 
