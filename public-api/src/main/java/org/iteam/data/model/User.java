@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
 
+	// TODO: todos los campos deben estar en minusculas
 	private String userName;
 	private String password;
 	private String name;

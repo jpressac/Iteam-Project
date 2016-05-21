@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class UserController {
 
-	private UserService loggingServiceImpl;
+	private UserService userServiceImpl;
 
 	/**
 	 * Request for getting the user information
@@ -34,11 +34,12 @@ public class UserController {
 	 * @return 200 OK and the user if it was successful or 500 if the user
 	 *         doesn't exists.
 	 */
+	// TODO: cambiar userName por username, todo en minusculas
 	@RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
 	public ResponseEntity<?> getUser(@RequestParam(value = "userName", required = true) String userName,
 			@RequestParam(value = "password", required = true) String password) {
 
-		User user = loggingServiceImpl.getUser(userName, password);
+		User user = userServiceImpl.getUser(userName, password);
 
 		if (user != null) {
 			return new ResponseEntity<>(user, HttpStatus.OK);
@@ -57,7 +58,7 @@ public class UserController {
 	@RequestMapping(value = "/user", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
 	public ResponseEntity<?> insertUser(@RequestBody @Valid User user) {
 
-		boolean insert = loggingServiceImpl.setUser(user);
+		boolean insert = userServiceImpl.setUser(user);
 
 		if (insert) {
 			return new ResponseEntity<>(HttpStatus.OK);
@@ -76,7 +77,7 @@ public class UserController {
 	@RequestMapping(value = "/user/modify", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
 	public ResponseEntity<?> modifyUser(@RequestBody @Valid User user) {
 
-		boolean modify = loggingServiceImpl.modifyUser(user);
+		boolean modify = userServiceImpl.modifyUser(user);
 
 		if (modify) {
 			return new ResponseEntity<>(HttpStatus.OK);
@@ -95,7 +96,7 @@ public class UserController {
 	@RequestMapping(value = "/user/delete", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
 	public ResponseEntity<?> deleteUser(@RequestBody @Valid User user) {
 
-		boolean delete = loggingServiceImpl.logicalDelete(user);
+		boolean delete = userServiceImpl.logicalDelete(user);
 
 		if (delete) {
 			return new ResponseEntity<>(HttpStatus.OK);
@@ -114,7 +115,7 @@ public class UserController {
 	@RequestMapping(value = "/user/exists", method = RequestMethod.HEAD)
 	public ResponseEntity<?> checkUserIfExists(@RequestParam(value = "userName", required = true) String userName) {
 
-		boolean exists = loggingServiceImpl.checkUserExistance(userName);
+		boolean exists = userServiceImpl.checkUserExistance(userName);
 
 		if (exists) {
 			return new ResponseEntity<>(HttpStatus.OK);
@@ -125,6 +126,6 @@ public class UserController {
 
 	@Autowired
 	private void setLoggingServiceImpl(UserService loggingServiceImpl) {
-		this.loggingServiceImpl = loggingServiceImpl;
+		this.userServiceImpl = loggingServiceImpl;
 	}
 }
