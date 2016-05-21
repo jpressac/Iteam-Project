@@ -17,3 +17,5 @@ public-api/gradle/
 public-api/bin/
 *.logs
 *.logs.*
+Iteam-project/node_modules/
+*.log
