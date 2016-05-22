@@ -3,6 +3,7 @@ package org.iteam.data.dal.client;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.index.query.QueryBuilder;
 
 /**
@@ -37,9 +38,9 @@ public interface ElasticsearchClient {
 	 *            the type name.
 	 * @param id,
 	 *            the id of the document to modify.
-	 * @return an index response with the information about the request.
+	 * @return an update response with the information about the request.
 	 */
-	public IndexResponse modifyData(String data, String index, String type, String id);
+	public UpdateResponse modifyData(String data, String index, String type, String id);
 
 	/**
 	 * Delete in a logical way some document
@@ -54,7 +55,7 @@ public interface ElasticsearchClient {
 	 *            the id of the document to delete.
 	 * @return an index response with the information about the request.
 	 */
-	public IndexResponse logicalDelete(String data, String index, String type, String id);
+	public UpdateResponse logicalDelete(String data, String index, String type, String id);
 
 	/**
 	 * Verify the existence of an specific document

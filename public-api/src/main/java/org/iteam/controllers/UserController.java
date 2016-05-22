@@ -34,9 +34,8 @@ public class UserController {
 	 * @return 200 OK and the user if it was successful or 500 if the user
 	 *         doesn't exists.
 	 */
-	// TODO: cambiar userName por username, todo en minusculas
 	@RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
-	public ResponseEntity<?> getUser(@RequestParam(value = "userName", required = true) String userName,
+	public ResponseEntity<?> getUser(@RequestParam(value = "username", required = true) String userName,
 			@RequestParam(value = "password", required = true) String password) {
 
 		User user = userServiceImpl.getUser(userName, password);
@@ -67,17 +66,11 @@ public class UserController {
 		}
 	}
 
-	/**
-	 * Request for modifying an specific user.
-	 * 
-	 * @param user,
-	 *            json representation of the user to create.
-	 * @return 200 OK if it was successfully modified or 500 if it wasn't
-	 */
-	@RequestMapping(value = "/user/modify", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
-	public ResponseEntity<?> modifyUser(@RequestBody @Valid User user) {
+	@RequestMapping(value = "/user/modify", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+	public ResponseEntity<?> modifyUser(@RequestBody String doc,
+			@RequestParam(value = "username", required = true) String username) {
 
-		boolean modify = userServiceImpl.modifyUser(user);
+		boolean modify = userServiceImpl.modifyUser(doc, username);
 
 		if (modify) {
 			return new ResponseEntity<>(HttpStatus.OK);
@@ -86,17 +79,11 @@ public class UserController {
 		}
 	}
 
-	/**
-	 * Request for deleting an user.
-	 * 
-	 * @param user,
-	 *            json representation of the user to create.
-	 * @return 200 OK if it was successfully deleted or 500 if it wasn't
-	 */
-	@RequestMapping(value = "/user/delete", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.PUT)
-	public ResponseEntity<?> deleteUser(@RequestBody @Valid User user) {
+	@RequestMapping(value = "/user/delete", method = RequestMethod.POST)
+	public ResponseEntity<?> deleteUser(@RequestBody String doc,
+			@RequestParam(value = "username", required = true) String username) {
 
-		boolean delete = userServiceImpl.logicalDelete(user);
+		boolean delete = userServiceImpl.logicalDelete(doc, username);
 
 		if (delete) {
 			return new ResponseEntity<>(HttpStatus.OK);
@@ -113,7 +100,7 @@ public class UserController {
 	 * @return 200 OK if the user exists or 404 otherwise
 	 */
 	@RequestMapping(value = "/user/exists", method = RequestMethod.HEAD)
-	public ResponseEntity<?> checkUserIfExists(@RequestParam(value = "userName", required = true) String userName) {
+	public ResponseEntity<?> checkUserIfExists(@RequestParam(value = "username", required = true) String userName) {
 
 		boolean exists = userServiceImpl.checkUserExistance(userName);
 
@@ -125,7 +112,7 @@ public class UserController {
 	}
 
 	@Autowired
-	private void setLoggingServiceImpl(UserService loggingServiceImpl) {
-		this.userServiceImpl = loggingServiceImpl;
+	public void setUserServiceImpl(UserService userServiceImpl) {
+		this.userServiceImpl = userServiceImpl;
 	}
 }

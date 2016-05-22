@@ -9,8 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
 
-	// TODO: todos los campos deben estar en minusculas
-	private String userName;
+	private String username;
 	private String password;
 	private String name;
 	private String lastName;
@@ -22,12 +21,20 @@ public class User {
 	private String discTest;
 	private boolean logicalDelete;
 
-	public String getUserName() {
-		return userName;
+	public User(boolean logicalDelete) {
+		this.logicalDelete = logicalDelete;
 	}
 
-	public void setUserName(String userName) {
-		this.userName = userName;
+	public User() {
+
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String userName) {
+		this.username = userName;
 	}
 
 	public String getPassword() {

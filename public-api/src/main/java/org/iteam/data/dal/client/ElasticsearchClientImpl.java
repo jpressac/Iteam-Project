@@ -8,6 +8,7 @@ import javax.annotation.PostConstruct;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
@@ -46,6 +47,7 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
 		}
 	}
 
+	// TODO: surround with try catch every method
 	@Override
 	public IndexResponse insertData(String data, String index, String type, String id) {
 		return client.prepareIndex(index, type, id).setSource(data).execute().actionGet();
@@ -53,7 +55,7 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
 
 	@Override
 	public SearchResponse search(String index, String type, QueryBuilder queryBuilder) {
-		return client.prepareSearch(index, type).setQuery(queryBuilder).execute().actionGet();
+		return client.prepareSearch("user").setTypes("data").setQuery(queryBuilder).execute().actionGet();
 	}
 
 	/*
@@ -70,13 +72,21 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
 	}
 
 	@Override
-	public IndexResponse modifyData(String data, String index, String type, String id) {
-		return insertData(data, index, type, id);
+	public UpdateResponse modifyData(String data, String index, String type, String id) {
+		try {
+			return client.prepareUpdate().setIndex(index).setType(type).setId(id).setDoc(data).execute().actionGet();
+		} catch (Exception e) {
+			LOGGER.error("Error while performing update user request - Error: ", e);
+			LOGGER.warn("User cannot be deleted/modified - User: '{}'", id);
+			// TODO: usar excepciones propias, con el throw remover el return
+			// null
+			return null;
+		}
 	}
 
 	@Override
-	public IndexResponse logicalDelete(String data, String index, String type, String id) {
-		return insertData(data, index, type, id);
+	public UpdateResponse logicalDelete(String data, String index, String type, String id) {
+		return modifyData(data, index, type, id);
 	}
 
 	@Autowired

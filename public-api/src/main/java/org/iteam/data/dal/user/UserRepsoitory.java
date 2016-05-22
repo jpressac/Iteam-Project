@@ -1,8 +1,13 @@
-package org.iteam.services.user;
+package org.iteam.data.dal.user;
 
 import org.iteam.data.model.User;
 
-public interface UserService {
+/**
+ * This class controls all the request for getting and setting information about
+ * the users
+ *
+ */
+public interface UserRepsoitory {
 
 	/**
 	 * Get the user with all his information.
@@ -54,5 +59,4 @@ public interface UserService {
 	 * @return true if it was successful, false otherwise.
 	 */
 	public boolean logicalDelete(String doc, String username);
-
 }
