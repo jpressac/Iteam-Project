@@ -5,9 +5,9 @@ export const PATHS = {
   ERROR,
   COMMON : {
     ROOT : ROOT,
-    LOGIN : `${ROOT}/login`,
-    REGISTER : `${ROOT}/register`,
-    ABOUT : `${ROOT}/about`,
-    HOWTO : `${ROOT}/howto`
+    LOGIN : `${ROOT}user/authenticated`,
+    REGISTER : `${ROOT}register`,
+    ABOUT : `${ROOT}about`,
+    HOWTO : `${ROOT}howto`
   }
 }
