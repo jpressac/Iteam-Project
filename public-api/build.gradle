@@ -32,7 +32,11 @@ repositories {
 dependencies {
 	compile('org.apache.commons:commons-lang3:3.4')
 	compile('org.apache.commons:commons-collections4:4.0')
-	//compile('org.springframework.boot:spring-boot-starter-security')
+	compile('org.springframework.boot:spring-boot-starter-security'){
+		exclude module: "logback-classic"
+		exclude module: "logbak-core"
+		exclude module: "log4j-over-slf4j"
+	}
 	compile('org.springframework.boot:spring-boot-starter-thymeleaf'){
 		exclude module: "logback-classic"
 		exclude module: "logbak-core"

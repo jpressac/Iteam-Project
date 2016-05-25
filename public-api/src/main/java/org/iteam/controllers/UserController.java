@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,16 +35,16 @@ public class UserController {
 	 * @return 200 OK and the user if it was successful or 500 if the user
 	 *         doesn't exists.
 	 */
-	@RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
-	public ResponseEntity<?> getUser(@RequestParam(value = "username", required = true) String userName,
-			@RequestParam(value = "password", required = true) String password) {
+	@RequestMapping(value = "/user/authenticated", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
+	public ResponseEntity<?> getUser() {
 
-		User user = userServiceImpl.getUser(userName, password);
+		User user = userServiceImpl.getUser(SecurityContextHolder.getContext().getAuthentication().getName(),
+				SecurityContextHolder.getContext().getAuthentication().getCredentials().toString());
 
 		if (user != null) {
 			return new ResponseEntity<>(user, HttpStatus.OK);
 		} else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		}
 	}
 
