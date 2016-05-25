@@ -13,3 +13,4 @@ gradle-app.setting
 public-api/.project
 public-api/.settings/
 public-api/bin/
+public-api/publicapi.logs.*

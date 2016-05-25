@@ -1,10 +1,10 @@
 import React, {Component,PropTypes} from 'react';
-import classes from ''
+import classes from './RegistrationForm.scss'
 class RegistrationForm extends Component {
 
   render(){
     return(
-    <form role="form" className=classes.form>
+    <form role="form" className={classes.form}>
     <label for="nombre completo"> Nombre completo </label>
                   <div class="row" id="nombre completo">
                       <div class="col-md-6">
