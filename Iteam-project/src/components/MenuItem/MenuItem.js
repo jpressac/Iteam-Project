@@ -1,7 +1,7 @@
 import React, { Component, PropTypes }  from 'react';
 import {Link} from 'react-router';
 import classes from './MenuItem.scss';
-
+import {PATHS} from '../../constants/routes.js'
 export class MenuItem extends React.Component {
 
 
@@ -10,9 +10,13 @@ export class MenuItem extends React.Component {
 
       return (
         <div className={classes.menuItem}  style={{fontSize: '1.5rem', fontWeight: 'initial', paddingTop: '0.8rem', paddingBottom: '0.8rem'}}>
-          <Link to={{ pathname: {nav}, query: { the: 'query' } }} >
+        <li>
+          <Link to={'/' + nav} activeClassName="active">
+
           {label}
+
           </Link>
+          </li>
         </div>
 
       )

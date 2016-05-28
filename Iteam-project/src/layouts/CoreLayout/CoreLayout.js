@@ -9,10 +9,10 @@ export const CoreLayout = ({ children }) => (
   <div class="text-center">
     <Header />
     <SlideMenu  alignment="left">
-      <MenuItem  label="Login" nav="/"></MenuItem>
-      <MenuItem  label="Register" nav="/register"></MenuItem>
-      <MenuItem label="About Us"></MenuItem>
-      <MenuItem label="Contact"></MenuItem>
+      <MenuItem  label="Login" nav=""></MenuItem>
+      <MenuItem  label="Register" nav={PATHS.COMMON.REGISTER}></MenuItem>
+      <MenuItem label="About Us" nav={PATHS.COMMON.ABOUT}></MenuItem>
+      <MenuItem label="Contact" nav={PATHS.COMMON.CONTACT}></MenuItem>
 
       </SlideMenu>
     <div className={classes.mainContainer}>
