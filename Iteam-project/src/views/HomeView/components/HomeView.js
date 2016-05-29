@@ -12,7 +12,7 @@ export class HomeView extends React.Component {
         <img align="center"
           alt='This is a duck, because Redux!'
           className={classes.image}
-          src={home} />
+          src={LightBulbImage} />
           <input type="text" className="text-center"></input>
       </div>
 )

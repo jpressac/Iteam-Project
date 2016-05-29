@@ -2,7 +2,8 @@ import React, {Component,PropTypes} from 'react';
 import classes from './RegistrationForm.scss'
 import TextBox from '../Form/TextBox/TextBox.js'
 import RadioButton from '../Form/RadioButton/RadioButton.js'
-import DatePicker from '../Form/DatePicker/DatePicker.js'
+import { Button } from 'react-bootstrap';
+//import DatePicker from '../Form/DatePicker/DatePicker.js'
 
 class RegistrationForm extends Component {
 
@@ -31,7 +32,7 @@ class RegistrationForm extends Component {
                           </div>
                         </div>
                         <div class="col-md-6">
-                          <DatePicker selected={this.state.date} onChange={this.handleChange}></DatePicker>
+                          //TODO datepicker
                         </div>
                         <div class="col-md-6">
                             <TextBox label="Mail"></TextBox>
@@ -52,8 +53,12 @@ class RegistrationForm extends Component {
                         <div class="col-md-6">
                             <TextBox label="Repeat password"></TextBox>
                         </div>
+                        <div class="col-md-6">
+                            <Button type="button" bsStyle="success">Submit</Button>
+                        </div>
                       </div>
               </form>);
   };
 }
+//DatePicker selected={this.state.date} onChange={this.handleChange}></DatePicker>
 export default RegistrationForm;

@@ -1,11 +1,11 @@
 import React, {Component,PropTypes} from 'react';
-var DayPicker = require('react-day-picker');
+var DayPicker = require('react-datepicker');
 
 function sunday(day) {
   return day.getDay() === 0;
 }
 
-class MyComponent extends React.Component {
+export class DatePicker extends React.Component {
   state = {
     selectedDay: new Date()
   }
@@ -29,3 +29,4 @@ class MyComponent extends React.Component {
     />);
   }
 }
+export default DatePicker

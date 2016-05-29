@@ -2,7 +2,7 @@
 import React, { Component, PropTypes }  from 'react';
 import SideBar from 'react-sidebar'
 import classes from './slideMenu.scss'
-import ReactSanfona, { Accordion, AccordionItem } from 'react-sanfona'
+
 
 
 export class SlideMenu extends React.Component {
