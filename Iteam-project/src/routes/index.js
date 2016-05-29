@@ -6,6 +6,7 @@ import HomeView from '../views/HomeView'
 import RegistrationView from '../views/RegistrationView'
 import AboutView from '../views/AboutView'
 import CounterRoute from './Counter'
+import ContactView from '../views/ContactView'
 import { PATHS } from '../constants/routes'
 //TODO import actions
 
@@ -13,7 +14,7 @@ export const createRoutes = (store) => (
   {
   path: '/',
   component: CoreLayout,
-  indexRoute: RegistrationView,
+  indexRoute: ContactView,
   childRoutes: [
     CounterRoute(store)
   ]
