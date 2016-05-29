@@ -1,23 +1,21 @@
 import React, {Component,PropTypes} from 'react';
 import classes from './RegistrationForm.scss'
+import TextBox from '../Form/TextBox/TextBox.js'
+import RadioButton from '../Form/RadioButton/RadioButton.js'
+import DatePicker from '../Form/DatePicker/DatePicker.js'
+
 class RegistrationForm extends Component {
 
   render(){
     return(
     <form role="form" className={classes.form}>
     <label for="nombre completo"> Nombre completo </label>
-                  <div class="row" id="nombre completo">
+                  <div class="row" id="datos_personales">
                       <div class="col-md-6">
-                          <div class="form-group input-group">
-                              <span class="input-group-btn"></span>
-                              <input class="form-control" type="text" placeholder="Nombre" id="nombre"></input>
-                          </div>
+                          <TextBox label="First name"></TextBox>
                       </div>
                       <div class="col-md-6">
-                          <div class="form-group input-group">
-                              <span class="input-group-btn"></span>
-                              <input class="form-control" type="text" placeholder="Apellido" id="apellido"></input>
-                          </div>
+                          <TextBox label="Last name"></TextBox>
                       </div>
                       <div class="col-md-8">
                           <div class="form-group">
@@ -33,13 +31,28 @@ class RegistrationForm extends Component {
                           </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="form-group">
-                              <label class="control-label">Profesión</label>
-                                <span class="input-group-btn"></span>
-                                <input class="form-control" type="text" placeholder="Profesión" id="profesión"></input>
-                            </div>
+                          <DatePicker selected={this.state.date} onChange={this.handleChange}></DatePicker>
                         </div>
-                  </div>
+                        <div class="col-md-6">
+                            <TextBox label="Mail"></TextBox>
+                        </div>
+                        <div class="col-md-6">
+                            <RadioButton groupName="Sexo" label="Male"></RadioButton>
+                            <RadioButton groupName="Sexo" label="Female"></RadioButton>
+                        </div>
+                        <div class="col-md-6">
+                            <TextBox label="Profession"></TextBox>
+                        </div>
+                        <div class="col-md-6">
+                            <TextBox label="User Name"></TextBox>
+                        </div>
+                        <div class="col-md-6">
+                            <TextBox label="Password"></TextBox>
+                        </div>
+                        <div class="col-md-6">
+                            <TextBox label="Repeat password"></TextBox>
+                        </div>
+                      </div>
               </form>);
   };
 }
