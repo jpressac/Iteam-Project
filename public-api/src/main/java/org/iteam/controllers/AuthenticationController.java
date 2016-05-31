@@ -9,10 +9,15 @@ public class AuthenticationController {
 
 	@RequestMapping("application")
 	public String index(Model model) {
-		return "index";
+		return "application";
 	}
 
-	@RequestMapping("application/**/*")
+	@RequestMapping("/login")
+	public String indexLogin(Model model) {
+		return "application";
+	}
+
+	@RequestMapping("/application/**/*")
 	public String rootLogged(Model model) {
 		return "redirect:/application";
 	}

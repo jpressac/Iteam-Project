@@ -9,18 +9,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Controller for logging api. It manage the methods get user for retrieving a
+ * Controller for login api. It manage the methods get user for retrieving a
  * particular user, post for inserting a new user and put for modifying an
  * existing user.
  */
-@Controller
+@RestController
 public class UserController {
 
 	private UserService userServiceImpl;
@@ -36,16 +36,17 @@ public class UserController {
 	 *         doesn't exists.
 	 */
 	@RequestMapping(value = "/user/authenticated", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
-	public ResponseEntity<?> getUser() {
-
-		User user = userServiceImpl.getUser(SecurityContextHolder.getContext().getAuthentication().getName(),
-				SecurityContextHolder.getContext().getAuthentication().getCredentials().toString());
-
-		if (user != null) {
-			return new ResponseEntity<>(user, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-		}
+	public String getUser() {
+		return SecurityContextHolder.getContext().getAuthentication().getName();
+		// User user =
+		// userServiceImpl.getUser(SecurityContextHolder.getContext().getAuthentication().getName(),
+		// SecurityContextHolder.getContext().getAuthentication().getCredentials().toString());
+		//
+		// if (user != null) {
+		// return new ResponseEntity<>(user, HttpStatus.OK);
+		// } else {
+		// return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		// }
 	}
 
 	/**
@@ -103,7 +104,7 @@ public class UserController {
 	@RequestMapping(value = "/user/exists", method = RequestMethod.HEAD)
 	public ResponseEntity<?> checkUserIfExists(@RequestParam(value = "username", required = true) String userName) {
 
-		boolean exists = userServiceImpl.checkUserExistance(userName);
+		boolean exists = userServiceImpl.checkUserExistence(userName);
 
 		if (exists) {
 			return new ResponseEntity<>(HttpStatus.OK);

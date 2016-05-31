@@ -3,11 +3,15 @@ package org.iteam.data.model;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
+
+	private static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
 
 	private String username;
 	private String password;
@@ -19,7 +23,7 @@ public class User {
 	private String profession;
 	private String mbtiTest;
 	private String discTest;
-	private boolean logicalDelete;
+	private boolean logicalDelete = false;
 
 	public User(boolean logicalDelete) {
 		this.logicalDelete = logicalDelete;
@@ -42,7 +46,7 @@ public class User {
 	}
 
 	public void setPassword(String password) {
-		this.password = password;
+		this.password = PASSWORD_ENCODER.encode(password);
 	}
 
 	public String getName() {

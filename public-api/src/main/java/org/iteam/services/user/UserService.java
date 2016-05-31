@@ -31,7 +31,7 @@ public interface UserService {
 	 *            the user name to check.
 	 * @return true if it exists, false otherwise.
 	 */
-	public boolean checkUserExistance(String username);
+	public boolean checkUserExistence(String username);
 
 	/**
 	 * Modify an existent user.

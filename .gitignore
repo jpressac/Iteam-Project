@@ -19,3 +19,6 @@ public-api/bin/
 *.logs.*
 Iteam-project/node_modules/
 *.log
+.settings/
+.classpath
+.project

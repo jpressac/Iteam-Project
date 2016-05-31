@@ -2,18 +2,14 @@ package org.iteam.services.user;
 
 import org.iteam.data.dal.client.ElasticsearchClientImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Component;
 
-@Configuration
-@EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@Component
 public class IteamUserDetailService implements UserDetailsService {
 
 	private ElasticsearchClientImpl elasticsearchRepository;
@@ -29,7 +25,7 @@ public class IteamUserDetailService implements UserDetailsService {
 		// AuthorityUtils.createAuthorityList(userRoles));
 		// }
 		//
-		return new User("admin", "fuckLogging", AuthorityUtils.createAuthorityList(new String[] { "ROLE_ADMIN" }));
+		return new User("juan", "duck", AuthorityUtils.createAuthorityList(new String[] { "ROLE_ADMIN" }));
 	}
 
 	@Autowired

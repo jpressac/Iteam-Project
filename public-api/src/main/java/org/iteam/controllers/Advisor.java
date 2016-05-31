@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 /**
- * Advisor that hands all the exception that occur while performing the
+ * Advisor that handles all the exception that occur while performing the
  * requests.
  *
  */
