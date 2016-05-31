@@ -14,3 +14,11 @@ public-api/.classpath
 public-api/.settings/
 *.class
 public-api/gradle/
+public-api/bin/
+*.logs
+*.logs.*
+Iteam-project/node_modules/
+*.log
+.settings/
+.classpath
+.project
