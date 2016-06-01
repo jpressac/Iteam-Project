@@ -1,5 +1,4 @@
 .gradle
-build/
 
 # Ignore Gradle GUI config
 gradle-app.setting
@@ -9,16 +8,15 @@ gradle-app.setting
 
 # Cache of project
 .gradletasknamecache
-public-api/.project
+
 public-api/.classpath
-public-api/.settings/
-*.class
 public-api/gradle/
 public-api/bin/
 *.logs
 *.logs.*
 Iteam-project/node_modules/
-*.log
 .settings/
 .classpath
 .project
+public-api/build/
+*.orig
