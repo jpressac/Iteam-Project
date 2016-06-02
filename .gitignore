@@ -20,3 +20,4 @@ Iteam-project/node_modules/
 .project
 public-api/build/
 *.orig
+Iteam/node_modules/
