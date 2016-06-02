@@ -8,9 +8,16 @@ gradle-app.setting
 
 # Cache of project
 .gradletasknamecache
-*.classpath
-public-api/.project
-public-api/.settings/
+
+public-api/.classpath
+public-api/gradle/
 public-api/bin/
-public-api/publicapi.logs.*
-public-api/
+*.logs
+*.logs.*
+Iteam-project/node_modules/
+.settings/
+.classpath
+.project
+public-api/build/
+*.orig
+Iteam/node_modules/
