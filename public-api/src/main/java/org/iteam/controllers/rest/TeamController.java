@@ -48,7 +48,15 @@ public class TeamController {
 	 */
 	public ResponseEntity<Boolean> deleteTeam(@RequestParam(value = "ownerName", required = true) String ownerName,
 			@RequestParam(value = "teamName", required = true) String teamName) {
-		return null;
+		// TODO: add validations Valid.istrue()
+
+		boolean success = teamService.deleteTeam(ownerName, teamName);
+
+		if (success) {
+			return new ResponseEntity<Boolean>(success, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<Boolean>(success, HttpStatus.BAD_REQUEST);
+		}
 	}
 
 	@Autowired
