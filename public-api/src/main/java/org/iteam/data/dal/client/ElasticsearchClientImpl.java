@@ -5,8 +5,11 @@ import java.net.UnknownHostException;
 
 import javax.annotation.PostConstruct;
 
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.Client;
@@ -20,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.thymeleaf.util.StringUtils;
 
 @Repository
 public class ElasticsearchClientImpl implements ElasticsearchClient {
@@ -47,15 +51,36 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
 		}
 	}
 
-	// TODO: surround with try catch every method
 	@Override
 	public IndexResponse insertData(String data, String index, String type, String id) {
-		return client.prepareIndex(index, type, id).setSource(data).execute().actionGet();
+
+		IndexRequestBuilder indexRequest = client.prepareIndex();
+		indexRequest.setIndex(index).setType(type);
+
+		if (id != null || !StringUtils.isEmpty(id)) {
+			indexRequest.setId(id);
+		}
+
+		return indexRequest.setSource(data).execute().actionGet();
+	}
+
+	@Override
+	public IndexResponse insertData(String data, String index, String type) {
+		return insertData(data, index, type, null);
 	}
 
 	@Override
 	public SearchResponse search(String index, String type, QueryBuilder queryBuilder) {
-		return client.prepareSearch("user").setTypes("data").setQuery(queryBuilder).execute().actionGet();
+
+		SearchRequestBuilder response = client.prepareSearch();
+
+		response.setIndices(index).setTypes(type);
+
+		if (queryBuilder != null) {
+			response.setQuery(queryBuilder);
+		}
+
+		return response.execute().actionGet();
 	}
 
 	/*
@@ -67,21 +92,18 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
 	 * java.lang.String)
 	 */
 	@Override
-	public GetResponse checkUser(String index, String type, String userName) {
-		return client.prepareGet(index, type, userName).get();
+	public GetResponse checkUser(String index, String type, String id) {
+		return client.prepareGet(index, type, id).execute().actionGet();
 	}
 
 	@Override
 	public UpdateResponse modifyData(String data, String index, String type, String id) {
-		try {
-			return client.prepareUpdate().setIndex(index).setType(type).setId(id).setDoc(data).execute().actionGet();
-		} catch (Exception e) {
-			LOGGER.error("Error while performing update user request - Error: ", e);
-			LOGGER.warn("User cannot be deleted/modified - User: '{}'", id);
-			// TODO: usar excepciones propias, con el throw remover el return
-			// null
-			return null;
-		}
+		return client.prepareUpdate().setIndex(index).setType(type).setId(id).setDoc(data).execute().actionGet();
+	}
+
+	@Override
+	public DeleteResponse delete(String index, String type, String id) {
+		return client.prepareDelete(index, type, id).execute().actionGet();
 	}
 
 	@Override

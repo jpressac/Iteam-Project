@@ -1,4 +1,4 @@
-package org.iteam.controllers;
+package org.iteam.controllers.rest;
 
 import org.iteam.data.model.ErrorDTO;
 import org.iteam.exceptions.ElasticsearchClientException;
