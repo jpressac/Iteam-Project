@@ -19,28 +19,26 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class UserRepositoryImpl implements UserRepsoitory {
 
-	private static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserRepositoryImpl.class);
+	private static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
 
 	private static final String USER_NAME_FIELD = "username";
-	private static final String PASSWORD_FIELD = "password";
 	private static final String LOGICAL_DELETE_FIELD = "logicalDelete";
 
 	private ElasticsearchClient elasticsearchClient;
 	private ExternalConfigurationProperties configuration;
 
 	@Override
-	public User getUser(String username, String password) {
+	public User getUser(String username) {
 
 		BoolQueryBuilder query = QueryBuilders.boolQuery();
 		query.must(QueryBuilders.termQuery(USER_NAME_FIELD, username))
-				.must(QueryBuilders.termQuery(PASSWORD_FIELD, PASSWORD_ENCODER.encode(password)))
 				.must(QueryBuilders.termQuery(LOGICAL_DELETE_FIELD, false));
 
 		SearchResponse response = elasticsearchClient.search(configuration.getElasticsearchIndexUserName(),
 				configuration.getElasticsearchIndexUserTypeName(), query);
 
-		if (response != null && response.getHits().getTotalHits() != 0) {
+		if (response != null && response.getHits().getTotalHits() == 1) {
 			return (User) JSONUtils.JSONToObject(response.getHits().getAt(0).getSourceAsString(), User.class);
 		}
 		return null;
@@ -48,6 +46,8 @@ public class UserRepositoryImpl implements UserRepsoitory {
 
 	@Override
 	public boolean setUser(User user) {
+
+		user.setPassword(PASSWORD_ENCODER.encode(user.getPassword()));
 		String data = JSONUtils.ObjectToJSON(user);
 
 		IndexResponse indexResponse = elasticsearchClient.insertData(data,

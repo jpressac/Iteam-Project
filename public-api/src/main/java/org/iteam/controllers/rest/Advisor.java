@@ -5,7 +5,7 @@ import org.iteam.exceptions.ElasticsearchClientException;
 import org.iteam.exceptions.HashingException;
 import org.iteam.exceptions.IlegalParamException;
 import org.iteam.exceptions.JsonParsingException;
-import org.iteam.exceptions.UserExistenceException;
+import org.iteam.exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -44,8 +44,8 @@ public class Advisor {
 				HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	@ExceptionHandler(UserExistenceException.class)
-	public ResponseEntity<?> userExistanceException(UserExistenceException e) {
+	@ExceptionHandler(UserNotFoundException.class)
+	public ResponseEntity<?> userExistanceException(UserNotFoundException e) {
 		return new ResponseEntity<ErrorDTO>(new ErrorDTO("u001", e.getMessage()), HttpStatus.UNAUTHORIZED);
 	}
 }
