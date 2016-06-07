@@ -5,8 +5,7 @@ export class RegistrationView extends React.Component {
   render(){
     return(
       <div className={classes.formContainer} >
-      <RegistrationForm></RegistrationForm>
-
+        <RegistrationForm></RegistrationForm>
       </div>
 )
 }

@@ -1,11 +1,11 @@
-export const ROOT = '/';
+export const ROOT = '/application';
 export const ERROR = '/error'
 export const PATHS = {
   ROOT,
   ERROR,
   COMMON : {
     ROOT : ROOT,
-    LOGIN : 'user/authenticated',
+    LOGIN : 'login',
     REGISTER : 'register',
     ABOUT : 'about',
     HOWTO : 'howto',

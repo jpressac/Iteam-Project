@@ -1,4 +1,4 @@
-import React, {Component,PropTypes} from 'react';
+import React, {Component} from 'react';
 import classes from './RegistrationForm.scss'
 import TextBox from '../Form/TextBox/TextBox.js'
 import RadioButton from '../Form/RadioButton/RadioButton.js'
@@ -16,7 +16,7 @@ class RegistrationForm extends Component {
                           <TextBox label="First name"></TextBox>
                       </div>
                       <div class="col-md-6">
-                          <TextBox label="Last name"></TextBox>
+                          <TextBox type="text" label="Last name"></TextBox>
                       </div>
                       <div class="col-md-8">
                           <div class="form-group">
@@ -35,26 +35,26 @@ class RegistrationForm extends Component {
                           //TODO datepicker
                         </div>
                         <div class="col-md-6">
-                            <TextBox label="Mail"></TextBox>
+                            <TextBox type="email" label="Mail"></TextBox>
                         </div>
                         <div class="col-md-6">
                             <RadioButton groupName="Sexo" label="Male"></RadioButton>
                             <RadioButton groupName="Sexo" label="Female"></RadioButton>
                         </div>
                         <div class="col-md-6">
-                            <TextBox label="Profession"></TextBox>
+                            <TextBox type="text" label="Profession"></TextBox>
                         </div>
                         <div class="col-md-6">
-                            <TextBox label="User Name"></TextBox>
+                            <TextBox type="text" label="Username"></TextBox>
                         </div>
                         <div class="col-md-6">
-                            <TextBox label="Password"></TextBox>
+                            <TextBox type="password" label="Password"></TextBox>
                         </div>
                         <div class="col-md-6">
-                            <TextBox label="Repeat password"></TextBox>
+                            <TextBox type="password" label="Repeat password"></TextBox>
                         </div>
                         <div class="col-md-6">
-                            <Button type="button" bsStyle="success">Submit</Button>
+                            <Button type="submit" bsStyle="success">Register</Button>
                         </div>
                       </div>
               </form>);

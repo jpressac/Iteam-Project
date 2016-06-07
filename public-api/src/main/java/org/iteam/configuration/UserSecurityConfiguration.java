@@ -32,16 +32,16 @@ public class UserSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Override
 	public void configure(WebSecurity web) throws Exception {
 		web.ignoring().antMatchers("/bower_components/**", "scripts/**/*.js", "scripts/**/*.jsx", "/styles/**/*",
-				"/imgs/**/*.*");
+				"/imgs/**/*.*", "/resources/static/**");
 	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests().antMatchers(HttpMethod.POST, "/user").permitAll()
 				.antMatchers(HttpMethod.GET, "/user/authenticated").permitAll().antMatchers(HttpMethod.OPTIONS, "/**/*")
-				.permitAll().anyRequest().authenticated().and().formLogin().loginPage("/login")
-				.defaultSuccessUrl("/application", true).permitAll().and().httpBasic().and().csrf().disable().logout()
-				.logoutSuccessUrl("/application").deleteCookies("JSESSIONID");
+				.permitAll().anyRequest().authenticated().and().formLogin().loginPage("/application/login")
+				.defaultSuccessUrl("/application/about", true).permitAll().and().httpBasic().and().csrf().disable()
+				.logout().logoutSuccessUrl("/application/register").deleteCookies("JSESSIONID");
 	}
 
 	@Autowired
