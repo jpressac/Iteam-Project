@@ -1,5 +1,3 @@
-import LoginForm from './Login'
+import LoginForm from './LoginForm'
 
-export default {
-  component: Login
-}
+export default LoginForm

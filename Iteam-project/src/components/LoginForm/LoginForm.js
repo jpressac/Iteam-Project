@@ -1,13 +1,13 @@
 import React, {Component} from 'react'
 import TextBox from '../Form/TextBox/TextBox.js'
 import { Button, FormGroup } from 'react-bootstrap';
-import classes from './Login.scss'
+import classes from './LoginForm.scss'
 
-class Login extends Component {
+class LoginForm extends Component {
 
   render(){
     return(
-      <form role="form" className={classes.form}>
+      <form action="/login" method="POST" className={classes.form, "form-signin"}>
         <FormGroup>
           <TextBox type='text' label='Username'></TextBox>
           <TextBox type='password' label='Password'></TextBox>
@@ -20,4 +20,4 @@ class Login extends Component {
   }
 }
 
-export default Login
+export default LoginForm

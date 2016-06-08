@@ -1,5 +1,3 @@
-import LoginView from './LoginView.js'
+import LoginView from './LoginView'
 
-export default {
-  component: LoginView
-}
+export default LoginView

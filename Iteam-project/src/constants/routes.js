@@ -5,6 +5,7 @@ export const PATHS = {
   ERROR,
   COMMON : {
     ROOT : ROOT,
+    HOME: 'home',
     LOGIN : 'login',
     REGISTER : 'register',
     ABOUT : 'about',

@@ -13,7 +13,7 @@ public class AuthenticationController {
 	}
 
 	@RequestMapping("/login")
-	public String indexLogin(Model model) {
+	public String login(Model model) {
 		return "application";
 	}
 

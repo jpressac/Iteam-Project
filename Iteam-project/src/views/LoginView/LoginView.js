@@ -1,5 +1,5 @@
 import React from 'react'
-import Login from '../../components/LoginForm/Login.js'
+import Login from '../../components/LoginForm/'
 import classes from './LoginView.scss'
 
 class LoginView extends React.Component {
