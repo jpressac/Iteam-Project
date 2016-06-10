@@ -5,9 +5,9 @@ class TextBox extends Component {
 
   render(){
     return(
-      <div class="form-group">
-          <label class="control-label">{this.props.label}</label>
-          <span class="input-group-btn"></span>
+      <div className="form-group">
+          <label className="control-label">{this.props.label}</label>
+          <span className="input-group-btn"></span>
           <FormControl  type={this.props.type} placeholder={this.props.label}></FormControl>
       </div>
     )

@@ -28,17 +28,16 @@ public class UserSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Override
 	public void configure(WebSecurity web) throws Exception {
-		web.ignoring().antMatchers("/**");
-		/* "/*.js", "/img/**", "/*.html", "/*.css", "/*.ico", "/*.jpg" */
+		web.ignoring().antMatchers("/*.js", "/*.css", "/*.jpg", "/*.ico");
 	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests().antMatchers(HttpMethod.POST, "/user").permitAll()
 				.antMatchers(HttpMethod.GET, "/user/authenticated").permitAll().antMatchers(HttpMethod.OPTIONS, "/**/*")
-				.permitAll().anyRequest().authenticated().and().formLogin().loginPage("/login")
+				.permitAll().anyRequest().authenticated().and().formLogin().loginPage("/application/login")
 				.defaultSuccessUrl("/application", true).permitAll().and().httpBasic().and().csrf().disable().logout()
-				.logoutSuccessUrl("/application").deleteCookies("JSESSIONID");
+				.logoutSuccessUrl("/application").deleteCookies("JSESSIONID").and().sessionManagement();
 	}
 
 	@Autowired
