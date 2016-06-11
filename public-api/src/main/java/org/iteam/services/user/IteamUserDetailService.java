@@ -1,6 +1,7 @@
 package org.iteam.services.user;
 
-import org.iteam.data.dal.client.ElasticsearchClientImpl;
+import org.iteam.data.dal.user.UserRepositoryImpl;
+import org.iteam.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
@@ -12,25 +13,25 @@ import org.springframework.stereotype.Component;
 @Component
 public class IteamUserDetailService implements UserDetailsService {
 
-	private ElasticsearchClientImpl elasticsearchRepository;
+	private UserRepositoryImpl userRepository;
+	private static final String ROLE = "ROLE_ADMIN";
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		// GetResponse response = elasticsearchRepository.checkUser("user",
-		// "data", username);
-		// if (response.isExists()) {
-		// String userRoles = response.getField("roles").getValue().toString();
-		// return new User(response.getId(),
-		// response.getField("password").getValue().toString(),
-		// AuthorityUtils.createAuthorityList(userRoles));
-		// }
-		//
-		return new User("juan", "duck", AuthorityUtils.createAuthorityList(new String[] { "ROLE_ADMIN" }));
+
+		org.iteam.data.model.User user = userRepository.getUser(username);
+
+		if (user == null) {
+			throw new UserNotFoundException();
+		}
+
+		return new User(user.getUsername(), user.getPassword(),
+				AuthorityUtils.createAuthorityList(new String[] { ROLE }));
+
 	}
 
 	@Autowired
-	private void setElasticsearchRepository(ElasticsearchClientImpl elasticsearchRepository) {
-		this.elasticsearchRepository = elasticsearchRepository;
+	private void setUserRepository(UserRepositoryImpl userRepository) {
+		this.userRepository = userRepository;
 	}
-
 }

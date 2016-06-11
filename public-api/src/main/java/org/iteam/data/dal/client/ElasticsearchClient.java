@@ -1,5 +1,6 @@
 package org.iteam.data.dal.client;
 
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
@@ -26,6 +27,19 @@ public interface ElasticsearchClient {
 	 * @return an index response with the information about the request.
 	 */
 	public IndexResponse insertData(String data, String index, String type, String id);
+
+	/**
+	 * Insert a new document with a random id.
+	 * 
+	 * @param data,
+	 *            the data to insert.
+	 * @param index,
+	 *            the index name.
+	 * @param type,
+	 *            the type name.
+	 * @return an index response with the information about the request.
+	 */
+	public IndexResponse insertData(String data, String index, String type);
 
 	/**
 	 * Modify an specific document.
@@ -83,5 +97,7 @@ public interface ElasticsearchClient {
 	 *         match the search.
 	 */
 	public SearchResponse search(String index, String type, QueryBuilder queryBuilder);
+
+	public DeleteResponse delete(String index, String type, String id);
 
 }

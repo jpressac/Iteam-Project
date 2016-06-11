@@ -1,22 +1,25 @@
-// We only need to import the modules necessary for initial render
+
 import React from 'react'
 import { Route, IndexRoute } from 'react-router'
-import CoreLayout from '../layouts/CoreLayout/CoreLayout.js'
-import HomeView from '../views/HomeView/components/HomeView.js'
-import RegistrationView from '../views/RegistrationView/RegistrationView.js'
-import AboutView from '../views/AboutView'
+import CoreLayout from '../layouts/CoreLayout/'
+import HomeView from '../views/HomeView/'
+import RegistrationView from '../views/RegistrationView/'
+import LoginView from '../views/LoginView/'
+import AboutUsView from '../views/AboutUsView'
 import CounterRoute from './Counter'
-import ContactView from '../views/ContactView/components/ContactView.js'
-import { PATHS } from '../constants/routes.js'
-//TODO import actions
+import ContactView from '../views/ContactView/'
+import { PATHS } from '../constants/routes'
 
 export const createRoutes = (store) => (
 
     <Route path = {PATHS.ROOT} component={CoreLayout}>
-      <IndexRoute component={HomeView}> </IndexRoute>
+      <IndexRoute component={HomeView}></IndexRoute>
+      <Route path={PATHS.COMMON.HOME} component={HomeView}></Route>
+      <Route path={PATHS.COMMON.LOGIN} component={LoginView}></Route>
       <Route path={PATHS.COMMON.REGISTER} component={RegistrationView}></Route>
-      <Route path={PATHS.COMMON.CONTACT} component={ContactView}> </Route>
-      </Route>
+      <Route path={PATHS.COMMON.ABOUT} component={AboutUsView}></Route>
+      <Route path={PATHS.COMMON.CONTACT} component={ContactView}></Route>
+    </Route>
 
 
 )

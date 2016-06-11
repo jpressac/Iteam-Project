@@ -10,6 +10,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
@@ -17,25 +19,25 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 public class UserSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	private IteamUserDetailService userDetailService;
+	private static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(this.userDetailService);
+		auth.userDetailsService(userDetailService).passwordEncoder(PASSWORD_ENCODER);
 	}
 
 	@Override
 	public void configure(WebSecurity web) throws Exception {
-		web.ignoring().antMatchers("/bower_components/**", "scripts/**/*.js", "scripts/**/*.jsx", "/styles/**/*",
-				"/imgs/**/*.*");
+		web.ignoring().antMatchers("/*.js", "/*.css", "/*.jpg", "/*.ico");
 	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests().antMatchers("/screenboard/**/*").permitAll()
+		http.authorizeRequests().antMatchers(HttpMethod.POST, "/user").permitAll()
 				.antMatchers(HttpMethod.GET, "/user/authenticated").permitAll().antMatchers(HttpMethod.OPTIONS, "/**/*")
-				.permitAll().anyRequest().authenticated().and().formLogin().loginPage("/login")
+				.permitAll().anyRequest().authenticated().and().formLogin().loginPage("/application/login")
 				.defaultSuccessUrl("/application", true).permitAll().and().httpBasic().and().csrf().disable().logout()
-				.logoutSuccessUrl("/application").deleteCookies("JSESSIONID");
+				.logoutSuccessUrl("/application").deleteCookies("JSESSIONID").and().sessionManagement();
 	}
 
 	@Autowired
