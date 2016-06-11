@@ -6,7 +6,7 @@ import classes from './ContactView.scss'
 export class ContactView extends React.Component {
   render(){
     return(
-      <div>
+      <div className="form-group">
 
             <div className={classes.label}>
             <label for="contacto"> CONTACT US </label>
@@ -14,22 +14,20 @@ export class ContactView extends React.Component {
             </div>
 
               <div className={classes.names}>
-              <label for="name" className={classes.labelNames}> First Name </label>
-                <input type="text" className="text-center" id="name"></input>
-              <label for="lastName" className={classes.labelNames}> Last Name </label>
-                <input type="text" className="text-center" id="lastName" ></input>
+              <label for="name" className={"form-control",classes.labelNames}> First Name </label>
+                <input type="text" className="form-control" id="name"></input>
+              <label for="lastName" className={"form-control",classes.labelNames}> Last Name </label>
+                <input type="text" className="form-control" id="lastName" ></input>
                 </div>
 
                 <div className={classes.input2}>
-                <label for="email" className={classes.labelNames}> Email </label>
-                  <input type="text" className="text-center" id="email" ></input>
+                <label for="email" className={"control-label",classes.labelNames}> Email </label>
+                  <input type="text" className={"form-control"}  id="email" ></input>
                 </div>
 
                 <div className={classes.input3} >
-
-                <label for="message" className={classes.labelMessage}> Message </label>
-
-                <input type="text"  id="message" className={classes.inputMessage}></input>
+                <label for="message" className={"form-control",classes.labelMessage}> Message </label>
+                <input type="text"  id="message" className={"form-control",classes.inputMessage}></input>
                 </div>
 
                   <div className={classes.button} >

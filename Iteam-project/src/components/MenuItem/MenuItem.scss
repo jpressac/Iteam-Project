@@ -2,11 +2,20 @@
 .menuItem {
   line-height: 40px;
   font-size: 20px;
-  text-align: center;
-  color: #ffffff;
-  border-bottom-color: #C0C0C0
+  text-align: left;
+  color: #FDEDEC;
+  border-bottom-color: #FDEDEC
+
+
+}
+.bullet{
+  list-style-type: none;
+  padding:0px;
+    margin:0px;
+    list-style: none;
 }
 
 .menuItem:hover {
-  background-color: #C0C0C0;
+  background-color:#C70039  ;
+
 }
