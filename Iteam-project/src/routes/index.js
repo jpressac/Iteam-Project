@@ -11,7 +11,7 @@ import ContactView from '../views/ContactView/'
 import { PATHS } from '../constants/routes'
 
 export const createRoutes = (store) => (
-
+  
     <Route path = {PATHS.ROOT} component={CoreLayout}>
       <IndexRoute component={HomeView}></IndexRoute>
       <Route path={PATHS.COMMON.HOME} component={HomeView}></Route>

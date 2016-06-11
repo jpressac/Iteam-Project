@@ -25,30 +25,31 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
 	private UserService userServiceImpl;
+	private String USER_NOT_LOGGED_IN = "anonymousUser";
 
 	/**
 	 * Request for checking if the user is authenticated
 	 * 
-	 * @return the username of the logged in user or anonymoususer if it's not
-	 *         authenticated.
+	 * @return 200 OK if there is user logged in or 401 UNAUTHORIZED if it
+	 *         isn't.
 	 */
 	@RequestMapping(value = "/user/authenticated", method = RequestMethod.GET)
-	public String getUserAuthenticated() {
-		return SecurityContextHolder.getContext().getAuthentication().getName();
+	public ResponseEntity<?> getUserAuthenticated() {
+
+		if (USER_NOT_LOGGED_IN.equals(SecurityContextHolder.getContext().getAuthentication().getName())) {
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		} else {
+			return new ResponseEntity<>(HttpStatus.OK);
+		}
 	}
 
 	/**
 	 * Request for getting the user information.
 	 * 
-	 * @param username,
-	 *            of the user logged in.
 	 * @return a User.
 	 */
-	@RequestMapping(value = "/user/", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
-	public User getUser(@RequestParam(value = "username", required = true) String username) {
-
-		// TODO: check what is better, use usernam as param or get the username
-		// of spring context.
+	@RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
+	public User getUser() {
 		return userServiceImpl.getUser(SecurityContextHolder.getContext().getAuthentication().getName());
 	}
 
