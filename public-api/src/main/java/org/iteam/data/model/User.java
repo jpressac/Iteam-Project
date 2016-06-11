@@ -3,16 +3,13 @@ package org.iteam.data.model;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
 
-	private static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
-
+	// TODO: add creation/modification date
 	private String username;
 	private String password;
 	private String name;
