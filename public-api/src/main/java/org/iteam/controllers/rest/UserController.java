@@ -1,4 +1,4 @@
-package org.iteam.controllers;
+package org.iteam.controllers.rest;
 
 import javax.validation.Valid;
 
@@ -26,27 +26,29 @@ public class UserController {
 	private UserService userServiceImpl;
 
 	/**
-	 * Request for getting the user information
+	 * Request for checking if the user is authenticated
 	 * 
-	 * @param userName,
-	 *            the userName that represent the user for deleting.
-	 * @param password,
-	 *            the password of the user.
-	 * @return 200 OK and the user if it was successful or 500 if the user
-	 *         doesn't exists.
+	 * @return the username of the logged in user or anonymoususer if it's not
+	 *         authenticated.
 	 */
-	@RequestMapping(value = "/user/authenticated", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
-	public String getUser() {
+	@RequestMapping(value = "/user/authenticated", method = RequestMethod.GET)
+	public String getUserAuthenticated() {
 		return SecurityContextHolder.getContext().getAuthentication().getName();
-		// User user =
-		// userServiceImpl.getUser(SecurityContextHolder.getContext().getAuthentication().getName(),
-		// SecurityContextHolder.getContext().getAuthentication().getCredentials().toString());
-		//
-		// if (user != null) {
-		// return new ResponseEntity<>(user, HttpStatus.OK);
-		// } else {
-		// return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-		// }
+	}
+
+	/**
+	 * Request for getting the user information.
+	 * 
+	 * @param username,
+	 *            of the user logged in.
+	 * @return a User.
+	 */
+	@RequestMapping(value = "/user/", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
+	public User getUser(@RequestParam(value = "username", required = true) String username) {
+
+		// TODO: check what is better, use usernam as param or get the username
+		// of spring context.
+		return userServiceImpl.getUser(SecurityContextHolder.getContext().getAuthentication().getName());
 	}
 
 	/**

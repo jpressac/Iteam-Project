@@ -9,11 +9,9 @@ public interface UserService {
 	 * 
 	 * @param username,
 	 *            the user name
-	 * @param password,
-	 *            the pass to that user
 	 * @return a user which contains all the information about him.
 	 */
-	public User getUser(String username, String password);
+	public User getUser(String username);
 
 	/**
 	 * Insert a new user into the database
