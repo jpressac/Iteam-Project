@@ -82,7 +82,7 @@ public interface ElasticsearchClient {
 	 *            the id of the document to check.
 	 * @return a get response with the information about the document.
 	 */
-	public GetResponse checkUser(String index, String type, String userName);
+	public GetResponse getDocument(String index, String type, String userName);
 
 	/**
 	 * Search for documents, given an index, a type and a query.

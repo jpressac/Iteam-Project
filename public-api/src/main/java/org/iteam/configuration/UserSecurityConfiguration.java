@@ -34,10 +34,13 @@ public class UserSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests().antMatchers(HttpMethod.POST, "/user").permitAll()
-				.antMatchers(HttpMethod.GET, "/user/authenticated").permitAll().antMatchers(HttpMethod.OPTIONS, "/**/*")
-				.permitAll().anyRequest().authenticated().and().formLogin().loginPage("/application/login")
-				.defaultSuccessUrl("/application", true).permitAll().and().httpBasic().and().csrf().disable().logout()
-				.logoutSuccessUrl("/application").deleteCookies("JSESSIONID").and().sessionManagement();
+				.antMatchers(HttpMethod.GET, "/user/authenticated").permitAll()
+				.antMatchers(HttpMethod.GET, "/user/nationality/get").permitAll()
+				.antMatchers(HttpMethod.POST, "/user/nationality/insert").permitAll()
+				.antMatchers(HttpMethod.OPTIONS, "/**/*").permitAll().anyRequest().authenticated().and().formLogin()
+				.loginPage("/application/login").defaultSuccessUrl("/application", true).permitAll().and().httpBasic()
+				.and().csrf().disable().logout().logoutSuccessUrl("/application").deleteCookies("JSESSIONID").and()
+				.sessionManagement();
 	}
 
 	@Autowired

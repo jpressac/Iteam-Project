@@ -1,5 +1,6 @@
 package org.iteam.data.dal.user;
 
+import org.iteam.data.model.Nationalities;
 import org.iteam.data.model.User;
 
 /**
@@ -57,4 +58,20 @@ public interface UserRepsoitory {
 	 * @return true if it was successful, false otherwise.
 	 */
 	public boolean logicalDelete(String doc, String username);
+
+	/**
+	 * Insert nationalities.
+	 * 
+	 * @param nationalities,
+	 *            the list of nationalities.
+	 * @return true if it was successful, false otherwise.
+	 */
+	public boolean insertNationalities(Nationalities nationalities);
+
+	/**
+	 * Get nationalities.
+	 * 
+	 * @return Nationalities.
+	 */
+	public Nationalities getNationalities();
 }

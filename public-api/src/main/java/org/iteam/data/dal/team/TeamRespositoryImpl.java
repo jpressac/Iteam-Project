@@ -80,8 +80,8 @@ public class TeamRespositoryImpl implements TeamRepository {
 
 		List<User> userList = new ArrayList<>();
 
-		SearchResponse response = elasticsearchClient.search(configuration.getElasticsaerchIndexTeam(),
-				configuration.getElasticsaerchIndexTypeTeam(), applyFiltersToQuery(filterList));
+		SearchResponse response = elasticsearchClient.search(configuration.getElasticsearchIndexUserName(),
+				configuration.getElasticsearchIndexUserTypeName(), applyFiltersToQuery(filterList));
 		if (response != null) {
 			for (SearchHit hit : response.getHits()) {
 				User user = (User) JSONUtils.JSONToObject(hit.getSourceAsString(), User.class);

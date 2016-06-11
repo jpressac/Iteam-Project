@@ -92,7 +92,7 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
 	 * java.lang.String)
 	 */
 	@Override
-	public GetResponse checkUser(String index, String type, String id) {
+	public GetResponse getDocument(String index, String type, String id) {
 		return client.prepareGet(index, type, id).execute().actionGet();
 	}
 
