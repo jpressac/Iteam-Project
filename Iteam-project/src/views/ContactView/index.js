@@ -1,6 +1,3 @@
-import ContactView from './components/ContactView.js'
+import ContactView from './components/ContactView'
 
-// Sync route definition
-export default {
-  component: ContactView
-}
+export default ContactView

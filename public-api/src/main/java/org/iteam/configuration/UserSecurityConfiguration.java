@@ -1,8 +1,6 @@
 package org.iteam.configuration;
 
 import org.iteam.services.user.IteamUserDetailService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -24,7 +22,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 @EnableWebMvc
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class UserSecurityConfiguration extends WebSecurityConfigurerAdapter {
-	private static final Logger LOGGER = LoggerFactory.getLogger(UserSecurityConfiguration.class);
 
 	private IteamUserDetailService userDetailService;
 	private static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
@@ -36,17 +33,16 @@ public class UserSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 	@Override
 	public void configure(WebSecurity web) throws Exception {
-		web.ignoring().antMatchers("/bower_components/**", "scripts/**/*.js", "scripts/**/*.jsx", "/styles/**/*",
-				"/imgs/**/*.*");
+		web.ignoring().antMatchers("/*.js", "/*.css", "/*.jpg", "/*.ico");
 	}
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests().antMatchers(HttpMethod.POST, "/user").permitAll()
 				.antMatchers(HttpMethod.GET, "/user/authenticated").permitAll().antMatchers(HttpMethod.OPTIONS, "/**/*")
-				.permitAll().anyRequest().authenticated().and().formLogin().loginPage("/login")
+				.permitAll().anyRequest().authenticated().and().formLogin().loginPage("/application/login")
 				.defaultSuccessUrl("/application", true).permitAll().and().httpBasic().and().csrf().disable().logout()
-				.logoutSuccessUrl("/application").deleteCookies("JSESSIONID");
+				.logoutSuccessUrl("/application").deleteCookies("JSESSIONID").and().sessionManagement();
 	}
 	
 	

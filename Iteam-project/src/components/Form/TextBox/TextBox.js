@@ -8,16 +8,14 @@ class TextBox extends Component {
       <div class="form-group">
           <label class="control-label">{this.props.label}</label>
           <span class="input-group-btn"></span>
-          <FormControl   componentClass="input" type={this.props.type} placeholder={this.props.label} ref={this.props.ref} ></FormControl>
+          <FormControl  type="text" placeholder={this.props.label}></FormControl>
       </div>
     )
   }
 }
 
 TextBox.propTypes ={
-  label: PropTypes.string,
-  type: PropTypes.string,
-  ref: PropTypes.string
+  label: PropTypes.string
 }
 
 export default TextBox

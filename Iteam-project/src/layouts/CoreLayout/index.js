@@ -1,3 +1,3 @@
-import CoreLayout from './CoreLayout.js'
+import CoreLayout from './CoreLayout'
 
 export default CoreLayout
