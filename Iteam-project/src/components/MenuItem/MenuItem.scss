@@ -4,18 +4,41 @@
   font-size: 20px;
   text-align: left;
   color: #FDEDEC;
-  border-bottom-color: #FDEDEC
+  border-bottom-color: #FDEDEC;
+  width: 100%;
+  margin-top: 20px;
 
 
 }
 .bullet{
-  list-style-type: none;
+  list-style-type:none;
   padding:0px;
     margin:0px;
-    list-style: none;
+    list-style:none;
+    text-decoration: none;
 }
 
 .menuItem:hover {
+  background-color:#C70039 ;
+  text-decoration: none;
+  color:#FDEDEC;
+
+}
+.menuItem:link{
+    color:#FDEDEC;
+    text-decoration: none;
+}
+.menuItem:selection
+{
+    color:#FDEDEC;
+    text-decoration: none;
+}
+
+.menuItem:active
+{
+  color:#FDEDEC;
   background-color:#C70039  ;
+  text-decoration: none;
+
 
 }

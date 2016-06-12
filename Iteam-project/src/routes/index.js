@@ -4,7 +4,7 @@ import { Route, IndexRoute } from 'react-router'
 import CoreLayout from '../layouts/CoreLayout/CoreLayout.js'
 import HomeView from '../views/HomeView/components/HomeView.js'
 import RegistrationView from '../views/RegistrationView/RegistrationView.js'
-import AboutView from '../views/AboutView'
+import AboutView from '../views/AboutView/AboutView.js'
 import CounterRoute from './Counter'
 import ContactView from '../views/ContactView/components/ContactView.js'
 import { PATHS } from '../constants/routes.js'
@@ -16,6 +16,8 @@ export const createRoutes = (store) => (
       <IndexRoute component={HomeView}> </IndexRoute>
       <Route path={PATHS.COMMON.REGISTER} component={RegistrationView}></Route>
       <Route path={PATHS.COMMON.CONTACT} component={ContactView}> </Route>
+      <Route path={PATHS.COMMON.ABOUT} component={AboutView}> </Route>
+      <Route path={PATHS.COMMON.HOME} component={HomeView}> </Route>
       </Route>
 
 
