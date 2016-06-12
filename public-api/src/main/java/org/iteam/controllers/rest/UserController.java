@@ -2,6 +2,7 @@ package org.iteam.controllers.rest;
 
 import javax.validation.Valid;
 
+import org.iteam.data.model.Nationalities;
 import org.iteam.data.model.User;
 import org.iteam.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,30 +25,31 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
 	private UserService userServiceImpl;
+	private String USER_NOT_LOGGED_IN = "anonymousUser";
 
 	/**
 	 * Request for checking if the user is authenticated
 	 * 
-	 * @return the username of the logged in user or anonymoususer if it's not
-	 *         authenticated.
+	 * @return 200 OK if there is user logged in or 401 UNAUTHORIZED if it
+	 *         isn't.
 	 */
 	@RequestMapping(value = "/user/authenticated", method = RequestMethod.GET)
-	public String getUserAuthenticated() {
-		return SecurityContextHolder.getContext().getAuthentication().getName();
+	public ResponseEntity<?> getUserAuthenticated() {
+
+		if (USER_NOT_LOGGED_IN.equals(SecurityContextHolder.getContext().getAuthentication().getName())) {
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		} else {
+			return new ResponseEntity<>(HttpStatus.OK);
+		}
 	}
 
 	/**
 	 * Request for getting the user information.
 	 * 
-	 * @param username,
-	 *            of the user logged in.
 	 * @return a User.
 	 */
-	@RequestMapping(value = "/user/", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
-	public User getUser(@RequestParam(value = "username", required = true) String username) {
-
-		// TODO: check what is better, use usernam as param or get the username
-		// of spring context.
+	@RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
+	public User getUser() {
 		return userServiceImpl.getUser(SecurityContextHolder.getContext().getAuthentication().getName());
 	}
 
@@ -83,6 +85,16 @@ public class UserController {
 		}
 	}
 
+	/**
+	 * Delete logically a user.
+	 * 
+	 * @param doc,
+	 *            the delete param.
+	 * @param username,
+	 *            the username of the user to delete.
+	 * @return 200 OK if it was successful, 500 INTERNAL SERVER ERROR if it
+	 *         wasn't.
+	 */
 	@RequestMapping(value = "/user/delete", method = RequestMethod.POST)
 	public ResponseEntity<?> deleteUser(@RequestBody String doc,
 			@RequestParam(value = "username", required = true) String username) {
@@ -113,6 +125,35 @@ public class UserController {
 		} else {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
+	}
+
+	/**
+	 * Insert nationalities to full fill drop down list (nationalities)
+	 * 
+	 * @param nationalities,
+	 *            the list of nationalities
+	 * @return true (200 OK) if it was successful or false (400 Bad Request) if
+	 *         it wasn't.
+	 */
+	@RequestMapping(value = "/user/nationality/insert", method = RequestMethod.POST)
+	public ResponseEntity<Boolean> saveNationalitiesDropDown(@RequestBody @Valid Nationalities nationalities) {
+		boolean succes = userServiceImpl.insertNationalities(nationalities);
+
+		if (succes) {
+			return new ResponseEntity<Boolean>(succes, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<Boolean>(succes, HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	/**
+	 * Get the nationalities for full fill the drop down list.
+	 * 
+	 * @return Nationalities.
+	 */
+	@RequestMapping(value = "/user/nationality/get", method = RequestMethod.GET)
+	public Nationalities getNationalitiesDDL() {
+		return userServiceImpl.getNationalities();
 	}
 
 	@Autowired

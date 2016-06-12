@@ -1,13 +1,21 @@
 package org.iteam.data.dal.team;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
 import org.iteam.configuration.ExternalConfigurationProperties;
 import org.iteam.data.dal.client.ElasticsearchClientImpl;
+import org.iteam.data.model.Filter;
+import org.iteam.data.model.FilterList;
 import org.iteam.data.model.Team;
+import org.iteam.data.model.User;
 import org.iteam.services.utils.JSONUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +75,34 @@ public class TeamRespositoryImpl implements TeamRepository {
 		return false;
 	}
 
+	@Override
+	public List<User> filterToCreateTeam(FilterList filterList) {
+
+		List<User> userList = new ArrayList<>();
+
+		SearchResponse response = elasticsearchClient.search(configuration.getElasticsearchIndexUserName(),
+				configuration.getElasticsearchIndexUserTypeName(), applyFiltersToQuery(filterList));
+		if (response != null) {
+			for (SearchHit hit : response.getHits()) {
+				User user = (User) JSONUtils.JSONToObject(hit.getSourceAsString(), User.class);
+				userList.add(user);
+			}
+		}
+
+		return userList;
+	}
+
+	private QueryBuilder applyFiltersToQuery(FilterList filterList) {
+		BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+
+		for (Filter filter : filterList.getFilters()) {
+			queryBuilder.should(QueryBuilders.termQuery(filter.getField(), filter.getValues()));
+		}
+
+		return queryBuilder.minimumNumberShouldMatch(1);
+
+	}
+
 	@Autowired
 	private void setElasticsearchClient(ElasticsearchClientImpl elasticsearchClient) {
 		this.elasticsearchClient = elasticsearchClient;
@@ -76,5 +112,4 @@ public class TeamRespositoryImpl implements TeamRepository {
 	private void setConfiguration(ExternalConfigurationProperties configuration) {
 		this.configuration = configuration;
 	}
-
 }

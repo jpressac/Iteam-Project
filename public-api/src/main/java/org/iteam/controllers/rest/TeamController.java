@@ -2,7 +2,9 @@ package org.iteam.controllers.rest;
 
 import javax.validation.Valid;
 
+import org.iteam.data.model.FilterList;
 import org.iteam.data.model.Team;
+import org.iteam.data.model.User;
 import org.iteam.services.team.TeamServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -46,6 +48,7 @@ public class TeamController {
 	 *            the team name.
 	 * @return 200 OK if it was successful, 400 if not.
 	 */
+	@RequestMapping(value = "/team/delete", method = RequestMethod.HEAD)
 	public ResponseEntity<Boolean> deleteTeam(@RequestParam(value = "ownerName", required = true) String ownerName,
 			@RequestParam(value = "teamName", required = true) String teamName) {
 		// TODO: add validations Valid.istrue()
@@ -57,6 +60,11 @@ public class TeamController {
 		} else {
 			return new ResponseEntity<Boolean>(success, HttpStatus.BAD_REQUEST);
 		}
+	}
+
+	@RequestMapping(value = "/team/select", method = RequestMethod.GET)
+	public ResponseEntity<User> filterTeam(@RequestParam(value = "filter") FilterList filter) {
+		return null;
 	}
 
 	@Autowired

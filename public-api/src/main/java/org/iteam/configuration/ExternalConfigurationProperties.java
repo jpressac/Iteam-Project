@@ -31,6 +31,12 @@ public class ExternalConfigurationProperties {
 	@Value("${org.iteam.elasticsearch.index.type.team}")
 	private String elasticsaerchIndexTypeTeam;
 
+	@Value("${org.iteam.elasticsearch.index.utility}")
+	private String elasticsearchIndexUtility;
+
+	@Value("${org.iteam.elasticsearch.index.type.utility}")
+	private String elasticsearchIndexTypeUtility;
+
 	public String getElasticsearchHost() {
 		return elasticsearchHost;
 	}
@@ -85,6 +91,22 @@ public class ExternalConfigurationProperties {
 
 	public void setElasticsaerchIndexTypeTeam(String elasticsaerchIndexTypeTeam) {
 		this.elasticsaerchIndexTypeTeam = elasticsaerchIndexTypeTeam;
+	}
+
+	public String getElasticsearchIndexUtility() {
+		return elasticsearchIndexUtility;
+	}
+
+	public void setElasticsearchIndexUtility(String elasticsearchIndexUtility) {
+		this.elasticsearchIndexUtility = elasticsearchIndexUtility;
+	}
+
+	public String getElasticsearchIndexTypeUtility() {
+		return elasticsearchIndexTypeUtility;
+	}
+
+	public void setElasticsearchIndexTypeUtility(String elasticsearchIndexTypeUtility) {
+		this.elasticsearchIndexTypeUtility = elasticsearchIndexTypeUtility;
 	}
 
 }

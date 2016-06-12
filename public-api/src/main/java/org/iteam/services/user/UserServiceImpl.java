@@ -1,6 +1,7 @@
 package org.iteam.services.user;
 
 import org.iteam.data.dal.user.UserRepositoryImpl;
+import org.iteam.data.model.Nationalities;
 import org.iteam.data.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,9 +36,18 @@ public class UserServiceImpl implements UserService {
 		return userRepository.logicalDelete(doc, username);
 	}
 
+	@Override
+	public boolean insertNationalities(Nationalities nationalities) {
+		return userRepository.insertNationalities(nationalities);
+	}
+
+	@Override
+	public Nationalities getNationalities() {
+		return userRepository.getNationalities();
+	}
+
 	@Autowired
 	private void setUserRepository(UserRepositoryImpl userRepository) {
 		this.userRepository = userRepository;
 	}
-
 }

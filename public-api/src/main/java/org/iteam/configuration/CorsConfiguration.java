@@ -1,0 +1,17 @@
+// package org.iteam.configuration;
+//
+// import org.springframework.context.annotation.Configuration;
+// import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+// import
+// org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+//
+// @Configuration
+// @EnableWebMvc
+// public class CorsConfiguration extends WebMvcConfigurerAdapter {
+//
+// @Override
+// public void addCorsMappings(CorsRegistry registry) {
+// // FIXME: adding cors configuration to maintain security
+// registry.addMapping("/**");
+// }
+// }

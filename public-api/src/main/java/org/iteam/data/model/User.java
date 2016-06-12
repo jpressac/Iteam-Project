@@ -3,16 +3,13 @@ package org.iteam.data.model;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class User {
 
-	private static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
-
+	// TODO: add creation/modification date
 	private String username;
 	private String password;
 	private String name;
@@ -24,6 +21,8 @@ public class User {
 	private String mbtiTest;
 	private String discTest;
 	private boolean logicalDelete = false;
+	private String insertionDate;
+	private String mail;
 
 	public User(boolean logicalDelete) {
 		this.logicalDelete = logicalDelete;
@@ -46,7 +45,6 @@ public class User {
 	}
 
 	public void setPassword(String password) {
-		// this.password = PASSWORD_ENCODER.encode(password);
 		this.password = password;
 	}
 
@@ -120,6 +118,22 @@ public class User {
 
 	public void setLogicalDelete(boolean logicalDelete) {
 		this.logicalDelete = logicalDelete;
+	}
+
+	public String getMail() {
+		return mail;
+	}
+
+	public void setMail(String mail) {
+		this.mail = mail;
+	}
+
+	public String getInsertionDate() {
+		return insertionDate;
+	}
+
+	public void setInsertionDate(String insertionDate) {
+		this.insertionDate = insertionDate;
 	}
 
 	@Override
