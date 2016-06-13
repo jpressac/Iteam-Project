@@ -2,10 +2,10 @@ import React, {PropTypes} from 'react'
 import Header from '../../components/Header'
 import SlideMenu from '../../components/SlideMenu'
 import MenuItem from '../../components/MenuItem'
-import classes from './CoreLayout.scss'
+import classes from './NotLoggedIn.scss'
 import { PATHS } from '../../constants/routes'
 
-export const CoreLayout = ({ children }) => (
+export const NotLoggedIn = ({ children }) => (
 
   <div className="text-center">
     <Header />
@@ -22,8 +22,8 @@ export const CoreLayout = ({ children }) => (
   </div>
 )
 
-CoreLayout.propTypes = {
+NotLoggedIn.propTypes = {
   children: React.PropTypes.element.isRequired
 }
 
-export default CoreLayout
+export default NotLoggedIn

@@ -1,7 +1,7 @@
 
 import React from 'react'
 import { Route, IndexRoute } from 'react-router'
-import CoreLayout from '../layouts/CoreLayout/'
+import NotLoggedIn from '../layouts/NotLoggedIn/'
 import HomeView from '../views/HomeView/'
 import RegistrationView from '../views/RegistrationView/'
 import LoginView from '../views/LoginView/'
@@ -10,9 +10,10 @@ import CounterRoute from './Counter'
 import ContactView from '../views/ContactView/'
 import { PATHS } from '../constants/routes'
 
-export const createRoutes = (store) => (
-  
-    <Route path = {PATHS.ROOT} component={CoreLayout}>
+export const createRoutes = (store, flag) => (
+
+  if(flag){
+    <Route path = {PATHS.ROOT} component={NotLoggedIn}>
       <IndexRoute component={HomeView}></IndexRoute>
       <Route path={PATHS.COMMON.HOME} component={HomeView}></Route>
       <Route path={PATHS.COMMON.LOGIN} component={LoginView}></Route>
@@ -20,6 +21,17 @@ export const createRoutes = (store) => (
       <Route path={PATHS.COMMON.ABOUT} component={AboutUsView}></Route>
       <Route path={PATHS.COMMON.CONTACT} component={ContactView}></Route>
     </Route>
+  }else{
+    <Route path = {PATHS.ROOT} component={NotLoggedIn}>
+      <IndexRoute component={LoginView}></IndexRoute>
+      <Route path={PATHS.COMMON.HOME} component={LoginView}></Route>
+      <Route path={PATHS.COMMON.LOGIN} component={LoginView}></Route>
+      <Route path={PATHS.COMMON.REGISTER} component={RegistrationView}></Route>
+      <Route path={PATHS.COMMON.ABOUT} component={AboutUsView}></Route>
+      <Route path={PATHS.COMMON.CONTACT} component={ContactView}></Route>
+    </Route>
+  }
+
 
 
 )

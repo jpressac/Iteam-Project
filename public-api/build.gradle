@@ -77,3 +77,27 @@ eclipse {
 task wrapper(type: Wrapper) {
 	gradleVersion = '2.13'
 }
+
+jacocoTestReport {
+    reports {
+        xml.enabled false
+        csv.enabled false
+    }    
+    group = "Reporting"
+    description = "Generate Jacoco coverage reports after running tests."
+    additionalSourceDirs = files(sourceSets.main.allJava.srcDirs)
+    
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(
+            	dir: it,
+            	
+            	excludes: [
+            		'org/iteam/configuration/**/*',
+            		'org/iteam/controllers/**/*',
+            		'org/iteam/data/dal/client/**',
+            		'org/iteam/data/model/**',
+            		'org/iteam/exceptions/**'])
+        })
+    }
+}

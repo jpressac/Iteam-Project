@@ -2,7 +2,7 @@ package org.iteam.services.team;
 
 import java.util.List;
 
-import org.iteam.data.dal.team.TeamRespositoryImpl;
+import org.iteam.data.dal.team.TeamRepositoryImpl;
 import org.iteam.data.model.FilterList;
 import org.iteam.data.model.Team;
 import org.iteam.data.model.User;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class TeamServiceImpl implements TeamService {
 
-	private TeamRespositoryImpl teamRepository;
+	private TeamRepositoryImpl teamRepository;
 
 	@Override
 	public boolean putTeam(Team team) {
@@ -30,7 +30,7 @@ public class TeamServiceImpl implements TeamService {
 	}
 
 	@Autowired
-	private void setTeamRepository(TeamRespositoryImpl teamRepository) {
+	private void setTeamRepository(TeamRepositoryImpl teamRepository) {
 		this.teamRepository = teamRepository;
 	}
 }

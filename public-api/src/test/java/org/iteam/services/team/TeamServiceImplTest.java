@@ -1,7 +1,12 @@
 package org.iteam.services.team;
 
-import org.iteam.data.dal.team.TeamRespositoryImpl;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.iteam.data.dal.team.TeamRepositoryImpl;
+import org.iteam.data.model.FilterList;
 import org.iteam.data.model.Team;
+import org.iteam.data.model.User;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,12 +21,14 @@ public class TeamServiceImplTest {
 	private TeamServiceImpl underTest;
 
 	@Mock
-	private TeamRespositoryImpl teamRepository;
+	private TeamRepositoryImpl teamRepository;
 
 	private Team team;
 	private boolean flag;
 	private String ownerName;
 	private String teamName;
+	private FilterList filterList;
+	private List<User> userList;
 
 	@Before
 	public void init() {
@@ -41,6 +48,32 @@ public class TeamServiceImplTest {
 		givenATeamName();
 		whenDeleteTeamIsCalled();
 		thenTeamWasDeleted();
+	}
+
+	@Test
+	public void filterParticipants() {
+		givenAFilterList();
+		whenFilterTeamIsCalled();
+		thenFilterWasApplied();
+	}
+
+	private void thenFilterWasApplied() {
+		Assert.assertNotNull(userList);
+		Assert.assertFalse(userList.isEmpty());
+	}
+
+	private void whenFilterTeamIsCalled() {
+
+		List<User> userListAfterFilter = new ArrayList<>();
+		userListAfterFilter.add(new User());
+
+		Mockito.when(teamRepository.filterToCreateTeam(filterList)).thenReturn(userListAfterFilter);
+
+		userList = underTest.filterToCreateTeam(filterList);
+	}
+
+	private void givenAFilterList() {
+		filterList = new FilterList();
 	}
 
 	private void thenTeamWasDeleted() {

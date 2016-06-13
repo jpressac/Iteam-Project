@@ -26,18 +26,21 @@ const history = syncHistoryWithStore(browserHistory, store, {
 // Now that we have the Redux store, we can create our routes. We provide
 // the store to the route definitions so that routes have access to it for
 // hooks such as `onEnter`.
-console.log("Im right here mother fucker");
-const routes = makeRoutes(store)
+
 console.log("Im right here bitch");
 
 var currenUser = axios.get('http://localhost:8080/user/authenticated').then(function(response){
     console.log(response.status)
-    'genio'
+    console.log("Im right here mother fucker");
+    const routes = makeRoutes(store, true)
+
   }).catch(function(response){
-    console.log(response.status);
-    'puto'
+    console.log(response.status)
+    console.log("Im right here bitch");
+    const routes = makeRoutes(store, false)
+    
   })
-console.log(currenUser);
+console.log(test);
 
 // Now that redux and react-router have been configured, we can render the
 // React application to the DOM!

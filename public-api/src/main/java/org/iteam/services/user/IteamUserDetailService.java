@@ -1,7 +1,6 @@
 package org.iteam.services.user;
 
 import org.iteam.data.dal.user.UserRepositoryImpl;
-import org.iteam.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
@@ -22,7 +21,7 @@ public class IteamUserDetailService implements UserDetailsService {
 		org.iteam.data.model.User user = userRepository.getUser(username);
 
 		if (user == null) {
-			throw new UserNotFoundException();
+			throw new UsernameNotFoundException("User not fould" + username);
 		}
 
 		return new User(user.getUsername(), user.getPassword(),
