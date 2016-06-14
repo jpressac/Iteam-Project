@@ -1,26 +1,56 @@
 .image {
+
   display: block;
-  width: 200px;
-  height: 180px;
+  width: 640px;
   margin: 1.5rem auto;
+  height:100%;
+  align-items: center;
 
 
 }
-.image1 {
-  display: block;
-  width: 200px;
-  height: 180px;
-  margin: 1.5rem auto;
+.prueba{
+
+  white-space: normal;
+   min-height: 0px;
+    min-width: 0px;
+    line-height: 20px;
+     border-width: 0px;
+     margin: 0px;
+
+      letter-spacing: auto;
+       font-size: 25px;
+       left: 284.719px;
+
+        visibility: visible;
+         opacity: 1;
+         max-height: 3px;
+  max-width: 3px;
+//transform: matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -0.0025, 0, 0, 0, 1);
+}
+.carouselText{
+  color: white;
+  font-style: bold;
+  background-color: #FF5733  ;
 
 }
-.image2 {
-  display: block;
-  width: 200px;
-  height: 180px;
-  margin: 1.5rem auto;
+.carouselDiv{
+  margin-top: 100px;
+
+  height:100%;
+  align-items: center;
+
+  margin: 0px auto;
+  padding: 0px;
+   position: absolute;
+   max-height: none;
+    overflow: visible;
+
+
+     background-color: rgb(98, 0, 56);
 
 }
+
 .homeDiv{
   height: 100%;
-  margin-left: 300px;
+  margin-left: 230px;
 }
