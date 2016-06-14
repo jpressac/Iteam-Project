@@ -6,12 +6,19 @@ class Board extends React.Component{
 
   render(){
     return(
-    <div className={classes.board}></div>
+    <div className={classes.board}>
     {this.state.notes.map(this.eachNote)
-    }
-  )
+      <button className="btn btn-sm btn-success glyphicon glyphicon-plus"
+        onClick={this.add.bind(this, "New note")}/>
+      </div>
+        })
   }
 
+  add(text){
+    var arr = this.state.notes;
+    arr.push(text);
+    this.setState({notes:arr})
+  }
   update(newText, i){
     var arr = this.state.notes
     arr[i]=newText
@@ -26,10 +33,16 @@ class Board extends React.Component{
     return(
       <Note key={i}
         index={i}
-        onChange={this.update}
-        onRemove={this.remove}
-      >{note}</note>
+        onChange={this.update.bind(this)}
+        onRemove={this.remove.bind(this)}
+      >{note.note}</note>
     )
   }
 
+  constructor(props){
+    super(props);
+    notes: []
+  }
 }
+
+export default Board
