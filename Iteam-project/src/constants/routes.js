@@ -10,6 +10,7 @@ export const PATHS = {
     REGISTER : 'register',
     ABOUT : 'about',
     HOWTO : 'howto',
-    CONTACT : 'contact'
+    CONTACT : 'contact',
+    LOGGEDIN: 'puto'
   }
 }

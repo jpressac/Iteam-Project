@@ -1,5 +1,6 @@
 package org.iteam.data.dal.team;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.assertj.core.util.Lists;
@@ -16,7 +17,6 @@ import org.iteam.data.model.Team;
 import org.iteam.data.model.User;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -88,15 +88,58 @@ public class TeamRepositoryImplTest {
 	}
 
 	@Test
-	@Ignore // FIXME
 	public void filterParticipantsSuccessfully() {
 		givenAFilterList();
 		givenAnElasticsearchFilterResponseOk();
 		whenFilterToCreateTeamIsCalled();
-		thenListOfUserOk();
+		thenListOfUsersOk();
 	}
 
-	private void thenListOfUserOk() {
+	@Test
+	public void filterParticipantsNotSuccessfulNull() {
+		givenAFilterList();
+		givenAnElasticsearchFilterResponseNull();
+		whenFilterToCreateTeamIsCalled();
+		thenListOfUsersNull();
+	}
+
+	@Test
+	public void filterParticipantsNotSuccessful() {
+		givenAFilterList();
+		givenAnElasticsearchFilterResponseNotHits();
+		whenFilterToCreateTeamIsCalled();
+		thenListOfUsersNull();
+	}
+
+	private void givenAnElasticsearchFilterResponseNotHits() {
+		SearchResponse response = Mockito.mock(SearchResponse.class);
+		SearchHits searchHits = Mockito.mock(SearchHits.class);
+
+		@SuppressWarnings("unchecked")
+		Iterator<SearchHit> hitIterator = Mockito.mock(Iterator.class);
+
+		Mockito.when(response.getHits()).thenReturn(searchHits);
+		Mockito.when(searchHits.iterator()).thenReturn(hitIterator);
+		Mockito.when(hitIterator.hasNext()).thenReturn(false);
+
+		Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyString(), Mockito.anyObject()))
+				.thenReturn(response);
+
+		ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
+	}
+
+	private void givenAnElasticsearchFilterResponseNull() {
+		Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyString(), Mockito.anyObject()))
+				.thenReturn(null);
+
+		ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
+	}
+
+	private void thenListOfUsersNull() {
+		Assert.assertEquals(0, userList.size());
+	}
+
+	private void thenListOfUsersOk() {
 		Assert.assertEquals(1, userList.size());
 		Assert.assertEquals("iteam", userList.get(0).getUsername());
 	}
@@ -110,10 +153,13 @@ public class TeamRepositoryImplTest {
 		SearchHits searchHits = Mockito.mock(SearchHits.class);
 		SearchHit hit = Mockito.mock(SearchHit.class);
 
-		SearchHit[] array = { hit };
+		@SuppressWarnings("unchecked")
+		Iterator<SearchHit> hitIterator = Mockito.mock(Iterator.class);
 
 		Mockito.when(response.getHits()).thenReturn(searchHits);
-		Mockito.when(searchHits.getHits()).thenReturn(array);
+		Mockito.when(searchHits.iterator()).thenReturn(hitIterator);
+		Mockito.when(hitIterator.hasNext()).thenReturn(true, false);
+		Mockito.when(hitIterator.next()).thenReturn(hit);
 		Mockito.when(hit.getSourceAsString()).thenReturn("{\"username\":\"iteam\"}");
 
 		Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyString(), Mockito.anyObject()))

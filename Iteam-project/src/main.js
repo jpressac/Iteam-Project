@@ -7,6 +7,9 @@ import makeRoutes from './routes'
 import Root from './containers/Root'
 import configureStore from './redux/configureStore'
 import axios from 'axios'
+import { PATHS } from './constants/routes'
+import {fetchUser} from './redux/modules/UserAuthenticated'
+import {push} from 'react-router-redux'
 
 // Configure history for react-router
 const browserHistory = useRouterHistory(createBrowserHistory)({
@@ -28,19 +31,14 @@ const history = syncHistoryWithStore(browserHistory, store, {
 // hooks such as `onEnter`.
 
 console.log("Im right here bitch");
+const routes = makeRoutes(store)
 
-var currenUser = axios.get('http://localhost:8080/user/authenticated').then(function(response){
-    console.log(response.status)
-    console.log("Im right here mother fucker");
-    const routes = makeRoutes(store, true)
-
-  }).catch(function(response){
-    console.log(response.status)
-    console.log("Im right here bitch");
-    const routes = makeRoutes(store, false)
-    
-  })
-console.log(test);
+fetchUser().then( () => {
+  console.log('im in')
+  push(PATHS.COMMOM.REGISTER)
+}, () => {
+  console.log('im out')
+})
 
 // Now that redux and react-router have been configured, we can render the
 // React application to the DOM!

@@ -9,10 +9,10 @@ import AboutUsView from '../views/AboutUsView'
 import CounterRoute from './Counter'
 import ContactView from '../views/ContactView/'
 import { PATHS } from '../constants/routes'
+import LoggedInLayout from '../layouts/LoggedInLayout'
 
-export const createRoutes = (store, flag) => (
+export const createRoutes = (store) => (
 
-  if(flag){
     <Route path = {PATHS.ROOT} component={NotLoggedIn}>
       <IndexRoute component={HomeView}></IndexRoute>
       <Route path={PATHS.COMMON.HOME} component={HomeView}></Route>
@@ -20,21 +20,11 @@ export const createRoutes = (store, flag) => (
       <Route path={PATHS.COMMON.REGISTER} component={RegistrationView}></Route>
       <Route path={PATHS.COMMON.ABOUT} component={AboutUsView}></Route>
       <Route path={PATHS.COMMON.CONTACT} component={ContactView}></Route>
+      <Route path={PATHS.COMMON.LOGGEDIN} component={LoggedInLayout}>
+        <indexRoute component={RegistrationView} />
+      </Route>
     </Route>
-  }else{
-    <Route path = {PATHS.ROOT} component={NotLoggedIn}>
-      <IndexRoute component={LoginView}></IndexRoute>
-      <Route path={PATHS.COMMON.HOME} component={LoginView}></Route>
-      <Route path={PATHS.COMMON.LOGIN} component={LoginView}></Route>
-      <Route path={PATHS.COMMON.REGISTER} component={RegistrationView}></Route>
-      <Route path={PATHS.COMMON.ABOUT} component={AboutUsView}></Route>
-      <Route path={PATHS.COMMON.CONTACT} component={ContactView}></Route>
-    </Route>
-  }
-
-
-
-)
+  )
 
 /*path: '/',
 component: CoreLayout,
