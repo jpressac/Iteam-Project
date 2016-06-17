@@ -1,10 +1,11 @@
 
 import React from 'react'
 import { Route, IndexRoute } from 'react-router'
-import CoreLayout from '../layouts/CoreLayout/CoreLayout.js'
+import NotLoggedIn from '../layouts/NotLoggedIn/NotLoggedIn'
 import LoggedInLayout from '../layouts/LoggedInLayout'
-import HomeView from '../views/HomeView/components/HomeView.js'
-import RegistrationView from '../views/RegistrationView/RegistrationView.js'
+import LoginView from '../views/LoginView'
+import HomeView from '../views/HomeView/components/HomeView'
+import RegistrationView from '../views/RegistrationView/RegistrationView'
 import AboutView from '../views/AboutUsView'
 import CounterRoute from './Counter'
 import TeamCreationView from '../views/TeamCreationView'
@@ -14,7 +15,7 @@ import { PATHS } from '../constants/routes'
 export const createRoutes = (store) => (
 
     <Route path = {PATHS.ROOT}>
-      <Route path= {PATHS.COMMON.ROOT}  component={CoreLayout}>
+      <Route path= {PATHS.COMMON.ROOT}  component={NotLoggedIn}>
         <IndexRoute component={HomeView}></IndexRoute>
         <Route path={PATHS.COMMON.HOME} component={HomeView}></Route>
         <Route path={PATHS.COMMON.LOGIN} component={LoginView}></Route>

@@ -11,7 +11,7 @@ export class MenuItem extends React.Component {
       return (
         <div className={classes.menuItem}>
         <li className={"sidebar-brand", classes.bullet}>
-          <Link to={'/application/' + nav} activeClassName="active" className={classes.menuItem}>
+          <Link to={'/' + nav} activeClassName="active" className={classes.menuItem}>
 
           {label}
           </Link>

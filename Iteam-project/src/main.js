@@ -35,7 +35,6 @@ const routes = makeRoutes(store)
 
 fetchUser().then( () => {
   console.log('im in')
-  push(PATHS.COMMOM.REGISTER)
 }, () => {
   console.log('im out')
 })
