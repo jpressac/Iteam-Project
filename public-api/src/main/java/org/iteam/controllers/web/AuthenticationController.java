@@ -12,8 +12,18 @@ public class AuthenticationController {
 		return "application";
 	}
 
-	@RequestMapping("/application/login")
+	@RequestMapping("/application/nmember/login")
 	public String login(Model model) {
+		return "application";
+	}
+
+	@RequestMapping("/application/member/home")
+	public String signin(Model model) {
+		return "application";
+	}
+
+	@RequestMapping("/application/nmember/home")
+	public String signout(Model model) {
 		return "application";
 	}
 

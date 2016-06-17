@@ -1,5 +1,7 @@
 package org.iteam.controllers.rest;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.iteam.data.model.FilterList;
@@ -62,9 +64,16 @@ public class TeamController {
 		}
 	}
 
+	/**
+	 * Apply filters to users for creating teams
+	 * 
+	 * @param filter,
+	 *            a filter list to apply to users.
+	 * @return a list of user.
+	 */
 	@RequestMapping(value = "/team/select", method = RequestMethod.GET)
-	public ResponseEntity<User> filterTeam(@RequestParam(value = "filter") FilterList filter) {
-		return null;
+	public List<User> filterTeam(@RequestParam(value = "filter") FilterList filter) {
+		return teamService.filterToCreateTeam(filter);
 	}
 
 	@Autowired

@@ -30,13 +30,12 @@ const history = syncHistoryWithStore(browserHistory, store, {
 // the store to the route definitions so that routes have access to it for
 // hooks such as `onEnter`.
 
-console.log("Im right here bitch");
 const routes = makeRoutes(store)
 
 fetchUser().then( () => {
-  console.log('im in')
+  store.dispatch(push(PATHS.LOGGEDIN.HOME))
 }, () => {
-  console.log('im out')
+  store.dispatch(push(PATHS.COMMON.LOGIN))
 })
 
 // Now that redux and react-router have been configured, we can render the

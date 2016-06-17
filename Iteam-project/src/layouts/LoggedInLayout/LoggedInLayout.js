@@ -2,18 +2,17 @@ import React, {PropTypes} from 'react'
 import Header from '../../components/Header'
 import SlideMenu from '../../components/SlideMenu'
 import MenuItem from '../../components/MenuItem'
-import { PATHS } from '../../constants/routes.js'
-import {Link} from 'react-router'
+import classes from './LoggedInLayout.scss'
+import { PATHS } from '../../constants/routes'
 
 export const LoggedInLayout = ({ children }) => (
-  <div >
+  <div className="text-center">
     <Header />
     <SlideMenu  alignment="left">
-      <MenuItem  label="My profile" nav={PATHS.LOGGEDIN.PROFILE}></MenuItem>
-      <MenuItem  label="New meeting" nav={PATHS.LOGGEDIN.MEETING}></MenuItem>
-      <MenuItem  label="New team" nav={PATHS.LOGGEDIN.NEWTEAM}></MenuItem>
-      <MenuItem label="Meeting summary" ></MenuItem>
-      <MenuItem label="Join meeting"></MenuItem>
+      <MenuItem  label="Home" nav={PATHS.MENULOGGEDIN.HOME}/>
+      <MenuItem  label="My profile" nav={PATHS.MENULOGGEDIN.PROFILE}/>
+      <MenuItem  label="New meeting" nav={PATHS.MENULOGGEDIN.MEETING}/>
+      <MenuItem  label="New team" nav={PATHS.MENULOGGEDIN.NEWTEAM}/>
     </SlideMenu>
     <div >
       {children}
