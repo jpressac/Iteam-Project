@@ -11,7 +11,7 @@ export class MenuItem extends React.Component {
       return (
         <div className={classes.menuItem}  style={{fontSize: '1.5rem', fontWeight: 'initial', paddingTop: '0.8rem', paddingBottom: '0.8rem'}}>
         <li>
-          <Link to={'/application/' + nav} activeClassName="active">
+          <Link to={'/' + nav} activeClassName="active">
 
           {label}
 

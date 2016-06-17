@@ -13,18 +13,23 @@ import LoggedInLayout from '../layouts/LoggedInLayout'
 
 export const createRoutes = (store) => (
 
-    <Route path = {PATHS.ROOT} component={NotLoggedIn}>
-      <IndexRoute component={HomeView}></IndexRoute>
-      <Route path={PATHS.COMMON.HOME} component={HomeView}></Route>
-      <Route path={PATHS.COMMON.LOGIN} component={LoginView}></Route>
-      <Route path={PATHS.COMMON.REGISTER} component={RegistrationView}></Route>
-      <Route path={PATHS.COMMON.ABOUT} component={AboutUsView}></Route>
-      <Route path={PATHS.COMMON.CONTACT} component={ContactView}></Route>
-      <Route path={PATHS.COMMON.LOGGEDIN} component={LoggedInLayout}>
-        <indexRoute component={RegistrationView} />
-      </Route>
-    </Route>
-  )
+  <Route path = {PATHS.ROOT}>
+     <Route path= {PATHS.COMMON.ROOT}  component={NotLoggedIn}>
+       <IndexRoute component={HomeView}></IndexRoute>
+       <Route path={PATHS.COMMON.HOME} component={HomeView}></Route>
+       <Route path={PATHS.COMMON.LOGIN} component={LoginView}></Route>
+       <Route path={PATHS.COMMON.REGISTER} component={RegistrationView}></Route>
+       <Route path={PATHS.COMMON.CONTACT} component={ContactView}> </Route>
+       <Route path={PATHS.COMMON.ABOUT} component={AboutUsView}> </Route>
+     </Route>
+     <Route path={PATHS.LOGGEDIN.ROOT} component={LoggedInLayout}>
+       <IndexRoute component={HomeView}></IndexRoute>
+       <Route path={PATHS.MENULOGGEDIN.NEWTEAM}></Route>
+     </Route>
+   </Route>
+   )
+
+
 
 /*path: '/',
 component: CoreLayout,

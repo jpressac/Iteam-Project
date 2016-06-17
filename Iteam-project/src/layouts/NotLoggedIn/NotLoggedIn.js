@@ -10,11 +10,11 @@ export const NotLoggedIn = ({ children }) => (
   <div className="text-center">
     <Header />
     <SlideMenu  alignment="left">
-      <MenuItem label="Home" nav={PATHS.COMMON.HOME}></MenuItem>
-      <MenuItem label="Login" nav={PATHS.COMMON.LOGIN}></MenuItem>
-      <MenuItem label="Register" nav={PATHS.COMMON.REGISTER}></MenuItem>
-      <MenuItem label="About Us" nav={PATHS.COMMON.ABOUT}></MenuItem>
-      <MenuItem label="Contact" nav={PATHS.COMMON.CONTACT}></MenuItem>
+      <MenuItem label="Home" nav={PATHS.MENUNOTLOGGEDIN.HOME}></MenuItem>
+      <MenuItem label="Login" nav={PATHS.MENUNOTLOGGEDIN.LOGIN}></MenuItem>
+      <MenuItem label="Register" nav={PATHS.MENUNOTLOGGEDIN.REGISTER}></MenuItem>
+      <MenuItem label="About Us" nav={PATHS.MENUNOTLOGGEDIN.ABOUT}></MenuItem>
+      <MenuItem label="Contact" nav={PATHS.MENUNOTLOGGEDIN.CONTACT}></MenuItem>
     </SlideMenu>
     <div className={classes.mainContainer}>
       {children}
