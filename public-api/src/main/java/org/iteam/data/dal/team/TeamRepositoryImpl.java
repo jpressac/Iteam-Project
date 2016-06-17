@@ -23,9 +23,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class TeamRespositoryImpl implements TeamRepository {
+public class TeamRepositoryImpl implements TeamRepository {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(TeamRespositoryImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TeamRepositoryImpl.class);
 
 	private ElasticsearchClientImpl elasticsearchClient;
 	private ExternalConfigurationProperties configuration;

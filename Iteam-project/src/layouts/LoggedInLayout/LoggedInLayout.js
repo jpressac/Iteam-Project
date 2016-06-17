@@ -4,6 +4,7 @@ import SlideMenu from '../../components/SlideMenu'
 import MenuItem from '../../components/MenuItem'
 import { PATHS } from '../../constants/routes.js'
 import {Link} from 'react-router'
+
 export const LoggedInLayout = ({ children }) => (
   <div >
     <Header />

@@ -10,8 +10,7 @@ export const PATHS = {
     REGISTER : 'register',
     ABOUT : 'about',
     HOWTO : 'howto',
-    CONTACT : 'contact',
-    HOME : 'home'
+    CONTACT : 'contact'
   },
   LOGGEDIN: {
     ROOT: 'member',

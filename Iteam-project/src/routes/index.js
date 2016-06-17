@@ -10,7 +10,7 @@ import CounterRoute from './Counter'
 import TeamCreationView from '../views/TeamCreationView'
 import ContactView from '../views/ContactView/'
 import { PATHS } from '../constants/routes'
-import LoginView from '../views/LoginView'
+
 export const createRoutes = (store) => (
 
     <Route path = {PATHS.ROOT}>

@@ -63,7 +63,7 @@ public class UserRepositoryImpl implements UserRepsoitory {
 				configuration.getElasticsearchIndexUserName(), configuration.getElasticsearchIndexUserTypeName(),
 				user.getUsername());
 
-		if (indexResponse.isCreated() && indexResponse != null) {
+		if (indexResponse != null && indexResponse.isCreated()) {
 			LOGGER.info("User created");
 			return true;
 		}
@@ -78,7 +78,7 @@ public class UserRepositoryImpl implements UserRepsoitory {
 		GetResponse response = elasticsearchClient.getDocument(configuration.getElasticsearchIndexUserName(),
 				configuration.getElasticsearchIndexUserTypeName(), username);
 
-		if (response.isExists()) {
+		if (response != null && response.isExists()) {
 			return true;
 		}
 		return false;
@@ -113,7 +113,7 @@ public class UserRepositoryImpl implements UserRepsoitory {
 		IndexResponse indexResponse = elasticsearchClient.insertData(data, configuration.getElasticsearchIndexUtility(),
 				configuration.getElasticsearchIndexTypeUtility(), NATIONALITIES_ID);
 
-		if (indexResponse.isCreated() && indexResponse != null) {
+		if (indexResponse != null && indexResponse.isCreated()) {
 			LOGGER.info("Nationalities created");
 			return true;
 		}
@@ -129,7 +129,7 @@ public class UserRepositoryImpl implements UserRepsoitory {
 		GetResponse response = elasticsearchClient.getDocument(configuration.getElasticsearchIndexUtility(),
 				configuration.getElasticsearchIndexTypeUtility(), NATIONALITIES_ID);
 
-		if (response.isExists()) {
+		if (response != null && response.isExists()) {
 
 			Nationalities nationalities = (Nationalities) JSONUtils.JSONToObject(response.getSourceAsString(),
 					Nationalities.class);
