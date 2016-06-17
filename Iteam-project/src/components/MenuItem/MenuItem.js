@@ -14,7 +14,6 @@ export class MenuItem extends React.Component {
           <Link to={'/application/' + nav} activeClassName="active">
 
           {label}
-
           </Link>
           </li>
         </div>

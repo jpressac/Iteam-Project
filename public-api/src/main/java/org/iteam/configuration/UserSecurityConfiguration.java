@@ -12,9 +12,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @Configuration
 @EnableWebSecurity
+@EnableWebMvc
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class UserSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
@@ -30,7 +35,7 @@ public class UserSecurityConfiguration extends WebSecurityConfigurerAdapter {
 	public void configure(WebSecurity web) throws Exception {
 		web.ignoring().antMatchers("/*.js", "/*.css", "/*.jpg", "/*.ico");
 	}
-
+	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests().antMatchers(HttpMethod.POST, "/user").permitAll()
@@ -39,7 +44,8 @@ public class UserSecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.defaultSuccessUrl("/application", true).permitAll().and().httpBasic().and().csrf().disable().logout()
 				.logoutSuccessUrl("/application").deleteCookies("JSESSIONID").and().sessionManagement();
 	}
-
+	
+	
 	@Autowired
 	private void setUserDetailService(IteamUserDetailService userDetailService) {
 		this.userDetailService = userDetailService;

@@ -5,10 +5,10 @@ class TextBox extends Component {
 
   render(){
     return(
-      <div className="form-group">
-          <label className="control-label">{this.props.label}</label>
-          <span className="input-group-btn"></span>
-          <FormControl  type={this.props.type} placeholder={this.props.label}></FormControl>
+      <div class="form-group">
+          <label class="control-label">{this.props.label}</label>
+          <span class="input-group-btn"></span>
+          <FormControl   componentClass="input" type={this.props.type} placeholder={this.props.label} ref={this.props.ref} ></FormControl>
       </div>
     )
   }
@@ -16,7 +16,8 @@ class TextBox extends Component {
 
 TextBox.propTypes ={
   label: PropTypes.string,
-  type: PropTypes.string
+  type: PropTypes.string,
+  ref: PropTypes.string
 }
 
 export default TextBox
