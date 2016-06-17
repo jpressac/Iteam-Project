@@ -16,6 +16,7 @@ export const PATHS = {
  },
  LOGGEDIN: {
    ROOT: 'member',
+   HOME: 'home',
    NEWTEAM: 'team',
    PROFILE: 'myprofile',
    MEETING: 'meeting'
@@ -24,7 +25,7 @@ export const PATHS = {
    HOME : 'application/nmember/home',
    LOGIN : 'application/nmember/login',
    REGISTER : 'application/nmember/register',
-   ABOUT : 'application/nmember/aboutus',
+   ABOUT : 'application/nmember/about',
    HOWTO : 'application/nmember/howto',
    CONTACT : 'application/nmember/contact'
  },

@@ -9,9 +9,10 @@ export const LoggedInLayout = ({ children }) => (
   <div className="text-center">
     <Header />
     <SlideMenu  alignment="left">
-      <MenuItem  label="My profile" nav={PATHS.LOGGEDIN.PROFILE}/>
-      <MenuItem  label="New meeting" nav={PATHS.LOGGEDIN.MEETING}/>
-      <MenuItem  label="New team" nav={PATHS.LOGGEDIN.NEWTEAM}/>
+      <MenuItem  label="Home" nav={PATHS.MENULOGGEDIN.HOME}/>
+      <MenuItem  label="My profile" nav={PATHS.MENULOGGEDIN.PROFILE}/>
+      <MenuItem  label="New meeting" nav={PATHS.MENULOGGEDIN.MEETING}/>
+      <MenuItem  label="New team" nav={PATHS.MENULOGGEDIN.NEWTEAM}/>
     </SlideMenu>
     <div >
       {children}

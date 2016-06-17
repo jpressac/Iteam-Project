@@ -17,7 +17,7 @@ public class AuthenticationController {
 		return "application";
 	}
 
-	@RequestMapping("/application/member")
+	@RequestMapping("/application/member/home")
 	public String signin(Model model) {
 		return "application";
 	}

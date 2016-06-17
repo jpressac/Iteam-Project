@@ -33,9 +33,9 @@ const history = syncHistoryWithStore(browserHistory, store, {
 const routes = makeRoutes(store)
 
 fetchUser().then( () => {
-  store.dispatch(push(PATHS.MENULOGGEDIN.HOME))
+  store.dispatch(push(PATHS.LOGGEDIN.HOME))
 }, () => {
-  store.dispatch(push(PATHS.MENUNOTLOGGEDIN.HOME))
+  store.dispatch(push(PATHS.COMMON.LOGIN))
 })
 
 // Now that redux and react-router have been configured, we can render the
