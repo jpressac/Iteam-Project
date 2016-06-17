@@ -4,12 +4,19 @@ export const PATHS = {
   ROOT,
   ERROR,
   COMMON : {
-    ROOT : ROOT,
+    ROOT : 'nmember',
     HOME: 'home',
     LOGIN : 'login',
     REGISTER : 'register',
     ABOUT : 'about',
     HOWTO : 'howto',
-    CONTACT : 'contact'
+    CONTACT : 'contact',
+    HOME : 'home'
+  },
+  LOGGEDIN: {
+    ROOT: 'member',
+    NEWTEAM: 'team',
+    PROFILE: 'myprofile',
+    MEETING: 'meeting'
   }
 }

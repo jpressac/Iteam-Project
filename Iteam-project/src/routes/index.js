@@ -1,24 +1,31 @@
 
 import React from 'react'
 import { Route, IndexRoute } from 'react-router'
-import CoreLayout from '../layouts/CoreLayout/'
-import HomeView from '../views/HomeView/'
-import RegistrationView from '../views/RegistrationView/'
-import LoginView from '../views/LoginView/'
-import AboutUsView from '../views/AboutUsView'
+import CoreLayout from '../layouts/CoreLayout/CoreLayout.js'
+import LoggedInLayout from '../layouts/LoggedInLayout'
+import HomeView from '../views/HomeView/components/HomeView.js'
+import RegistrationView from '../views/RegistrationView/RegistrationView.js'
+import AboutView from '../views/AboutUsView'
 import CounterRoute from './Counter'
+import TeamCreationView from '../views/TeamCreationView'
 import ContactView from '../views/ContactView/'
 import { PATHS } from '../constants/routes'
-
+import LoginView from '../views/LoginView'
 export const createRoutes = (store) => (
-  
-    <Route path = {PATHS.ROOT} component={CoreLayout}>
-      <IndexRoute component={HomeView}></IndexRoute>
-      <Route path={PATHS.COMMON.HOME} component={HomeView}></Route>
-      <Route path={PATHS.COMMON.LOGIN} component={LoginView}></Route>
-      <Route path={PATHS.COMMON.REGISTER} component={RegistrationView}></Route>
-      <Route path={PATHS.COMMON.ABOUT} component={AboutUsView}></Route>
-      <Route path={PATHS.COMMON.CONTACT} component={ContactView}></Route>
+
+    <Route path = {PATHS.ROOT}>
+      <Route path= {PATHS.COMMON.ROOT}  component={CoreLayout}>
+        <IndexRoute component={HomeView}></IndexRoute>
+        <Route path={PATHS.COMMON.HOME} component={HomeView}></Route>
+        <Route path={PATHS.COMMON.LOGIN} component={LoginView}></Route>
+        <Route path={PATHS.COMMON.REGISTER} component={RegistrationView}></Route>
+        <Route path={PATHS.COMMON.CONTACT} component={ContactView}> </Route>
+        <Route path={PATHS.COMMON.ABOUT} component={AboutView}> </Route>
+      </Route>
+      <Route path={PATHS.LOGGEDIN.ROOT} component={LoggedInLayout}>
+        <IndexRoute component={HomeView}></IndexRoute>
+        <Route path={PATHS.LOGGEDIN.NEWTEAM} component={TeamCreationView}></Route>
+      </Route>
     </Route>
 
 

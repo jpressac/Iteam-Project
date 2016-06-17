@@ -26,7 +26,7 @@ export class SlideMenu extends React.Component {
   render(){
     return (
       <div id="sidebar-wrapper" className={classes.sidebarWrapper} >
-        <ul class="sidebar-nav" className={classes.sidebarNav}>
+        <ul className={classes.sidebarNav, "sidebar-nav"}>
           {this.props.children}
         </ul>
       </div>

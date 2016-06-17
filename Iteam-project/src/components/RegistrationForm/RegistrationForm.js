@@ -5,6 +5,7 @@ import RadioButton from '../Form/RadioButton/'
 import { Button } from 'react-bootstrap';
 import {connect} from 'react-redux';
 import {submitUser} from '../../redux/RegistrationForm/actions.js'
+import NationalitiesSelect from '../NationalitiesSelect'
 
 class RegistrationForm extends Component {
   constructor(props){
@@ -24,6 +25,7 @@ class RegistrationForm extends Component {
     }
     this.handleClick = this.handleClick.bind(this);
   }
+
   handleClick(){
 
       console.dir(this.refs);
@@ -119,14 +121,9 @@ class RegistrationForm extends Component {
                     </div>
                   </div>
                   <div className="form-group">
-                    <label for="inputUsername" className="col-md-4">Country</label>
+                    <label for="inputUsername" className="col-md-4">Nationality</label>
                     <div className="col-md-8">
-                      <select name="" className="form-control" defaultvalue="usa" ref="country">
-                        <option value="australia">Australia</option>
-                        <option value="canada">Canada</option>
-                        <option value="united Kingdom">United Kingdom</option>
-                        <option value="usa">USA</option>
-                      </select>
+                      <NationalitiesSelect ></NationalitiesSelect>
                     </div>
                   </div>
                   <div className="form-group">
@@ -172,4 +169,10 @@ class RegistrationForm extends Component {
       </div>);
   };
 }
+// <select name="" className="form-control" defaultvalue="usa" ref="country">
+//   <option value="australia">Australia</option>
+//   <option value="canada">Canada</option>
+//   <option value="united Kingdom">United Kingdom</option>
+//   <option value="usa">USA</option>
+// </select>
 export default RegistrationForm

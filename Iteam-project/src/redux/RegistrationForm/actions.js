@@ -35,8 +35,16 @@ export function submitUser(data){
   } ).then(function(response){
       console.log(response.status);
     }).catch(function(response){
-
-        console.log(response.error);
-      
+    console.log(response.error);
+  })
+}
+export function getNationalities(){
+  axios.get('http://localhost:8080/user/nationality').then(function(response){
+    console.log(response.status);
+    console.log('me ejecute exitosamente');
+    return response.status;
+  }).catch(function(response){
+    console.log(response.error);
+    return response.status;
   })
 }
