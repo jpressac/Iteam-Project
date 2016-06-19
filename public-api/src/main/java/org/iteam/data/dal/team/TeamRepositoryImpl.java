@@ -96,7 +96,7 @@ public class TeamRepositoryImpl implements TeamRepository {
 		BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
 
 		for (Filter filter : filterList.getFilters()) {
-			queryBuilder.should(QueryBuilders.termQuery(filter.getField(), filter.getValues()));
+			queryBuilder.should(QueryBuilders.termsQuery(filter.getField(), filter.getValues()));
 		}
 
 		return queryBuilder.minimumNumberShouldMatch(1);

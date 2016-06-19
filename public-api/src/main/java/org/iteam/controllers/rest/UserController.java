@@ -61,22 +61,30 @@ public class UserController {
 	 * @return 200 OK if it was successfully created or 500 if it wasn't.
 	 */
 	@RequestMapping(value = "/user", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-	public ResponseEntity<?> insertUser(@RequestBody @Valid User user) {
+	public ResponseEntity<Boolean> insertUser(@RequestBody @Valid User user) {
 
 		boolean insert = userServiceImpl.setUser(user);
 
 		if (insert) {
-			return new ResponseEntity<>(HttpStatus.OK);
+			return new ResponseEntity<Boolean>(insert, HttpStatus.OK);
 		} else {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<Boolean>(insert, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
+	/**
+	 * Modify user's information.
+	 * 
+	 * @param doc,
+	 *            JSON representation of the fields that will be modified.
+	 * @return 200 OK if it was successful or, 500 INTERNAL SERVER ERROR if it
+	 *         wasn't.
+	 */
 	@RequestMapping(value = "/user/modify", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-	public ResponseEntity<?> modifyUser(@RequestBody String doc,
-			@RequestParam(value = "username", required = true) String username) {
+	public ResponseEntity<?> modifyUser(@RequestBody String doc) {
 
-		boolean modify = userServiceImpl.modifyUser(doc, username);
+		boolean modify = userServiceImpl.modifyUser(doc,
+				SecurityContextHolder.getContext().getAuthentication().getName());
 
 		if (modify) {
 			return new ResponseEntity<>(HttpStatus.OK);
@@ -89,17 +97,15 @@ public class UserController {
 	 * Delete logically a user.
 	 * 
 	 * @param doc,
-	 *            the delete param.
-	 * @param username,
-	 *            the username of the user to delete.
+	 *            JSON representation of the delete field.
 	 * @return 200 OK if it was successful, 500 INTERNAL SERVER ERROR if it
 	 *         wasn't.
 	 */
 	@RequestMapping(value = "/user/delete", method = RequestMethod.POST)
-	public ResponseEntity<?> deleteUser(@RequestBody String doc,
-			@RequestParam(value = "username", required = true) String username) {
+	public ResponseEntity<?> deleteUser(@RequestBody String doc) {
 
-		boolean delete = userServiceImpl.logicalDelete(doc, username);
+		boolean delete = userServiceImpl.logicalDelete(doc,
+				SecurityContextHolder.getContext().getAuthentication().getName());
 
 		if (delete) {
 			return new ResponseEntity<>(HttpStatus.OK);

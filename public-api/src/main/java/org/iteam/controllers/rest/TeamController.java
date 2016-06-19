@@ -12,13 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 public class TeamController {
 
 	private TeamServiceImpl teamService;
@@ -50,7 +50,7 @@ public class TeamController {
 	 *            the team name.
 	 * @return 200 OK if it was successful, 400 if not.
 	 */
-	@RequestMapping(value = "/team/delete", method = RequestMethod.HEAD)
+	@RequestMapping(value = "/team/delete", method = RequestMethod.DELETE)
 	public ResponseEntity<Boolean> deleteTeam(@RequestParam(value = "ownerName", required = true) String ownerName,
 			@RequestParam(value = "teamName", required = true) String teamName) {
 		// TODO: add validations Valid.istrue()

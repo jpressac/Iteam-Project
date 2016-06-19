@@ -2,7 +2,6 @@ package org.iteam.configuration;
 
 import org.iteam.services.user.IteamUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -13,9 +12,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @Configuration
 @EnableWebSecurity
@@ -41,21 +37,23 @@ public class UserSecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.GET, "/user/authenticated").permitAll()
 				.antMatchers(HttpMethod.GET, "/user/nationality/get").permitAll()
 				.antMatchers(HttpMethod.POST, "/user/nationality/insert").permitAll()
-				.antMatchers(HttpMethod.OPTIONS, "/**/*").permitAll().anyRequest().authenticated().and().formLogin()
-				.loginPage("/application/nmember/login").defaultSuccessUrl("/application/member/home", true).permitAll()
-				.and().httpBasic().and().csrf().disable().logout().logoutSuccessUrl("/application/nmember/home")
-				.deleteCookies("JSESSIONID").and().sessionManagement();
+				.antMatchers(HttpMethod.GET, "/team/select").permitAll().antMatchers(HttpMethod.OPTIONS, "/**/*")
+				.permitAll().anyRequest().authenticated().and().formLogin().loginPage("/application/nmember/login")
+				.defaultSuccessUrl("/application/member/home", true).permitAll().and().httpBasic().and().csrf()
+				.disable().logout().logoutSuccessUrl("/application/nmember/home").deleteCookies("JSESSIONID").and()
+				.sessionManagement();
 	}
 
-	@Bean
-	public WebMvcConfigurer corsConfigurer() {
-		return new WebMvcConfigurerAdapter() {
-			@Override
-			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**").allowedOrigins("http://localhost:3000").allowedMethods("GET", "POST");
-			}
-		};
-	}
+	// @Bean
+	// public WebMvcConfigurer corsConfigurer() {
+	// return new WebMvcConfigurerAdapter() {
+	// @Override
+	// public void addCorsMappings(CorsRegistry registry) {
+	// registry.addMapping("/**").allowedOrigins("http://localhost:8080").allowedMethods("GET",
+	// "POST");
+	// }
+	// };
+	// }
 
 	@Autowired
 	private void setUserDetailService(IteamUserDetailService userDetailService) {
