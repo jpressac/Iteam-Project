@@ -1,5 +1,7 @@
 import React from 'react';
 import classes from './TeamSugestionForm.scss'
+import axios from 'axios'
+
 class TeamSugestionForm extends React.Component {
     constructor(props){
       super(props);
@@ -8,19 +10,31 @@ class TeamSugestionForm extends React.Component {
       }
     }
     handleClick(){
-      this.state.filters.push({name: this.refs.filterName.value, value: this.refs.filterValue.value});
+      let valueFields = [];
+      valueFields.push(this.refs.filterValue.value);
+      this.state.filters.push({field: (this.refs.filterName.value).toLowerCase(), values: valueFields});
       console.log(this.state);
       this.forceUpdate();
     }
 
-
+    searchUsers(){
+      if(this.state.filters.length > 0){
+        axios.get('http://localhost:8080/team/select',
+                        {params: {filter: JSON.stringify(this.state.filters)}
+                        }).then(function(response){
+                          console.log(response.data);
+                      }).catch(function(response){
+                        console.log(response.error);
+                      });
+      }
+    }
 
     render(){
       var filterLabels = this.state.filters.map(function(filter,index) {
 
             return (
               <span className="tag label label-info" style={{fontSize:14, margin:10, marginTop:20}}>
-                <span key={index}>{filter.name} : {filter.value}</span>
+                <span key={index}>{filter.field} : {filter.values}</span>
                 <a><i className="remove glyphicon glyphicon-remove-sign glyphicon-white" ></i></a>
               </span>
             );
@@ -61,19 +75,27 @@ class TeamSugestionForm extends React.Component {
 			</div>
 		</div>
 	</div>
+  <div className="row">
+    <div className="col-md-2">
+      <button type="button" className="btn btn-primary" style={{marginTop:20}} onClick={this.searchUsers.bind(this)}>
+        <span className="glyphicon glyphicon-search"></span> Search
+      </button>
+    </div>
+  </div>
 	<div className="row">
-    <div className="table-responsive">
+    <div className="col-md-8">
 		  <table className="table table-condensed table-striped table-bordered table-hover no-margin" data-url="data1.json" data-height="299" data-click-to-select="true">
         <thead>
             <tr>
-              <th >
+              <th style={{"width": "5%"}}>
                 <input className="no-margin" type="checkbox"></input>
               </th>
-              <th >Last name</th>
-              <th >Name</th>
+              <th style={{"width" : "45%"}}>Last name</th>
+              <th style={{"width" : "50%"}}>Name</th>
             </tr>
         </thead>
         <tbody>
+
         </tbody>
 		  </table>
     </div>

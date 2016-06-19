@@ -1,3 +1,3 @@
-import LoginView from './About'
+import AboutView from './AboutView'
 
-export default LoginView
+export default AboutView
