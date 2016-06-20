@@ -1,6 +1,5 @@
 package org.iteam.data.dal.user;
 
-import org.assertj.core.util.Lists;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
@@ -8,7 +7,6 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.iteam.configuration.ExternalConfigurationProperties;
 import org.iteam.data.dal.client.ElasticsearchClientImpl;
-import org.iteam.data.model.Nationalities;
 import org.iteam.data.model.User;
 import org.junit.Assert;
 import org.junit.Before;
@@ -31,11 +29,9 @@ public class UserRepositoryImplTest {
 	private ExternalConfigurationProperties configuration;
 
 	private static final String USER_AS_JSON = "{\"username\":\"iteam\",\"password\":\"005f6e6f2dda2\",\"name\":\"iteamProject\"}";
-	private static final String NATIONALITIES_AS_JSON = "{\"nationalities\":[\"Argentina\", \"Germany\", \"Brazil\"]}";
 	private User user;
 	private String username;
 	private boolean flag;
-	private Nationalities nationalities;
 
 	@Before
 	public void init() {
@@ -112,96 +108,6 @@ public class UserRepositoryImplTest {
 		givenAnElasticsearchGetResponseFailure();
 		whenCheckUserExistenceIsCalled();
 		thenUserNotExists();
-	}
-
-	@Test
-	public void insertNationalitiesSuccessful() {
-		givenNationalities();
-		givenAnElasticsearchIndexResponseOk();
-		whenInsertNationalitiesIsCalled();
-		thenNationalitiesWereCreated();
-	}
-
-	@Test
-	public void insertNationalitiesNotSuccessfulNull() {
-		givenNationalities();
-		givenAnElasticsearchIndexResponseNull();
-		whenInsertNationalitiesIsCalled();
-		thenNationalitiesWerentCreated();
-	}
-
-	@Test
-	public void insertNationalitiesNotSuccessfulFailure() {
-		givenNationalities();
-		givenAnElasticsearchIndexResponseFailure();
-		whenInsertNationalitiesIsCalled();
-		thenNationalitiesWerentCreated();
-	}
-
-	@Test
-	public void getNationalitiesSuccessful() {
-		givenAnElasticsearchGetResponseNatOk();
-		whenGetNationalitiesIsCalled();
-		thenNationalitiesWere3();
-	}
-
-	@Test
-	public void getNationalitiesNotSuccessfulNull() {
-		givenAnElasticsearchGetResponseNull();
-		whenGetNationalitiesIsCalled();
-		thenNationalitiesWereNull();
-	}
-
-	@Test
-	public void getNationalitiesNotSuccessfulFailure() {
-		givenAnElasticsearchGetResponseFailure();
-		whenGetNationalitiesIsCalled();
-		thenNationalitiesWereNull();
-	}
-
-	private void thenNationalitiesWereNull() {
-		Assert.assertNull(nationalities);
-	}
-
-	private void thenNationalitiesWere3() {
-		Assert.assertEquals(3, nationalities.getNationalities().size());
-		Assert.assertTrue(nationalities.getNationalities().contains("Argentina"));
-		Assert.assertTrue(nationalities.getNationalities().contains("Germany"));
-		Assert.assertTrue(nationalities.getNationalities().contains("Brazil"));
-	}
-
-	private void whenGetNationalitiesIsCalled() {
-		nationalities = underTest.getNationalities();
-	}
-
-	private void givenAnElasticsearchGetResponseNatOk() {
-		GetResponse response = Mockito.mock(GetResponse.class);
-
-		Mockito.when(response.getSourceAsString()).thenReturn(NATIONALITIES_AS_JSON);
-
-		Mockito.when(response.isExists()).thenReturn(true);
-
-		Mockito.when(elasticsearchClient.getDocument(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
-				.thenReturn(response);
-
-		ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClient);
-	}
-
-	private void thenNationalitiesWerentCreated() {
-		Assert.assertFalse(flag);
-	}
-
-	private void thenNationalitiesWereCreated() {
-		Assert.assertTrue(flag);
-	}
-
-	private void whenInsertNationalitiesIsCalled() {
-		flag = underTest.insertNationalities(nationalities);
-	}
-
-	private void givenNationalities() {
-		nationalities = new Nationalities();
-		nationalities.setNationalities(Lists.newArrayList("Argentina", "Germany", "Brazil"));
 	}
 
 	private void givenAnElasticsearchGetResponseFailure() {

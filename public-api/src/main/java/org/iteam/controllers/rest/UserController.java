@@ -2,7 +2,6 @@ package org.iteam.controllers.rest;
 
 import javax.validation.Valid;
 
-import org.iteam.data.model.Nationalities;
 import org.iteam.data.model.User;
 import org.iteam.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,35 +130,6 @@ public class UserController {
 		} else {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-	}
-
-	/**
-	 * Insert nationalities to full fill drop down list (nationalities)
-	 * 
-	 * @param nationalities,
-	 *            the list of nationalities
-	 * @return true (200 OK) if it was successful or false (400 Bad Request) if
-	 *         it wasn't.
-	 */
-	@RequestMapping(value = "/user/nationality/insert", method = RequestMethod.POST)
-	public ResponseEntity<Boolean> saveNationalitiesDropDown(@RequestBody @Valid Nationalities nationalities) {
-		boolean succes = userServiceImpl.insertNationalities(nationalities);
-
-		if (succes) {
-			return new ResponseEntity<Boolean>(succes, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<Boolean>(succes, HttpStatus.BAD_REQUEST);
-		}
-	}
-
-	/**
-	 * Get the nationalities for full fill the drop down list.
-	 * 
-	 * @return Nationalities.
-	 */
-	@RequestMapping(value = "/user/nationality/get", method = RequestMethod.GET)
-	public Nationalities getNationalitiesDDL() {
-		return userServiceImpl.getNationalities();
 	}
 
 	@Autowired
