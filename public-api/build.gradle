@@ -12,6 +12,9 @@ buildscript {
 		elasticsaerchVersion = '2.3.0'
 		slf4jVersion = '1.6.1'
 		assertjVersion = '3.3.0'
+		contextSupportVersion = '4.3.0.RELEASE'
+		javaMailVersion = '1.4.7'
+		googleAPIMailVersion = 'v1-rev44-1.22.0'
 	}
 	repositories {
 		mavenCentral()
@@ -37,6 +40,12 @@ repositories {
 dependencies {
 	compile("org.apache.commons:commons-lang3:${apacheCommonsLang3Version}")
 	compile("org.apache.commons:commons-collections4:${apacheCommonsCollections4Version}")
+	// compile("org.springframework:spring-context-support:${contextSupportVersion}")
+	compile("com.google.apis:google-api-services-gmail:${googleAPIMailVersion}"){
+		exclude module: "guava-jdk5"
+	}
+	
+	compile("javax.mail:mail:${javaMailVersion}")
 	compile("org.springframework.boot:spring-boot-starter-security"){
 		exclude module: "logback-classic"
 		exclude module: "logbak-core"
@@ -76,4 +85,28 @@ eclipse {
 
 task wrapper(type: Wrapper) {
 	gradleVersion = '2.13'
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled false
+        csv.enabled false
+    }    
+    group = "Reporting"
+    description = "Generate Jacoco coverage reports after running tests."
+    additionalSourceDirs = files(sourceSets.main.allJava.srcDirs)
+    
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(
+            	dir: it,
+            	
+            	excludes: [
+            		'org/iteam/configuration/**/*',
+            		'org/iteam/controllers/**/*',
+            		'org/iteam/data/dal/client/**',
+            		'org/iteam/data/model/**',
+            		'org/iteam/exceptions/**'])
+        })
+    }
 }

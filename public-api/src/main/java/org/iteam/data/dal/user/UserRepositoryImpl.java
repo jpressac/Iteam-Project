@@ -9,6 +9,8 @@ import org.iteam.configuration.ExternalConfigurationProperties;
 import org.iteam.data.dal.client.ElasticsearchClient;
 import org.iteam.data.model.User;
 import org.iteam.services.utils.JSONUtils;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,13 +50,17 @@ public class UserRepositoryImpl implements UserRepsoitory {
 	public boolean setUser(User user) {
 
 		user.setPassword(PASSWORD_ENCODER.encode(user.getPassword()));
+
+		DateTime dateTime = new DateTime().withZoneRetainFields(DateTimeZone.UTC);
+		user.setInsertionDate(dateTime.toString());
+
 		String data = JSONUtils.ObjectToJSON(user);
 
 		IndexResponse indexResponse = elasticsearchClient.insertData(data,
 				configuration.getElasticsearchIndexUserName(), configuration.getElasticsearchIndexUserTypeName(),
 				user.getUsername());
 
-		if (indexResponse.isCreated() && indexResponse != null) {
+		if (indexResponse != null && indexResponse.isCreated()) {
 			LOGGER.info("User created");
 			return true;
 		}
@@ -66,10 +72,10 @@ public class UserRepositoryImpl implements UserRepsoitory {
 	@Override
 	public boolean checkUserExistance(String username) {
 
-		GetResponse response = elasticsearchClient.checkUser(configuration.getElasticsearchIndexUserName(),
+		GetResponse response = elasticsearchClient.getDocument(configuration.getElasticsearchIndexUserName(),
 				configuration.getElasticsearchIndexUserTypeName(), username);
 
-		if (response.isExists()) {
+		if (response != null && response.isExists()) {
 			return true;
 		}
 		return false;

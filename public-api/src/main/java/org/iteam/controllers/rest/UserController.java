@@ -24,30 +24,31 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
 	private UserService userServiceImpl;
+	private String USER_NOT_LOGGED_IN = "anonymousUser";
 
 	/**
 	 * Request for checking if the user is authenticated
 	 * 
-	 * @return the username of the logged in user or anonymoususer if it's not
-	 *         authenticated.
+	 * @return 200 OK if there is user logged in or 401 UNAUTHORIZED if it
+	 *         isn't.
 	 */
 	@RequestMapping(value = "/user/authenticated", method = RequestMethod.GET)
-	public String getUserAuthenticated() {
-		return SecurityContextHolder.getContext().getAuthentication().getName();
+	public ResponseEntity<?> getUserAuthenticated() {
+
+		if (USER_NOT_LOGGED_IN.equals(SecurityContextHolder.getContext().getAuthentication().getName())) {
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		} else {
+			return new ResponseEntity<>(HttpStatus.OK);
+		}
 	}
 
 	/**
 	 * Request for getting the user information.
 	 * 
-	 * @param username,
-	 *            of the user logged in.
 	 * @return a User.
 	 */
-	@RequestMapping(value = "/user/", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
-	public User getUser(@RequestParam(value = "username", required = true) String username) {
-
-		// TODO: check what is better, use usernam as param or get the username
-		// of spring context.
+	@RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
+	public User getUser() {
 		return userServiceImpl.getUser(SecurityContextHolder.getContext().getAuthentication().getName());
 	}
 
@@ -59,22 +60,30 @@ public class UserController {
 	 * @return 200 OK if it was successfully created or 500 if it wasn't.
 	 */
 	@RequestMapping(value = "/user", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-	public ResponseEntity<?> insertUser(@RequestBody @Valid User user) {
+	public ResponseEntity<Boolean> insertUser(@RequestBody @Valid User user) {
 
 		boolean insert = userServiceImpl.setUser(user);
 
 		if (insert) {
-			return new ResponseEntity<>(HttpStatus.OK);
+			return new ResponseEntity<Boolean>(insert, HttpStatus.OK);
 		} else {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<Boolean>(insert, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 
+	/**
+	 * Modify user's information.
+	 * 
+	 * @param doc,
+	 *            JSON representation of the fields that will be modified.
+	 * @return 200 OK if it was successful or, 500 INTERNAL SERVER ERROR if it
+	 *         wasn't.
+	 */
 	@RequestMapping(value = "/user/modify", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-	public ResponseEntity<?> modifyUser(@RequestBody String doc,
-			@RequestParam(value = "username", required = true) String username) {
+	public ResponseEntity<?> modifyUser(@RequestBody String doc) {
 
-		boolean modify = userServiceImpl.modifyUser(doc, username);
+		boolean modify = userServiceImpl.modifyUser(doc,
+				SecurityContextHolder.getContext().getAuthentication().getName());
 
 		if (modify) {
 			return new ResponseEntity<>(HttpStatus.OK);
@@ -83,11 +92,19 @@ public class UserController {
 		}
 	}
 
+	/**
+	 * Delete logically a user.
+	 * 
+	 * @param doc,
+	 *            JSON representation of the delete field.
+	 * @return 200 OK if it was successful, 500 INTERNAL SERVER ERROR if it
+	 *         wasn't.
+	 */
 	@RequestMapping(value = "/user/delete", method = RequestMethod.POST)
-	public ResponseEntity<?> deleteUser(@RequestBody String doc,
-			@RequestParam(value = "username", required = true) String username) {
+	public ResponseEntity<?> deleteUser(@RequestBody String doc) {
 
-		boolean delete = userServiceImpl.logicalDelete(doc, username);
+		boolean delete = userServiceImpl.logicalDelete(doc,
+				SecurityContextHolder.getContext().getAuthentication().getName());
 
 		if (delete) {
 			return new ResponseEntity<>(HttpStatus.OK);

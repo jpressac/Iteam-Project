@@ -9,9 +9,9 @@ export class MenuItem extends React.Component {
       const {label,nav}= this.props;
 
       return (
-        <div className={classes.menuItem}  style={{fontSize: '1.5rem', fontWeight: 'initial', paddingTop: '0.8rem', paddingBottom: '0.8rem'}}>
-        <li>
-          <Link to={'/application/' + nav} activeClassName="active">
+        <div className={classes.menuItem}>
+        <li className={"sidebar-brand", classes.bullet}>
+          <Link to={'/' + nav} activeClassName="active" className={classes.menuItem}>
 
           {label}
           </Link>
