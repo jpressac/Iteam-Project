@@ -5,6 +5,7 @@ import CoreLayout from '../layouts/CoreLayout/CoreLayout.js'
 import HomeView from '../views/HomeView/components/HomeView.js'
 import RegistrationView from '../views/RegistrationView/RegistrationView.js'
 import AboutView from '../views/AboutView/AboutView.js'
+import BoardView from '../views/BoardView/BoardView'
 import CounterRoute from './Counter'
 import ContactView from '../views/ContactView/components/ContactView.js'
 import { PATHS } from '../constants/routes.js'
@@ -18,6 +19,7 @@ export const createRoutes = (store) => (
       <Route path={PATHS.COMMON.CONTACT} component={ContactView}> </Route>
       <Route path={PATHS.COMMON.ABOUT} component={AboutView}> </Route>
       <Route path={PATHS.COMMON.HOME} component={HomeView}> </Route>
+      <Route path={PATHS.COMMON.BOARD} component={BoardView}> </Route>
       </Route>
 
 

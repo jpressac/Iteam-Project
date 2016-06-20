@@ -11,6 +11,7 @@ export const PATHS = {
     ABOUT : 'about',
     HOWTO : 'howto',
     CONTACT : 'contact',
-    HOME : 'home'
+    HOME : 'home',
+    BOARD: 'board'
   }
 }

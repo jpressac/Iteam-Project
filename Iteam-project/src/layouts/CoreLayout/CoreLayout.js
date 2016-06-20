@@ -2,6 +2,7 @@ import React from 'react'
 import Header from '../../components/Header'
 import SlideMenu from '../../components/SlideMenu'
 import MenuItem from '../../components/MenuItem'
+import Board from '../../components/Board'
 import classes from './CoreLayout.scss'
 import { PATHS } from '../../constants/routes.js'
 import {Link} from 'react-router'
@@ -18,7 +19,7 @@ export const CoreLayout = ({children}) => (
       <MenuItem  label="Register" nav={PATHS.COMMON.REGISTER}></MenuItem>
       <MenuItem label="About Us" nav={PATHS.COMMON.ABOUT}></MenuItem>
       <MenuItem label="Contact" nav={PATHS.COMMON.CONTACT}></MenuItem>
-
+      <MenuItem label="Board" nav={PATHS.COMMON.BOARD}></MenuItem>
 
       </SlideMenu>
       <div>
