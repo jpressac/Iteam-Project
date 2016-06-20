@@ -1,3 +1,3 @@
-import Board from './Board.js'
+import Board from './Board'
 
 export default Board
