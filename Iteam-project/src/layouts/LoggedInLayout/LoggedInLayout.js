@@ -13,6 +13,7 @@ export const LoggedInLayout = ({ children }) => (
       <MenuItem  label="My profile" nav={PATHS.MENULOGGEDIN.PROFILE}/>
       <MenuItem  label="New meeting" nav={PATHS.MENULOGGEDIN.MEETING}/>
       <MenuItem  label="New team" nav={PATHS.MENULOGGEDIN.NEWTEAM}/>
+      <MenuItem  label="Personal Board" nav={PATHS.MENULOGGEDIN.BOARD}/>
     </SlideMenu>
     <div >
       {children}

@@ -1,5 +1,3 @@
-import BoardView from './BoardView.js'
+import BoardView from './BoardView'
 
-export default{
-  component: BoardView
-}
+export default BoardView

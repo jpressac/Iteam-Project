@@ -1,5 +1,3 @@
 import BoardForm from './BoardForm';
 
-export default {
-  component: BoardForm
-}
+export default BoardForm

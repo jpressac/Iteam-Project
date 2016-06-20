@@ -76,7 +76,7 @@ class Board extends React.Component{
 
   constructor(props){
     super(props);
-    this.state= {notes: ['Call Bill']}
+    this.state= {notes: ["New Note"]}
   }
 }
 
