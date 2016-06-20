@@ -1,5 +1,8 @@
 package org.iteam.services.utilities;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.assertj.core.util.Lists;
 import org.iteam.data.dal.utilities.UtilitiesRepositoryImpl;
 import org.iteam.data.model.Nationalities;
@@ -20,6 +23,7 @@ public class UtilitiesServiceImplTest {
 	private UtilitiesRepositoryImpl utilitiesRepositoryImpl;
 
 	private Nationalities nationalities;
+	private List<String> professionList = new ArrayList<>();
 	private boolean flag;
 
 	@Before
@@ -38,6 +42,24 @@ public class UtilitiesServiceImplTest {
 	public void getNationalities() {
 		whenGetNationalities();
 		thenNationalitiesWereNotEmpty();
+	}
+
+	@Test
+	public void getProfessions() {
+		whenGetProfessionsIsCalled();
+		thenListOfProfessionsIsReturned();
+	}
+
+	private void thenListOfProfessionsIsReturned() {
+		Assert.assertEquals(2, professionList.size());
+	}
+
+	private void whenGetProfessionsIsCalled() {
+		Mockito.when(utilitiesRepositoryImpl.getProfessions())
+				.thenReturn(Lists.newArrayList("Software Engineer", "Estudiante"));
+
+		professionList = underTest.getProfessions();
+
 	}
 
 	private void thenNationalitiesWereNotEmpty() {

@@ -10,6 +10,7 @@ import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
+import org.elasticsearch.search.aggregations.bucket.terms.Terms.Order;
 import org.iteam.configuration.ExternalConfigurationProperties;
 import org.iteam.data.dal.client.ElasticsearchClient;
 import org.iteam.data.model.Nationalities;
@@ -75,17 +76,21 @@ public class UtilitiesRepositoryImpl implements UtilitiesRepository {
 		List<String> professionsList = new ArrayList<>();
 
 		AbstractAggregationBuilder agrgregationBuilder = AggregationBuilders.terms("professionAgg")
-				.field(PROFESSION_FIELD);
+				.field(PROFESSION_FIELD).order(Order.term(true));
 
 		SearchResponse response = elasticsearchClient.search(configuration.getElasticsearchIndexUserName(),
 				configuration.getElasticsaerchIndexTypeTeam(), null, agrgregationBuilder, 0);
 
-		Terms term = response.getAggregations().get("professionAgg");
-		List<Bucket> buckets = term.getBuckets();
+		if (response != null) {
+			Terms term = response.getAggregations().get("professionAgg");
+			List<Bucket> buckets = term.getBuckets();
 
-		buckets.forEach(b -> {
-			professionsList.add(b.getKeyAsString());
-		});
+			buckets.forEach(b -> {
+				professionsList.add(b.getKeyAsString());
+			});
+		}
+
+		LOGGER.debug("Professions list: '{}'", professionsList.toString());
 
 		return professionsList;
 	}
