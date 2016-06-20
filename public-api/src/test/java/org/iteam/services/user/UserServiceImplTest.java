@@ -1,8 +1,6 @@
 package org.iteam.services.user;
 
-import org.assertj.core.util.Lists;
 import org.iteam.data.dal.user.UserRepositoryImpl;
-import org.iteam.data.model.Nationalities;
 import org.iteam.data.model.User;
 import org.junit.Assert;
 import org.junit.Before;
@@ -24,7 +22,6 @@ public class UserServiceImplTest {
 	private boolean flag;
 	private String userName;
 	private String doc;
-	private Nationalities nationalities;
 
 	@Before
 	public void init() {
@@ -75,47 +72,6 @@ public class UserServiceImplTest {
 		givenAUserRepoMockDelete();
 		whenLogicalDeleteIsCalled();
 		thenUserWasDeleted();
-	}
-
-	@Test
-	public void insertNationalities() {
-		givenANationalities();
-		whenInsertNationalitiesIsCalled();
-		thenNationalitiesWereCreated();
-	}
-
-	@Test
-	public void getNationalities() {
-		whenGetNationalities();
-		thenNationalitiesWereNotEmpty();
-	}
-
-	private void thenNationalitiesWereNotEmpty() {
-		Assert.assertTrue(nationalities.getNationalities().contains("Argentina"));
-	}
-
-	private void whenGetNationalities() {
-
-		Nationalities natioanlitiesTest = new Nationalities();
-		natioanlitiesTest.setNationalities(Lists.newArrayList("Argentina", "Germany", "Brazil"));
-
-		Mockito.when(userRepositoryImpl.getNationalities()).thenReturn(natioanlitiesTest);
-
-		nationalities = underTest.getNationalities();
-	}
-
-	private void thenNationalitiesWereCreated() {
-		Assert.assertTrue(flag);
-	}
-
-	private void whenInsertNationalitiesIsCalled() {
-		Mockito.when(userRepositoryImpl.insertNationalities(nationalities)).thenReturn(true);
-
-		flag = underTest.insertNationalities(nationalities);
-	}
-
-	private void givenANationalities() {
-		nationalities = new Nationalities();
 	}
 
 	private void thenUserWasDeleted() {

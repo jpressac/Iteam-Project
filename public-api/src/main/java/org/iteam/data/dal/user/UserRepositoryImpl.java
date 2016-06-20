@@ -7,12 +7,10 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.iteam.configuration.ExternalConfigurationProperties;
 import org.iteam.data.dal.client.ElasticsearchClient;
-import org.iteam.data.model.Nationalities;
 import org.iteam.data.model.User;
 import org.iteam.services.utils.JSONUtils;
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
+import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +26,6 @@ public class UserRepositoryImpl implements UserRepsoitory {
 
 	private static final String USER_NAME_FIELD = "username";
 	private static final String LOGICAL_DELETE_FIELD = "logicalDelete";
-	private static final String NATIONALITIES_ID = "nationalities";
 
 	private ElasticsearchClient elasticsearchClient;
 	private ExternalConfigurationProperties configuration;
@@ -53,10 +50,10 @@ public class UserRepositoryImpl implements UserRepsoitory {
 	public boolean setUser(User user) {
 
 		user.setPassword(PASSWORD_ENCODER.encode(user.getPassword()));
-		DateTime dateTime = new DateTime();
-		DateTimeFormatter formatter = ISODateTimeFormat.basicDateTimeNoMillis();
 
-		user.setInsertionDate(formatter.print(dateTime));
+		DateTime dateTime = new DateTime().withZoneRetainFields(DateTimeZone.UTC);
+		user.setInsertionDate(dateTime.toString());
+
 		String data = JSONUtils.ObjectToJSON(user);
 
 		IndexResponse indexResponse = elasticsearchClient.insertData(data,
@@ -103,45 +100,6 @@ public class UserRepositoryImpl implements UserRepsoitory {
 				configuration.getElasticsearchIndexUserTypeName(), username);
 		LOGGER.info("User deleted");
 		return true;
-	}
-
-	@Override
-	public boolean insertNationalities(Nationalities nationalities) {
-
-		String data = JSONUtils.ObjectToJSON(nationalities);
-
-		IndexResponse indexResponse = elasticsearchClient.insertData(data, configuration.getElasticsearchIndexUtility(),
-				configuration.getElasticsearchIndexTypeUtility(), NATIONALITIES_ID);
-
-		if (indexResponse != null && indexResponse.isCreated()) {
-			LOGGER.info("Nationalities created");
-			return true;
-		}
-
-		LOGGER.warn("Nationalities cannot be created - Nationalities: '{}'", nationalities.toString());
-		return false;
-
-	}
-
-	@Override
-	public Nationalities getNationalities() {
-
-		GetResponse response = elasticsearchClient.getDocument(configuration.getElasticsearchIndexUtility(),
-				configuration.getElasticsearchIndexTypeUtility(), NATIONALITIES_ID);
-
-		if (response != null && response.isExists()) {
-
-			Nationalities nationalities = (Nationalities) JSONUtils.JSONToObject(response.getSourceAsString(),
-					Nationalities.class);
-
-			LOGGER.debug("Nationalities retrieve successfully - '{}'", nationalities.toString());
-
-			return nationalities;
-		}
-
-		LOGGER.warn("Nationalities cannot be retrieved");
-
-		return null;
 	}
 
 	@Autowired

@@ -1,6 +1,5 @@
 package org.iteam.services.user;
 
-import org.iteam.data.model.Nationalities;
 import org.iteam.data.model.User;
 
 public interface UserService {
@@ -53,21 +52,5 @@ public interface UserService {
 	 * @return true if it was successful, false otherwise.
 	 */
 	public boolean logicalDelete(String doc, String username);
-
-	/**
-	 * Insert nationalities.
-	 * 
-	 * @param nationalities,
-	 *            the list of nationalities.
-	 * @return true if it was successful, false otherwise.
-	 */
-	public boolean insertNationalities(Nationalities nationalities);
-
-	/**
-	 * Get the nationalities.
-	 * 
-	 * @return Nationalities.
-	 */
-	public Nationalities getNationalities();
 
 }

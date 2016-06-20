@@ -30,6 +30,7 @@ public class TeamRepositoryImpl implements TeamRepository {
 	private ElasticsearchClientImpl elasticsearchClient;
 	private ExternalConfigurationProperties configuration;
 	private static final String OWNER_NAME_FIELD = "ownerName";
+	private static final String LOGICAL_DELETE_FIELD = "logicalDelete";
 	private static final String TEAM_NAME_FIELD = "teamName";
 
 	@Override
@@ -99,6 +100,7 @@ public class TeamRepositoryImpl implements TeamRepository {
 			queryBuilder.should(QueryBuilders.termsQuery(filter.getField(), filter.getValues()));
 		}
 
+		queryBuilder.must(QueryBuilders.termQuery(LOGICAL_DELETE_FIELD, false));
 		return queryBuilder.minimumNumberShouldMatch(1);
 
 	}
