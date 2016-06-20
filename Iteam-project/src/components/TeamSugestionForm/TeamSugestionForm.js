@@ -7,6 +7,8 @@ class TeamSugestionForm extends React.Component {
       super(props);
       this.state= {
         filters: [],
+        users: [],
+        selectedUsers: []
       }
     }
     handleClick(){
@@ -18,15 +20,33 @@ class TeamSugestionForm extends React.Component {
     }
 
     searchUsers(){
+      var _this = this;
       if(this.state.filters.length > 0){
         axios.get('http://localhost:8080/team/select',
                         {params: {filter: JSON.stringify(this.state.filters)}
                         }).then(function(response){
                           console.log(response.data);
+                          _this.fillUsersTable(response.data);
                       }).catch(function(response){
                         console.log(response.error);
                       });
       }
+    }
+    fillUsersTable(data){
+      let us = [];
+      debugger
+      data.map(function(user,index){
+        us.push(
+          <tr key={us.length}>
+            <td><input className="no-margin" type="checkbox"></input></td>
+            <td>{user.lastName}</td>
+            <td>{user.name}</td>
+          </tr>
+        );
+      });
+      console.log(us);
+      this.setState({users: us});
+      this.forceUpdate();
     }
 
     render(){
@@ -90,12 +110,12 @@ class TeamSugestionForm extends React.Component {
               <th style={{"width": "5%"}}>
                 <input className="no-margin" type="checkbox"></input>
               </th>
-              <th style={{"width" : "45%"}}>Last name</th>
+              <th style={{"width" : "45%" , "align":"center"}}>Last name</th>
               <th style={{"width" : "50%"}}>Name</th>
             </tr>
         </thead>
         <tbody>
-
+        {this.state.users}
         </tbody>
 		  </table>
     </div>

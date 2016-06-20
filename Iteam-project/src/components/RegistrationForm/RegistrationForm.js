@@ -10,19 +10,7 @@ import NationalitiesSelect from '../NationalitiesSelect'
 class RegistrationForm extends Component {
   constructor(props){
     super(props);
-    this.state = {
-      firstName: '',
-      lastName: '',
-      nationality: '',
-      dateOfBirth:'',
-      mail: '',
-      male: '',
-      female: '',
-      profession: '',
-      username: '',
-      password: '',
-      repeatPassword: ''
-    }
+    this.state = {};
     this.handleClick = this.handleClick.bind(this);
   }
 
@@ -34,7 +22,7 @@ class RegistrationForm extends Component {
       this.setState({
         firstName: this.refs.firstName.value,
         lastName: this.refs.lastName.value,
-        nationality: this.refs.country.value,
+        nationality: '',
         dateOfBirth: this.refs.month.value + '/' + this.refs.day.value + '/' + this.refs.year.value,
         mail: this.refs.mail.value,
         male: this.refs.male.value,
