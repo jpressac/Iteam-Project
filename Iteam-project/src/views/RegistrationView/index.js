@@ -1,5 +1,3 @@
-import RegistrationView from './RegistrationView.js'
+import RegistrationView from './RegistrationView'
 
-export default{
-  component: RegistrationView
-}
+export default RegistrationView

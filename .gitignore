@@ -10,7 +10,6 @@ gradle-app.setting
 .gradletasknamecache
 
 public-api/.classpath
-public-api/gradle/
 public-api/bin/
 *.logs
 *.logs.*

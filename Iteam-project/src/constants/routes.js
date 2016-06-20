@@ -1,16 +1,38 @@
-export const ROOT = '/';
+export const ROOT = '/application';
 export const ERROR = '/error'
+export const SIGNIN = '/application/member'
+export const SIGNOUT = '/application/nmember'
 export const PATHS = {
-  ROOT,
-  ERROR,
-  COMMON : {
-    ROOT : ROOT,
-    LOGIN : 'user/authenticated',
-    REGISTER : 'register',
-    ABOUT : 'about',
-    HOWTO : 'howto',
-    CONTACT : 'contact',
-    HOME : 'home',
-    MEETING : 'meeting'
-  }
+ ROOT,
+ ERROR,
+ COMMON : {
+   ROOT : 'nmember',
+   HOME: 'home',
+   LOGIN :'login',
+   REGISTER : 'register',
+   ABOUT : 'about',
+   HOWTO : 'howto',
+   CONTACT : 'contact'
+ },
+ LOGGEDIN: {
+   ROOT: 'member',
+   HOME: 'home',
+   NEWTEAM: 'team',
+   PROFILE: 'myprofile',
+   MEETING: 'meeting'
+ },
+ MENUNOTLOGGEDIN: {
+   HOME : 'application/nmember/home',
+   LOGIN : 'application/nmember/login',
+   REGISTER : 'application/nmember/register',
+   ABOUT : 'application/nmember/about',
+   HOWTO : 'application/nmember/howto',
+   CONTACT : 'application/nmember/contact'
+ },
+ MENULOGGEDIN:{
+   HOME : 'application/member/home',
+   NEWTEAM : 'application/member/team',
+   PROFILE : 'application/member/myprofile',
+   MEETING : 'application/member/meeting'
+ }
 }

@@ -1,6 +1,3 @@
-import MeetingView from '.meetingView.js'
+import MeetingView from './MeetingView.js'
 
-// Sync route definition
-export default {
-  component: MeetingView
-}
+export default MeetingView

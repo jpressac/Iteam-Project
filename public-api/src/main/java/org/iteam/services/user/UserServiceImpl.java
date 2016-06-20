@@ -39,5 +39,4 @@ public class UserServiceImpl implements UserService {
 	private void setUserRepository(UserRepositoryImpl userRepository) {
 		this.userRepository = userRepository;
 	}
-
 }

@@ -1,30 +1,39 @@
-// We only need to import the modules necessary for initial render
+
 import React from 'react'
 import { Route, IndexRoute } from 'react-router'
-import CoreLayout from '../layouts/CoreLayout/CoreLayout.js'
-import HomeView from '../views/HomeView/components/HomeView.js'
-import RegistrationView from '../views/RegistrationView/RegistrationView.js'
-import AboutView from '../views/AboutView/AboutView.js'
+import NotLoggedIn from '../layouts/NotLoggedIn/'
+import HomeView from '../views/HomeView/'
+import RegistrationView from '../views/RegistrationView/'
+import LoginView from '../views/LoginView/'
+import AboutView from '../views/AboutView'
 import CounterRoute from './Counter'
-import ContactView from '../views/ContactView/components/ContactView.js'
-import MeetingView from '../views/MeetingView/meetingView.js'
-import { PATHS } from '../constants/routes.js'
-//TODO import actions
+import ContactView from '../views/ContactView/'
+import { PATHS } from '../constants/routes'
+import LoggedInLayout from '../layouts/LoggedInLayout'
+import TeamCreationView from '../views/TeamCreationView'
+import MeetingView from '../views/MeetingView'
 
 export const createRoutes = (store) => (
 
-    <Route path = {PATHS.ROOT} component={CoreLayout}>
-      <IndexRoute component={HomeView}> </IndexRoute>
-      <Route path={PATHS.COMMON.REGISTER} component={RegistrationView}></Route>
-      <Route path={PATHS.COMMON.CONTACT} component={ContactView}> </Route>
-      <Route path={PATHS.COMMON.ABOUT} component={AboutView}> </Route>
-      <Route path={PATHS.COMMON.HOME} component={HomeView}> </Route>
-      <Route path={PATHS.COMMON.MEETING} component={MeetingView}> </Route>
+  <Route path = {PATHS.ROOT}>
+     <Route path= {PATHS.COMMON.ROOT}  component={NotLoggedIn}>
+       <IndexRoute component={HomeView} />
+       <Route path={PATHS.COMMON.HOME} component={HomeView} />
+       <Route path={PATHS.COMMON.LOGIN} component={LoginView} />
+       <Route path={PATHS.COMMON.REGISTER} component={RegistrationView} />
+       <Route path={PATHS.COMMON.CONTACT} component={ContactView} />
+       <Route path={PATHS.COMMON.ABOUT} component={AboutView} />
+     </Route>
+     <Route path={PATHS.LOGGEDIN.ROOT} component={LoggedInLayout}>
+       <IndexRoute component={HomeView} />
+       <Route path={PATHS.LOGGEDIN.NEWTEAM} component={TeamCreationView} />
+       <Route path={PATHS.LOGGEDIN.HOME} component={HomeView} />
+       <Route path={PATHS.LOGGEDIN.MEETING} component={MeetingView} />
+     </Route>
+   </Route>
+   )
 
-      </Route>
 
-
-)
 
 /*path: '/',
 component: CoreLayout,
