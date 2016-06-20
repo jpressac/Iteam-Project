@@ -1,0 +1,259 @@
+import React from 'react';
+import ReactDOM from 'react-dom';
+import Grid from "react-bootstrap/lib/Grid";
+import Row from "react-bootstrap/lib/Row";
+import Col from "react-bootstrap/lib/Col";
+import { Navbar } from "react-bootstrap";
+import Nav from "react-bootstrap/lib/Nav";
+import NavItem from "react-bootstrap/lib/NavItem";
+//import DatePicker from "../../index.js";
+import Glyphicon from 'react-bootstrap/lib/Glyphicon';
+import FormGroup from 'react-bootstrap/lib/FormGroup';
+import ControlLabel from 'react-bootstrap/lib/ControlLabel';
+import HelpBlock from 'react-bootstrap/lib/HelpBlock';
+
+const spanishDayLabels = ['Dom', 'Lu', 'Ma', 'Mx', 'Ju', 'Vi', 'Sab'];
+const spanishMonthLabels = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+
+const App = React.createClass({
+  getInitialState() {
+    return {
+      date: new Date().toISOString(),
+      previousDate: null,
+      focused: false
+    };
+  },
+  handleChange(value) {
+    this.setState({
+      date: value
+    });
+  },
+  render() {
+    const LabelISOString = new Date().toISOString();
+    return <Grid>
+      <Row>
+        <Col xs={12}>
+          <h1>React-Bootstrap Date Picker</h1>
+        </Col>
+      </Row>
+      <Row>
+        <Col xs={12}>
+          <Navbar>
+            <Nav bsStyle="pills">
+              <NavItem href="https://github.com/pushtell/react-bootstrap-date-picker/blob/master/example/app.jsx">Example Source</NavItem>
+              <NavItem href="https://github.com/pushtell/react-bootstrap-date-picker">Documentation on Github</NavItem>
+              <NavItem href="https://www.npmjs.com/package/react-bootstrap-date-picker">NPM Package</NavItem>
+            </Nav>
+          </Navbar>
+        </Col>
+      </Row>
+      <Row>
+        <Col xs={12}>
+          <h2>Change Handler</h2>
+        </Col>
+      </Row>
+      <Row>
+        <Col sm={6}>
+          <FormGroup controlId="change_handler">
+            <DatePicker onChange={this.handleChange} placeholder="Placeholder" value={this.state.date} id="change_handler_example" />
+          </FormGroup>
+        </Col>
+      </Row>
+      <Row>
+        <Col xs={12}>
+          <h2>Blur and Focus Events</h2>
+        </Col>
+      </Row>
+      <Row>
+        <Col sm={6}>
+          <FormGroup>
+            <ControlLabel>{this.state.focused ? "Focused" : "Blurred"}</ControlLabel>
+            <DatePicker onChange={this.handleChange}  placeholder="Placeholder" value={this.state.date} onFocus={() => {this.setState({focused: true})}} onBlur={() => {this.setState({focused: false})}} />
+            <HelpBlock>This is {this.state.focused ? "focused" : "blurred"}.</HelpBlock>
+          </FormGroup>
+        </Col>
+      </Row>
+      <Row>
+        <Col xs={12}>
+          <h2>Styles</h2>
+        </Col>
+      </Row>
+      <Row>
+        <Col sm={4}>
+          <FormGroup validationState="success">
+            <ControlLabel>Success</ControlLabel>
+            <DatePicker placeholder="Placeholder" />
+            <HelpBlock>Help</HelpBlock>
+          </FormGroup>
+        </Col>
+        <Col sm={4}>
+          <FormGroup validationState="warning">
+            <ControlLabel>Warning</ControlLabel>
+            <DatePicker placeholder="Placeholder" />
+            <HelpBlock>Help</HelpBlock>
+          </FormGroup>
+        </Col>
+        <Col sm={4}>
+          <FormGroup validationState="error">
+            <ControlLabel>Error</ControlLabel>
+            <DatePicker placeholder="Placeholder" />
+            <HelpBlock>Help</HelpBlock>
+          </FormGroup>
+        </Col>
+      </Row>
+      <Row>
+        <Col xs={12}>
+          <h2>Date Format</h2>
+        </Col>
+      </Row>
+      <Row>
+        <Col sm={4}>
+          <FormGroup>
+            <ControlLabel>MM/DD/YYYY</ControlLabel>
+            <DatePicker dateFormat="MM/DD/YYYY" onChange={this.handleChange} value={this.state.date} />
+            <HelpBlock>Help</HelpBlock>
+          </FormGroup>
+        </Col>
+        <Col sm={4}>
+          <FormGroup>
+            <ControlLabel>DD-MM-YYYY</ControlLabel>
+            <DatePicker dateFormat="DD-MM-YYYY" onChange={this.handleChange} value={this.state.date} />
+            <HelpBlock>Help</HelpBlock>
+          </FormGroup>
+        </Col>
+        <Col sm={4}>
+          <FormGroup>
+            <ControlLabel>YYYY/MM/DD</ControlLabel>
+            <DatePicker dateFormat="YYYY/MM/DD" onChange={this.handleChange} value={this.state.date} />
+            <HelpBlock>Help</HelpBlock>
+          </FormGroup>
+        </Col>
+      </Row>
+      <Row>
+        <Col xs={12}>
+          <h2>Custom</h2>
+        </Col>
+      </Row>
+      <Row>
+        <Col sm={3}>
+          <FormGroup>
+            <ControlLabel>Clear Button</ControlLabel>
+            <DatePicker placeholder="Placeholder" clearButtonElement={<Glyphicon glyph="star" />} />
+            <HelpBlock>Help</HelpBlock>
+          </FormGroup>
+        </Col>
+        <Col sm={3}>
+          <FormGroup>
+            <ControlLabel>Previous / Next Buttons</ControlLabel>
+            <DatePicker placeholder="Placeholder" previousButtonElement={<Glyphicon glyph="star" />}  nextButtonElement={<Glyphicon glyph="star" />}  />
+            <HelpBlock>Help</HelpBlock>
+          </FormGroup>
+        </Col>
+        <Col sm={3}>
+          <FormGroup>
+            <ControlLabel>Padding</ControlLabel>
+            <DatePicker placeholder="Placeholder" cellPadding="10px" />
+            <HelpBlock>Help</HelpBlock>
+          </FormGroup>
+        </Col>
+        <Col sm={3}>
+          <FormGroup>
+            <ControlLabel>Day and Month Labels</ControlLabel>
+            <DatePicker placeholder="Placeholder" dayLabels={spanishDayLabels} monthLabels={spanishMonthLabels} />
+            <HelpBlock>Help</HelpBlock>
+          </FormGroup>
+        </Col>
+      </Row>
+      <Row>
+        <Col xs={12}>
+          <h2>Placement</h2>
+        </Col>
+      </Row>
+      <Row>
+        <Col sm={3}>
+          <FormGroup>
+            <ControlLabel>Top</ControlLabel>
+            <DatePicker placeholder="Placeholder" calendarPlacement="top" />
+            <HelpBlock>Help</HelpBlock>
+          </FormGroup>
+        </Col>
+        <Col sm={3}>
+          <FormGroup>
+            <ControlLabel>Right</ControlLabel>
+            <DatePicker placeholder="Placeholder" calendarPlacement="right" />
+            <HelpBlock>Help</HelpBlock>
+          </FormGroup>
+        </Col>
+        <Col sm={3}>
+          <FormGroup>
+            <ControlLabel>Bottom</ControlLabel>
+            <DatePicker placeholder="Placeholder" calendarPlacement="bottom" />
+            <HelpBlock>Help</HelpBlock>
+          </FormGroup>
+        </Col>
+        <Col sm={3}>
+          <FormGroup>
+            <ControlLabel>Left</ControlLabel>
+            <DatePicker placeholder="Placeholder" calendarPlacement="left" />
+            <HelpBlock>Help</HelpBlock>
+          </FormGroup>
+        </Col>
+      </Row>
+      <Row>
+        <Col xs={12}>
+          <h2>Sizes</h2>
+        </Col>
+      </Row>
+      <Row>
+        <Col sm={6}>
+          <FormGroup>
+            <ControlLabel>Label</ControlLabel>
+            <DatePicker placeholder="Placeholder" />
+            <HelpBlock>Help</HelpBlock>
+          </FormGroup>
+        </Col>
+        <Col sm={6}>
+          <FormGroup bsSize="small">
+            <ControlLabel>Label</ControlLabel>
+            <DatePicker placeholder="Placeholder" value={this.state.date} />
+            <HelpBlock>Help</HelpBlock>
+          </FormGroup>
+        </Col>
+      </Row>
+      <Row>
+        <Col sm={6}>
+          <FormGroup>
+            <ControlLabel>Label</ControlLabel>
+            <DatePicker placeholder="Placeholder" />
+            <HelpBlock>Help</HelpBlock>
+          </FormGroup>
+        </Col>
+        <Col sm={6}>
+          <FormGroup>
+            <ControlLabel>Label</ControlLabel>
+            <DatePicker placeholder="Placeholder" value={this.state.date} />
+            <HelpBlock>Help</HelpBlock>
+          </FormGroup>
+        </Col>
+      </Row>
+      <Row>
+        <Col sm={6}>
+          <FormGroup bsSize="large">
+            <ControlLabel>Label</ControlLabel>
+            <DatePicker placeholder="Placeholder" />
+            <HelpBlock>Help</HelpBlock>
+          </FormGroup>
+        </Col>
+        <Col sm={6}>
+          <FormGroup bsSize="large">
+            <ControlLabel>Label</ControlLabel>
+            <DatePicker placeholder="Placeholder" value={this.state.date} />
+            <HelpBlock>Help</HelpBlock>
+          </FormGroup>
+        </Col>
+      </Row>
+    </Grid>;
+  }
+});
+
+ReactDOM.render(<App />, document.getElementById('react'));

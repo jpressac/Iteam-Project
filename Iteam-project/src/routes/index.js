@@ -7,6 +7,7 @@ import RegistrationView from '../views/RegistrationView/RegistrationView.js'
 import AboutView from '../views/AboutView/AboutView.js'
 import CounterRoute from './Counter'
 import ContactView from '../views/ContactView/components/ContactView.js'
+import MeetingView from '../views/MeetingView/meetingView.js'
 import { PATHS } from '../constants/routes.js'
 //TODO import actions
 
@@ -18,6 +19,8 @@ export const createRoutes = (store) => (
       <Route path={PATHS.COMMON.CONTACT} component={ContactView}> </Route>
       <Route path={PATHS.COMMON.ABOUT} component={AboutView}> </Route>
       <Route path={PATHS.COMMON.HOME} component={HomeView}> </Route>
+      <Route path={PATHS.COMMON.MEETING} component={MeetingView}> </Route>
+
       </Route>
 
 

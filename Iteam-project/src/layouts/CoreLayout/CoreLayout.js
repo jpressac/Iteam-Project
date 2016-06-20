@@ -18,6 +18,7 @@ export const CoreLayout = ({children}) => (
       <MenuItem  label="Register" nav={PATHS.COMMON.REGISTER}></MenuItem>
       <MenuItem label="About Us" nav={PATHS.COMMON.ABOUT}></MenuItem>
       <MenuItem label="Contact" nav={PATHS.COMMON.CONTACT}></MenuItem>
+      <MenuItem label="Create Meeting" nav={PATHS.COMMON.MEETING}></MenuItem>
 
 
       </SlideMenu>
