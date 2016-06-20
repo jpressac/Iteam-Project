@@ -1,5 +1,7 @@
 package org.iteam.services.utilities;
 
+import java.util.List;
+
 import org.iteam.data.dal.utilities.UtilitiesRepositoryImpl;
 import org.iteam.data.model.Nationalities;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +22,13 @@ public class UtilitiesServiceImpl implements UtilitiesService {
 		return utilitiesRepositoryImpl.getNationalities();
 	}
 
+	@Override
+	public List<String> getProfessions() {
+		return utilitiesRepositoryImpl.getProfessions();
+	}
+
 	@Autowired
 	private void setUtilitiesRepositoryImpl(UtilitiesRepositoryImpl utilitiesRepositoryImpl) {
 		this.utilitiesRepositoryImpl = utilitiesRepositoryImpl;
 	}
-
 }

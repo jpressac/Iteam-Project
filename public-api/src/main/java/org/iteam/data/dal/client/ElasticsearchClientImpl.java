@@ -17,6 +17,7 @@ import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.iteam.configuration.ExternalConfigurationProperties;
 import org.iteam.exceptions.ElasticsearchClientException;
 import org.slf4j.Logger;
@@ -31,6 +32,7 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchClientImpl.class);
 
 	private static final String ELASTICSEARCH_CLUSTER_NAME_PROP = "cluster.name";
+	private static final Integer SIZE_RESPONSE = 10000;
 
 	private Client client;
 	private ExternalConfigurationProperties configuration;
@@ -71,6 +73,12 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
 
 	@Override
 	public SearchResponse search(String index, String type, QueryBuilder queryBuilder) {
+		return search(index, type, queryBuilder, null, SIZE_RESPONSE);
+	}
+
+	@Override
+	public SearchResponse search(String index, String type, QueryBuilder queryBuilder,
+			AbstractAggregationBuilder aggregationBuilder, Integer size) {
 
 		SearchRequestBuilder response = client.prepareSearch();
 
@@ -78,6 +86,14 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
 
 		if (queryBuilder != null) {
 			response.setQuery(queryBuilder);
+		}
+
+		if (aggregationBuilder != null) {
+			response.addAggregation(aggregationBuilder);
+		}
+
+		if (size != null) {
+			response.setSize(size);
 		}
 
 		return response.execute().actionGet();

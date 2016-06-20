@@ -1,5 +1,7 @@
 package org.iteam.data.dal.utilities;
 
+import java.util.List;
+
 import org.iteam.data.model.Nationalities;
 
 public interface UtilitiesRepository {
@@ -19,5 +21,12 @@ public interface UtilitiesRepository {
 	 * @return Nationalities.
 	 */
 	public Nationalities getNationalities();
+
+	/**
+	 * Get the list of professions.
+	 * 
+	 * @return, the list of professions.
+	 */
+	public List<String> getProfessions();
 
 }

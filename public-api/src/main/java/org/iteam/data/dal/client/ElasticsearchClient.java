@@ -6,6 +6,7 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 
 /**
  * Interface for all the request to elasticsearch
@@ -97,6 +98,25 @@ public interface ElasticsearchClient {
 	 *         match the search.
 	 */
 	public SearchResponse search(String index, String type, QueryBuilder queryBuilder);
+
+	/**
+	 * Search for documents, given an index, a type, a query and an aggregation.
+	 * 
+	 * @param index,
+	 *            the index name.
+	 * @param type,
+	 *            the type name.
+	 * @param queryBuilder,
+	 *            the query for filtering documents.
+	 * @param aggregationBuilder,
+	 *            the aggregation for grouping.
+	 * @param size,
+	 *            limit the response query.
+	 * @return a search response with the information of all the documents that
+	 *         match the search.
+	 */
+	public SearchResponse search(String index, String type, QueryBuilder queryBuilder,
+			AbstractAggregationBuilder aggregationBuilder, Integer size);
 
 	public DeleteResponse delete(String index, String type, String id);
 
