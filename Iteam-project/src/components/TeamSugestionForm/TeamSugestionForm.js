@@ -8,8 +8,10 @@ class TeamSugestionForm extends React.Component {
       this.state= {
         filters: [],
         users: [],
-        selectedUsers: []
+        selectedUsers: [],
+        usernames: {}
       }
+
     }
     handleClick(){
       let valueFields = [];
@@ -17,6 +19,17 @@ class TeamSugestionForm extends React.Component {
       this.state.filters.push({field: (this.refs.filterName.value).toLowerCase(), values: valueFields});
       console.log(this.state);
       this.forceUpdate();
+    }
+
+    handleOnChange(username){
+      console.log('putos');
+      var _this = this;
+      let newMap = {};
+      newMap= _this.state.usernames;
+      newMap[username]=true;
+      this.setState({usernames:newMap});
+      console.log(_this.state.usernames);
+      _this.forceUpdate();
     }
 
     searchUsers(){
@@ -32,42 +45,69 @@ class TeamSugestionForm extends React.Component {
                       });
       }
     }
+    sendUsers(){
+      let usersMap = this.state.usernames;
+      let selected = [];
+      debugger
+      for (let user in usersMap){
+        if(usersMap[user]==true){
+          selected.push(user);
+        }
+      }
+      axios.post('http://localhost:8080/team/create', {
+        ownerName: "valran",
+        name: "iteam",
+        members: selected
+      }).then(function (response){
+        console.log(response.status);
+      }).catch(function(response){
+        console.log(response.status);
+      })
+    }
     fillUsersTable(data){
+      var _this = this;
       let us = [];
+      let names={};
       debugger
       data.map(function(user,index){
         us.push(
           <tr key={us.length}>
-            <td><input className="no-margin" type="checkbox"></input></td>
+            <td><input className="no-margin" type="checkbox" onChange={_this.handleOnChange.bind(_this, user.username)}></input></td>
             <td>{user.lastName}</td>
             <td>{user.name}</td>
           </tr>
         );
+        names[user.username] = false;
       });
-      console.log(us);
       this.setState({users: us});
+      this.setState({usernames:names});
       this.forceUpdate();
     }
+
+
 
     render(){
       var filterLabels = this.state.filters.map(function(filter,index) {
 
             return (
-              <span className="tag label label-info" style={{fontSize:14, margin:10, marginTop:20}}>
+              <span className="tag label label-info" style={{fontSize:14, margin:10, marginTop:50}}>
                 <span key={index}>{filter.field} : {filter.values}</span>
                 <a><i className="remove glyphicon glyphicon-remove-sign glyphicon-white" ></i></a>
               </span>
             );
           });
-      return(<div className="container">
+      return(
+        <form className="form-horizontal">
+  <div className={classes.title} >
   <h2>Team creation</h2>
+  </div>
   <div className="row">
 		<div className="form-horizontal">
-			<div className="form-group">
-				<div className="col-md-12">
+			<div className={"form-group", classes.filter}>
+				<div className="col-md-8">
 					<div className="row">
 						<label for="filterselect" className="col-md-2 control-label">Filters <i className="glyphicon glyphicon-filter "></i></label>
-						<div className="col-md-2">
+						<div className="col-md-3">
 							<select className="form-control" id="filters" data-width="fit" data-live-search="true" ref="filterName" defaultvalue="Profession" >
 								<option> Profession </option>
 								<option> Age </option>
@@ -77,11 +117,11 @@ class TeamSugestionForm extends React.Component {
 							</select>
 						</div>
 						<label for="inputvalue" className="col-md-2 control-label">Value</label>
-						<div className="col-md-2">
+						<div className="col-md-3">
 							<input type="text" className="form-control" id="inputvalue" ref="filterValue"></input>
 						</div>
 						<div className="col-md-2">
-							<button type="button" className="btn btn-primary" style={{marginTop:20}} onClick={this.handleClick.bind(this)}>
+							<button type="button" className="btn btn-primary"  onClick={this.handleClick.bind(this)}>
     					     <span className="glyphicon glyphicon-plus"></span> Add
 							</button>
 						</div>
@@ -89,7 +129,7 @@ class TeamSugestionForm extends React.Component {
 				</div>
 		  </div>
 			<div className="row">
-				<div className="col-md-8">
+				<div className="col-md-8" style={{marginTop:20}}>
 					{filterLabels}
 				</div>
 			</div>
@@ -104,7 +144,7 @@ class TeamSugestionForm extends React.Component {
   </div>
 	<div className="row">
     <div className="col-md-8">
-		  <table className="table table-condensed table-striped table-bordered table-hover no-margin" data-url="data1.json" data-height="299" data-click-to-select="true">
+		  <table className="table table-condensed table-striped table-bordered table-hover no-margin" style={{marginTop:20}} data-height="299" data-click-to-select="true">
         <thead>
             <tr>
               <th style={{"width": "5%"}}>
@@ -118,9 +158,15 @@ class TeamSugestionForm extends React.Component {
         {this.state.users}
         </tbody>
 		  </table>
+      <div className="row">
+      <button type="button" className="btn btn-primary" style={{marginTop:20}} onClick={this.sendUsers.bind(this)}>
+        Create
+      </button>
+    </div>
+
     </div>
 	</div>
-</div>);
+</form>);
 }
 
 
