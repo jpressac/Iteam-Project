@@ -20,8 +20,8 @@ class NationalitiesSelect extends React.Component {
 }
   successHandler(data) {
     var opt = [];
-    data.map(function(option, index)
-    { opt.push(
+    data.map(function(option, index){
+      opt.push(
         <option key={index} value={option}>{option}</option>
     );
    });
