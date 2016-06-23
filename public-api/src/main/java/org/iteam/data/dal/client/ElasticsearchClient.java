@@ -1,10 +1,12 @@
 package org.iteam.data.dal.client;
 
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 
 /**
  * Interface for all the request to elasticsearch
@@ -26,6 +28,19 @@ public interface ElasticsearchClient {
 	 * @return an index response with the information about the request.
 	 */
 	public IndexResponse insertData(String data, String index, String type, String id);
+
+	/**
+	 * Insert a new document with a random id.
+	 * 
+	 * @param data,
+	 *            the data to insert.
+	 * @param index,
+	 *            the index name.
+	 * @param type,
+	 *            the type name.
+	 * @return an index response with the information about the request.
+	 */
+	public IndexResponse insertData(String data, String index, String type);
 
 	/**
 	 * Modify an specific document.
@@ -68,7 +83,7 @@ public interface ElasticsearchClient {
 	 *            the id of the document to check.
 	 * @return a get response with the information about the document.
 	 */
-	public GetResponse checkUser(String index, String type, String userName);
+	public GetResponse getDocument(String index, String type, String userName);
 
 	/**
 	 * Search for documents, given an index, a type and a query.
@@ -83,5 +98,26 @@ public interface ElasticsearchClient {
 	 *         match the search.
 	 */
 	public SearchResponse search(String index, String type, QueryBuilder queryBuilder);
+
+	/**
+	 * Search for documents, given an index, a type, a query and an aggregation.
+	 * 
+	 * @param index,
+	 *            the index name.
+	 * @param type,
+	 *            the type name.
+	 * @param queryBuilder,
+	 *            the query for filtering documents.
+	 * @param aggregationBuilder,
+	 *            the aggregation for grouping.
+	 * @param size,
+	 *            limit the response query.
+	 * @return a search response with the information of all the documents that
+	 *         match the search.
+	 */
+	public SearchResponse search(String index, String type, QueryBuilder queryBuilder,
+			AbstractAggregationBuilder aggregationBuilder, Integer size);
+
+	public DeleteResponse delete(String index, String type, String id);
 
 }

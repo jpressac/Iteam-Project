@@ -2,11 +2,43 @@
 .menuItem {
   line-height: 40px;
   font-size: 20px;
-  text-align: center;
-  color: #ffffff;
-  border-bottom-color: #C0C0C0
+  text-align: left;
+  color: #FDEDEC;
+  border-bottom-color: #FDEDEC;
+  width: 100%;
+  margin-top: 20px;
+
+
+}
+.bullet{
+  list-style-type:none;
+  padding:0px;
+    margin:0px;
+    list-style:none;
+    text-decoration: none;
 }
 
 .menuItem:hover {
-  background-color: #C0C0C0;
+  background-color:#C70039 ;
+  text-decoration: none;
+  color:#FDEDEC;
+
+}
+.menuItem:link{
+    color:#FDEDEC;
+    text-decoration: none;
+}
+.menuItem:focus
+{
+    color:#FDEDEC;
+    text-decoration: none;
+}
+
+.menuItem:active
+{
+  color:#FDEDEC;
+  background-color:#C70039  ;
+  text-decoration: none;
+
+
 }

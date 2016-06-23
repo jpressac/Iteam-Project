@@ -63,7 +63,7 @@ const karmaConfig = {
   }
 }
 
-if (config.globals.__COVERAGE__) {
+if (config.coverage_enabled) {
   karmaConfig.reporters.push('coverage')
   karmaConfig.webpack.module.preLoaders = [{
     test: /\.(js|jsx)$/,

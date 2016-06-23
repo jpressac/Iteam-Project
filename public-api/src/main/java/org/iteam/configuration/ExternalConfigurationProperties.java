@@ -19,11 +19,23 @@ public class ExternalConfigurationProperties {
 	@Value("${org.iteam.elasticsearch.cluster.name}")
 	private String elasticsearchClusterName;
 
-	@Value("${org.item.elasticsearch.index.user.name}")
+	@Value("${org.iteam.elasticsearch.index.user}")
 	private String elasticsearchIndexUserName;
 
-	@Value("${org.item.elasticsearch.index.user.type}")
+	@Value("${org.iteam.elasticsearch.index.type.user}")
 	private String elasticsearchIndexUserTypeName;
+
+	@Value("${org.iteam.elasticsearch.index.team}")
+	private String elasticsaerchIndexTeam;
+
+	@Value("${org.iteam.elasticsearch.index.type.team}")
+	private String elasticsaerchIndexTypeTeam;
+
+	@Value("${org.iteam.elasticsearch.index.utility}")
+	private String elasticsearchIndexUtility;
+
+	@Value("${org.iteam.elasticsearch.index.type.utility}")
+	private String elasticsearchIndexTypeUtility;
 
 	public String getElasticsearchHost() {
 		return elasticsearchHost;
@@ -63,6 +75,38 @@ public class ExternalConfigurationProperties {
 
 	public void setElasticsearchIndexUserTypeName(String elasticsearchIndexUserTypeName) {
 		this.elasticsearchIndexUserTypeName = elasticsearchIndexUserTypeName;
+	}
+
+	public String getElasticsaerchIndexTeam() {
+		return elasticsaerchIndexTeam;
+	}
+
+	public void setElasticsaerchIndexTeam(String elasticsaerchIndexTeam) {
+		this.elasticsaerchIndexTeam = elasticsaerchIndexTeam;
+	}
+
+	public String getElasticsaerchIndexTypeTeam() {
+		return elasticsaerchIndexTypeTeam;
+	}
+
+	public void setElasticsaerchIndexTypeTeam(String elasticsaerchIndexTypeTeam) {
+		this.elasticsaerchIndexTypeTeam = elasticsaerchIndexTypeTeam;
+	}
+
+	public String getElasticsearchIndexUtility() {
+		return elasticsearchIndexUtility;
+	}
+
+	public void setElasticsearchIndexUtility(String elasticsearchIndexUtility) {
+		this.elasticsearchIndexUtility = elasticsearchIndexUtility;
+	}
+
+	public String getElasticsearchIndexTypeUtility() {
+		return elasticsearchIndexTypeUtility;
+	}
+
+	public void setElasticsearchIndexTypeUtility(String elasticsearchIndexTypeUtility) {
+		this.elasticsearchIndexTypeUtility = elasticsearchIndexTypeUtility;
 	}
 
 }

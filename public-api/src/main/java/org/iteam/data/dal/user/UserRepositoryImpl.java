@@ -9,6 +9,8 @@ import org.iteam.configuration.ExternalConfigurationProperties;
 import org.iteam.data.dal.client.ElasticsearchClient;
 import org.iteam.data.model.User;
 import org.iteam.services.utils.JSONUtils;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,28 +21,26 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class UserRepositoryImpl implements UserRepsoitory {
 
-	private static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
 	private static final Logger LOGGER = LoggerFactory.getLogger(UserRepositoryImpl.class);
+	private static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
 
 	private static final String USER_NAME_FIELD = "username";
-	private static final String PASSWORD_FIELD = "password";
 	private static final String LOGICAL_DELETE_FIELD = "logicalDelete";
 
 	private ElasticsearchClient elasticsearchClient;
 	private ExternalConfigurationProperties configuration;
 
 	@Override
-	public User getUser(String username, String password) {
+	public User getUser(String username) {
 
 		BoolQueryBuilder query = QueryBuilders.boolQuery();
 		query.must(QueryBuilders.termQuery(USER_NAME_FIELD, username))
-				.must(QueryBuilders.termQuery(PASSWORD_FIELD, PASSWORD_ENCODER.encode(password)))
 				.must(QueryBuilders.termQuery(LOGICAL_DELETE_FIELD, false));
 
 		SearchResponse response = elasticsearchClient.search(configuration.getElasticsearchIndexUserName(),
 				configuration.getElasticsearchIndexUserTypeName(), query);
 
-		if (response != null && response.getHits().getTotalHits() != 0) {
+		if (response != null && response.getHits().getTotalHits() == 1) {
 			return (User) JSONUtils.JSONToObject(response.getHits().getAt(0).getSourceAsString(), User.class);
 		}
 		return null;
@@ -48,13 +48,19 @@ public class UserRepositoryImpl implements UserRepsoitory {
 
 	@Override
 	public boolean setUser(User user) {
+
+		user.setPassword(PASSWORD_ENCODER.encode(user.getPassword()));
+
+		DateTime dateTime = new DateTime().withZoneRetainFields(DateTimeZone.UTC);
+		user.setInsertionDate(dateTime.toString());
+
 		String data = JSONUtils.ObjectToJSON(user);
 
 		IndexResponse indexResponse = elasticsearchClient.insertData(data,
 				configuration.getElasticsearchIndexUserName(), configuration.getElasticsearchIndexUserTypeName(),
 				user.getUsername());
 
-		if (indexResponse.isCreated() && indexResponse != null) {
+		if (indexResponse != null && indexResponse.isCreated()) {
 			LOGGER.info("User created");
 			return true;
 		}
@@ -66,10 +72,10 @@ public class UserRepositoryImpl implements UserRepsoitory {
 	@Override
 	public boolean checkUserExistance(String username) {
 
-		GetResponse response = elasticsearchClient.checkUser(configuration.getElasticsearchIndexUserName(),
+		GetResponse response = elasticsearchClient.getDocument(configuration.getElasticsearchIndexUserName(),
 				configuration.getElasticsearchIndexUserTypeName(), username);
 
-		if (response.isExists()) {
+		if (response != null && response.isExists()) {
 			return true;
 		}
 		return false;
