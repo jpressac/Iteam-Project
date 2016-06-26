@@ -6,9 +6,9 @@ import Board from '../Board/Board.js'
 class BoardForm extends Component {
   render(){
     return(
-      <body>
-          <Board></Board>
-      </body>
+      <div>
+          <Board />
+      </div>
     );
     };
   }

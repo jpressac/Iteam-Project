@@ -20,8 +20,4 @@ Iteam-project/node_modules/
 public-api/build/
 *.orig
 Iteam/node_modules/
-Iteam-project/.idea/Iteam-project.iml
-Iteam-project/.idea/jsLibraryMappings.xml
-Iteam-project/.idea/libraries/Iteam_project_node_modules.xml
-Iteam-project/.idea/modules.xml
-Iteam-project/.idea/workspace.xml
+Iteam-project/.idea/
