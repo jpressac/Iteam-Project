@@ -27,10 +27,10 @@ public class ExternalConfigurationProperties {
 	private String elasticsearchIndexUserTypeName;
 
 	@Value("${org.iteam.elasticsearch.index.team}")
-	private String elasticsaerchIndexTeam;
+	private String elasticsearchIndexTeam;
 
 	@Value("${org.iteam.elasticsearch.index.type.team}")
-	private String elasticsaerchIndexTypeTeam;
+	private String elasticsearchIndexTypeTeam;
 
 	@Value("${org.iteam.elasticsearch.index.utility}")
 	private String elasticsearchIndexUtility;
@@ -84,20 +84,20 @@ public class ExternalConfigurationProperties {
 		this.elasticsearchIndexUserTypeName = elasticsearchIndexUserTypeName;
 	}
 
-	public String getElasticsaerchIndexTeam() {
-		return elasticsaerchIndexTeam;
+	public String getElasticsearchIndexTeam() {
+		return elasticsearchIndexTeam;
 	}
 
-	public void setElasticsaerchIndexTeam(String elasticsaerchIndexTeam) {
-		this.elasticsaerchIndexTeam = elasticsaerchIndexTeam;
+	public void setElasticsearchIndexTeam(String elasticsaerchIndexTeam) {
+		this.elasticsearchIndexTeam = elasticsaerchIndexTeam;
 	}
 
 	public String getElasticsaerchIndexTypeTeam() {
-		return elasticsaerchIndexTypeTeam;
+		return elasticsearchIndexTypeTeam;
 	}
 
 	public void setElasticsaerchIndexTypeTeam(String elasticsaerchIndexTypeTeam) {
-		this.elasticsaerchIndexTypeTeam = elasticsaerchIndexTypeTeam;
+		this.elasticsearchIndexTypeTeam = elasticsaerchIndexTypeTeam;
 	}
 
 	public String getElasticsearchIndexUtility() {

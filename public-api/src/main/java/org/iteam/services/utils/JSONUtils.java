@@ -47,6 +47,8 @@ public class JSONUtils {
 	 *            the class that represent that json.
 	 * @return the object representation of the json.
 	 */
+	// FIXME: copiar metodo generico json to object factual table indexer, es
+	// para no tener que castear.
 	public static Object JSONToObject(String json, Class<?> objectToConvert) {
 		try {
 			return OBJECT_MAPPER.readValue(json, objectToConvert);

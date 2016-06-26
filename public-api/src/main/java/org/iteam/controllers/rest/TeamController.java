@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -74,6 +75,16 @@ public class TeamController {
 	@RequestMapping(value = "/team/select", method = RequestMethod.GET)
 	public List<User> filterTeam(@RequestParam(value = "filter") FilterList filter) {
 		return teamService.filterToCreateTeam(filter);
+	}
+
+	/**
+	 * Get the all the teams given an owner (user authenticated)
+	 * 
+	 * @return a team list.
+	 */
+	@RequestMapping(value = "/team/teamByOwner", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
+	public List<Team> getTeamByOwner() {
+		return teamService.getTeams(SecurityContextHolder.getContext().getAuthentication().getName());
 	}
 
 	@Autowired
