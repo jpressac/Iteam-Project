@@ -10,9 +10,10 @@ public class Meeting {
 	private String creationDate;
 	private String programmedDate;
 	private String ownerName;
-	private Team teamAssistant;
-	// private Ideas meetingIdeas;
-	// private Feedback feedback;
+	private Team team;
+	private String topic;
+	private String description;
+	private byte[] attachment;
 
 	public String getCreationDate() {
 		return creationDate;
@@ -38,12 +39,36 @@ public class Meeting {
 		this.ownerName = ownerName;
 	}
 
-	public Team getTeamAssistant() {
-		return teamAssistant;
+	public Team getTeam() {
+		return team;
 	}
 
-	public void setTeamAssistant(Team teamAssistant) {
-		this.teamAssistant = teamAssistant;
+	public void setTeam(Team team) {
+		this.team = team;
+	}
+
+	public String getTopic() {
+		return topic;
+	}
+
+	public void setTopic(String topic) {
+		this.topic = topic;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public byte[] getAttachment() {
+		return attachment;
+	}
+
+	public void setAttachment(byte[] attachment) {
+		this.attachment = attachment;
 	}
 
 	@Override

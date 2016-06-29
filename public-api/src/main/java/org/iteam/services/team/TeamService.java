@@ -39,4 +39,13 @@ public interface TeamService {
 	 */
 	public List<User> filterToCreateTeam(FilterList filterList);
 
+	/**
+	 * Get the list of teams given an owner.
+	 * 
+	 * @param ownerName,
+	 *            the owner of the teams.
+	 * @return a list of teams.
+	 */
+	public List<Team> getTeams(String ownerName);
+
 }

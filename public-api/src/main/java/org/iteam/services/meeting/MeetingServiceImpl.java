@@ -1,20 +1,29 @@
 package org.iteam.services.meeting;
 
-import org.iteam.services.mail.MailServiceImpl;
+import org.iteam.data.dal.meeting.MeetingRepositoryImpl;
+import org.iteam.data.model.InfoMeeting;
+import org.iteam.data.model.Meeting;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-//@Service
+@Service
 public class MeetingServiceImpl implements MeetingService {
 
-	private MailServiceImpl mailServiceImpl;
+	private MeetingRepositoryImpl meetingRepositoryImpl;
 
 	@Override
-	public void createMeeting() {
-		mailServiceImpl.sendEmail();
+	public InfoMeeting createMeeting(Meeting meeting) {
+		String meetingId = meetingRepositoryImpl.createMeeting(meeting);
+		if (meetingId != null) {
+			return new InfoMeeting(meetingId, meeting.getProgrammedDate(), meeting.getTopic(), meeting.getTeam(),
+					meeting.getDescription());
+		}
+		return new InfoMeeting();
 	}
 
-	// @Autowired
-	private void setMailServiceImpl(MailServiceImpl mailServiceImpl) {
-		this.mailServiceImpl = mailServiceImpl;
+	@Autowired
+	private void setMeetingRepositoryImpl(MeetingRepositoryImpl meetingRepositoryImpl) {
+		this.meetingRepositoryImpl = meetingRepositoryImpl;
 	}
 
 }
