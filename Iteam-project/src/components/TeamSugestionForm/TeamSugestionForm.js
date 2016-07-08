@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {PropTypes} from 'react';
 import classes from './TeamSugestionForm.scss'
 import axios from 'axios'
 
@@ -9,23 +9,30 @@ class TeamSugestionForm extends React.Component {
         filters: [],
         users: [],
         selectedUsers: [],
-        usernames: {}
+        usernames: {},
+        values: []
       }
 
     }
-    handleClick(){
-      let valueFields = [];
-      valueFields.push(this.refs.filterValue.value);
-      this.state.filters.push({field: (this.refs.filterName.value).toLowerCase(), values: valueFields});
-      console.log(this.state);
-      this.forceUpdate();
+    handleClick(event){
+      if((this.refs.filterName.value !== '') && (this.refs.filterValue.value!=='') ) {
+        let valueFields = [];
+        valueFields.push(this.refs.filterValue.value);
+        this.state.filters.push({field: (this.refs.filterName.value).toLowerCase(), values: valueFields});
+        console.log(this.state);
+        this.forceUpdate();
+      }
     }
 
     handleOnChange(username){
       var _this = this;
       let newMap = {};
       newMap= _this.state.usernames;
-      newMap[username]=true;
+      if(newMap[username]==false){
+        newMap[username]=true;
+      }else{
+        newMap[username]=false;
+      }
       this.setState({usernames:newMap});
       console.log(_this.state.usernames);
       _this.forceUpdate();
@@ -33,7 +40,7 @@ class TeamSugestionForm extends React.Component {
 
     searchUsers(){
       var _this = this;
-      if(this.state.filters.length > 0){
+      if(this.state.filters.length >= 0){
         axios.get('http://localhost:8080/team/select',
                         {params: {filter: JSON.stringify(this.state.filters)}
                         }).then(function(response){
@@ -44,7 +51,7 @@ class TeamSugestionForm extends React.Component {
                       });
       }
     }
-    sendUsers(){
+    createMeeting(){
       let usersMap = this.state.usernames;
       let selected = [];
       debugger
@@ -53,15 +60,36 @@ class TeamSugestionForm extends React.Component {
           selected.push(user);
         }
       }
-      axios.post('http://localhost:8080/team/create', {
-        ownerName: "valran",
-        name: "iteam",
-        members: selected
-      }).then(function (response){
-        console.log(response.status);
-      }).catch(function(response){
-        console.log(response.status);
+      if((selected.length > 0) &&(this.refs.teamName.value !=='') ) {
+        axios.post('http://localhost:8080/team/create', {
+          ownerName: "valran",
+          name: this.refs.teamName.value,
+          members: selected
+        }).then(function (response) {
+          console.log(response.status);
+        }).catch(function (response) {
+          console.log(response.status);
+        })
+      }
+    }
+    validateBeforeCreation(){
+
+        if(this.refs.teamName ===''){
+          //required field add to modal error
+        }
+    }
+    deleteFilter(pos){
+      debugger
+      let newFilters = this.state.filters;
+      newFilters.map(function(filter,index){
+        if(pos === index){
+          newFilters.splice(index,1);
+        }
+
       })
+      this.setState({filters: newFilters});
+      this.searchUsers();
+      this.forceUpdate();
     }
     fillUsersTable(data){
       var _this = this;
@@ -83,42 +111,86 @@ class TeamSugestionForm extends React.Component {
       this.forceUpdate();
     }
 
-
+    fillFilterValues() {
+      const filter = this.refs.filterName.value;
+      let url = '';
+      switch (filter) {
+        case "Profession":
+          url = 'http://localhost:8080/utilities/professions';
+          break;
+        case "Age":
+          break;
+        case "Nationality":
+          url = 'http://localhost:8080/utilities/nationality/get';
+          break;
+        case "Job position":
+          break;
+        case "Hobbies":
+          break;
+      }
+      if (url !== '') {
+        axios.get(url).then(function (response) {
+          console.log(response.data);
+          this.setValuesOptions(response.data);
+          this.forceUpdate();
+        }.bind(this));
+      }
+    }
+    setValuesOptions(data){
+      var opt = [];
+      data.map(function(option, index){
+        opt.push(
+          <option key={index} value={option}>{option}</option>
+        );
+      });
+      this.setState({values : opt});
+      this.forceUpdate();
+    }
 
     render(){
       var filterLabels = this.state.filters.map(function(filter,index) {
-
-            return (
+          return (
               <span className="tag label label-info" style={{fontSize:14, margin:10, marginTop:50}}>
                 <span key={index}>{filter.field} : {filter.values}</span>
-                <a><i className="remove glyphicon glyphicon-remove-sign glyphicon-white" ></i></a>
+                <a  href='javascript:;' onClick={this.deleteFilter.bind(this,index)}><i className="remove glyphicon glyphicon-remove-sign glyphicon-white" ></i></a>
               </span>
             );
-          });
+          }.bind(this));
       return(
-        <form className="form-horizontal">
-  <div className={classes.title} >
-  <h2>Team creation</h2>
-  </div>
-  <div className="row">
+        <form className={"form-horizontal", classes.form}>
+<div className="row">
 		<div className="form-horizontal">
-			<div className={"form-group", classes.filter}>
+      <div className="form-group"  style={{marginRight:400}}>
+        <div className="col-md-8">
+          <div className="row">
+            <label for="inputTeamName" className="col-md-4 control-label">Team name</label>
+            <div className="col-md-4">
+              <input type="text" className="form-control" id="inputTeamName" ref="teamName" maxlength="20"></input>
+            </div>
+          </div>
+         </div>
+      </div>
+      <div className={"form-group", classes.filter}>
 				<div className="col-md-8">
 					<div className="row">
 						<label for="filterselect" className="col-md-2 control-label">Filters <i className="glyphicon glyphicon-filter "></i></label>
 						<div className="col-md-3">
-							<select className="form-control" id="filters" data-width="fit" data-live-search="true" ref="filterName" defaultvalue="Profession" >
-								<option> Profession </option>
-								<option> Age </option>
-								<option> Nationality </option>
-								<option> Job position </option>
-								<option> Hobbies </option>
+							<select className="form-control" id="filters" data-width="fit" data-live-search="true" ref="filterName"  onChange={this.fillFilterValues.bind(this)}>
+                <option value="" default> </option>
+								<option value="Profession"> Profession </option>
+								<option value="Age"> Age </option>
+								<option value="Nationality"> Nationality </option>
+								<option value="Job position"> Job position </option>
+								<option value="Hobbies"> Hobbies </option>
 							</select>
 						</div>
 						<label for="inputvalue" className="col-md-2 control-label">Value</label>
 						<div className="col-md-3">
-							<input type="text" className="form-control" id="inputvalue" ref="filterValue"></input>
-						</div>
+							<select  className="form-control" id="filterValue" ref="filterValue">
+                <option value ="" default>  </option>
+                {this.state.values}
+              </select>
+            </div>
 						<div className="col-md-2">
 							<button type="button" className="btn btn-primary"  onClick={this.handleClick.bind(this)}>
     					     <span className="glyphicon glyphicon-plus"></span> Add
@@ -158,16 +230,13 @@ class TeamSugestionForm extends React.Component {
         </tbody>
 		  </table>
       <div className="row">
-      <button type="button" className="btn btn-primary" style={{marginTop:20}} onClick={this.sendUsers.bind(this)}>
+      <button type="button" className="btn btn-primary" style={{marginTop:20}} onClick={this.createMeeting.bind(this)}>
         Create
       </button>
     </div>
-
-    </div>
+  </div>
 	</div>
 </form>);
 }
-
-
 }
 export default TeamSugestionForm

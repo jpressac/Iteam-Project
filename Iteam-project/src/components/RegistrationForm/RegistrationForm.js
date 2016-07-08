@@ -1,19 +1,39 @@
 import React, {Component} from 'react';
 import {submitUser} from '../../redux/RegistrationForm/actions.js'
 import NationalitiesSelect from '../NationalitiesSelect'
+import axios from 'axios'
 
 class RegistrationForm extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
-    this.handleClick = this.handleClick.bind(this);
+
+    this.state = {
+      firstName: null,
+      lastName: null,
+      nationality: null,
+      dateOfBirth: null,
+      mail: null,
+      male: null,
+      female: null,
+      profession: null,
+      username: null,
+      password: null,
+      repeatPassword: null,
+      professions: []
+    };
+
   }
+  componentDidMount() {
+    let opt = [];
+    debugger
+    axios.get('http://localhost:8080/utilities/professions').then(function (response) {
+      console.log(response.data);
+      debugger
+      this.fillProfessions(response.data);
+  }.bind(this));
 
+  }
   handleClick() {
-
-    console.dir(this.refs);
-    console.log(this.refs.firstName.value)
-
     this.setState({
       firstName: this.refs.firstName.value,
       lastName: this.refs.lastName.value,
@@ -27,10 +47,24 @@ class RegistrationForm extends Component {
       password: this.refs.password.value,
       repeatPassword: this.refs.repeatPassword.value
     });
+    this.forceUpdate();
     console.log(this.state.dateOfBirth);
     debugger
     console.log(this.state);
     submitUser(this.state);
+  }
+  fillProfessions(data) {
+    let opt = [];
+    debugger
+    if (data !== null) {
+      data.map(function (option, index) {
+        opt.push(
+          <option key={index} value={option}>{option}</option>
+        );
+      }.bind(this));
+      this.setState({professions: opt});
+      this.forceUpdate();
+    }
   }
   render() {
 
@@ -122,8 +156,10 @@ class RegistrationForm extends Component {
                   <div className="form-group">
                     <label for="inputprofession" className="col-md-4">Profession</label>
                     <div className="col-md-8">
-                      <input type="text" className="form-control" id="inputprofession" placeholder="Profession"
-                             ref="profession"></input>
+                      <select  className="form-control" id="inputprofession" ref="profession">
+                        <option value ="" default>  </option>
+                        {this.state.professions}
+                      </select>
                     </div>
                   </div>
                   <div className="form-group">
@@ -147,8 +183,9 @@ class RegistrationForm extends Component {
                   </div>
                   <div className="form-group">
                     <div className="col-md-12">
-                      <input type="button" onClick={this.handleClick}
-                             className="btn btn-success">Register</input>
+                      <input type="button" onClick={this.handleClick.bind(this)}
+                             className="btn btn-success" value="Register"></input>
+
                     </div>
                   </div>
                 </form>
