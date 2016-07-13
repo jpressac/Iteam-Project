@@ -1,46 +1,27 @@
 import React, { Component, PropTypes } from 'react';
 import classes from './Note.scss';
-// import { ItemTypes } from '../Board/Board.js';
-// import { DragSource } from 'react-dnd';
+import { ItemTypes } from '../Constants/Constants';
+import { DragSource } from 'react-dnd';
 
 
-// const NoteSource ={
-//   beginDrag(props){
-//     return{};
-//   }
-// }
-//
-// function collect(connect, monitor) {
-//   return {
-//     connectDragSource: connect.dragSource(),
-//     isDragging: monitor.isDragging()
-//   }
-// }
+const NoteSource ={
+  beginDrag(props){
+    return{};
+  }
+};
 
-class Note extends React.Component{
+function collect(connect, monitor) {
+  return {
+    connectDragSource: connect.dragSource(),
+    isDragging: monitor.isDragging()
+  };
+}
+
+class Note extends Component{
 
   render(){
+    const { connectDragSource, isDragging } = this.props;
     if(this.state.editing){
-      return this.renderForm()
-    }
-    else{
-      return this.renderDisplay()
-    }
-  }
-
-    renderDisplay(){
-      return(
-        <div className={classes.note}>
-        <p>{this.props.children}</p>
-            <span>
-                 <button onClick={this.edit.bind(this)} className="btn btn-primary glyphicon glyphicon-pencil"/>
-                 <button onClick={this.remove.bind(this)} className="btn btn-danger glyphicon glyphicon-trash"/>
-             </span>
-        </div>
-      )
-    }
-
-    renderForm(){
       return(
             <div className={classes.note}>
                 <textarea ref="newText" defaultValue={this.props.children} className="form-control"></textarea>
@@ -48,6 +29,18 @@ class Note extends React.Component{
             </div>
             )
     }
+    else{
+      return connectDragSource(
+        <div className={classes.note}>
+            <p>{this.props.children}</p>
+            <span>
+                 <button onClick={this.edit.bind(this)} className="btn btn-primary glyphicon glyphicon-pencil"/>
+                 <button onClick={this.remove.bind(this)} className="btn btn-danger glyphicon glyphicon-trash"/>
+             </span>
+        </div>
+      );
+    };
+  }
 
     edit(){
       this.setState({editing:true})
@@ -66,11 +59,10 @@ class Note extends React.Component{
       this.state = {editing:false}
     }
 }
-// Note.propTypes={
-//   connectDragSource: PropTypes.func.isRequired,
-//   isDragging: PropTypes.bool.isRequired
-// }
 
-//export default DragSource(ItemTypes.NOTE, NoteSource, collect)(Note);
+Note.propTypes={
+  connectDragSource: PropTypes.func.isRequired,
+  isDragging: PropTypes.bool.isRequired
+};
 
-export default Note
+export default DragSource(ItemTypes.NOTE, NoteSource, collect)(Note);

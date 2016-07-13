@@ -1,8 +1,8 @@
-.board {
-    background-color: white;
-    width: auto;
-    height: 600px;
-    overflow: auto;
+.Board {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .button{
