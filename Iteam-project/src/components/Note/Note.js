@@ -4,53 +4,59 @@ import { ItemTypes } from '../Constants/Constants';
 import { DragSource } from 'react-dnd';
 
 
-const NoteSource ={
-  beginDrag(props){
-    return{};
+const NoteSource = {
+  beginDrag(props) {
+    const { id, left, top } = props;
+    return { id, left, top };
   }
 };
 
-function collect(connect, monitor) {
-  return {
-    connectDragSource: connect.dragSource(),
-    isDragging: monitor.isDragging()
-  };
-}
+const style = {
+  cursor: 'move'
+};
+
 
 class Note extends Component{
 
   render(){
-    const { connectDragSource, isDragging } = this.props;
-    if(this.state.editing){
-      return(
-            <div className={classes.note}>
-                <textarea ref="newText" defaultValue={this.props.children} className="form-control"></textarea>
-                <button onClick={this.save.bind(this)} className="btn btn-success btn-sm glyphicon glyphicon-floppy-disk" />
-            </div>
-            )
+    const { connectDragSource,isDragging , id,left, top, children } = this.props;
+    if (isDragging) {
+      return null;
     }
     else{
-      return connectDragSource(
-        <div className={classes.note}>
-            <p>{this.props.children}</p>
-            <span>
-                 <button onClick={this.edit.bind(this)} className="btn btn-primary glyphicon glyphicon-pencil"/>
-                 <button onClick={this.remove.bind(this)} className="btn btn-danger glyphicon glyphicon-trash"/>
-             </span>
-        </div>
-      );
-    };
-  }
+            if(this.state.editing){
+              return(
+                    <div className={classes.note}
+                    style={{ ...style, left, top }}>
+                        <textarea ref="newText" defaultValue={this.props.children} className="form-control"></textarea>
+                        <button onClick={this.save.bind(this)} className="btn btn-success btn-sm glyphicon glyphicon-floppy-disk" />
+                    </div>
+                    )
+            }
+            else{
+              return connectDragSource(
+                    <div className={classes.note}
+                      style={{ ...style, left, top }}>
+                        <p>{this.props.children}</p>
+                        <span>
+                             <button onClick={this.edit.bind(this)} className="btn btn-primary glyphicon glyphicon-pencil"/>
+                             <button onClick={this.remove.bind(this)} className="btn btn-danger glyphicon glyphicon-trash"/>
+                         </span>
+                    </div>
+              );
+            }
+          }
+    }
 
     edit(){
       this.setState({editing:true})
     }
     save(){
-      {this.props.onChange(this.refs.newText.value, this.props.index)}
+      {this.props.onChange(this.refs.newText.value, this.props.id)}
       this.setState({editing:false})
     }
     remove(){
-      {this.props.onRemove(this.props.index)}
+      {this.props.onRemove(this.props.id)}
       this.setState({editing:false})
     }
 
@@ -61,8 +67,15 @@ class Note extends Component{
 }
 
 Note.propTypes={
-  connectDragSource: PropTypes.func.isRequired,
-  isDragging: PropTypes.bool.isRequired
+    connectDragSource: PropTypes.func.isRequired,
+    isDragging: PropTypes.bool.isRequired,
+    id: PropTypes.any.isRequired,
+    left: PropTypes.any.isRequired,
+    top: PropTypes.any.isRequired,
+    children: PropTypes.node
 };
 
-export default DragSource(ItemTypes.NOTE, NoteSource, collect)(Note);
+export default DragSource(ItemTypes.NOTE, NoteSource, (connect, monitor) => ({
+  connectDragSource: connect.dragSource(),
+  isDragging: monitor.isDragging()
+}))(Note);

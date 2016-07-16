@@ -1,55 +1,45 @@
 import React, {Component,PropTypes} from 'react';
-import { DragDropContext } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
+import { DropTarget } from 'react-dnd';
 import classes from './Board.scss';
 import Note from '../Note/Note';
-import Square from '../Square/Square';
-import BoardSquare from '../BoardSquare/BoardSquare';
-import { moveNote } from './Game';
+import { ItemTypes } from '../Constants/Constants';
 
-class Board extends React.Component{
 
-  renderSquare(z) {
-    const x = z % 8;
-    const y = Math.floor(z / 8);
-    debugger
-    console.log(this);
-    return (
-      <div key={z}
-      style={{ width: '12.5%', height: '12.5%' }}>
-           <BoardSquare x={x}
-                        y={y}>
-                        {this.state.notes.map(this.eachNote.bind(this))}
-         </BoardSquare>
-      </div>
-    );
+const styles = {
+  width: 300,
+  height: 300,
+  position: 'relative'
+};
+
+const NoteTarget = {
+  drop(props, monitor, component) {
+    const item = monitor.getItem();
+    const delta = monitor.getDifferenceFromInitialOffset();
+    const left = Math.round(item.left + delta.x);
+    const top = Math.round(item.top + delta.y);
+
+    component.updatePosition(item.id, left, top);
   }
+};
 
-renderNote(x,y){
-  const [noteX, noteY] = this.props.NotePosition;
-  if (x === noteX && y === noteY) {
-    {this.state.notes.map(this.eachNote.bind(this))}
-  }
-}
+
+class Board extends Component{
 
   render(){
-    const squares = [];
-    for (let z = 0; z < 5; z++) {
-      squares.push(this.renderSquare(z));
-    }
-    return(
+    const { connectDropTarget } = this.props;
+    const { notes } = this.state;
+    console.log(this)
+    return connectDropTarget(
       <div className={classes.board}>
-        <div className={classes.button}>
-            <button className="btn btn-sm btn-success glyphicon glyphicon-plus"
-              onClick={this.add.bind(this, "New note")}/>
+            <div className={classes.button}>
+                <button className="btn btn-sm btn-success glyphicon glyphicon-plus"
+                  onClick={this.add.bind(this, "New note")}/>
+            </div>
+            <div style={styles}>
+                {this.state.notes.map(this.eachNote.bind(this))}
+          </div>
         </div>
-          {squares}
-      </div>
-    )
-  }
-
-handleSquareClick(toX, toY) {
-    moveNote(toX, toY)
+    );
   }
 
   nextId() {
@@ -61,7 +51,9 @@ handleSquareClick(toX, toY) {
     var arr = this.state.notes;
     arr.push({
             id: this.nextId(),
-            note: text
+            text: text,
+            left:0,
+            top:0
         });
     this.setState({notes:arr})
     this.forceUpdate();
@@ -69,7 +61,15 @@ handleSquareClick(toX, toY) {
 
   update(newText, i){
     var arr = this.state.notes
-    arr[i].note = newText;
+    arr[i].text = newText;
+    this.setState({notes:arr})
+    this.forceUpdate();
+  }
+
+  updatePosition(id, left, top){
+    var arr = this.state.notes
+    arr[id].left = left;
+    arr[id].top = top;
     this.setState({notes:arr})
     this.forceUpdate();
   }
@@ -81,26 +81,27 @@ handleSquareClick(toX, toY) {
     this.forceUpdate();
   }
 
-  eachNote(note, i){
+  eachNote(notes, i){
     return(
-      <Note key={note.id}
-        index={i}
+      <Note key={i}
+        id={notes.id}
         onChange= {this.update.bind(this)}
         onRemove={this.remove.bind(this)}
-      >{note.note}</Note>
+        left= {notes.left}
+        top= {notes.top}
+      >{notes.text}</Note>
     );
   }
 
   constructor(props){
     super(props);
     this.state= {notes:[]}
-  }
+  };
 }
 
 Board.propTypes = {
-  NotePosition: PropTypes.arrayOf(
-    PropTypes.number.isRequired
-  ).isRequired
+  connectDropTarget: PropTypes.func.isRequired
 };
 
-export default DragDropContext(HTML5Backend)(Board);
+export default DropTarget(ItemTypes.NOTE, NoteTarget,  connect =>
+        ({ connectDropTarget: connect.dropTarget()}))(Board);
