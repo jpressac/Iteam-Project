@@ -17,7 +17,7 @@ const NoteTarget = {
     const delta = monitor.getDifferenceFromInitialOffset();
     const left = Math.round(item.left + delta.x);
     const top = Math.round(item.top + delta.y);
-
+    console.log("BELU ESTUVO AQUI ")
     component.updatePosition(item.id, left, top);
   }
 };
@@ -26,9 +26,9 @@ const NoteTarget = {
 class Board extends Component{
 
   render(){
+    var notemap = this.state.notes
     const { connectDropTarget } = this.props;
     const { notes } = this.state;
-    console.log(this)
     return connectDropTarget(
       <div className={classes.board}>
             <div className={classes.button}>
@@ -36,7 +36,18 @@ class Board extends Component{
                   onClick={this.add.bind(this, "New note")}/>
             </div>
             <div style={styles}>
-                {this.state.notes.map(this.eachNote.bind(this))}
+              {Object.keys(notemap).map((key) =>{
+                return(
+                      <Note key={key}
+                        id={key}
+                        onChange= {this.update.bind(this)}
+                        onRemove={this.remove.bind(this)}
+                        left= {notemap[key].left}
+                        top= {notemap[key].top}
+                      >{notemap[key].text}</Note>
+                    );
+              }
+              )}
           </div>
         </div>
     );
@@ -48,54 +59,45 @@ class Board extends Component{
   }
 
   add(text){
-    var arr = this.state.notes;
-    arr.push({
-            id: this.nextId(),
-            text: text,
-            left:0,
-            top:0
-        });
-    this.setState({notes:arr})
-    this.forceUpdate();
+    var map = this.state.notes;
+    var id =this.nextId()
+    map[id] =
+      {
+        id:id,
+        text: text,
+        left:0,
+        top:0,
+        user: "belen"
+        };
+    this.setState({notes:map})
+    //this.forceUpdate();
   }
 
-  update(newText, i){
-    var arr = this.state.notes
-    arr[i].text = newText;
-    this.setState({notes:arr})
-    this.forceUpdate();
+  update(newText, id){
+    var map = this.state.notes
+    map[id].text = newText;
+    this.setState({notes:map})
+    //this.forceUpdate();
   }
 
   updatePosition(id, left, top){
-    var arr = this.state.notes
-    arr[id].left = left;
-    arr[id].top = top;
-    this.setState({notes:arr})
-    this.forceUpdate();
+    var map = this.state.notes
+    map[id].left = left;
+    map[id].top = top;
+    this.setState({notes:map})
+    //this.forceUpdate();
   }
 
-  remove(i){
-    var arr = this.state.notes
-    arr.splice(i,1)
-    this.setState({notes:arr})
-    this.forceUpdate();
-  }
-
-  eachNote(notes, i){
-    return(
-      <Note key={i}
-        id={notes.id}
-        onChange= {this.update.bind(this)}
-        onRemove={this.remove.bind(this)}
-        left= {notes.left}
-        top= {notes.top}
-      >{notes.text}</Note>
-    );
+  remove(id){
+    var map = this.state.notes
+    delete map[id]
+    this.setState({notes:map})
+    //this.forceUpdate();
   }
 
   constructor(props){
     super(props);
-    this.state= {notes:[]}
+    this.state= {notes:{}}
   };
 }
 

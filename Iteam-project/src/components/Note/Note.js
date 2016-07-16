@@ -72,6 +72,7 @@ Note.propTypes={
     id: PropTypes.any.isRequired,
     left: PropTypes.any.isRequired,
     top: PropTypes.any.isRequired,
+    user: PropTypes.string,
     children: PropTypes.node
 };
 
