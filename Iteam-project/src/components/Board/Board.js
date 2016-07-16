@@ -32,8 +32,11 @@ class Board extends Component{
                 <button type= "button" className={"btn btn-primary",classes.button}  onClick={this.add.bind(this, "New note")}>
                  <span className="glyphicon glyphicon-plus"></span> ADD NOTE </button>
             </div>
-            <div>
+            
+            <div className={classes.Notecontainer}>
               {Object.keys(notemap).map((key) =>{
+                console.log(notemap[key].left + ' key:' + key)
+                console.log(notemap[key].top + ' key:' + key)
                 return(
                       <Note key={key}
                         id={key}
@@ -55,6 +58,9 @@ class Board extends Component{
       return this.uniqueId++;
   }
 
+generateRandomNumber(){
+  return Math.floor(Math.random() * 200) + 1 ;
+}
   add(text){
     var map = this.state.notes;
     var id =this.nextId()
@@ -62,8 +68,8 @@ class Board extends Component{
       {
         id:id,
         text: text,
-        left:0,
-        top:0,
+        left:this.generateRandomNumber(),
+        top:this.generateRandomNumber(),
         user: "belen"
         };
     this.setState({notes:map})
