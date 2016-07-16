@@ -3,6 +3,7 @@ import { IndexLink, Link } from 'react-router'
 import classes from './HeaderLog.scss'
 import { Button } from 'react-bootstrap';
 import logo from '../image/logo.png'
+import profile from '../image/profile.jpg'
 import { PATHS } from '../../../constants/routes'
 
 class HeaderLog extends Component {
@@ -29,7 +30,7 @@ class HeaderLog extends Component {
                <li ><Link className={classes.menus} to={'/' + PATHS.MENUNOTLOGGEDIN.HOME} activeClassName="active">
                   <span className="glyphicon glyphicon-home"></span>HOME</Link></li>
                <li><Link className={classes.menus} to={'/' + PATHS.MENULOGGEDIN.PROFILE} activeClassName="active">
-                  <span className="glyphicon glyphicon-user"></span> MY PROFILE </Link></li>
+               <img src={profile} className={"img-circle special-img", classes.pro}/> MY PROFILE  <b className="caret"></b></Link></li>
                <li><Link className={classes.menus} to={'/' + PATHS.MENULOGGEDIN.MEETING} activeClassName="active">
                   <span className="glyphicon glyphicon-paperclip"></span>MEETING</Link></li>
                <li></li>
