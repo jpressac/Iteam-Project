@@ -5,11 +5,7 @@ import Note from '../Note/Note';
 import { ItemTypes } from '../Constants/Constants';
 
 
-const styles = {
-  width: 300,
-  height: 300,
-  position: 'relative'
-};
+
 
 const NoteTarget = {
   drop(props, monitor, component) {
@@ -31,11 +27,12 @@ class Board extends Component{
     const { notes } = this.state;
     return connectDropTarget(
       <div className={classes.board}>
-            <div className={classes.button}>
-                <button className="btn btn-sm btn-success glyphicon glyphicon-plus"
-                  onClick={this.add.bind(this, "New note")}/>
+      <label className={classes.label1}>My personal board</label>
+            <div >
+                <button type= "button" className={"btn btn-primary",classes.button}  onClick={this.add.bind(this, "New note")}>
+                 <span className="glyphicon glyphicon-plus"></span> ADD NOTE </button>
             </div>
-            <div style={styles}>
+            <div>
               {Object.keys(notemap).map((key) =>{
                 return(
                       <Note key={key}
