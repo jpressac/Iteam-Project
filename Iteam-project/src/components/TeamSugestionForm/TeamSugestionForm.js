@@ -136,8 +136,8 @@ class TeamSugestionForm extends React.Component {
 		</div>
 	</div>
   <div className="row">
-    <div className="col-md-2">
-      <button type="button" className="btn btn-primary" style={{marginTop:20}} onClick={this.searchUsers.bind(this)}>
+    <div className="col-md-1">
+      <button type="button" className="btn btn-primary" style={{marginTop:30}} onClick={this.searchUsers.bind(this)}>
         <span className="glyphicon glyphicon-search"></span> Search
       </button>
     </div>
