@@ -22,7 +22,6 @@ class TeamSugestionForm extends React.Component {
     }
 
     handleOnChange(username){
-      console.log('putos');
       var _this = this;
       let newMap = {};
       newMap= _this.state.usernames;

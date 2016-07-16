@@ -1,44 +1,40 @@
 import React, {Component} from 'react';
-import classes from './RegistrationForm.scss'
-import TextBox from '../Form/TextBox/'
-import RadioButton from '../Form/RadioButton/'
-import { Button } from 'react-bootstrap';
-import {connect} from 'react-redux';
 import {submitUser} from '../../redux/RegistrationForm/actions.js'
 import NationalitiesSelect from '../NationalitiesSelect'
 
 class RegistrationForm extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {};
     this.handleClick = this.handleClick.bind(this);
   }
 
-  handleClick(){
+  handleClick() {
 
-      console.dir(this.refs);
-      console.log(this.refs.firstName.value)
+    console.dir(this.refs);
+    console.log(this.refs.firstName.value)
 
-      this.setState({
-        firstName: this.refs.firstName.value,
-        lastName: this.refs.lastName.value,
-        nationality: '',
-        dateOfBirth: this.refs.month.value + '/' + this.refs.day.value + '/' + this.refs.year.value,
-        mail: this.refs.mail.value,
-        male: this.refs.male.value,
-        female: this.refs.female.value,
-        profession: this.refs.profession.value,
-        username: this.refs.username.value,
-        password: this.refs.password.value,
-        repeatPassword: this.refs.repeatPassword.value
-      });
-      console.log(this.state.dateOfBirth);
-      debugger
-      console.log(this.state);
-      submitUser(this.state);
-    }
-    render(){
-      return(
+    this.setState({
+      firstName: this.refs.firstName.value,
+      lastName: this.refs.lastName.value,
+      nationality: '',
+      dateOfBirth: this.refs.month.value + '/' + this.refs.day.value + '/' + this.refs.year.value,
+      mail: this.refs.mail.value,
+      male: this.refs.male.value,
+      female: this.refs.female.value,
+      profession: this.refs.profession.value,
+      username: this.refs.username.value,
+      password: this.refs.password.value,
+      repeatPassword: this.refs.repeatPassword.value
+    });
+    console.log(this.state.dateOfBirth);
+    debugger
+    console.log(this.state);
+    submitUser(this.state);
+  }
+  render() {
+
+    return (
       <div className="container">
         <div className="row">
           <div className="col-md-6">
@@ -51,13 +47,15 @@ class RegistrationForm extends Component {
                   <div className="form-group">
                     <label for="inputfirstname" className="col-md-4 control-label">First Name</label>
                     <div className="col-md-8">
-                      <input type="text" className="form-control" id="inputfirstname" placeholder="Enter First Name..." ref="firstName"/>
+                      <input type="text" className="form-control" id="inputfirstname" placeholder="Enter First Name..."
+                             ref="firstName"/>
                     </div>
                   </div>
                   <div className="form-group">
                     <label for="inputlastname" className="col-md-4 control-label">Last Name</label>
                     <div className="col-md-8">
-                      <input type="text" className="form-control" id="inputlastname" placeholder="Enter Last Name..." ref="lastName" />
+                      <input type="text" className="form-control" id="inputlastname" placeholder="Enter Last Name..."
+                             ref="lastName"/>
                     </div>
                   </div>
                   <div className="form-group">
@@ -65,7 +63,7 @@ class RegistrationForm extends Component {
                     <div className="col-md-8">
                       <div className="row">
                         <div className="col-md-5">
-                          <select className="form-control" defaultvalue="January"name="" ref="month">
+                          <select className="form-control" defaultvalue="January" name="" ref="month">
                             <option value="1">January</option>
                             <option value="2">February</option>
                             <option value="3">March</option>
@@ -117,19 +115,22 @@ class RegistrationForm extends Component {
                   <div className="form-group">
                     <label for="inputemail" className="col-md-4">E-mail</label>
                     <div className="col-md-8">
-                      <input type="text" className="form-control" id="inputemail" placeholder=" E-mail " ref="mail"></input>
+                      <input type="text" className="form-control" id="inputemail" placeholder=" E-mail "
+                             ref="mail"></input>
                     </div>
                   </div>
                   <div className="form-group">
                     <label for="inputprofession" className="col-md-4">Profession</label>
                     <div className="col-md-8">
-                      <input type="text" className="form-control" id="inputprofession" placeholder="Profession" ref="profession"></input>
+                      <input type="text" className="form-control" id="inputprofession" placeholder="Profession"
+                             ref="profession"></input>
                     </div>
                   </div>
                   <div className="form-group">
                     <label for="inputusername" className="col-md-4">User name</label>
                     <div className="col-md-8">
-                      <input type="text" className="form-control" id="inputusername" placeholder="User name" ref="username"></input>
+                      <input type="text" className="form-control" id="inputusername" placeholder="User name"
+                             ref="username"></input>
                     </div>
                   </div>
                   <div className="form-group">
@@ -141,12 +142,13 @@ class RegistrationForm extends Component {
                   <div className="form-group">
                     <label for="inputconfirmpassword" className="col-md-4">Confirm Password</label>
                     <div className="col-md-8">
-                      <input type="password" name="" className="form-control" ref="repeatPassword" ></input>
+                      <input type="password" name="" className="form-control" ref="repeatPassword"></input>
                     </div>
                   </div>
                   <div className="form-group">
                     <div className="col-md-12">
-                      <input type="button" onClick={this.handleClick} value="Register" className="btn btn-success"></input>
+                      <input type="button" onClick={this.handleClick}
+                             className="btn btn-success">Register</input>
                     </div>
                   </div>
                 </form>
@@ -157,10 +159,5 @@ class RegistrationForm extends Component {
       </div>);
   };
 }
-// <select name="" className="form-control" defaultvalue="usa" ref="country">
-//   <option value="australia">Australia</option>
-//   <option value="canada">Canada</option>
-//   <option value="united Kingdom">United Kingdom</option>
-//   <option value="usa">USA</option>
-// </select>
+
 export default RegistrationForm
