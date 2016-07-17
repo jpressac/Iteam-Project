@@ -1,11 +1,30 @@
-.board {
-    background-color: white;
-    width: auto;
-    height: 600px;
-    overflow: auto;
+.Board {
+  width: 100%;
+  height: auto;
+
 }
 
 .button{
-  align-items:flex-end;
+  margin-top: 10px;
+  position: fixed;
+  font-size: 15px;
+  background-color: #900C3F;
+  border: none;
+  color: white;
+  padding: 6px 9px;
+    border-radius: 4px;
+    display: inline-block;
+      z-index:1;
+
+}
+.label1
+{
+//  #900C3F
+  color:white;
+  margin-left: 0px;
+  font-size: 25px;
   position: static;
+  margin-top: 10px;
+background-color:hsla(337,85%,31%, 0.6);
+width: 100%
 }
