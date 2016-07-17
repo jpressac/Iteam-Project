@@ -1,5 +1,7 @@
 package org.iteam.data.dal.user;
 
+import java.util.Date;
+
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
@@ -8,15 +10,16 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.iteam.configuration.ExternalConfigurationProperties;
 import org.iteam.data.dal.client.ElasticsearchClient;
 import org.iteam.data.model.User;
+import org.iteam.exceptions.JsonParsingException;
 import org.iteam.services.utils.JSONUtils;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
+
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 
 @Repository
 public class UserRepositoryImpl implements UserRepsoitory {
@@ -26,6 +29,9 @@ public class UserRepositoryImpl implements UserRepsoitory {
 
 	private static final String USER_NAME_FIELD = "username";
 	private static final String LOGICAL_DELETE_FIELD = "logicalDelete";
+
+	private static final String USER_GENDER_MALE = "male";
+	private static final String USER_GENDER_FEMALE = "female";
 
 	private ElasticsearchClient elasticsearchClient;
 	private ExternalConfigurationProperties configuration;
@@ -51,8 +57,11 @@ public class UserRepositoryImpl implements UserRepsoitory {
 
 		user.setPassword(PASSWORD_ENCODER.encode(user.getPassword()));
 
-		DateTime dateTime = new DateTime().withZoneRetainFields(DateTimeZone.UTC);
-		user.setInsertionDate(dateTime.toString());
+		user.setInsertionDate(new ISO8601DateFormat().format(new Date()));
+
+		if (!USER_GENDER_MALE.equals(user.getGender()) && !USER_GENDER_FEMALE.equals(user.getGender())) {
+			throw new JsonParsingException("Incorrect User information");
+		}
 
 		String data = JSONUtils.ObjectToJSON(user);
 
