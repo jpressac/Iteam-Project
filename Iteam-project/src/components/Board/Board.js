@@ -13,7 +13,7 @@ const NoteTarget = {
     const delta = monitor.getDifferenceFromInitialOffset();
     const left = Math.round(item.left + delta.x);
     const top = Math.round(item.top + delta.y);
-
+    console.log("BELU ESTUVO AQUI ")
     component.updatePosition(item.id, left, top);
   }
 };
@@ -22,9 +22,9 @@ const NoteTarget = {
 class Board extends Component{
 
   render(){
+    var notemap = this.state.notes
     const { connectDropTarget } = this.props;
     const { notes } = this.state;
-    console.log(this)
     return connectDropTarget(
       <div className={classes.board}>
       <label className={classes.label1}>My personal board</label>
@@ -32,8 +32,22 @@ class Board extends Component{
                 <button type= "button" className={"btn btn-primary",classes.button}  onClick={this.add.bind(this, "New note")}>
                  <span className="glyphicon glyphicon-plus"></span> ADD NOTE </button>
             </div>
-            <div >
-                {this.state.notes.map(this.eachNote.bind(this))}
+            
+            <div className={classes.Notecontainer}>
+              {Object.keys(notemap).map((key) =>{
+                console.log(notemap[key].left + ' key:' + key)
+                console.log(notemap[key].top + ' key:' + key)
+                return(
+                      <Note key={key}
+                        id={key}
+                        onChange= {this.update.bind(this)}
+                        onRemove={this.remove.bind(this)}
+                        left= {notemap[key].left}
+                        top= {notemap[key].top}
+                      >{notemap[key].text}</Note>
+                    );
+              }
+              )}
           </div>
         </div>
     );
@@ -44,55 +58,49 @@ class Board extends Component{
       return this.uniqueId++;
   }
 
+generateRandomNumber(){
+  return Math.floor(Math.random() * 200) + 1 ;
+}
   add(text){
-    var arr = this.state.notes;
-    arr.push({
-            id: this.nextId(),
-            text: text,
-            left:0,
-            top:0
-        });
-    this.setState({notes:arr})
-    this.forceUpdate();
+    var map = this.state.notes;
+    var id =this.nextId()
+    map[id] =
+      {
+        id:id,
+        text: text,
+        left:this.generateRandomNumber(),
+        top:this.generateRandomNumber(),
+        user: "belen"
+        };
+    this.setState({notes:map})
+    //this.forceUpdate();
   }
 
-  update(newText, i){
-    var arr = this.state.notes
-    arr[i].text = newText;
-    this.setState({notes:arr})
-    this.forceUpdate();
+  update(newText, id){
+    var map = this.state.notes
+    map[id].text = newText;
+    this.setState({notes:map})
+    //this.forceUpdate();
   }
 
   updatePosition(id, left, top){
-    var arr = this.state.notes
-    arr[id].left = left;
-    arr[id].top = top;
-    this.setState({notes:arr})
-    this.forceUpdate();
+    var map = this.state.notes
+    map[id].left = left;
+    map[id].top = top;
+    this.setState({notes:map})
+    //this.forceUpdate();
   }
 
-  remove(i){
-    var arr = this.state.notes
-    arr.splice(i,1)
-    this.setState({notes:arr})
-    this.forceUpdate();
-  }
-
-  eachNote(notes, i){
-    return(
-      <Note key={i}
-        id={notes.id}
-        onChange= {this.update.bind(this)}
-        onRemove={this.remove.bind(this)}
-        left= {notes.left}
-        top= {notes.top}
-      >{notes.text}</Note>
-    );
+  remove(id){
+    var map = this.state.notes
+    delete map[id]
+    this.setState({notes:map})
+    //this.forceUpdate();
   }
 
   constructor(props){
     super(props);
-    this.state= {notes:[]}
+    this.state= {notes:{}}
   };
 }
 
