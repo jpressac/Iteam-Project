@@ -28,7 +28,7 @@ export function submitUser(data){
         username: data.username,
         password: data.password,
         nationality: data.nationality,
-        //bornDate: data.month + '/' + data.day + '/' + data.year,
+        bornDate:  data.date ,
         mail : data.mail,
         nationality: data.nationality,
         hobbies: [""],

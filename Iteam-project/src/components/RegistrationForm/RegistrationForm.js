@@ -11,9 +11,7 @@ class RegistrationForm extends Component {
       firstName: null,
       lastName: null,
       nationality: null,
-      month: null,
-      year: null,
-      day: null,
+      date: null,
       mail: null,
       male: null,
       female: null,
@@ -64,17 +62,11 @@ class RegistrationForm extends Component {
       this.setState({lastName: last });
     }
   }
-  monthChanged(event){
-    let actualMonth = event.target.value;
-    this.setState({month: actualMonth});
-  }
-  yearChanged(event){
-    let actualYear = event.target.value;
-    this.setState({year: actualYear});
-  }
-  dayChanged(event){
-    let actualDay = event.target.value;
-    this.setState({day: actualDay});
+  dateChanged(event) {
+    let actualDate = event.target.value;
+    console.log(actualDate);
+    this.setState({date: actualDate});
+
   }
   emailChanged(event) {
     let email = event.target.value;
@@ -124,7 +116,7 @@ class RegistrationForm extends Component {
     let actualProfession = event.target.value;
     this.setState({profession: actualProfession});
   }
-  
+
   render() {
 
     return (
@@ -154,36 +146,7 @@ class RegistrationForm extends Component {
                   <div className="form-group">
                     <label for="inputdateofbirth" className="col-md-4 control-label"> Date of Birth</label>
                     <div className="col-md-8">
-                      <div className="row">
-                        <div className="col-md-5">
-                          <select className="form-control" defaultvalue="January" name="" ref="month" onChange={this.monthChanged.bind(this)}>
-                            <option value="1">January</option>
-                            <option value="2">February</option>
-                            <option value="3">March</option>
-                            <option value="4">April</option>
-                            <option value="5">May</option>
-                          </select>
-                        </div>
-                        <div className="col-md-3">
-                          <select name="" className="form-control" defaultvalue="1" ref="day" onChange={this.dayChanged.bind(this)}>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                          </select>
-                        </div>
-                        <div className="col-md-4">
-                          <select name="" className="form-control" defaultvalue="1980" ref="year" onChange={this.yearChanged.bind(this)}>
-                            <option value="1980">1980</option>
-                            <option value="1981">1981</option>
-                            <option value="1982">1982</option>
-                            <option value="1983">1983</option>
-                            <option value="1984">1984</option>
-                            <option value="1985">1985</option>
-                          </select>
-                        </div>
-                      </div>
+                     <input type="date" className="form-control" id="inputname" ref="birthDate" placeholder="" onChange={this.dateChanged.bind(this)}></input>
                     </div>
                   </div>
                   <div className="form-group">
