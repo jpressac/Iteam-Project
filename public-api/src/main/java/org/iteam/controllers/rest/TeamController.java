@@ -28,17 +28,11 @@ public class TeamController {
 	 * 
 	 * @param team,
 	 *            the team to create.
-	 * @return 200 OK if it was successful, 400 if not.
+	 * @return 200 OK if it was successful.
 	 */
 	@RequestMapping(value = "/team/create", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-	public ResponseEntity<Boolean> createTeam(@RequestBody @Valid Team team) {
-		boolean success = teamService.putTeam(team);
-
-		if (success) {
-			return new ResponseEntity<Boolean>(success, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<Boolean>(success, HttpStatus.BAD_REQUEST);
-		}
+	public ResponseEntity<Void> createTeam(@RequestBody @Valid Team team) {
+		return checkResult(teamService.putTeam(team));
 	}
 
 	/**
@@ -48,20 +42,13 @@ public class TeamController {
 	 *            the team owner.
 	 * @param teamName,
 	 *            the team name.
-	 * @return 200 OK if it was successful, 400 if not.
+	 * @return 200 OK if it was successful.
 	 */
 	@RequestMapping(value = "/team/delete", method = RequestMethod.DELETE)
-	public ResponseEntity<Boolean> deleteTeam(@RequestParam(value = "ownerName", required = true) String ownerName,
+	public ResponseEntity<Void> deleteTeam(@RequestParam(value = "ownerName", required = true) String ownerName,
 			@RequestParam(value = "teamName", required = true) String teamName) {
-		// TODO: add validations Valid.istrue()
 
-		boolean success = teamService.deleteTeam(ownerName, teamName);
-
-		if (success) {
-			return new ResponseEntity<Boolean>(success, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<Boolean>(success, HttpStatus.BAD_REQUEST);
-		}
+		return checkResult(teamService.deleteTeam(ownerName, teamName));
 	}
 
 	/**
@@ -74,6 +61,14 @@ public class TeamController {
 	@RequestMapping(value = "/team/select", method = RequestMethod.GET)
 	public List<User> filterTeam(@RequestParam(value = "filter") FilterList filter) {
 		return teamService.filterToCreateTeam(filter);
+	}
+
+	private ResponseEntity<Void> checkResult(boolean flag) {
+		if (flag) {
+			return new ResponseEntity<>(HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	@Autowired

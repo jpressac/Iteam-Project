@@ -103,7 +103,7 @@ jacocoTestReport {
             	
             	excludes: [
             		'org/iteam/configuration/**/*',
-            		'org/iteam/controllers/**/*',
+            		'org/iteam/controllers/Advisor/**',
             		'org/iteam/data/dal/client/**',
             		'org/iteam/data/model/**',
             		'org/iteam/exceptions/**'])
