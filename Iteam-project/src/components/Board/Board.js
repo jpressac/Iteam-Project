@@ -28,11 +28,18 @@ class Board extends Component{
     return connectDropTarget(
       <div className={classes.board}>
       <label className={classes.label1}>My personal board</label>
-            <div >
-                <button type= "button" className={"btn btn-primary",classes.button}  onClick={this.add.bind(this, "New note")}>
-                 <span className="glyphicon glyphicon-plus"></span> ADD NOTE </button>
-            </div>
-            
+
+        <div className="col-md-8">
+              <div className="row">
+                    <div className="col-md-4">
+                          <button type= "button" className={" btn btn-primary",classes.button}  onClick={this.add.bind(this, "New note")}>
+                           <span className="glyphicon glyphicon-plus"></span> ADD NOTE </button>
+                           </div>
+                             <div className="col-md-4">
+                           <button type="button" className={" btn btn-success", classes.button}> SAVE </button>
+                      </div>
+                </div>
+          </div>
             <div className={classes.Notecontainer}>
               {Object.keys(notemap).map((key) =>{
                 console.log(notemap[key].left + ' key:' + key)
