@@ -3,6 +3,8 @@ import TextBox from '../Form/TextBox/TextBox.js'
 import {Form, FormGroup, Button, FormControl, ControlLabel, Col} from 'react-bootstrap'
 import classes from './LoginForm.scss'
 import fondo from './image/fondo.jpg'
+import { PATHS } from '../../constants/routes'
+import { IndexLink, Link } from 'react-router'
 
 class LoginForm extends Component {
 
@@ -13,7 +15,7 @@ class LoginForm extends Component {
       <div className={classes.label}  style={{marginTop:20}}>
       <label>LOGIN</label>
       </div>
-                <div className={"well",classes.well} style={{width:550, height:260}} >
+                <div className={"well",classes.well} style={{width:550, height:300}} >
                       <label> </label>
 
                       <div className="row" >
@@ -39,9 +41,20 @@ class LoginForm extends Component {
                                 </div>
                                 <div className="col-md-11">
                                   <div className="row">
-                                    <label for="team" className="col-md-4 control-label" style={{marginLeft:20, marginTop:20, fontSize: 17}}> </label>
+                                  <label style={{marginTop:30}}>Don&#39;t have an account yet? </label>
+                                  <Link to={'/' + PATHS.MENUNOTLOGGEDIN.REGISTER} activeClassName="active">  Click here to sign up </Link>
+
+                                  </div>
+                                  </div>
+
+                                <div className="col-md-11" style={{marginTop:20}}>
+                                  <div className="row">
+                                  <div className="checkbox col-md-7" >
+                                   <label>
+                                     <input type="checkbox"/> Remember me </label>
+                                  </div>
                               <div className="col-md-5">
-                              <button type="button" className={"btn btn-primary", classes.btn} style={{marginTop:40, marginLeft:10}}>
+                              <button type="button" className={"btn btn-primary", classes.btn} style={{ marginLeft:10}}>
                                 <span className="glyphicon glyphicon-ok"></span> SIGN IN
                               </button>
                               </div>
