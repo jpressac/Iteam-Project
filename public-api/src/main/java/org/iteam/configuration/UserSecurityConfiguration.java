@@ -40,6 +40,8 @@ public class UserSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		http.authorizeRequests().antMatchers(HttpMethod.POST, "/user").permitAll()
 				.antMatchers(HttpMethod.GET, "/user/authenticated").permitAll()
 				.antMatchers(HttpMethod.GET, "/utilities/nationality/get").permitAll()
+				.antMatchers(HttpMethod.GET, "/utilities/professions").permitAll()
+				.antMatchers(HttpMethod.POST, "/team/create").permitAll()
 				.antMatchers(HttpMethod.GET, "/team/select").permitAll().antMatchers(HttpMethod.OPTIONS, "/**/*")
 				.permitAll().anyRequest().authenticated().and().formLogin().loginPage("/application/nmember/login")
 				.defaultSuccessUrl("/application/member/home", true).permitAll().and().httpBasic().and().csrf()
@@ -52,7 +54,7 @@ public class UserSecurityConfiguration extends WebSecurityConfigurerAdapter {
 		return new WebMvcConfigurerAdapter() {
 			@Override
 			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/**").allowedOrigins("http://localhost:8080").allowedMethods("GET", "POST");
+				registry.addMapping("/**").allowedOrigins("http://localhost:3000").allowedMethods("GET", "POST");
 			}
 		};
 	}

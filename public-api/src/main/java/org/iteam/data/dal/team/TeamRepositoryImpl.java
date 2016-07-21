@@ -38,7 +38,7 @@ public class TeamRepositoryImpl implements TeamRepository {
 
 		String data = JSONUtils.ObjectToJSON(team);
 
-		IndexResponse response = elasticsearchClient.insertData(data, configuration.getElasticsaerchIndexTeam(),
+		IndexResponse response = elasticsearchClient.insertData(data, configuration.getElasticsearchIndexTeam(),
 				configuration.getElasticsaerchIndexTypeTeam());
 
 		if (response.isCreated()) {
@@ -57,13 +57,13 @@ public class TeamRepositoryImpl implements TeamRepository {
 		query.must(QueryBuilders.termQuery(OWNER_NAME_FIELD, ownerName))
 				.must(QueryBuilders.termQuery(TEAM_NAME_FIELD, teamName));
 
-		SearchResponse searchResponse = elasticsearchClient.search(configuration.getElasticsaerchIndexTeam(),
+		SearchResponse searchResponse = elasticsearchClient.search(configuration.getElasticsearchIndexTeam(),
 				configuration.getElasticsaerchIndexTypeTeam(), query);
 
 		DeleteResponse deleteResponse = null;
 
 		if (searchResponse.getHits().getTotalHits() == 1) {
-			deleteResponse = elasticsearchClient.delete(configuration.getElasticsaerchIndexTeam(),
+			deleteResponse = elasticsearchClient.delete(configuration.getElasticsearchIndexTeam(),
 					configuration.getElasticsaerchIndexTypeTeam(), searchResponse.getHits().getAt(0).getId());
 		}
 
@@ -103,6 +103,25 @@ public class TeamRepositoryImpl implements TeamRepository {
 		queryBuilder.must(QueryBuilders.termQuery(LOGICAL_DELETE_FIELD, false));
 		return queryBuilder.minimumNumberShouldMatch(1);
 
+	}
+
+	@Override
+	public List<Team> getTeams(String ownerName) {
+		BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+		queryBuilder.must(QueryBuilders.termQuery(OWNER_NAME_FIELD, ownerName));
+
+		SearchResponse response = elasticsearchClient.search(configuration.getElasticsearchIndexTeam(),
+				configuration.getElasticsaerchIndexTypeTeam(), queryBuilder);
+
+		List<Team> teamList = new ArrayList<>();
+
+		if (response != null) {
+			for (SearchHit hit : response.getHits()) {
+				teamList.add((Team) JSONUtils.JSONToObject(hit.getSourceAsString(), Team.class));
+			}
+		}
+
+		return teamList;
 	}
 
 	@Autowired

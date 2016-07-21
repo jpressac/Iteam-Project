@@ -23,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.ObjectUtils;
 
 public class TeamRepositoryImplTest {
 
@@ -35,11 +36,15 @@ public class TeamRepositoryImplTest {
 	@Mock
 	private ExternalConfigurationProperties configuration;
 
+	private static final String JSON_REPRESNTATION_USER = "{\"username\":\"iteam\"}";
+	private static final String JSON_REPRESNTATION_TEAM = "{\"ownerName\":\"iteam\", \"name\":\"testIteam\"}";
+
 	private boolean flag;
 	private String ownerName;
 	private String teamName;
 	private FilterList filterList;
 	private List<User> userList;
+	private List<Team> teamList;
 
 	@Before
 	public void init() {
@@ -90,7 +95,7 @@ public class TeamRepositoryImplTest {
 	@Test
 	public void filterParticipantsSuccessfully() {
 		givenAFilterList();
-		givenAnElasticsearchFilterResponseOk();
+		givenAnElasticsearchSearchResponseOk(JSON_REPRESNTATION_USER);
 		whenFilterToCreateTeamIsCalled();
 		thenListOfUsersOk();
 	}
@@ -98,7 +103,7 @@ public class TeamRepositoryImplTest {
 	@Test
 	public void filterParticipantsNotSuccessfulNull() {
 		givenAFilterList();
-		givenAnElasticsearchFilterResponseNull();
+		givenAnElasticsearchSearchResponseNull();
 		whenFilterToCreateTeamIsCalled();
 		thenListOfUsersNull();
 	}
@@ -106,12 +111,48 @@ public class TeamRepositoryImplTest {
 	@Test
 	public void filterParticipantsNotSuccessful() {
 		givenAFilterList();
-		givenAnElasticsearchFilterResponseNotHits();
+		givenAnElasticsearchSearchResponseNotHits();
 		whenFilterToCreateTeamIsCalled();
 		thenListOfUsersNull();
 	}
 
-	private void givenAnElasticsearchFilterResponseNotHits() {
+	@Test
+	public void getTeamsSuccessful() {
+		givenAnOwnerName();
+		givenAnElasticsearchSearchResponseOk(JSON_REPRESNTATION_TEAM);
+		whenGetTeamsIsCalled();
+		thenListOfTeamsNotEmpty();
+	}
+
+	@Test
+	public void getTeamNotSuccessfulNull() {
+		givenAnOwnerName();
+		givenAnElasticsearchSearchResponseNull();
+		whenGetTeamsIsCalled();
+		thenListOfTeamsIsEmpty();
+	}
+
+	@Test
+	public void getTeamNotSuccessful() {
+		givenAnOwnerName();
+		givenAnElasticsearchSearchResponseNotHits();
+		whenGetTeamsIsCalled();
+		thenListOfTeamsIsEmpty();
+	}
+
+	private void thenListOfTeamsIsEmpty() {
+		Assert.assertTrue(ObjectUtils.isEmpty(teamList));
+	}
+
+	private void thenListOfTeamsNotEmpty() {
+		Assert.assertFalse(ObjectUtils.isEmpty(teamList));
+	}
+
+	private void whenGetTeamsIsCalled() {
+		teamList = underTest.getTeams(ownerName);
+	}
+
+	private void givenAnElasticsearchSearchResponseNotHits() {
 		SearchResponse response = Mockito.mock(SearchResponse.class);
 		SearchHits searchHits = Mockito.mock(SearchHits.class);
 
@@ -128,7 +169,7 @@ public class TeamRepositoryImplTest {
 		ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
 	}
 
-	private void givenAnElasticsearchFilterResponseNull() {
+	private void givenAnElasticsearchSearchResponseNull() {
 		Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyString(), Mockito.anyObject()))
 				.thenReturn(null);
 
@@ -148,7 +189,7 @@ public class TeamRepositoryImplTest {
 		userList = underTest.filterToCreateTeam(filterList);
 	}
 
-	private void givenAnElasticsearchFilterResponseOk() {
+	private void givenAnElasticsearchSearchResponseOk(String jsonRepresentation) {
 		SearchResponse response = Mockito.mock(SearchResponse.class);
 		SearchHits searchHits = Mockito.mock(SearchHits.class);
 		SearchHit hit = Mockito.mock(SearchHit.class);
@@ -160,7 +201,7 @@ public class TeamRepositoryImplTest {
 		Mockito.when(searchHits.iterator()).thenReturn(hitIterator);
 		Mockito.when(hitIterator.hasNext()).thenReturn(true, false);
 		Mockito.when(hitIterator.next()).thenReturn(hit);
-		Mockito.when(hit.getSourceAsString()).thenReturn("{\"username\":\"iteam\"}");
+		Mockito.when(hit.getSourceAsString()).thenReturn(jsonRepresentation);
 
 		Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyString(), Mockito.anyObject()))
 				.thenReturn(response);

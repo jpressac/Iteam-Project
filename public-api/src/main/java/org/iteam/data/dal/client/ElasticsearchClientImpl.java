@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.thymeleaf.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 
 @Repository
 public class ElasticsearchClientImpl implements ElasticsearchClient {
@@ -59,7 +59,7 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
 		IndexRequestBuilder indexRequest = client.prepareIndex();
 		indexRequest.setIndex(index).setType(type);
 
-		if (id != null || !StringUtils.isEmpty(id)) {
+		if (id != null || !ObjectUtils.isEmpty(id)) {
 			indexRequest.setId(id);
 		}
 
