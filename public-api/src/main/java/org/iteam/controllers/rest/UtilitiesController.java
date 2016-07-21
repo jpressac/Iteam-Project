@@ -24,17 +24,16 @@ public class UtilitiesController {
 	 * 
 	 * @param nationalities,
 	 *            the list of nationalities
-	 * @return true (200 OK) if it was successful or false (400 Bad Request) if
-	 *         it wasn't.
+	 * @return true 200 OK if it was successful
 	 */
 	@RequestMapping(value = "/utilities/nationality/insert", method = RequestMethod.POST)
-	public ResponseEntity<Boolean> saveNationalitiesDropDown(@RequestBody @Valid Nationalities nationalities) {
+	public ResponseEntity<Void> saveNationalitiesDropDown(@RequestBody @Valid Nationalities nationalities) {
 		boolean succes = utilitiesServiceImpl.insertNationalities(nationalities);
 
 		if (succes) {
-			return new ResponseEntity<Boolean>(succes, HttpStatus.OK);
+			return new ResponseEntity<>(HttpStatus.OK);
 		} else {
-			return new ResponseEntity<Boolean>(succes, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 

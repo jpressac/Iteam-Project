@@ -11,8 +11,6 @@ public class Meeting {
 	private String programmedDate;
 	private String ownerName;
 	private Team teamAssistant;
-	// private Ideas meetingIdeas;
-	// private Feedback feedback;
 
 	public String getCreationDate() {
 		return creationDate;
