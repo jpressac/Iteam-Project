@@ -1,22 +1,29 @@
 package org.iteam.services.meeting;
 
-import org.iteam.data.model.InfoMeeting;
+import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.Meeting;
 
 /**
- * Handles all information about the meeting
+ * Handles all the request for the meeting.
  *
  */
 public interface MeetingService {
 
 	/**
-	 * Create a new meeting based on the information received by the UI service.
+	 * Create a new meeting given the meeting information.
 	 * 
-	 * @param meeting,
-	 *            the model that contains information about the meeting.
-	 * 
-	 * 			@return, infoMeeting object that represent the basic info of
-	 *            the meeting.
+	 * @param meeting
+	 *            the meeting information.
+	 * @return true if it was successful, false otherwise
 	 */
-	public InfoMeeting createMeeting(Meeting meeting);
+	public boolean createMeeting(Meeting meeting);
+
+	/**
+	 * Save the ideas generated during the meeting.
+	 * 
+	 * @param ideas
+	 *            ideas generated.
+	 * @return true if it was successful, false otherwise
+	 */
+	public boolean savedIdeas(IdeasDTO ideas);
 }

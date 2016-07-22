@@ -1,5 +1,8 @@
 package org.iteam.data.dal.client;
 
+import java.util.List;
+
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
@@ -41,6 +44,19 @@ public interface ElasticsearchClient {
 	 * @return an index response with the information about the request.
 	 */
 	public IndexResponse insertData(String data, String index, String type);
+
+	/**
+	 * Insert a multiple documents with a random id.
+	 * 
+	 * @param data,
+	 *            the data to insert.
+	 * @param index,
+	 *            the index name.
+	 * @param type,
+	 *            the type name.
+	 * @return the information of the bulk request.
+	 */
+	public BulkResponse insertData(List<String> data, String index, String type);
 
 	/**
 	 * Modify an specific document.

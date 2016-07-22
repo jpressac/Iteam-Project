@@ -1,21 +1,18 @@
 package org.iteam.controllers.rest;
 
-import javax.validation.Valid;
-
-import org.iteam.data.model.InfoMeeting;
+import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.Meeting;
 import org.iteam.services.meeting.MeetingServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Controller for all request operations for the meeting.
+ * Controller for handling all meeting request.
  *
  */
 @RestController
@@ -24,22 +21,35 @@ public class MeetingController {
 	private MeetingServiceImpl meetingServiceImpl;
 
 	/**
-	 * Create a new meeting based on the information provided by the UI service.
+	 * Create a new meeting, given the meeting information.
 	 * 
-	 * @param meeting,
-	 *            all the information to save about the meeting.
-	 * 
-	 * 			@return, an InfoMeeting object that represent the minimal
-	 *            information.
+	 * @return 200 OK if it was successful.
 	 */
 	@RequestMapping(value = "/meeting/create", method = RequestMethod.POST)
-	public ResponseEntity<InfoMeeting> createMeeting(@RequestBody @Valid Meeting meeting) {
-		InfoMeeting infoMeeting = meetingServiceImpl.createMeeting(meeting);
+	public ResponseEntity<Void> createMeeting(@RequestBody Meeting meeting) {
 
-		if (!ObjectUtils.isEmpty(infoMeeting)) {
-			return new ResponseEntity<InfoMeeting>(infoMeeting, HttpStatus.OK);
+		return checkResult(meetingServiceImpl.createMeeting(meeting));
+
+	}
+
+	/**
+	 * Save the ideas generated in the meeting.
+	 * 
+	 * @param ideas
+	 *            all the ideas.
+	 * @return 200 OK if it was successful
+	 */
+	@RequestMapping(value = "/meeting/ideas/save", method = RequestMethod.POST)
+	public ResponseEntity<Void> saveIdeas(@RequestBody IdeasDTO ideas) {
+
+		return checkResult(meetingServiceImpl.savedIdeas(ideas));
+	}
+
+	private ResponseEntity<Void> checkResult(boolean flag) {
+		if (flag) {
+			return new ResponseEntity<>(HttpStatus.OK);
 		} else {
-			return new ResponseEntity<InfoMeeting>(infoMeeting, HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 

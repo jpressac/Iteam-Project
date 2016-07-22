@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,17 +28,11 @@ public class TeamController {
 	 * 
 	 * @param team,
 	 *            the team to create.
-	 * @return 200 OK if it was successful, 400 if not.
+	 * @return 200 OK if it was successful.
 	 */
 	@RequestMapping(value = "/team/create", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-	public ResponseEntity<Boolean> createTeam(@RequestBody @Valid Team team) {
-		boolean success = teamService.putTeam(team);
-
-		if (success) {
-			return new ResponseEntity<Boolean>(success, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<Boolean>(success, HttpStatus.BAD_REQUEST);
-		}
+	public ResponseEntity<Void> createTeam(@RequestBody @Valid Team team) {
+		return checkResult(teamService.putTeam(team));
 	}
 
 	/**
@@ -49,20 +42,13 @@ public class TeamController {
 	 *            the team owner.
 	 * @param teamName,
 	 *            the team name.
-	 * @return 200 OK if it was successful, 400 if not.
+	 * @return 200 OK if it was successful.
 	 */
 	@RequestMapping(value = "/team/delete", method = RequestMethod.DELETE)
-	public ResponseEntity<Boolean> deleteTeam(@RequestParam(value = "ownerName", required = true) String ownerName,
+	public ResponseEntity<Void> deleteTeam(@RequestParam(value = "ownerName", required = true) String ownerName,
 			@RequestParam(value = "teamName", required = true) String teamName) {
-		// TODO: add validations Valid.istrue()
 
-		boolean success = teamService.deleteTeam(ownerName, teamName);
-
-		if (success) {
-			return new ResponseEntity<Boolean>(success, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<Boolean>(success, HttpStatus.BAD_REQUEST);
-		}
+		return checkResult(teamService.deleteTeam(ownerName, teamName));
 	}
 
 	/**
@@ -77,14 +63,12 @@ public class TeamController {
 		return teamService.filterToCreateTeam(filter);
 	}
 
-	/**
-	 * Get the all the teams given an owner (user authenticated)
-	 * 
-	 * @return a team list.
-	 */
-	@RequestMapping(value = "/team/teamByOwner", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
-	public List<Team> getTeamByOwner() {
-		return teamService.getTeams(SecurityContextHolder.getContext().getAuthentication().getName());
+	private ResponseEntity<Void> checkResult(boolean flag) {
+		if (flag) {
+			return new ResponseEntity<>(HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	@Autowired

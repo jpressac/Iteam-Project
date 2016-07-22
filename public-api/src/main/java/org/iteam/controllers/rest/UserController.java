@@ -33,13 +33,10 @@ public class UserController {
 	 *         isn't.
 	 */
 	@RequestMapping(value = "/user/authenticated", method = RequestMethod.GET)
-	public ResponseEntity<?> getUserAuthenticated() {
+	public ResponseEntity<Void> getUserAuthenticated() {
 
-		if (USER_NOT_LOGGED_IN.equals(SecurityContextHolder.getContext().getAuthentication().getName())) {
-			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-		} else {
-			return new ResponseEntity<>(HttpStatus.OK);
-		}
+		return checkResult(USER_NOT_LOGGED_IN.equals(SecurityContextHolder.getContext().getAuthentication().getName()),
+				HttpStatus.UNAUTHORIZED);
 	}
 
 	/**
@@ -57,18 +54,12 @@ public class UserController {
 	 * 
 	 * @param user,
 	 *            json representation of the user to create.
-	 * @return 200 OK if it was successfully created or 500 if it wasn't.
+	 * @return 200 OK if it was successful.
 	 */
 	@RequestMapping(value = "/user", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-	public ResponseEntity<Boolean> insertUser(@RequestBody @Valid User user) {
+	public ResponseEntity<Void> insertUser(@RequestBody @Valid User user) {
 
-		boolean insert = userServiceImpl.setUser(user);
-
-		if (insert) {
-			return new ResponseEntity<Boolean>(insert, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<Boolean>(insert, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+		return checkResult(userServiceImpl.setUser(user), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	/**
@@ -76,20 +67,14 @@ public class UserController {
 	 * 
 	 * @param doc,
 	 *            JSON representation of the fields that will be modified.
-	 * @return 200 OK if it was successful or, 500 INTERNAL SERVER ERROR if it
-	 *         wasn't.
+	 * @return 200 OK if it was successful or.
 	 */
 	@RequestMapping(value = "/user/modify", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-	public ResponseEntity<?> modifyUser(@RequestBody String doc) {
+	public ResponseEntity<Void> modifyUser(@RequestBody String doc) {
 
-		boolean modify = userServiceImpl.modifyUser(doc,
-				SecurityContextHolder.getContext().getAuthentication().getName());
-
-		if (modify) {
-			return new ResponseEntity<>(HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+		return checkResult(
+				userServiceImpl.modifyUser(doc, SecurityContextHolder.getContext().getAuthentication().getName()),
+				HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	/**
@@ -97,20 +82,15 @@ public class UserController {
 	 * 
 	 * @param doc,
 	 *            JSON representation of the delete field.
-	 * @return 200 OK if it was successful, 500 INTERNAL SERVER ERROR if it
-	 *         wasn't.
+	 * @return 200 OK if it was successful.
 	 */
 	@RequestMapping(value = "/user/delete", method = RequestMethod.POST)
-	public ResponseEntity<?> deleteUser(@RequestBody String doc) {
+	public ResponseEntity<Void> deleteUser(@RequestBody String doc) {
 
-		boolean delete = userServiceImpl.logicalDelete(doc,
-				SecurityContextHolder.getContext().getAuthentication().getName());
+		return checkResult(
+				userServiceImpl.logicalDelete(doc, SecurityContextHolder.getContext().getAuthentication().getName()),
+				HttpStatus.INTERNAL_SERVER_ERROR);
 
-		if (delete) {
-			return new ResponseEntity<>(HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
 	}
 
 	/**
@@ -121,14 +101,16 @@ public class UserController {
 	 * @return 200 OK if the user exists or 404 otherwise
 	 */
 	@RequestMapping(value = "/user/exists", method = RequestMethod.HEAD)
-	public ResponseEntity<?> checkUserIfExists(@RequestParam(value = "username", required = true) String userName) {
+	public ResponseEntity<Void> checkUserIfExists(@RequestParam(value = "username", required = true) String userName) {
 
-		boolean exists = userServiceImpl.checkUserExistence(userName);
+		return checkResult(userServiceImpl.checkUserExistence(userName), HttpStatus.NOT_FOUND);
+	}
 
-		if (exists) {
+	private ResponseEntity<Void> checkResult(boolean flag, HttpStatus errorCode) {
+		if (flag) {
 			return new ResponseEntity<>(HttpStatus.OK);
 		} else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(errorCode);
 		}
 	}
 

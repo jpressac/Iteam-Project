@@ -2,9 +2,12 @@ package org.iteam.data.dal.client;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.elasticsearch.action.bulk.BulkRequestBuilder;
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
@@ -24,7 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.ObjectUtils;
+import org.thymeleaf.util.StringUtils;
 
 @Repository
 public class ElasticsearchClientImpl implements ElasticsearchClient {
@@ -56,19 +59,24 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
 	@Override
 	public IndexResponse insertData(String data, String index, String type, String id) {
 
-		IndexRequestBuilder indexRequest = client.prepareIndex();
-		indexRequest.setIndex(index).setType(type);
-
-		if (id != null || !ObjectUtils.isEmpty(id)) {
-			indexRequest.setId(id);
-		}
-
-		return indexRequest.setSource(data).execute().actionGet();
+		return insert(index, type, id, data).execute().actionGet();
 	}
 
 	@Override
 	public IndexResponse insertData(String data, String index, String type) {
 		return insertData(data, index, type, null);
+	}
+
+	@Override
+	public BulkResponse insertData(List<String> data, String index, String type) {
+
+		BulkRequestBuilder insertBulk = client.prepareBulk();
+
+		data.forEach((dataToInsert) -> {
+			insertBulk.add(insert(index, type, null, dataToInsert));
+		});
+
+		return insertBulk.execute().actionGet();
 	}
 
 	@Override
@@ -125,6 +133,17 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
 	@Override
 	public UpdateResponse logicalDelete(String data, String index, String type, String id) {
 		return modifyData(data, index, type, id);
+	}
+
+	private IndexRequestBuilder insert(String index, String type, String id, String data) {
+		IndexRequestBuilder indexRequest = client.prepareIndex();
+		indexRequest.setIndex(index).setType(type);
+
+		if (id != null || !StringUtils.isEmpty(id)) {
+			indexRequest.setId(id);
+		}
+
+		return indexRequest.setSource(data);
 	}
 
 	@Autowired
