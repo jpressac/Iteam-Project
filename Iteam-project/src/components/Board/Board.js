@@ -2,6 +2,8 @@ import React, {Component,PropTypes} from 'react';
 import { DropTarget } from 'react-dnd';
 import classes from './Board.scss';
 import Note from '../Note/Note';
+import axios from 'axios'
+import BootstrapModal from '../BootstrapModal'
 import { ItemTypes } from '../Constants/Constants';
 
 
@@ -36,7 +38,8 @@ class Board extends Component{
                            <span className="glyphicon glyphicon-plus"></span> ADD NOTE </button>
                            </div>
                              <div className="col-md-4">
-                           <button type="button" className={" btn btn-success", classes.button}> SAVE </button>
+                           <button type="button" className={" btn btn-success", classes.button} onClick={this.saveNotes.bind(this)}> SAVE </button>
+                           <BootstrapModal ref="mymodal" message={this.state.message}></BootstrapModal>
                       </div>
                 </div>
           </div>
@@ -51,7 +54,7 @@ class Board extends Component{
                         onRemove={this.remove.bind(this)}
                         left= {notemap[key].left}
                         top= {notemap[key].top}
-                      >{notemap[key].text}</Note>
+                      >{notemap[key].content}</Note>
                     );
               }
               )}
@@ -65,6 +68,29 @@ class Board extends Component{
       return this.uniqueId++;
   }
 
+saveNotes(){
+  var notemap = this.state.notes;
+  var ideasList = Object.keys(notemap).map((key) =>{
+    return ({
+      "content": notemap[key].text,
+      "username": notemap[key].username,
+      "content": notemap[key].content,
+      "comments": notemap[key].comments,
+      "ranking": notemap[key].ranking,
+      "reunionId": notemap[key].reunionId
+    });
+})
+axios.post('http://localhost:8080/meeting/ideas/save',{
+  ideasList}).then(function (response) {
+    console.log(response.status);
+    this.setState({message: '¡Your notes were successfully saved!'});
+    this.refs.mymodal.openModal();
+  }.bind(this)).catch(function (response) {
+    console.log(response.status);
+  })
+console.log(ideasList);
+}
+
 generateRandomNumber(){
   return Math.floor(Math.random() * 200) + 1 ;
 }
@@ -74,10 +100,14 @@ generateRandomNumber(){
     map[id] =
       {
         id:id,
-        text: text,
+        content: text,
         left:this.generateRandomNumber(),
         top:this.generateRandomNumber(),
-        user: "belen"
+        username: "belen",
+        content: 'No comments',
+        comments: 'My first note :)',
+        ranking: 10,
+        reunionId: 'SomeHash'
         };
     this.setState({notes:map})
     //this.forceUpdate();
@@ -85,7 +115,7 @@ generateRandomNumber(){
 
   update(newText, id){
     var map = this.state.notes
-    map[id].text = newText;
+    map[id].content = newText;
     this.setState({notes:map})
     //this.forceUpdate();
   }
