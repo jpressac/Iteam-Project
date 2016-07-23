@@ -6,27 +6,27 @@ import org.iteam.data.model.Nationalities;
 
 public interface UtilitiesRepository {
 
-	/**
-	 * Insert nationalities.
-	 * 
-	 * @param nationalities,
-	 *            the list of nationalities.
-	 * @return true if it was successful, false otherwise.
-	 */
-	public boolean insertNationalities(Nationalities nationalities);
+    /**
+     * Insert nationalities.
+     * 
+     * @param nationalities,
+     *            the list of nationalities.
+     * @return true if it was successful, false otherwise.
+     */
+    public boolean insertNationalities(Nationalities nationalities);
 
-	/**
-	 * Get nationalities.
-	 * 
-	 * @return Nationalities.
-	 */
-	public Nationalities getNationalities();
+    /**
+     * Get nationalities.
+     * 
+     * @return Nationalities.
+     */
+    public Nationalities getNationalities();
 
-	/**
-	 * Get the list of professions.
-	 * 
-	 * @return, the list of professions.
-	 */
-	public List<String> getProfessions();
+    /**
+     * Get the list of professions.
+     * 
+     * @return, the list of professions.
+     */
+    public List<String> getProfessions();
 
 }

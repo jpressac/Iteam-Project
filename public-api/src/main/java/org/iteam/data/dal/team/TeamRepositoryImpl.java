@@ -25,93 +25,94 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class TeamRepositoryImpl implements TeamRepository {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(TeamRepositoryImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TeamRepositoryImpl.class);
 
-	private ElasticsearchClientImpl elasticsearchClient;
-	private ExternalConfigurationProperties configuration;
-	private static final String OWNER_NAME_FIELD = "ownerName";
-	private static final String LOGICAL_DELETE_FIELD = "logicalDelete";
-	private static final String TEAM_NAME_FIELD = "teamName";
+    private ElasticsearchClientImpl elasticsearchClient;
+    private static final String OWNER_NAME_FIELD = "ownerName";
+    private static final String LOGICAL_DELETE_FIELD = "logicalDelete";
+    private static final String TEAM_NAME_FIELD = "teamName";
+    private static final String INDEX_TEAM_NAME = "team";
+    private static final String INDEX_TYPE_TEAM_NAME = "teamdata";
 
-	@Override
-	public boolean putTeam(Team team) {
+    @Override
+    public boolean putTeam(Team team) {
 
-		String data = JSONUtils.ObjectToJSON(team);
+        String data = JSONUtils.ObjectToJSON(team);
 
-		IndexResponse response = elasticsearchClient.insertData(data, configuration.getElasticsearchIndexTeam(),
-				configuration.getElasticsaerchIndexTypeTeam());
+        IndexResponse response = elasticsearchClient.insertData(data, INDEX_TEAM_NAME,
+                INDEX_TYPE_TEAM_NAME);
 
-		if (response.isCreated()) {
-			LOGGER.info("Team successfully created");
-			return true;
-		}
-		LOGGER.warn("The team could not be created");
-		return false;
-	}
+        if (response.isCreated()) {
+            LOGGER.info("Team successfully created");
+            return true;
+        }
+        LOGGER.warn("The team could not be created");
+        return false;
+    }
 
-	@Override
-	public boolean deleteTeam(String ownerName, String teamName) {
+    @Override
+    public boolean deleteTeam(String ownerName, String teamName) {
 
-		BoolQueryBuilder query = QueryBuilders.boolQuery();
+        BoolQueryBuilder query = QueryBuilders.boolQuery();
 
-		query.must(QueryBuilders.termQuery(OWNER_NAME_FIELD, ownerName))
-				.must(QueryBuilders.termQuery(TEAM_NAME_FIELD, teamName));
+        query.must(QueryBuilders.termQuery(OWNER_NAME_FIELD, ownerName))
+                .must(QueryBuilders.termQuery(TEAM_NAME_FIELD, teamName));
 
-		SearchResponse searchResponse = elasticsearchClient.search(configuration.getElasticsearchIndexTeam(),
-				configuration.getElasticsaerchIndexTypeTeam(), query);
+        SearchResponse searchResponse = elasticsearchClient.search(INDEX_TEAM_NAME,
+                INDEX_TYPE_TEAM_NAME, query);
 
-		DeleteResponse deleteResponse = null;
+        DeleteResponse deleteResponse = null;
 
-		if (searchResponse.getHits().getTotalHits() == 1) {
-			deleteResponse = elasticsearchClient.delete(configuration.getElasticsearchIndexTeam(),
-					configuration.getElasticsaerchIndexTypeTeam(), searchResponse.getHits().getAt(0).getId());
-		}
+        if (searchResponse.getHits().getTotalHits() == 1) {
+            deleteResponse = elasticsearchClient.delete(INDEX_TEAM_NAME,
+                    INDEX_TYPE_TEAM_NAME, searchResponse.getHits().getAt(0).getId());
+        }
 
-		if (deleteResponse != null && deleteResponse.isFound()) {
-			LOGGER.info("Team was successfully deleted");
-			return true;
-		}
+        if (deleteResponse != null && deleteResponse.isFound()) {
+            LOGGER.info("Team was successfully deleted");
+            return true;
+        }
 
-		LOGGER.warn("Team could not be deleted");
-		return false;
-	}
+        LOGGER.warn("Team could not be deleted");
+        return false;
+    }
 
-	@Override
-	public List<User> filterToCreateTeam(FilterList filterList) {
+    @Override
+    public List<User> filterToCreateTeam(FilterList filterList) {
 
-		List<User> userList = new ArrayList<>();
+        List<User> userList = new ArrayList<>();
 
-		SearchResponse response = elasticsearchClient.search(configuration.getElasticsearchIndexUserName(),
-				configuration.getElasticsearchIndexUserTypeName(), applyFiltersToQuery(filterList));
-		if (response != null) {
-			for (SearchHit hit : response.getHits()) {
-				User user = (User) JSONUtils.JSONToObject(hit.getSourceAsString(), User.class);
-				userList.add(user);
-			}
-		}
+        SearchResponse response = elasticsearchClient.search(INDEX_TEAM_NAME,
+                INDEX_TYPE_TEAM_NAME, applyFiltersToQuery(filterList));
+        if (response != null) {
+            for (SearchHit hit : response.getHits()) {
+                User user = (User) JSONUtils.JSONToObject(hit.getSourceAsString(), User.class);
+                userList.add(user);
+            }
+        }
 
-		return userList;
-	}
+        return userList;
+    }
 
-	private QueryBuilder applyFiltersToQuery(FilterList filterList) {
-		BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+    private QueryBuilder applyFiltersToQuery(FilterList filterList) {
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
 
-		for (Filter filter : filterList.getFilters()) {
-			queryBuilder.should(QueryBuilders.termsQuery(filter.getField(), filter.getValues()));
-		}
+        for (Filter filter : filterList.getFilters()) {
+            queryBuilder.should(QueryBuilders.termsQuery(filter.getField(), filter.getValues()));
+        }
 
-		queryBuilder.must(QueryBuilders.termQuery(LOGICAL_DELETE_FIELD, false));
-		return queryBuilder.minimumNumberShouldMatch(1);
+        queryBuilder.must(QueryBuilders.termQuery(LOGICAL_DELETE_FIELD, false));
+        return queryBuilder.minimumNumberShouldMatch(1);
 
-	}
+    }
 
 	@Override
 	public List<Team> getTeams(String ownerName) {
 		BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
 		queryBuilder.must(QueryBuilders.termQuery(OWNER_NAME_FIELD, ownerName));
 
-		SearchResponse response = elasticsearchClient.search(configuration.getElasticsearchIndexTeam(),
-				configuration.getElasticsaerchIndexTypeTeam(), queryBuilder);
+		SearchResponse response = elasticsearchClient.search(INDEX_TEAM_NAME,
+				INDEX_TYPE_TEAM_NAME, queryBuilder);
 
 		List<Team> teamList = new ArrayList<>();
 
@@ -127,10 +128,5 @@ public class TeamRepositoryImpl implements TeamRepository {
 	@Autowired
 	private void setElasticsearchClient(ElasticsearchClientImpl elasticsearchClient) {
 		this.elasticsearchClient = elasticsearchClient;
-	}
-
-	@Autowired
-	private void setConfiguration(ExternalConfigurationProperties configuration) {
-		this.configuration = configuration;
 	}
 }

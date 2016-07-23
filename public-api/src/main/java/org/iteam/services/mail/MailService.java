@@ -6,8 +6,8 @@ package org.iteam.services.mail;
  */
 public interface MailService {
 
-	/**
-	 * Send an email.
-	 */
-	public void sendEmail();
+    /**
+     * Send an email.
+     */
+    public void sendEmail();
 }

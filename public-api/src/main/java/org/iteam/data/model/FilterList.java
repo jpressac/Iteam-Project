@@ -7,26 +7,26 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class FilterList {
 
-	private List<Filter> filters;
+    private List<Filter> filters;
 
-	public FilterList() {
-		this.filters = new ArrayList<>();
-	}
+    public FilterList() {
+        this.filters = new ArrayList<>();
+    }
 
-	public List<Filter> getFilters() {
-		return filters;
-	}
+    public List<Filter> getFilters() {
+        return filters;
+    }
 
-	public void setFilters(List<Filter> filters) {
-		this.filters = filters;
-	}
+    public void setFilters(List<Filter> filters) {
+        this.filters = filters;
+    }
 
-	public void addFilter(Filter filter) {
-		filters.add(filter);
-	}
+    public void addFilter(Filter filter) {
+        filters.add(filter);
+    }
 
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
-	}
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
 }

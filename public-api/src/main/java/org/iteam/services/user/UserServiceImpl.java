@@ -8,35 +8,35 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserServiceImpl implements UserService {
 
-	private UserRepositoryImpl userRepository;
+    private UserRepositoryImpl userRepository;
 
-	@Override
-	public User getUser(String username) {
-		return userRepository.getUser(username);
-	}
+    @Override
+    public User getUser(String username) {
+        return userRepository.getUser(username);
+    }
 
-	@Override
-	public boolean setUser(User user) {
-		return userRepository.setUser(user);
-	}
+    @Override
+    public boolean setUser(User user) {
+        return userRepository.setUser(user);
+    }
 
-	@Override
-	public boolean checkUserExistence(String username) {
-		return userRepository.checkUserExistance(username);
-	}
+    @Override
+    public boolean checkUserExistence(String username) {
+        return userRepository.checkUserExistance(username);
+    }
 
-	@Override
-	public boolean modifyUser(String doc, String username) {
-		return userRepository.modifyUser(doc, username);
-	}
+    @Override
+    public boolean modifyUser(String doc, String username) {
+        return userRepository.modifyUser(doc, username);
+    }
 
-	@Override
-	public boolean logicalDelete(String doc, String username) {
-		return userRepository.logicalDelete(doc, username);
-	}
+    @Override
+    public boolean logicalDelete(String doc, String username) {
+        return userRepository.logicalDelete(doc, username);
+    }
 
-	@Autowired
-	private void setUserRepository(UserRepositoryImpl userRepository) {
-		this.userRepository = userRepository;
-	}
+    @Autowired
+    private void setUserRepository(UserRepositoryImpl userRepository) {
+        this.userRepository = userRepository;
+    }
 }

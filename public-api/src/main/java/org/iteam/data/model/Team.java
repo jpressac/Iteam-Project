@@ -7,45 +7,45 @@ import org.joda.time.DateTime;
 
 public class Team {
 
-	private String ownerName;
-	private DateTime creationDate;
-	private String name;
-	private List<String> members;
+    private String ownerName;
+    private DateTime creationDate;
+    private String name;
+    private List<String> members;
 
-	public String getOwnerName() {
-		return ownerName;
-	}
+    public String getOwnerName() {
+        return ownerName;
+    }
 
-	public void setOwnerName(String ownerName) {
-		this.ownerName = ownerName;
-	}
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
+    }
 
-	public DateTime getCreationDate() {
-		return creationDate;
-	}
+    public DateTime getCreationDate() {
+        return creationDate;
+    }
 
-	public void setCreationDate(DateTime creationDate) {
-		this.creationDate = creationDate;
-	}
+    public void setCreationDate(DateTime creationDate) {
+        this.creationDate = creationDate;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public List<String> getMembers() {
-		return members;
-	}
+    public List<String> getMembers() {
+        return members;
+    }
 
-	public void setMembers(List<String> members) {
-		this.members = members;
-	}
+    public void setMembers(List<String> members) {
+        this.members = members;
+    }
 
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
-	}
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
 }

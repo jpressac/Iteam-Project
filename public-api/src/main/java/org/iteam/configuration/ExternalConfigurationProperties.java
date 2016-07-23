@@ -1,6 +1,5 @@
 package org.iteam.configuration;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,130 +10,103 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ExternalConfigurationProperties {
 
-	@Value("${org.iteam.elasticsearch.host}")
-	private String elasticsearchHost;
+    @Value("${org.iteam.elasticsearch.host}")
+    private String elasticsearchHost;
 
-	@Value("${org.iteam.elasticsearch.port}")
-	private int elasticsearchPort;
+    @Value("${org.iteam.elasticsearch.port}")
+    private int elasticsearchPort;
 
-	@Value("${org.iteam.elasticsearch.cluster.name}")
-	private String elasticsearchClusterName;
+    @Value("${org.iteam.elasticsearch.cluster.name}")
+    private String elasticsearchClusterName;
 
-	@Value("${org.iteam.elasticsearch.index.user}")
-	private String elasticsearchIndexUserName;
+    @Value("${org.iteam.elasticsearch.index.user}")
+    private String elasticsearchIndexUserName;
 
-	@Value("${org.iteam.elasticsearch.index.type.user}")
-	private String elasticsearchIndexUserTypeName;
+    @Value("${org.iteam.elasticsearch.index.type.user}")
+    private String elasticsearchIndexUserTypeName;
 
-	@Value("${org.iteam.elasticsearch.index.team}")
-	private String elasticsearchIndexTeam;
+    @Value("${org.iteam.elasticsearch.index.team}")
+    private String elasticsaerchIndexTeam;
 
-	@Value("${org.iteam.elasticsearch.index.type.team}")
-	private String elasticsearchIndexTypeTeam;
+    @Value("${org.iteam.elasticsearch.index.type.team}")
+    private String elasticsaerchIndexTypeTeam;
 
-	@Value("${org.iteam.elasticsearch.index.utility}")
-	private String elasticsearchIndexUtility;
+    @Value("${org.iteam.elasticsearch.index.utility}")
+    private String elasticsearchIndexUtility;
 
-	@Value("${org.iteam.elasticsearch.index.type.utility}")
-	private String elasticsearchIndexTypeUtility;
+    @Value("${org.iteam.elasticsearch.index.type.utility}")
+    private String elasticsearchIndexTypeUtility;
 
-	@Value("${org.iteam.elasticsearch.index.meeting}")
-	private String elasticsearchIndexMeeting;
+    public String getElasticsearchHost() {
+        return elasticsearchHost;
+    }
 
-	@Value("${org.iteam.elasticsearch.index.type.meeting}")
-	private String elasticsearchIndexTypeMeeting;
+    public void setElasticsearchHost(String elasticsearchHost) {
+        this.elasticsearchHost = elasticsearchHost;
+    }
 
-	public String getElasticsearchHost() {
-		return elasticsearchHost;
-	}
+    public int getElasticsearchPort() {
+        return elasticsearchPort;
+    }
 
-	public void setElasticsearchHost(String elasticsearchHost) {
-		this.elasticsearchHost = elasticsearchHost;
-	}
+    public void setElasticsearchPort(int elasticsearchPort) {
+        this.elasticsearchPort = elasticsearchPort;
+    }
 
-	public int getElasticsearchPort() {
-		return elasticsearchPort;
-	}
+    public String getElasticsearchClusterName() {
+        return elasticsearchClusterName;
+    }
 
-	public void setElasticsearchPort(int elasticsearchPort) {
-		this.elasticsearchPort = elasticsearchPort;
-	}
+    public void setElasticsearchClusterName(String elasticsearchClusterName) {
+        this.elasticsearchClusterName = elasticsearchClusterName;
+    }
 
-	public String getElasticsearchClusterName() {
-		return elasticsearchClusterName;
-	}
+    public String getElasticsearchIndexUserName() {
+        return elasticsearchIndexUserName;
+    }
 
-	public void setElasticsearchClusterName(String elasticsearchClusterName) {
-		this.elasticsearchClusterName = elasticsearchClusterName;
-	}
+    public void setElasticsearchIndexUserName(String elasticsearchIndexUserName) {
+        this.elasticsearchIndexUserName = elasticsearchIndexUserName;
+    }
 
-	public String getElasticsearchIndexUserName() {
-		return elasticsearchIndexUserName;
-	}
+    public String getElasticsearchIndexUserTypeName() {
+        return elasticsearchIndexUserTypeName;
+    }
 
-	public void setElasticsearchIndexUserName(String elasticsearchIndexUserName) {
-		this.elasticsearchIndexUserName = elasticsearchIndexUserName;
-	}
+    public void setElasticsearchIndexUserTypeName(String elasticsearchIndexUserTypeName) {
+        this.elasticsearchIndexUserTypeName = elasticsearchIndexUserTypeName;
+    }
 
-	public String getElasticsearchIndexUserTypeName() {
-		return elasticsearchIndexUserTypeName;
-	}
+    public String getElasticsaerchIndexTeam() {
+        return elasticsaerchIndexTeam;
+    }
 
-	public void setElasticsearchIndexUserTypeName(String elasticsearchIndexUserTypeName) {
-		this.elasticsearchIndexUserTypeName = elasticsearchIndexUserTypeName;
-	}
+    public void setElasticsaerchIndexTeam(String elasticsaerchIndexTeam) {
+        this.elasticsaerchIndexTeam = elasticsaerchIndexTeam;
+    }
 
-	public String getElasticsearchIndexTeam() {
-		return elasticsearchIndexTeam;
-	}
+    public String getElasticsaerchIndexTypeTeam() {
+        return elasticsaerchIndexTypeTeam;
+    }
 
-	public void setElasticsearchIndexTeam(String elasticsaerchIndexTeam) {
-		this.elasticsearchIndexTeam = elasticsaerchIndexTeam;
-	}
+    public void setElasticsaerchIndexTypeTeam(String elasticsaerchIndexTypeTeam) {
+        this.elasticsaerchIndexTypeTeam = elasticsaerchIndexTypeTeam;
+    }
 
-	public String getElasticsaerchIndexTypeTeam() {
-		return elasticsearchIndexTypeTeam;
-	}
+    public String getElasticsearchIndexUtility() {
+        return elasticsearchIndexUtility;
+    }
 
-	public void setElasticsaerchIndexTypeTeam(String elasticsaerchIndexTypeTeam) {
-		this.elasticsearchIndexTypeTeam = elasticsaerchIndexTypeTeam;
-	}
+    public void setElasticsearchIndexUtility(String elasticsearchIndexUtility) {
+        this.elasticsearchIndexUtility = elasticsearchIndexUtility;
+    }
 
-	public String getElasticsearchIndexUtility() {
-		return elasticsearchIndexUtility;
-	}
+    public String getElasticsearchIndexTypeUtility() {
+        return elasticsearchIndexTypeUtility;
+    }
 
-	public void setElasticsearchIndexUtility(String elasticsearchIndexUtility) {
-		this.elasticsearchIndexUtility = elasticsearchIndexUtility;
-	}
-
-	public String getElasticsearchIndexTypeUtility() {
-		return elasticsearchIndexTypeUtility;
-	}
-
-	public void setElasticsearchIndexTypeUtility(String elasticsearchIndexTypeUtility) {
-		this.elasticsearchIndexTypeUtility = elasticsearchIndexTypeUtility;
-	}
-
-	public String getElasticsearchIndexMeeting() {
-		return elasticsearchIndexMeeting;
-	}
-
-	public void setElasticsearchIndexMeeting(String elasticsearchIndexMeeting) {
-		this.elasticsearchIndexMeeting = elasticsearchIndexMeeting;
-	}
-
-	public String getElasticsearchIndexTypeMeeting() {
-		return elasticsearchIndexTypeMeeting;
-	}
-
-	public void setElasticsearchIndexTypeMeeting(String elasticsearchIndexTypeMeeting) {
-		this.elasticsearchIndexTypeMeeting = elasticsearchIndexTypeMeeting;
-	}
-
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
-	}
+    public void setElasticsearchIndexTypeUtility(String elasticsearchIndexTypeUtility) {
+        this.elasticsearchIndexTypeUtility = elasticsearchIndexTypeUtility;
+    }
 
 }

@@ -9,36 +9,36 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class IdeasDTO {
 
-	private List<Idea> ideas;
-	private String insertionDate;
+    private List<Idea> ideas;
+    private String insertionDate;
 
-	public IdeasDTO() {
-	}
+    public IdeasDTO() {
+    }
 
-	public IdeasDTO(List<Idea> ideas, String insertionDate) {
-		this.ideas = ideas;
-		this.insertionDate = insertionDate;
-	}
+    public IdeasDTO(List<Idea> ideas, String insertionDate) {
+        this.ideas = ideas;
+        this.insertionDate = insertionDate;
+    }
 
-	public List<Idea> getIdeas() {
-		return ideas;
-	}
+    public List<Idea> getIdeas() {
+        return ideas;
+    }
 
-	public void setIdeas(List<Idea> ideas) {
-		this.ideas = ideas;
-	}
+    public void setIdeas(List<Idea> ideas) {
+        this.ideas = ideas;
+    }
 
-	public String getInsertionDate() {
-		return insertionDate;
-	}
+    public String getInsertionDate() {
+        return insertionDate;
+    }
 
-	public void setInsertionDate(String insertionDate) {
-		this.insertionDate = insertionDate;
-	}
+    public void setInsertionDate(String insertionDate) {
+        this.insertionDate = insertionDate;
+    }
 
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
-	}
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
 
 }

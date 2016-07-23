@@ -24,7 +24,7 @@ const NoteTarget = {
 class Board extends Component{
 
   render(){
-    var notemap = this.state.notes
+    let notemap = this.state.notes
     const { connectDropTarget } = this.props;
     const { notes } = this.state;
     return connectDropTarget(
@@ -69,16 +69,18 @@ class Board extends Component{
   }
 
 saveNotes(){
-  var notemap = this.state.notes;
-  var ideasList = Object.keys(notemap).map((key) =>{
-    return ({
+  let notemap = this.state.notes;
+  let ideasList = Object.keys(notemap).map((key) =>{
+    return ([
+    {
       "content": notemap[key].text,
       "username": notemap[key].username,
       "content": notemap[key].content,
       "comments": notemap[key].comments,
       "ranking": notemap[key].ranking,
       "reunionId": notemap[key].reunionId
-    });
+    }
+  ]);
 })
 axios.post('http://localhost:8080/meeting/ideas/save',{
   ideasList}).then(function (response) {
@@ -95,8 +97,8 @@ generateRandomNumber(){
   return Math.floor(Math.random() * 200) + 1 ;
 }
   add(text){
-    var map = this.state.notes;
-    var id =this.nextId()
+    let map = this.state.notes;
+    let id =this.nextId()
     map[id] =
       {
         id:id,
@@ -105,7 +107,7 @@ generateRandomNumber(){
         top:this.generateRandomNumber(),
         username: "belen",
         content: 'No comments',
-        comments: 'My first note :)',
+        comments: ['My first note :)'],
         ranking: 10,
         reunionId: 'SomeHash'
         };
@@ -114,14 +116,14 @@ generateRandomNumber(){
   }
 
   update(newText, id){
-    var map = this.state.notes
+    let map = this.state.notes
     map[id].content = newText;
     this.setState({notes:map})
     //this.forceUpdate();
   }
 
   updatePosition(id, left, top){
-    var map = this.state.notes
+    let map = this.state.notes
     map[id].left = left;
     map[id].top = top;
     this.setState({notes:map})
@@ -129,7 +131,7 @@ generateRandomNumber(){
   }
 
   remove(id){
-    var map = this.state.notes
+    let map = this.state.notes
     delete map[id]
     this.setState({notes:map})
     //this.forceUpdate();
