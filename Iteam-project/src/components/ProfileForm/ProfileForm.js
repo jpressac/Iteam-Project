@@ -3,12 +3,16 @@ import TextBox from '../Form/TextBox/TextBox.js'
 import {Form, FormGroup, Button, FormControl, ControlLabel, Col} from 'react-bootstrap'
 import classes from './ProfileForm.scss'
 import profile from '../Header/image/profile.jpg'
-import axios from 'axios'
+import {getUserData} from '../../redux/modules/ProfileData'
 
 class ProfileForm extends Component {
-  getData(){
-    //TODO: USAR USER AUTENTICATED PARA OBTENER USERNAME
-     axios
+  componentDidMount(){
+    getUserData().then( () => {
+      console.log('puto BIEN!!!')
+    }, () => {
+      console.log('puto MALLLL!!!')
+    })
+
   }
   render(){
     return(

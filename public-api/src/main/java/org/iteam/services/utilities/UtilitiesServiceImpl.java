@@ -10,25 +10,25 @@ import org.springframework.stereotype.Service;
 @Service
 public class UtilitiesServiceImpl implements UtilitiesService {
 
-	private UtilitiesRepositoryImpl utilitiesRepositoryImpl;
+    private UtilitiesRepositoryImpl utilitiesRepositoryImpl;
 
-	@Override
-	public boolean insertNationalities(Nationalities nationalities) {
-		return utilitiesRepositoryImpl.insertNationalities(nationalities);
-	}
+    @Override
+    public boolean insertNationalities(Nationalities nationalities) {
+        return utilitiesRepositoryImpl.insertNationalities(nationalities);
+    }
 
-	@Override
-	public Nationalities getNationalities() {
-		return utilitiesRepositoryImpl.getNationalities();
-	}
+    @Override
+    public Nationalities getNationalities() {
+        return utilitiesRepositoryImpl.getNationalities();
+    }
 
-	@Override
-	public List<String> getProfessions() {
-		return utilitiesRepositoryImpl.getProfessions();
-	}
+    @Override
+    public List<String> getProfessions() {
+        return utilitiesRepositoryImpl.getProfessions();
+    }
 
-	@Autowired
-	private void setUtilitiesRepositoryImpl(UtilitiesRepositoryImpl utilitiesRepositoryImpl) {
-		this.utilitiesRepositoryImpl = utilitiesRepositoryImpl;
-	}
+    @Autowired
+    private void setUtilitiesRepositoryImpl(UtilitiesRepositoryImpl utilitiesRepositoryImpl) {
+        this.utilitiesRepositoryImpl = utilitiesRepositoryImpl;
+    }
 }

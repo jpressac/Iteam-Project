@@ -15,6 +15,7 @@ class LoginForm extends Component {
       <div className={classes.label}  style={{marginTop:20}}>
       <label>LOGIN</label>
       </div>
+      <form method="POST" className="form-singin">
                 <div className={"well",classes.well} style={{width:550, height:300}} >
                       <label> </label>
 
@@ -54,7 +55,7 @@ class LoginForm extends Component {
                                      <input type="checkbox"/> Remember me </label>
                                   </div>
                               <div className="col-md-5">
-                              <button type="button" className={"btn btn-primary", classes.btn} style={{ marginLeft:10}}>
+                              <button type="submit" className={"btn btn-primary", classes.btn} style={{ marginLeft:10}}>
                                 <span className="glyphicon glyphicon-ok"></span> SIGN IN
                               </button>
                               </div>
@@ -65,7 +66,7 @@ class LoginForm extends Component {
                     </div>
                     </div>
                     </div>
-
+                    </form>
                   </div>
 
 

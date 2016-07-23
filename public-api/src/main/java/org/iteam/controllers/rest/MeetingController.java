@@ -18,44 +18,44 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class MeetingController {
 
-	private MeetingServiceImpl meetingServiceImpl;
+    private MeetingServiceImpl meetingServiceImpl;
 
-	/**
-	 * Create a new meeting, given the meeting information.
-	 * 
-	 * @return 200 OK if it was successful.
-	 */
-	@RequestMapping(value = "/meeting/create", method = RequestMethod.POST)
-	public ResponseEntity<Void> createMeeting(@RequestBody Meeting meeting) {
+    /**
+     * Create a new meeting, given the meeting information.
+     * 
+     * @return 200 OK if it was successful.
+     */
+    @RequestMapping(value = "/meeting/create", method = RequestMethod.POST)
+    public ResponseEntity<Void> createMeeting(@RequestBody Meeting meeting) {
 
-		return checkResult(meetingServiceImpl.createMeeting(meeting));
+        return checkResult(meetingServiceImpl.createMeeting(meeting));
 
-	}
+    }
 
-	/**
-	 * Save the ideas generated in the meeting.
-	 * 
-	 * @param ideas
-	 *            all the ideas.
-	 * @return 200 OK if it was successful
-	 */
-	@RequestMapping(value = "/meeting/ideas/save", method = RequestMethod.POST)
-	public ResponseEntity<Void> saveIdeas(@RequestBody IdeasDTO ideas) {
+    /**
+     * Save the ideas generated in the meeting.
+     * 
+     * @param ideas
+     *            all the ideas.
+     * @return 200 OK if it was successful
+     */
+    @RequestMapping(value = "/meeting/ideas/save", method = RequestMethod.POST)
+    public ResponseEntity<Void> saveIdeas(@RequestBody IdeasDTO ideas) {
 
-		return checkResult(meetingServiceImpl.savedIdeas(ideas));
-	}
+        return checkResult(meetingServiceImpl.savedIdeas(ideas));
+    }
 
-	private ResponseEntity<Void> checkResult(boolean flag) {
-		if (flag) {
-			return new ResponseEntity<>(HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
+    private ResponseEntity<Void> checkResult(boolean flag) {
+        if (flag) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
-	@Autowired
-	private void setMeetingServiceImpl(MeetingServiceImpl meetingServiceImpl) {
-		this.meetingServiceImpl = meetingServiceImpl;
-	}
+    @Autowired
+    private void setMeetingServiceImpl(MeetingServiceImpl meetingServiceImpl) {
+        this.meetingServiceImpl = meetingServiceImpl;
+    }
 
 }
