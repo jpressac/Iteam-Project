@@ -9,21 +9,23 @@ import org.iteam.data.model.Meeting;
  */
 public interface MeetingService {
 
-    /**
-     * Create a new meeting given the meeting information.
-     * 
-     * @param meeting
-     *            the meeting information.
-     * @return true if it was successful, false otherwise
-     */
-    public boolean createMeeting(Meeting meeting);
+	/**
+	 * Create a new meeting given the meeting information.
+	 * 
+	 * @param meeting
+	 *            the meeting information.
+	 * @return true if it was successful, false otherwise
+	 */
+	public boolean createMeeting(Meeting meeting);
 
-    /**
-     * Save the ideas generated during the meeting.
-     * 
-     * @param ideas
-     *            ideas generated.
-     * @return true if it was successful, false otherwise
-     */
-    public boolean savedIdeas(IdeasDTO ideas);
+	/**
+	 * Save the ideas generated during the meeting.
+	 * 
+	 * @param ideas
+	 *            ideas generated.
+	 * @return true if it was successful, false otherwise
+	 */
+	public boolean savedIdeas(IdeasDTO ideas);
+
+	public void generateReport(String meetingId);
 }

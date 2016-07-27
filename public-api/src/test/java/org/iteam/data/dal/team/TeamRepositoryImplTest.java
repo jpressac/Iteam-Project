@@ -9,7 +9,6 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
-import org.iteam.configuration.ExternalConfigurationProperties;
 import org.iteam.data.dal.client.ElasticsearchClientImpl;
 import org.iteam.data.model.Filter;
 import org.iteam.data.model.FilterList;
@@ -31,9 +30,6 @@ public class TeamRepositoryImplTest {
 
 	@Mock
 	private ElasticsearchClientImpl elasticsearchClientImpl;
-
-	@Mock
-	private ExternalConfigurationProperties configuration;
 
 	private boolean flag;
 	private String ownerName;
@@ -122,15 +118,13 @@ public class TeamRepositoryImplTest {
 		Mockito.when(searchHits.iterator()).thenReturn(hitIterator);
 		Mockito.when(hitIterator.hasNext()).thenReturn(false);
 
-		Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyString(), Mockito.anyObject()))
-				.thenReturn(response);
+		Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
 
 		ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
 	}
 
 	private void givenAnElasticsearchFilterResponseNull() {
-		Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyString(), Mockito.anyObject()))
-				.thenReturn(null);
+		Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(null);
 
 		ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
 	}
@@ -162,8 +156,7 @@ public class TeamRepositoryImplTest {
 		Mockito.when(hitIterator.next()).thenReturn(hit);
 		Mockito.when(hit.getSourceAsString()).thenReturn("{\"username\":\"iteam\"}");
 
-		Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyString(), Mockito.anyObject()))
-				.thenReturn(response);
+		Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
 
 		ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
 
@@ -184,8 +177,7 @@ public class TeamRepositoryImplTest {
 		Mockito.when(searchHits.getAt(0)).thenReturn(hit);
 		Mockito.when(hit.getId()).thenReturn("12345-abcde");
 
-		Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyString(), Mockito.anyObject()))
-				.thenReturn(response);
+		Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
 
 		DeleteResponse deleteResponse = Mockito.mock(DeleteResponse.class);
 
@@ -211,8 +203,7 @@ public class TeamRepositoryImplTest {
 		Mockito.when(searchHits.getAt(0)).thenReturn(hit);
 		Mockito.when(hit.getId()).thenReturn("12345-abcde");
 
-		Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyString(), Mockito.anyObject()))
-				.thenReturn(response);
+		Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
 
 		ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
 	}
@@ -231,8 +222,7 @@ public class TeamRepositoryImplTest {
 		Mockito.when(searchHits.getAt(0)).thenReturn(hit);
 		Mockito.when(hit.getId()).thenReturn("12345-abcde");
 
-		Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyString(), Mockito.anyObject()))
-				.thenReturn(response);
+		Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
 
 		DeleteResponse deleteResponse = Mockito.mock(DeleteResponse.class);
 

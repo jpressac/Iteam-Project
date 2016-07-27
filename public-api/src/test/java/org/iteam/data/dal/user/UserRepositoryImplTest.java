@@ -5,7 +5,6 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
-import org.iteam.configuration.ExternalConfigurationProperties;
 import org.iteam.data.dal.client.ElasticsearchClientImpl;
 import org.iteam.data.model.User;
 import org.junit.Assert;
@@ -24,9 +23,6 @@ public class UserRepositoryImplTest {
 
 	@Mock
 	private ElasticsearchClientImpl elasticsearchClient;
-
-	@Mock
-	private ExternalConfigurationProperties configuration;
 
 	private static final String USER_AS_JSON = "{\"username\":\"iteam\",\"password\":\"005f6e6f2dda2\",\"name\":\"iteamProject\"}";
 	private User user;
@@ -177,8 +173,7 @@ public class UserRepositoryImplTest {
 		Mockito.when(response.getHits()).thenReturn(searchHits);
 		Mockito.when(searchHits.getTotalHits()).thenReturn(0l);
 
-		Mockito.when(elasticsearchClient.search(Mockito.anyString(), Mockito.anyString(), Mockito.anyObject()))
-				.thenReturn(response);
+		Mockito.when(elasticsearchClient.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
 
 		ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClient);
 	}
@@ -188,8 +183,7 @@ public class UserRepositoryImplTest {
 	}
 
 	private void givenAnElasticsearchResponseNull() {
-		Mockito.when(elasticsearchClient.search(Mockito.anyString(), Mockito.anyString(), Mockito.anyObject()))
-				.thenReturn(null);
+		Mockito.when(elasticsearchClient.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(null);
 
 		ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClient);
 	}
@@ -217,8 +211,7 @@ public class UserRepositoryImplTest {
 		Mockito.when(searchHits.getAt(0)).thenReturn(hit);
 		Mockito.when(hit.getSourceAsString()).thenReturn(USER_AS_JSON);
 
-		Mockito.when(elasticsearchClient.search(Mockito.anyString(), Mockito.anyString(), Mockito.anyObject()))
-				.thenReturn(response);
+		Mockito.when(elasticsearchClient.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
 
 		ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClient);
 	}
