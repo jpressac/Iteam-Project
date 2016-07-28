@@ -79,7 +79,6 @@
   "author": "David Zukowski <david@zuko.me> (http://zuko.me)",
   "license": "MIT",
   "dependencies": {
-    
     "axios": "^0.12.0",
     "babel-cli": "^6.5.1",
     "babel-core": "^6.3.17",
@@ -110,6 +109,8 @@
     "koa-convert": "^1.2.0",
     "koa-proxy": "^0.5.0",
     "koa-static": "^2.0.0",
+    "moment": "^2.14.1",
+    "moment-range": "^2.2.0",
     "node-sass": "^3.3.3",
     "postcss-loader": "^0.8.0",
     "react": "^15.0.0",
@@ -117,7 +118,7 @@
     "react-dnd": "^2.1.4",
     "react-dnd-html5-backend": "^2.1.2",
     "react-dom": "^15.0.0",
-    "react-input-calendar": "^0.3.9",
+    "react-input-calendar": "^0.3.10",
     "react-redux": "^4.0.0",
     "react-router": "^2.0.0",
     "react-router-redux": "^4.0.0",
@@ -129,6 +130,7 @@
     "sass-loader": "^3.0.0",
     "style-loader": "^0.13.0",
     "url-loader": "^0.5.6",
+    "validator": "^5.5.0",
     "webpack": "^1.12.14",
     "yargs": "^4.0.0"
   },

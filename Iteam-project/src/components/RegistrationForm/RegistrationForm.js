@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {submitUser} from '../../redux/RegistrationForm/actions.js'
 import NationalitiesSelect from '../NationalitiesSelect'
 import axios from 'axios'
+import validator from 'validator'
 
 class RegistrationForm extends Component {
   constructor(props) {
@@ -13,33 +14,44 @@ class RegistrationForm extends Component {
       nationality: null,
       date: null,
       mail: null,
-      male: null,
-      female: null,
+      gender: null,
       profession: null,
       username: null,
       password: null,
       repeatPassword: null,
-      professions: []
+      professions: [],
+      errors: {}
     };
 
   }
   componentDidMount() {
     let opt = [];
-    debugger
     axios.get('http://localhost:8080/utilities/professions').then(function (response) {
-      console.log(response.data);
-      debugger
       this.fillProfessions(response.data);
-  }.bind(this));
+    }.bind(this));
 
   }
   handleClick() {
+      debugger
+    let errors2 = {};
+    if(!validator.isEmail(this.state.mail)){
+        errors2.mail = 'Invalid email address';
+      }
+    if(!validator.isAlpha(this.state.firstName)){
+      errors2.name = 'Invalid name';
+    }
+    if(!validator.isAlpha(this.state.lastName)){
+      errors2.lastName = 'Invalid last name';
+    }
+    if(!validator.equals(this.state.password, this.state.repeatPassword)){
+      errors2.password = 'The passwords entered do not match';
+    }
+    this.setState({errors: errors2});
 
-    submitUser(this.state);
+      //submitUser(this.state);
   }
   fillProfessions(data) {
     let opt = [];
-    debugger
     if (data !== null) {
       data.map(function (option, index) {
         opt.push(
@@ -49,6 +61,14 @@ class RegistrationForm extends Component {
       this.setState({professions: opt});
       this.forceUpdate();
     }
+  }
+  validateBeforeCreation() {
+      debugger
+      if (!/.+@.+\..+/.test(this.state.mail)) {
+      //if(!validator.isEmail(this.state.mail)){
+        this.setState({error :'Invalid mail'});
+        console.log('enbtreo');
+      }
   }
   firstNameChanged(event) {
     let first = event.target.value;
@@ -95,17 +115,17 @@ class RegistrationForm extends Component {
   maleCheckboxChanged(event) {
     let checked = event.target.checked;
     if (checked) {
-      this.setState({male: true});
+      this.setState({gender: 'male'});
     } else {
-      this.setState({male: false});
+      this.setState({gender: 'female'});
     }
   }
   femaleCheckboxChanged(event) {
     let checked = event.target.checked;
     if(checked){
-      this.setState({female: true });
+      this.setState({gender: 'female' });
     }else{
-      this.setState({female: false });
+      this.setState({gender: 'male' });
     }
   }
   nationalityChanged(event){
@@ -134,6 +154,8 @@ class RegistrationForm extends Component {
                     <div className="col-md-8">
                       <input type="text" className="form-control" id="inputfirstname" placeholder="Enter First Name..."
                              ref="firstName" onChange={this.firstNameChanged.bind(this)}/>
+
+                      <label htmlFor="inputemail">{this.state.errors.name}</label>
                     </div>
                   </div>
                   <div className="form-group">
@@ -173,6 +195,7 @@ class RegistrationForm extends Component {
                     <div className="col-md-8">
                       <input type="text" className="form-control" id="inputemail" placeholder=" E-mail "
                              ref="mail" onChange={this.emailChanged.bind(this)}></input>
+                      <label htmlFor="inputemail">{this.state.errors.mail}</label>
                     </div>
                   </div>
                   <div className="form-group">
@@ -201,6 +224,7 @@ class RegistrationForm extends Component {
                     <label for="inputconfirmpassword" className="col-md-4">Confirm Password</label>
                     <div className="col-md-8">
                       <input type="password" name="" className="form-control" ref="repeatPassword" onChange={this.repeatPasswordChanged.bind(this)}></input>
+                      <label htmlFor="inputconfirmpassword">{this.state.errors.password}</label>
                     </div>
                   </div>
                   <div className="form-group">
@@ -218,5 +242,4 @@ class RegistrationForm extends Component {
       </div>);
   };
 }
-
 export default RegistrationForm
