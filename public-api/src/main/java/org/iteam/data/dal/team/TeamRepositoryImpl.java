@@ -25,86 +25,86 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class TeamRepositoryImpl implements TeamRepository {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(TeamRepositoryImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TeamRepositoryImpl.class);
 
-	private ElasticsearchClientImpl elasticsearchClient;
-	private static final String OWNER_NAME_FIELD = "ownerName";
-	private static final String LOGICAL_DELETE_FIELD = "logicalDelete";
-	private static final String TEAM_NAME_FIELD = "teamName";
+    private ElasticsearchClientImpl elasticsearchClient;
+    private static final String OWNER_NAME_FIELD = "ownerName";
+    private static final String LOGICAL_DELETE_FIELD = "logicalDelete";
+    private static final String TEAM_NAME_FIELD = "teamName";
 
-	@Override
-	public boolean putTeam(Team team) {
+    @Override
+    public boolean putTeam(Team team) {
 
-		String data = JSONUtils.ObjectToJSON(team);
+        String data = JSONUtils.ObjectToJSON(team);
 
-		IndexResponse response = elasticsearchClient.insertData(data, StringUtilities.INDEX_TEAM,
-				StringUtilities.INDEX_TYPE_TEAM);
+        IndexResponse response = elasticsearchClient.insertData(data, StringUtilities.INDEX_TEAM,
+                StringUtilities.INDEX_TYPE_TEAM);
 
-		if (response.isCreated()) {
-			LOGGER.info("Team successfully created");
-			return true;
-		}
-		LOGGER.warn("The team could not be created");
-		return false;
-	}
+        if(response.isCreated()) {
+            LOGGER.info("Team successfully created");
+            return true;
+        }
+        LOGGER.warn("The team could not be created");
+        return false;
+    }
 
-	@Override
-	public boolean deleteTeam(String ownerName, String teamName) {
+    @Override
+    public boolean deleteTeam(String ownerName, String teamName) {
 
-		BoolQueryBuilder query = QueryBuilders.boolQuery();
+        BoolQueryBuilder query = QueryBuilders.boolQuery();
 
-		query.must(QueryBuilders.termQuery(OWNER_NAME_FIELD, ownerName))
-				.must(QueryBuilders.termQuery(TEAM_NAME_FIELD, teamName));
+        query.must(QueryBuilders.termQuery(OWNER_NAME_FIELD, ownerName))
+                .must(QueryBuilders.termQuery(TEAM_NAME_FIELD, teamName));
 
-		SearchResponse searchResponse = elasticsearchClient.search(StringUtilities.INDEX_TEAM, query);
+        SearchResponse searchResponse = elasticsearchClient.search(StringUtilities.INDEX_TEAM, query);
 
-		DeleteResponse deleteResponse = null;
+        DeleteResponse deleteResponse = null;
 
-		if (searchResponse.getHits().getTotalHits() == 1) {
-			deleteResponse = elasticsearchClient.delete(StringUtilities.INDEX_TEAM, StringUtilities.INDEX_TYPE_TEAM,
-					searchResponse.getHits().getAt(0).getId());
-		}
+        if(searchResponse.getHits().getTotalHits() == 1) {
+            deleteResponse = elasticsearchClient.delete(StringUtilities.INDEX_TEAM, StringUtilities.INDEX_TYPE_TEAM,
+                    searchResponse.getHits().getAt(0).getId());
+        }
 
-		if (deleteResponse != null && deleteResponse.isFound()) {
-			LOGGER.info("Team was successfully deleted");
-			return true;
-		}
+        if(deleteResponse != null && deleteResponse.isFound()) {
+            LOGGER.info("Team was successfully deleted");
+            return true;
+        }
 
-		LOGGER.warn("Team could not be deleted");
-		return false;
-	}
+        LOGGER.warn("Team could not be deleted");
+        return false;
+    }
 
-	@Override
-	public List<User> filterToCreateTeam(FilterList filterList) {
+    @Override
+    public List<User> filterToCreateTeam(FilterList filterList) {
 
-		List<User> userList = new ArrayList<>();
+        List<User> userList = new ArrayList<>();
 
-		SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_USER,
-				applyFiltersToQuery(filterList));
-		if (response != null) {
-			for (SearchHit hit : response.getHits()) {
-				User user = (User) JSONUtils.JSONToObject(hit.getSourceAsString(), User.class);
-				userList.add(user);
-			}
-		}
+        SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_USER,
+                applyFiltersToQuery(filterList));
+        if(response != null) {
+            for(SearchHit hit : response.getHits()) {
+                User user = (User) JSONUtils.JSONToObject(hit.getSourceAsString(), User.class);
+                userList.add(user);
+            }
+        }
 
-		return userList;
-	}
+        return userList;
+    }
 
-	private QueryBuilder applyFiltersToQuery(FilterList filterList) {
-		BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+    private QueryBuilder applyFiltersToQuery(FilterList filterList) {
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
 
-		for (Filter filter : filterList.getFilters()) {
-			queryBuilder.should(QueryBuilders.termsQuery(filter.getField(), filter.getValues()));
-		}
+        for(Filter filter : filterList.getFilters()) {
+            queryBuilder.should(QueryBuilders.termsQuery(filter.getField(), filter.getValues()));
+        }
 
-		queryBuilder.must(QueryBuilders.termQuery(LOGICAL_DELETE_FIELD, false));
-		return queryBuilder.minimumNumberShouldMatch(1);
+        queryBuilder.must(QueryBuilders.termQuery(LOGICAL_DELETE_FIELD, false));
+        return queryBuilder.minimumNumberShouldMatch(1);
 
-	}
+    }
 
-	@Autowired
-	private void setElasticsearchClient(ElasticsearchClientImpl elasticsearchClient) {
-		this.elasticsearchClient = elasticsearchClient;
-	}
+    @Autowired
+    private void setElasticsearchClient(ElasticsearchClientImpl elasticsearchClient) {
+        this.elasticsearchClient = elasticsearchClient;
+    }
 }
