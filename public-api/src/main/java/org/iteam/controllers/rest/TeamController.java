@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class TeamController {
 
     private TeamServiceImpl teamService;
+    Team team = new Team();
 
     /**
      * Create a new team based on the parameter information.
