@@ -1,7 +1,14 @@
-.Board {
+.board {
   width: 100%;
-  height: auto;
+  height: 100%;
+  position:relative;
+}
 
+.Notecontainer{
+  width: 500px;
+  height: 500px;
+  overflow: hidden;
+  z-index:0.7;
 }
 
 .button{
@@ -12,9 +19,10 @@
   border: none;
   color: white;
   padding: 6px 9px;
-    border-radius: 4px;
-    display: inline-block;
-      z-index:1;
+  border-radius: 4px;
+  display: inline-block;
+  z-index:1;
+  align-items: center;
 
 }
 .label1
@@ -23,7 +31,6 @@
   color:white;
   margin-left: 0px;
   font-size: 25px;
-  position: static;
   margin-top: 10px;
 background-color:hsla(337,85%,31%, 0.6);
 width: 100%

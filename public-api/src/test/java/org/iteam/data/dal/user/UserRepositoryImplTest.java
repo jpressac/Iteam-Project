@@ -7,6 +7,7 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.iteam.data.dal.client.ElasticsearchClientImpl;
 import org.iteam.data.model.User;
+import org.iteam.exceptions.JsonParsingException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,7 +61,7 @@ public class UserRepositoryImplTest {
 
 	@Test
 	public void setUserSuccessful() {
-		givenANewUser();
+		givenANewUser("male");
 		givenAnElasticsearchIndexResponseOk();
 		whenSetUserIsCalled();
 		thenUserWasInserted();
@@ -68,7 +69,7 @@ public class UserRepositoryImplTest {
 
 	@Test
 	public void setUserNotSuccessfulResponseNull() {
-		givenANewUser();
+		givenANewUser("male");
 		givenAnElasticsearchIndexResponseNull();
 		whenSetUserIsCalled();
 		thenUserWasntInserted();
@@ -76,8 +77,15 @@ public class UserRepositoryImplTest {
 
 	@Test
 	public void setUserNotSuccessfulFailure() {
-		givenANewUser();
+		givenANewUser("female");
 		givenAnElasticsearchIndexResponseFailure();
+		whenSetUserIsCalled();
+
+	}
+
+	@Test(expected = JsonParsingException.class)
+	public void checkGenderUserFailed() {
+		givenANewUser("hola");
 		whenSetUserIsCalled();
 		thenUserWasntInserted();
 	}
@@ -160,10 +168,11 @@ public class UserRepositoryImplTest {
 		givenAnElasticsearchIndexResponse(true);
 	}
 
-	private void givenANewUser() {
+	private void givenANewUser(String gender) {
 		user = new User();
 		user.setUsername("iteam");
 		user.setPassword("admin");
+		user.setGender(gender);
 	}
 
 	private void givenAnElasticsearchResponseFailure() {

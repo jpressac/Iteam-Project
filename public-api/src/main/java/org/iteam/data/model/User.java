@@ -15,6 +15,7 @@ public class User {
 	private String password;
 	private String name;
 	private String lastName;
+	private String gender;
 	private String nationality;
 	private String bornDate;
 	private List<String> hobbies;
@@ -135,6 +136,14 @@ public class User {
 
 	public void setInsertionDate(String insertionDate) {
 		this.insertionDate = insertionDate;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
 	}
 
 	@Override

@@ -8,4 +8,7 @@ public class JsonParsingException extends RuntimeException {
         super(e);
     }
 
+	public JsonParsingException(String message) {
+		super(message);
+	}
 }

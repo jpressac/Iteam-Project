@@ -12,7 +12,7 @@ class NationalitiesSelect extends React.Component {
   componentDidMount() {
     // get nationalities
     var _this = this;
-    _this.serverFetch = axios.get('http://localhost:8080/user/nationality/get').then(function(response){
+    _this.serverFetch = axios.get('http://localhost:8080/utilities/nationality/get').then(function(response){
     const nationalities = response.data.nationalities;
     _this.successHandler(nationalities);
     _this._select.focus();
@@ -33,8 +33,11 @@ class NationalitiesSelect extends React.Component {
   render() {
 
       return (
-          <select className="form-control" ref={(c) => this._select = c}>{this.state.options}</select>
+          <select className="form-control" ref={(c) => this._select = c} onChange={this.props.onchange}>{this.state.options}</select>
       )
   }
+}
+NationalitiesSelect.propTypes = {
+  onchange: React.PropTypes.func
 }
   export default NationalitiesSelect
