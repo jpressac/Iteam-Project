@@ -38,7 +38,7 @@ public class UserSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/utilities/nationality/get").permitAll()
                 .antMatchers(HttpMethod.POST, "/utilities/nationality/insert").permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**/*").permitAll().anyRequest().authenticated().and().formLogin()
-                .loginPage("/application/nmember/home").defaultSuccessUrl("/application/member/home", true).permitAll()
+                .loginPage("/application/nmember/login").defaultSuccessUrl("/application/member/home", true).permitAll()
                 .and().httpBasic().and().csrf().disable().logout().logoutSuccessUrl("/application/nmember/home")
                 .deleteCookies("JSESSIONID").and().sessionManagement();
     }
