@@ -79,7 +79,7 @@ public class UtilitiesRepositoryImpl implements UtilitiesRepository {
                 .field(PROFESSION_FIELD).order(Order.term(true));
 
         SearchResponse response = elasticsearchClient.search(configuration.getElasticsearchIndexUserName(),
-                configuration.getElasticsaerchIndexTypeTeam(), null, agrgregationBuilder, 0);
+                configuration.getElasticsearchIndexUserTypeName(), null, agrgregationBuilder, 0);
 
         if (response != null) {
             Terms term = response.getAggregations().get("professionAgg");

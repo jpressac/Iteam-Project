@@ -11,6 +11,7 @@ import org.iteam.data.model.Meeting;
 import org.iteam.services.utils.JSONUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -65,5 +66,12 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
         return true;
     }
+
+    @Autowired
+	private void setElasticsearchClientImpl(ElasticsearchClientImpl elasticsearchClientImpl) {
+		this.elasticsearchClientImpl = elasticsearchClientImpl;
+	}
+    
+    
 
 }

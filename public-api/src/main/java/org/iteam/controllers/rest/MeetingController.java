@@ -1,5 +1,7 @@
 package org.iteam.controllers.rest;
 
+import javax.validation.Valid;
+
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.Meeting;
 import org.iteam.services.meeting.MeetingServiceImpl;
@@ -40,7 +42,7 @@ public class MeetingController {
      * @return 200 OK if it was successful
      */
     @RequestMapping(value = "/meeting/ideas/save", method = RequestMethod.POST)
-    public ResponseEntity<Void> saveIdeas(@RequestBody IdeasDTO ideas) {
+	public ResponseEntity<Void> saveIdeas(@RequestBody @Valid IdeasDTO ideas) {
 
         return checkResult(meetingServiceImpl.savedIdeas(ideas));
     }

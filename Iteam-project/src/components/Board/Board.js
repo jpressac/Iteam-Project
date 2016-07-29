@@ -31,16 +31,20 @@ class Board extends Component{
       <div className={classes.board}>
       <label className={classes.label1}>My personal board</label>
 
-        <div className="col-md-8">
+        <div className="col-md-12">
               <div className="row">
                     <div className="col-md-4">
                           <button type= "button" className={" btn btn-primary",classes.button}  onClick={this.add.bind(this, "New note")}>
                            <span className="glyphicon glyphicon-plus"></span> ADD NOTE </button>
-                           </div>
-                             <div className="col-md-4">
+                    </div>
+                    <div className="col-md-4">
                            <button type="button" className={" btn btn-success", classes.button} onClick={this.saveNotes.bind(this)}> SAVE </button>
                            <BootstrapModal ref="mymodal" message={this.state.message}></BootstrapModal>
                       </div>
+                      <div className="col-md-4">
+                             <button type="button" className={" btn btn-success", classes.button} onClick={this.generateReport.bind(this)}> GENERATE REPORT </button>
+                             <BootstrapModal ref="mymodal" message={this.state.message}></BootstrapModal>
+                        </div>
                 </div>
           </div>
             <div className={classes.Notecontainer}>
@@ -70,27 +74,36 @@ class Board extends Component{
 
 saveNotes(){
   let notemap = this.state.notes;
-  let ideasList = Object.keys(notemap).map((key) =>{
-    return ([
+  let ideas = Object.keys(notemap).map((key) =>{
+    return (
     {
-      "content": notemap[key].text,
-      "username": notemap[key].username,
-      "content": notemap[key].content,
-      "comments": notemap[key].comments,
-      "ranking": notemap[key].ranking,
-      "reunionId": notemap[key].reunionId
+      username: notemap[key].username,
+      content: notemap[key].content,
+      comments: notemap[key].comments,
+      ranking: notemap[key].ranking,
+      meetingId: notemap[key].meetingId
     }
-  ]);
+  );
 })
 axios.post('http://localhost:8080/meeting/ideas/save',{
-  ideasList}).then(function (response) {
+  ideas}).then(function (response) {
     console.log(response.status);
     this.setState({message: '¡Your notes were successfully saved!'});
     this.refs.mymodal.openModal();
   }.bind(this)).catch(function (response) {
     console.log(response.status);
   })
-console.log(ideasList);
+console.log(ideas);
+}
+
+generateReport(){
+  axios.get('http://localhost:8080/meeting/report', {
+    params: {'SomeHash'}
+  }).then(function (response) {
+  console.log(response.data);
+  _this.fillUsersTable(response.data);
+}).catch(function (response) {
+  console.log(response.error);
 }
 
 generateRandomNumber(){
@@ -102,14 +115,13 @@ generateRandomNumber(){
     map[id] =
       {
         id:id,
-        content: text,
         left:this.generateRandomNumber(),
         top:this.generateRandomNumber(),
         username: "belen",
         content: 'No comments',
         comments: ['My first note :)'],
         ranking: 10,
-        reunionId: 'SomeHash'
+        meetingId: 'SomeHash'
         };
     this.setState({notes:map})
     //this.forceUpdate();
