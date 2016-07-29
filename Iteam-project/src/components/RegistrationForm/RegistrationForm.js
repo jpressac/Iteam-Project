@@ -9,16 +9,16 @@ class RegistrationForm extends Component {
     super(props);
 
     this.state = {
-      firstName: null,
-      lastName: null,
+      firstName: '',
+      lastName: '',
       nationality: null,
       date: null,
-      mail: null,
+      mail: '',
       gender: null,
       profession: null,
-      username: null,
-      password: null,
-      repeatPassword: null,
+      username: '',
+      password: '',
+      repeatPassword: '',
       professions: [],
       errors: {}
     };
@@ -32,22 +32,30 @@ class RegistrationForm extends Component {
 
   }
   handleClick() {
-      debugger
+    debugger
     let errors2 = {};
-    if(!validator.isEmail(this.state.mail)){
+    if (!validator.isNull(this.state.mail)) {
+      if (!validator.isEmail(this.state.mail)) {
         errors2.mail = 'Invalid email address';
       }
-    if(!validator.isAlpha(this.state.firstName)){
-      errors2.name = 'Invalid name';
+    } else {
+      errors2.mail = 'Required field';
     }
-    if(!validator.isAlpha(this.state.lastName)){
-      errors2.lastName = 'Invalid last name';
+    if (!validator.isNull(this.state.firstName)) {
+      if (!validator.isAlpha(this.state.firstName)) {
+        errors2.name = 'Invalid name';
+      }
+    } else {
+      errors2.name = 'Required field';
     }
-    if(!validator.equals(this.state.password, this.state.repeatPassword)){
-      errors2.password = 'The passwords entered do not match';
+    if(!validator.isNull(this.state.lastName)) {
+      if (!validator.isAlpha(this.state.lastName)) {
+        errors2.lastName = 'Invalid last name';
+      }
+    } else{
+        errors2.lastName = 'Required field';
     }
     this.setState({errors: errors2});
-
       //submitUser(this.state);
   }
   fillProfessions(data) {
@@ -152,7 +160,7 @@ class RegistrationForm extends Component {
                   <div className="form-group">
                     <label for="inputfirstname" className="col-md-4 control-label">First Name</label>
                     <div className="col-md-8">
-                      <input type="text" className="form-control" id="inputfirstname" placeholder="Enter First Name..."
+                      <input type="text" className="form-control" id="inputfirstname"
                              ref="firstName" onChange={this.firstNameChanged.bind(this)}/>
 
                       <label htmlFor="inputemail">{this.state.errors.name}</label>
@@ -161,8 +169,9 @@ class RegistrationForm extends Component {
                   <div className="form-group">
                     <label for="inputlastname" className="col-md-4 control-label" >Last Name</label>
                     <div className="col-md-8">
-                      <input type="text" className="form-control" id="inputlastname" placeholder="Enter Last Name..."
+                      <input type="text" className="form-control" id="inputlastname"
                              ref="lastName" onChange={this.lastNameChanged.bind(this)}/>
+                      <label htmlFor="inputlastname" className="control-label">{this.state.errors.lastName}</label>
                     </div>
                   </div>
                   <div className="form-group">
@@ -195,8 +204,9 @@ class RegistrationForm extends Component {
                     <div className="col-md-8">
                       <input type="text" className="form-control" id="inputemail" placeholder=" E-mail "
                              ref="mail" onChange={this.emailChanged.bind(this)}></input>
-                      <label htmlFor="inputemail">{this.state.errors.mail}</label>
+
                     </div>
+                    <label htmlFor="inputemail">{this.state.errors.mail}</label>
                   </div>
                   <div className="form-group">
                     <label for="inputprofession" className="col-md-4">Profession</label>

@@ -34,7 +34,7 @@ class NationalitiesSelect extends React.Component {
 
       return (
           <select className="form-control" ref={(c) => this._select = c} onChange={this.props.onchange}>
-            <option value="" default></option>
+            <option value="" default>Choose a nationality</option>
             {this.state.options}
           </select>
       )
