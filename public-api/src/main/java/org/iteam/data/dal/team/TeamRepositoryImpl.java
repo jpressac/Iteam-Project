@@ -91,6 +91,24 @@ public class TeamRepositoryImpl implements TeamRepository {
         return userList;
     }
 
+    @Override
+    public List<Team> getTeams(String ownerName) {
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+        queryBuilder.must(QueryBuilders.termQuery(OWNER_NAME_FIELD, ownerName));
+
+        SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_TEAM, queryBuilder);
+
+        List<Team> teamList = new ArrayList<>();
+
+        if(response != null) {
+            for(SearchHit hit : response.getHits()) {
+                teamList.add((Team) JSONUtils.JSONToObject(hit.getSourceAsString(), Team.class));
+            }
+        }
+
+        return teamList;
+    }
+
     private QueryBuilder applyFiltersToQuery(FilterList filterList) {
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
 

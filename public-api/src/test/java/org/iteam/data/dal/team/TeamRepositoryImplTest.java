@@ -9,6 +9,7 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
+import org.iteam.configuration.ExternalConfigurationProperties;
 import org.iteam.data.dal.client.ElasticsearchClientImpl;
 import org.iteam.data.model.Filter;
 import org.iteam.data.model.FilterList;
@@ -22,265 +23,309 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.ObjectUtils;
 
 public class TeamRepositoryImplTest {
 
-	@InjectMocks
-	private TeamRepositoryImpl underTest;
-
-	@Mock
-	private ElasticsearchClientImpl elasticsearchClientImpl;
-
-	private boolean flag;
-	private String ownerName;
-	private String teamName;
-	private FilterList filterList;
-	private List<User> userList;
-
-	@Before
-	public void init() {
-		MockitoAnnotations.initMocks(this);
-	}
-
-	@Test
-	public void insertNewTeamSuccessfully() {
-		givenAnElasticsearchClientResponseOk();
-		whenPutTeamIsCalled();
-		thenTeamWasCreated();
-	}
-
-	@Test
-	public void insertNewTeamNotSuccessfully() {
-		givenAnElasticsearchClientResponseFailure();
-		whenPutTeamIsCalled();
-		thenTeamWasntCreated();
-	}
-
-	@Test
-	public void deleteTeamSuccessfully() {
-		givenAnOwnerName();
-		givenATeamName();
-		givenAnElasticsearchClientSearchDeleteOk();
-		whenDeleteTeamIsCalled();
-		thenTeamWasDeleted();
-	}
-
-	@Test
-	public void deleteTeamNotSuccessfullySearchError() {
-		givenAnOwnerName();
-		givenATeamName();
-		givenAnElasticsearchClientSearchFailure();
-		whenDeleteTeamIsCalled();
-		thenTeamWasntDeleted();
-	}
-
-	@Test
-	public void deleteTeamNotSuccessfullyDeleteFailure() {
-		givenAnOwnerName();
-		givenATeamName();
-		givenAnElasticsearchClientDeleteFailure();
-		whenDeleteTeamIsCalled();
-		thenTeamWasntDeleted();
-	}
-
-	@Test
-	public void filterParticipantsSuccessfully() {
-		givenAFilterList();
-		givenAnElasticsearchFilterResponseOk();
-		whenFilterToCreateTeamIsCalled();
-		thenListOfUsersOk();
-	}
-
-	@Test
-	public void filterParticipantsNotSuccessfulNull() {
-		givenAFilterList();
-		givenAnElasticsearchFilterResponseNull();
-		whenFilterToCreateTeamIsCalled();
-		thenListOfUsersNull();
-	}
-
-	@Test
-	public void filterParticipantsNotSuccessful() {
-		givenAFilterList();
-		givenAnElasticsearchFilterResponseNotHits();
-		whenFilterToCreateTeamIsCalled();
-		thenListOfUsersNull();
-	}
-
-	private void givenAnElasticsearchFilterResponseNotHits() {
-		SearchResponse response = Mockito.mock(SearchResponse.class);
-		SearchHits searchHits = Mockito.mock(SearchHits.class);
-
-		@SuppressWarnings("unchecked")
-		Iterator<SearchHit> hitIterator = Mockito.mock(Iterator.class);
-
-		Mockito.when(response.getHits()).thenReturn(searchHits);
-		Mockito.when(searchHits.iterator()).thenReturn(hitIterator);
-		Mockito.when(hitIterator.hasNext()).thenReturn(false);
-
-		Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
-
-		ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
-	}
-
-	private void givenAnElasticsearchFilterResponseNull() {
-		Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(null);
-
-		ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
-	}
+    @InjectMocks
+    private TeamRepositoryImpl underTest;
+
+    @Mock
+    private ElasticsearchClientImpl elasticsearchClientImpl;
+
+    @Mock
+    private ExternalConfigurationProperties configuration;
+
+    private static final String JSON_REPRESNTATION_USER = "{\"username\":\"iteam\"}";
+    private static final String JSON_REPRESNTATION_TEAM = "{\"ownerName\":\"iteam\", \"name\":\"testIteam\"}";
+
+    private boolean flag;
+    private String ownerName;
+    private String teamName;
+    private FilterList filterList;
+    private List<User> userList;
+    private List<Team> teamList;
+
+    @Before
+    public void init() {
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void insertNewTeamSuccessfully() {
+        givenAnElasticsearchClientResponseOk();
+        whenPutTeamIsCalled();
+        thenTeamWasCreated();
+    }
+
+    @Test
+    public void insertNewTeamNotSuccessfully() {
+        givenAnElasticsearchClientResponseFailure();
+        whenPutTeamIsCalled();
+        thenTeamWasntCreated();
+    }
+
+    @Test
+    public void deleteTeamSuccessfully() {
+        givenAnOwnerName();
+        givenATeamName();
+        givenAnElasticsearchClientSearchDeleteOk();
+        whenDeleteTeamIsCalled();
+        thenTeamWasDeleted();
+    }
+
+    @Test
+    public void deleteTeamNotSuccessfullySearchError() {
+        givenAnOwnerName();
+        givenATeamName();
+        givenAnElasticsearchClientSearchFailure();
+        whenDeleteTeamIsCalled();
+        thenTeamWasntDeleted();
+    }
+
+    @Test
+    public void deleteTeamNotSuccessfullyDeleteFailure() {
+        givenAnOwnerName();
+        givenATeamName();
+        givenAnElasticsearchClientDeleteFailure();
+        whenDeleteTeamIsCalled();
+        thenTeamWasntDeleted();
+    }
+
+    @Test
+    public void filterParticipantsSuccessfully() {
+        givenAFilterList();
+        givenAnElasticsearchSearchResponseOk(JSON_REPRESNTATION_USER);
+        whenFilterToCreateTeamIsCalled();
+        thenListOfUsersOk();
+    }
+
+    @Test
+    public void filterParticipantsNotSuccessfulNull() {
+        givenAFilterList();
+        givenAnElasticsearchSearchResponseNull();
+        whenFilterToCreateTeamIsCalled();
+        thenListOfUsersNull();
+    }
+
+    @Test
+    public void filterParticipantsNotSuccessful() {
+        givenAFilterList();
+        givenAnElasticsearchSearchResponseNotHits();
+        whenFilterToCreateTeamIsCalled();
+        thenListOfUsersNull();
+    }
+
+    @Test
+    public void getTeamsSuccessful() {
+        givenAnOwnerName();
+        givenAnElasticsearchSearchResponseOk(JSON_REPRESNTATION_TEAM);
+        whenGetTeamsIsCalled();
+        thenListOfTeamsNotEmpty();
+    }
+
+    @Test
+    public void getTeamNotSuccessfulNull() {
+        givenAnOwnerName();
+        givenAnElasticsearchSearchResponseNull();
+        whenGetTeamsIsCalled();
+        thenListOfTeamsIsEmpty();
+    }
 
-	private void thenListOfUsersNull() {
-		Assert.assertEquals(0, userList.size());
-	}
+    @Test
+    public void getTeamNotSuccessful() {
+        givenAnOwnerName();
+        givenAnElasticsearchSearchResponseNotHits();
+        whenGetTeamsIsCalled();
+        thenListOfTeamsIsEmpty();
+    }
 
-	private void thenListOfUsersOk() {
-		Assert.assertEquals(1, userList.size());
-		Assert.assertEquals("iteam", userList.get(0).getUsername());
-	}
+    private void thenListOfTeamsIsEmpty() {
+        Assert.assertTrue(ObjectUtils.isEmpty(teamList));
+    }
 
-	private void whenFilterToCreateTeamIsCalled() {
-		userList = underTest.filterToCreateTeam(filterList);
-	}
+    private void thenListOfTeamsNotEmpty() {
+        Assert.assertFalse(ObjectUtils.isEmpty(teamList));
+    }
 
-	private void givenAnElasticsearchFilterResponseOk() {
-		SearchResponse response = Mockito.mock(SearchResponse.class);
-		SearchHits searchHits = Mockito.mock(SearchHits.class);
-		SearchHit hit = Mockito.mock(SearchHit.class);
+    private void whenGetTeamsIsCalled() {
+        teamList = underTest.getTeams(ownerName);
+    }
 
-		@SuppressWarnings("unchecked")
-		Iterator<SearchHit> hitIterator = Mockito.mock(Iterator.class);
+    private void givenAnElasticsearchSearchResponseNotHits() {
+        SearchResponse response = Mockito.mock(SearchResponse.class);
+        SearchHits searchHits = Mockito.mock(SearchHits.class);
 
-		Mockito.when(response.getHits()).thenReturn(searchHits);
-		Mockito.when(searchHits.iterator()).thenReturn(hitIterator);
-		Mockito.when(hitIterator.hasNext()).thenReturn(true, false);
-		Mockito.when(hitIterator.next()).thenReturn(hit);
-		Mockito.when(hit.getSourceAsString()).thenReturn("{\"username\":\"iteam\"}");
+        @SuppressWarnings("unchecked")
+        Iterator<SearchHit> hitIterator = Mockito.mock(Iterator.class);
 
-		Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
+        Mockito.when(response.getHits()).thenReturn(searchHits);
+        Mockito.when(searchHits.iterator()).thenReturn(hitIterator);
+        Mockito.when(hitIterator.hasNext()).thenReturn(false);
 
-		ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
+        Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
 
-	}
+        ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
+    }
 
-	private void givenAFilterList() {
-		filterList = new FilterList();
-		filterList.addFilter(new Filter("nationality", Lists.newArrayList("Argentina", "Germany")));
-	}
+    private void givenAnElasticsearchSearchResponseNull() {
+        Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(null);
 
-	private void givenAnElasticsearchClientDeleteFailure() {
-		SearchResponse response = Mockito.mock(SearchResponse.class);
-		SearchHits searchHits = Mockito.mock(SearchHits.class);
-		SearchHit hit = Mockito.mock(SearchHit.class);
+        ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
+    }
 
-		Mockito.when(response.getHits()).thenReturn(searchHits);
-		Mockito.when(searchHits.getTotalHits()).thenReturn(1l);
-		Mockito.when(searchHits.getAt(0)).thenReturn(hit);
-		Mockito.when(hit.getId()).thenReturn("12345-abcde");
+    private void thenListOfUsersNull() {
+        Assert.assertEquals(0, userList.size());
+    }
 
-		Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
+    private void thenListOfUsersOk() {
+        Assert.assertEquals(1, userList.size());
+        Assert.assertEquals("iteam", userList.get(0).getUsername());
+    }
 
-		DeleteResponse deleteResponse = Mockito.mock(DeleteResponse.class);
+    private void whenFilterToCreateTeamIsCalled() {
+        userList = underTest.filterToCreateTeam(filterList);
+    }
 
-		Mockito.when(deleteResponse.isFound()).thenReturn(false);
+    private void givenAnElasticsearchSearchResponseOk(String jsonRepresentation) {
+        SearchResponse response = Mockito.mock(SearchResponse.class);
+        SearchHits searchHits = Mockito.mock(SearchHits.class);
+        SearchHit hit = Mockito.mock(SearchHit.class);
 
-		Mockito.when(elasticsearchClientImpl.delete(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
-				.thenReturn(deleteResponse);
+        @SuppressWarnings("unchecked")
+        Iterator<SearchHit> hitIterator = Mockito.mock(Iterator.class);
 
-		ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
-	}
+        Mockito.when(response.getHits()).thenReturn(searchHits);
+        Mockito.when(searchHits.iterator()).thenReturn(hitIterator);
+        Mockito.when(hitIterator.hasNext()).thenReturn(true, false);
+        Mockito.when(hitIterator.next()).thenReturn(hit);
+        Mockito.when(hit.getSourceAsString()).thenReturn(jsonRepresentation);
 
-	private void thenTeamWasntDeleted() {
-		Assert.assertFalse(flag);
-	}
+        Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
 
-	private void givenAnElasticsearchClientSearchFailure() {
-		SearchResponse response = Mockito.mock(SearchResponse.class);
-		SearchHits searchHits = Mockito.mock(SearchHits.class);
-		SearchHit hit = Mockito.mock(SearchHit.class);
+        ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
 
-		Mockito.when(response.getHits()).thenReturn(searchHits);
-		Mockito.when(searchHits.getTotalHits()).thenReturn(0l);
-		Mockito.when(searchHits.getAt(0)).thenReturn(hit);
-		Mockito.when(hit.getId()).thenReturn("12345-abcde");
+    }
 
-		Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
+    private void givenAFilterList() {
+        filterList = new FilterList();
+        filterList.addFilter(new Filter("nationality", Lists.newArrayList("Argentina", "Germany")));
+    }
 
-		ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
-	}
+    private void givenAnElasticsearchClientDeleteFailure() {
+        SearchResponse response = Mockito.mock(SearchResponse.class);
+        SearchHits searchHits = Mockito.mock(SearchHits.class);
+        SearchHit hit = Mockito.mock(SearchHit.class);
 
-	private void whenDeleteTeamIsCalled() {
-		flag = underTest.deleteTeam(ownerName, teamName);
-	}
+        Mockito.when(response.getHits()).thenReturn(searchHits);
+        Mockito.when(searchHits.getTotalHits()).thenReturn(1l);
+        Mockito.when(searchHits.getAt(0)).thenReturn(hit);
+        Mockito.when(hit.getId()).thenReturn("12345-abcde");
 
-	private void givenAnElasticsearchClientSearchDeleteOk() {
-		SearchResponse response = Mockito.mock(SearchResponse.class);
-		SearchHits searchHits = Mockito.mock(SearchHits.class);
-		SearchHit hit = Mockito.mock(SearchHit.class);
+        Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
 
-		Mockito.when(response.getHits()).thenReturn(searchHits);
-		Mockito.when(searchHits.getTotalHits()).thenReturn(1l);
-		Mockito.when(searchHits.getAt(0)).thenReturn(hit);
-		Mockito.when(hit.getId()).thenReturn("12345-abcde");
+        DeleteResponse deleteResponse = Mockito.mock(DeleteResponse.class);
 
-		Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
+        Mockito.when(deleteResponse.isFound()).thenReturn(false);
 
-		DeleteResponse deleteResponse = Mockito.mock(DeleteResponse.class);
+        Mockito.when(elasticsearchClientImpl.delete(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(deleteResponse);
 
-		Mockito.when(deleteResponse.isFound()).thenReturn(true);
+        ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
+    }
 
-		Mockito.when(elasticsearchClientImpl.delete(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
-				.thenReturn(deleteResponse);
+    private void thenTeamWasntDeleted() {
+        Assert.assertFalse(flag);
+    }
 
-		ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
-	}
+    private void givenAnElasticsearchClientSearchFailure() {
+        SearchResponse response = Mockito.mock(SearchResponse.class);
+        SearchHits searchHits = Mockito.mock(SearchHits.class);
+        SearchHit hit = Mockito.mock(SearchHit.class);
 
-	private void thenTeamWasDeleted() {
-		Assert.assertTrue(flag);
-	}
+        Mockito.when(response.getHits()).thenReturn(searchHits);
+        Mockito.when(searchHits.getTotalHits()).thenReturn(0l);
+        Mockito.when(searchHits.getAt(0)).thenReturn(hit);
+        Mockito.when(hit.getId()).thenReturn("12345-abcde");
 
-	private void givenATeamName() {
-		teamName = "iteam";
-	}
+        Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
 
-	private void givenAnOwnerName() {
-		ownerName = "Iteam";
-	}
+        ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
+    }
 
-	private void givenAnElasticsearchClientResponseFailure() {
-		IndexResponse response = Mockito.mock(IndexResponse.class);
+    private void whenDeleteTeamIsCalled() {
+        flag = underTest.deleteTeam(ownerName, teamName);
+    }
 
-		Mockito.when(response.isCreated()).thenReturn(false);
+    private void givenAnElasticsearchClientSearchDeleteOk() {
+        SearchResponse response = Mockito.mock(SearchResponse.class);
+        SearchHits searchHits = Mockito.mock(SearchHits.class);
+        SearchHit hit = Mockito.mock(SearchHit.class);
 
-		Mockito.when(elasticsearchClientImpl.insertData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
-				.thenReturn(response);
+        Mockito.when(response.getHits()).thenReturn(searchHits);
+        Mockito.when(searchHits.getTotalHits()).thenReturn(1l);
+        Mockito.when(searchHits.getAt(0)).thenReturn(hit);
+        Mockito.when(hit.getId()).thenReturn("12345-abcde");
 
-		ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
-	}
+        Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
 
-	private void thenTeamWasntCreated() {
-		Assert.assertFalse(flag);
-	}
+        DeleteResponse deleteResponse = Mockito.mock(DeleteResponse.class);
 
-	private void thenTeamWasCreated() {
-		Assert.assertTrue(flag);
-	}
+        Mockito.when(deleteResponse.isFound()).thenReturn(true);
 
-	private void whenPutTeamIsCalled() {
+        Mockito.when(elasticsearchClientImpl.delete(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(deleteResponse);
 
-		Team team = new Team();
+        ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
+    }
 
-		flag = underTest.putTeam(team);
-	}
+    private void thenTeamWasDeleted() {
+        Assert.assertTrue(flag);
+    }
 
-	private void givenAnElasticsearchClientResponseOk() {
-		IndexResponse response = Mockito.mock(IndexResponse.class);
+    private void givenATeamName() {
+        teamName = "iteam";
+    }
 
-		Mockito.when(response.isCreated()).thenReturn(true);
+    private void givenAnOwnerName() {
+        ownerName = "Iteam";
+    }
 
-		Mockito.when(elasticsearchClientImpl.insertData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
-				.thenReturn(response);
+    private void givenAnElasticsearchClientResponseFailure() {
+        IndexResponse response = Mockito.mock(IndexResponse.class);
 
-		ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
-	}
+        Mockito.when(response.isCreated()).thenReturn(false);
+
+        Mockito.when(elasticsearchClientImpl.insertData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(response);
+
+        ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
+    }
+
+    private void thenTeamWasntCreated() {
+        Assert.assertFalse(flag);
+    }
+
+    private void thenTeamWasCreated() {
+        Assert.assertTrue(flag);
+    }
+
+    private void whenPutTeamIsCalled() {
+
+        Team team = new Team();
+
+        flag = underTest.putTeam(team);
+    }
+
+    private void givenAnElasticsearchClientResponseOk() {
+        IndexResponse response = Mockito.mock(IndexResponse.class);
+
+        Mockito.when(response.isCreated()).thenReturn(true);
+
+        Mockito.when(elasticsearchClientImpl.insertData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(response);
+
+        ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
+    }
 
 }

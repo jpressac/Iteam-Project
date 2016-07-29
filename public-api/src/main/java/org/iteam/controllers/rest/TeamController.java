@@ -27,7 +27,7 @@ public class TeamController {
     /**
      * Create a new team based on the parameter information.
      * 
-     * @param team,
+     * @param team
      *            the team to create.
      * @return 200 OK if it was successful.
      */
@@ -39,9 +39,9 @@ public class TeamController {
     /**
      * Delete an entire team based on a team owner a his name.
      * 
-     * @param ownerName,
+     * @param ownerName
      *            the team owner.
-     * @param teamName,
+     * @param teamName
      *            the team name.
      * @return 200 OK if it was successful.
      */
@@ -55,7 +55,7 @@ public class TeamController {
     /**
      * Apply filters to users for creating teams
      * 
-     * @param filter,
+     * @param filter
      *            a filter list to apply to users.
      * @return a list of user.
      */
@@ -64,8 +64,20 @@ public class TeamController {
         return teamService.filterToCreateTeam(filter);
     }
 
+    /**
+     * Get all the teams given a team owner
+     * 
+     * @param ownerName
+     *            the name of the owner
+     * @return a list of teams.
+     */
+    @RequestMapping(value = "team/byowner", method = RequestMethod.GET)
+    public List<Team> getTeamByOwner(@RequestParam(value = "ownerName", required = true) String ownerName) {
+        return teamService.getTeams(ownerName);
+    }
+
     private ResponseEntity<Void> checkResult(boolean flag) {
-        if (flag) {
+        if(flag) {
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
