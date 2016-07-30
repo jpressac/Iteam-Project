@@ -12,6 +12,10 @@ public class Team {
     private String name;
     private List<String> members;
 
+    public Team() {
+
+    }
+
     public String getOwnerName() {
         return ownerName;
     }

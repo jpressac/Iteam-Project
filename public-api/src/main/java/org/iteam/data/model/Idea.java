@@ -10,67 +10,67 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Idea {
 
-    private String username;
-    private String content;
-    private List<String> comments;
-    private Integer ranking;
-    private String reunionId;
+	private String username;
+	private String content;
+	private List<String> comments;
+	private Integer ranking;
+	private String meetingId;
 
-    // TODO: check what is better, where do we store the images, in the database
-    // or file-system.
-    @JsonIgnore
-    private List<byte[]> attachments;
+	// TODO: check what is better, where do we store the images, in the database
+	// or file-system.
+	@JsonIgnore
+	private List<byte[]> attachments;
 
-    public String getUsername() {
-        return username;
-    }
+	public String getUsername() {
+		return username;
+	}
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
-    public String getContent() {
-        return content;
-    }
+	public String getContent() {
+		return content;
+	}
 
-    public void setContent(String content) {
-        this.content = content;
-    }
+	public void setContent(String content) {
+		this.content = content;
+	}
 
-    public List<String> getComments() {
-        return comments;
-    }
+	public List<String> getComments() {
+		return comments;
+	}
 
-    public void setComments(List<String> comments) {
-        this.comments = comments;
-    }
+	public void setComments(List<String> comments) {
+		this.comments = comments;
+	}
 
-    public Integer getRanking() {
-        return ranking;
-    }
+	public Integer getRanking() {
+		return ranking;
+	}
 
-    public void setRanking(Integer ranking) {
-        this.ranking = ranking;
-    }
+	public void setRanking(Integer ranking) {
+		this.ranking = ranking;
+	}
 
-    public List<byte[]> getAttachments() {
-        return attachments;
-    }
+	public List<byte[]> getAttachments() {
+		return attachments;
+	}
 
-    public void setAttachments(List<byte[]> attachments) {
-        this.attachments = attachments;
-    }
+	public void setAttachments(List<byte[]> attachments) {
+		this.attachments = attachments;
+	}
 
-    public String getReunionId() {
-        return reunionId;
-    }
+	public String getMeetingId() {
+		return meetingId;
+	}
 
-    public void setReunionId(String reunionId) {
-        this.reunionId = reunionId;
-    }
+	public void setMeetingId(String meetingId) {
+		this.meetingId = meetingId;
+	}
 
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
+	}
 }

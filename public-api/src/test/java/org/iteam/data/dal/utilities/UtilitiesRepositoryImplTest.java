@@ -11,7 +11,6 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
-import org.iteam.configuration.ExternalConfigurationProperties;
 import org.iteam.data.dal.client.ElasticsearchClientImpl;
 import org.iteam.data.model.Nationalities;
 import org.junit.Assert;
@@ -30,9 +29,6 @@ public class UtilitiesRepositoryImplTest {
 
 	@Mock
 	private ElasticsearchClientImpl elasticsearchClient;
-
-	@Mock
-	private ExternalConfigurationProperties configuration;
 
 	private static final String NATIONALITIES_AS_JSON = "{\"nationalities\":[\"Argentina\", \"Germany\", \"Brazil\"]}";
 	private boolean flag;
@@ -125,8 +121,8 @@ public class UtilitiesRepositoryImplTest {
 		Mockito.when(terms.getBuckets()).thenReturn(bucketList);
 		Mockito.when(bucketIterator.hasNext()).thenReturn(false);
 
-		Mockito.when(elasticsearchClient.search(Mockito.anyString(), Mockito.anyString(), Mockito.anyObject(),
-				Mockito.anyObject(), Mockito.anyInt())).thenReturn(response);
+		Mockito.when(elasticsearchClient.search(Mockito.anyString(), Mockito.anyObject(), Mockito.anyObject(),
+				Mockito.anyInt())).thenReturn(response);
 
 		ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClient);
 
@@ -137,8 +133,8 @@ public class UtilitiesRepositoryImplTest {
 	}
 
 	private void givenAnElasticsearchResponseNull() {
-		Mockito.when(elasticsearchClient.search(Mockito.anyString(), Mockito.anyString(), Mockito.anyObject(),
-				Mockito.anyObject(), Mockito.anyInt())).thenReturn(null);
+		Mockito.when(elasticsearchClient.search(Mockito.anyString(), Mockito.anyObject(), Mockito.anyObject(),
+				Mockito.anyInt())).thenReturn(null);
 
 		ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClient);
 	}
@@ -175,8 +171,8 @@ public class UtilitiesRepositoryImplTest {
 		Mockito.when(bucket.getKeyAsString()).thenReturn("Estudiante");
 		Mockito.when(bucket2.getKeyAsString()).thenReturn("Software Engineer");
 
-		Mockito.when(elasticsearchClient.search(Mockito.anyString(), Mockito.anyString(), Mockito.anyObject(),
-				Mockito.anyObject(), Mockito.anyInt())).thenReturn(response);
+		Mockito.when(elasticsearchClient.search(Mockito.anyString(), Mockito.anyObject(), Mockito.anyObject(),
+				Mockito.anyInt())).thenReturn(response);
 
 		ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClient);
 	}

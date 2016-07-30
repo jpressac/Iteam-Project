@@ -10,6 +10,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
+import org.elasticsearch.search.sort.SortBuilder;
 
 /**
  * Interface for all the request to elasticsearch
@@ -20,13 +21,13 @@ public interface ElasticsearchClient {
     /**
      * Insert a new document.
      * 
-     * @param data,
+     * @param data
      *            the data to insert.
-     * @param index,
+     * @param index
      *            the index name.
-     * @param type,
+     * @param type
      *            the type name.
-     * @param id,
+     * @param id
      *            the document id.
      * @return an index response with the information about the request.
      */
@@ -35,11 +36,11 @@ public interface ElasticsearchClient {
     /**
      * Insert a new document with a random id.
      * 
-     * @param data,
+     * @param data
      *            the data to insert.
-     * @param index,
+     * @param index
      *            the index name.
-     * @param type,
+     * @param type
      *            the type name.
      * @return an index response with the information about the request.
      */
@@ -48,11 +49,11 @@ public interface ElasticsearchClient {
     /**
      * Insert a multiple documents with a random id.
      * 
-     * @param data,
+     * @param data
      *            the data to insert.
-     * @param index,
+     * @param index
      *            the index name.
-     * @param type,
+     * @param type
      *            the type name.
      * @return the information of the bulk request.
      */
@@ -61,13 +62,13 @@ public interface ElasticsearchClient {
     /**
      * Modify an specific document.
      * 
-     * @param data,
+     * @param data
      *            the new data, could be entire new data or some fields.
-     * @param index,
+     * @param index
      *            the index name.
-     * @param type,
+     * @param type
      *            the type name.
-     * @param id,
+     * @param id
      *            the id of the document to modify.
      * @return an update response with the information about the request.
      */
@@ -76,13 +77,13 @@ public interface ElasticsearchClient {
     /**
      * Delete in a logical way some document
      * 
-     * @param data,
+     * @param data
      *            the new data, could be entire new data or some fields.
-     * @param index,
+     * @param index
      *            the index name.
-     * @param type,
+     * @param type
      *            the type name.
-     * @param id,
+     * @param id
      *            the id of the document to delete.
      * @return an index response with the information about the request.
      */
@@ -91,11 +92,11 @@ public interface ElasticsearchClient {
     /**
      * Verify the existence of an specific document
      * 
-     * @param index,
+     * @param index
      *            the index name.
-     * @param type,
+     * @param type
      *            the type name.
-     * @param userName,
+     * @param userName
      *            the id of the document to check.
      * @return a get response with the information about the document.
      */
@@ -104,35 +105,64 @@ public interface ElasticsearchClient {
     /**
      * Search for documents, given an index, a type and a query.
      * 
-     * @param index,
+     * @param index
      *            the index name.
-     * @param type,
-     *            the type name.
-     * @param queryBuilder,
+     * @param queryBuilder
+     *            the query for filtering documents.
+     * @param sort
+     *            the sort order of the return results.
+     * @return a search response with the information of all the documents that
+     *         match the search.
+     */
+    public SearchResponse search(String index, QueryBuilder queryBuilder, SortBuilder sort);
+
+    /**
+     * Search for documents, given an index, a type and a query.
+     * 
+     * @param index
+     *            the index name.
+     * @param queryBuilder
      *            the query for filtering documents.
      * @return a search response with the information of all the documents that
      *         match the search.
      */
-    public SearchResponse search(String index, String type, QueryBuilder queryBuilder);
+    public SearchResponse search(String index, QueryBuilder queryBuilder);
 
     /**
      * Search for documents, given an index, a type, a query and an aggregation.
      * 
-     * @param index,
+     * @param index
      *            the index name.
-     * @param type,
-     *            the type name.
-     * @param queryBuilder,
+     * @param queryBuilder
      *            the query for filtering documents.
      * @param aggregationBuilder,
      *            the aggregation for grouping.
-     * @param size,
+     * @param size
+     *            limit the response query.
+     * @param sort
+     *            the sort order of the return results.
+     * @return a search response with the information of all the documents that
+     *         match the search.
+     */
+    public SearchResponse search(String index, QueryBuilder queryBuilder, AbstractAggregationBuilder aggregationBuilder,
+            Integer size, SortBuilder sort);
+
+    /**
+     * Search for documents, given an index, a type, a query and an aggregation.
+     * 
+     * @param index
+     *            the index name.
+     * @param queryBuilder
+     *            the query for filtering documents.
+     * @param aggregationBuilder,
+     *            the aggregation for grouping.
+     * @param size
      *            limit the response query.
      * @return a search response with the information of all the documents that
      *         match the search.
      */
-    public SearchResponse search(String index, String type, QueryBuilder queryBuilder,
-            AbstractAggregationBuilder aggregationBuilder, Integer size);
+    public SearchResponse search(String index, QueryBuilder queryBuilder, AbstractAggregationBuilder aggregationBuilder,
+            Integer size);
 
     public DeleteResponse delete(String index, String type, String id);
 

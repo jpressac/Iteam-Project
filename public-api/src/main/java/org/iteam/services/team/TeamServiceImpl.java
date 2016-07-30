@@ -29,13 +29,13 @@ public class TeamServiceImpl implements TeamService {
         return teamRepository.filterToCreateTeam(filterList);
     }
 
-	@Override
-	public List<Team> getTeams(String ownerName) {
-		return teamRepository.getTeams(ownerName);
-	}
+    @Override
+    public List<Team> getTeams(String ownerName) {
+        return teamRepository.getTeams(ownerName);
+    }
 
-	@Autowired
-	private void setTeamRepository(TeamRepositoryImpl teamRepository) {
-		this.teamRepository = teamRepository;
-	}
+    @Autowired
+    private void setTeamRepository(TeamRepositoryImpl teamRepository) {
+        this.teamRepository = teamRepository;
+    }
 }

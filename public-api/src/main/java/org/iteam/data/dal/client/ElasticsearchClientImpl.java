@@ -21,6 +21,7 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
+import org.elasticsearch.search.sort.SortBuilder;
 import org.iteam.configuration.ExternalConfigurationProperties;
 import org.iteam.exceptions.ElasticsearchClientException;
 import org.slf4j.Logger;
@@ -32,122 +33,137 @@ import org.thymeleaf.util.StringUtils;
 @Repository
 public class ElasticsearchClientImpl implements ElasticsearchClient {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchClientImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchClientImpl.class);
 
-	private static final String ELASTICSEARCH_CLUSTER_NAME_PROP = "cluster.name";
-	private static final Integer SIZE_RESPONSE = 10000;
+    private static final String ELASTICSEARCH_CLUSTER_NAME_PROP = "cluster.name";
+    private static final Integer SIZE_RESPONSE = 10000;
 
-	private Client client;
-	private ExternalConfigurationProperties configuration;
+    private Client client;
+    private ExternalConfigurationProperties configuration;
 
-	@PostConstruct
-	private void init() {
-		Settings settings = Settings.settingsBuilder()
-				.put(ELASTICSEARCH_CLUSTER_NAME_PROP, configuration.getElasticsearchClusterName())
-				.put("client.transport.sniff", true).build();
+    @PostConstruct
+    private void init() {
+        Settings settings = Settings.settingsBuilder()
+                .put(ELASTICSEARCH_CLUSTER_NAME_PROP, configuration.getElasticsearchClusterName())
+                .put("client.transport.sniff", true).build();
 
-		try {
-			client = TransportClient.builder().settings(settings).build().addTransportAddress(
-					new InetSocketTransportAddress(InetAddress.getByName(configuration.getElasticsearchHost()),
-							configuration.getElasticsearchPort()));
-		} catch (UnknownHostException e) {
-			LOGGER.error("Unexpected exception while initializing Elastic Search client: ", e);
-			throw new ElasticsearchClientException(e);
-		}
-	}
+        try {
+            client = TransportClient.builder().settings(settings).build().addTransportAddress(
+                    new InetSocketTransportAddress(InetAddress.getByName(configuration.getElasticsearchHost()),
+                            configuration.getElasticsearchPort()));
+        } catch (UnknownHostException e) {
+            LOGGER.error("Unexpected exception while initializing Elastic Search client: ", e);
+            throw new ElasticsearchClientException(e);
+        }
+    }
 
-	@Override
-	public IndexResponse insertData(String data, String index, String type, String id) {
+    @Override
+    public IndexResponse insertData(String data, String index, String type, String id) {
 
-		return insert(index, type, id, data).execute().actionGet();
-	}
+        return insert(index, type, id, data).execute().actionGet();
+    }
 
-	@Override
-	public IndexResponse insertData(String data, String index, String type) {
-		return insertData(data, index, type, null);
-	}
+    @Override
+    public IndexResponse insertData(String data, String index, String type) {
+        return insertData(data, index, type, null);
+    }
 
-	@Override
-	public BulkResponse insertData(List<String> data, String index, String type) {
+    @Override
+    public BulkResponse insertData(List<String> data, String index, String type) {
 
-		BulkRequestBuilder insertBulk = client.prepareBulk();
+        BulkRequestBuilder insertBulk = client.prepareBulk();
 
-		data.forEach((dataToInsert) -> {
-			insertBulk.add(insert(index, type, null, dataToInsert));
-		});
+        data.forEach((dataToInsert) -> {
+            insertBulk.add(insert(index, type, null, dataToInsert));
+        });
 
-		return insertBulk.execute().actionGet();
-	}
+        return insertBulk.execute().actionGet();
+    }
 
-	@Override
-	public SearchResponse search(String index, String type, QueryBuilder queryBuilder) {
-		return search(index, type, queryBuilder, null, SIZE_RESPONSE);
-	}
+    @Override
+    public SearchResponse search(String index, QueryBuilder queryBuilder, SortBuilder sort) {
+        return search(index, queryBuilder, null, SIZE_RESPONSE, sort);
+    }
 
-	@Override
-	public SearchResponse search(String index, String type, QueryBuilder queryBuilder,
-			AbstractAggregationBuilder aggregationBuilder, Integer size) {
+    @Override
+    public SearchResponse search(String index, QueryBuilder queryBuilder) {
+        return search(index, queryBuilder, null, SIZE_RESPONSE, null);
+    }
 
-		SearchRequestBuilder response = client.prepareSearch();
+    @Override
+    public SearchResponse search(String index, QueryBuilder queryBuilder, AbstractAggregationBuilder aggregationBuilder,
+            Integer size) {
+        return search(index, queryBuilder, aggregationBuilder, SIZE_RESPONSE, null);
+    }
 
-		response.setIndices(index).setTypes(type);
+    @Override
+    public SearchResponse search(String index, QueryBuilder queryBuilder, AbstractAggregationBuilder aggregationBuilder,
+            Integer size, SortBuilder sort) {
 
-		if (queryBuilder != null) {
-			response.setQuery(queryBuilder);
-		}
+        SearchRequestBuilder search = client.prepareSearch();
 
-		if (aggregationBuilder != null) {
-			response.addAggregation(aggregationBuilder);
-		}
+        search.setIndices(index);
 
-		if (size != null) {
-			response.setSize(size);
-		}
+        if(queryBuilder != null) {
+            search.setQuery(queryBuilder);
+        }
 
-		return response.execute().actionGet();
-	}
+        if(aggregationBuilder != null) {
+            search.addAggregation(aggregationBuilder);
+        }
 
-	/*
-	 * curl -XHEAD --dump-header - localhost:9200/index/type/doc(non-Javadoc)
-	 * This request doesn't return a document body, just 200 or 404
-	 * 
-	 * @see
-	 * org.iteam.data.dal.client.ElasticsearchClient#checkUser(java.lang.String,
-	 * java.lang.String)
-	 */
-	@Override
-	public GetResponse getDocument(String index, String type, String id) {
-		return client.prepareGet(index, type, id).execute().actionGet();
-	}
+        if(size != null) {
+            search.setSize(size);
+        }
 
-	@Override
-	public UpdateResponse modifyData(String data, String index, String type, String id) {
-		return client.prepareUpdate().setIndex(index).setType(type).setId(id).setDoc(data).execute().actionGet();
-	}
+        if(sort != null) {
+            search.addSort(sort);
+        }
 
-	@Override
-	public DeleteResponse delete(String index, String type, String id) {
-		return client.prepareDelete(index, type, id).execute().actionGet();
-	}
+        return search.execute().actionGet();
+    }
 
-	@Override
-	public UpdateResponse logicalDelete(String data, String index, String type, String id) {
-		return modifyData(data, index, type, id);
-	}
+    /*
+     * curl -XHEAD --dump-header - localhost:9200/index/type/doc(non-Javadoc)
+     * This request doesn't return a document body, just 200 or 404
+     * 
+     * @see
+     * org.iteam.data.dal.client.ElasticsearchClient#checkUser(java.lang.String,
+     * java.lang.String)
+     */
+    @Override
+    public GetResponse getDocument(String index, String type, String id) {
+        return client.prepareGet(index, type, id).execute().actionGet();
+    }
 
-	private IndexRequestBuilder insert(String index, String type, String id, String data) {
-		IndexRequestBuilder indexRequest = client.prepareIndex();
-		indexRequest.setIndex(index).setType(type);
+    @Override
+    public UpdateResponse modifyData(String data, String index, String type, String id) {
+        return client.prepareUpdate().setIndex(index).setType(type).setId(id).setDoc(data).execute().actionGet();
+    }
 
-		if (id != null || !StringUtils.isEmpty(id)) {
-			indexRequest.setId(id);
-		}
+    @Override
+    public DeleteResponse delete(String index, String type, String id) {
+        return client.prepareDelete(index, type, id).execute().actionGet();
+    }
 
-		return indexRequest.setSource(data);
-	}
+    @Override
+    public UpdateResponse logicalDelete(String data, String index, String type, String id) {
+        return modifyData(data, index, type, id);
+    }
 
-	@Autowired
-	private void setConfiguration(ExternalConfigurationProperties configuration) {
-		this.configuration = configuration;
-	}
+    private IndexRequestBuilder insert(String index, String type, String id, String data) {
+        IndexRequestBuilder indexRequest = client.prepareIndex();
+        indexRequest.setIndex(index).setType(type);
+
+        if(id != null || !StringUtils.isEmpty(id)) {
+            indexRequest.setId(id);
+        }
+
+        return indexRequest.setSource(data);
+    }
+
+    @Autowired
+    private void setConfiguration(ExternalConfigurationProperties configuration) {
+        this.configuration = configuration;
+    }
 }
