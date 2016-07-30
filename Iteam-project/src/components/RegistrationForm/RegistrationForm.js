@@ -5,17 +5,18 @@ import axios from 'axios'
 import validator from 'validator'
 
 class RegistrationForm extends Component {
+
   constructor(props) {
     super(props);
 
     this.state = {
       firstName: '',
       lastName: '',
-      nationality: null,
-      date: null,
+      nationality: '',
+      date: '',
       mail: '',
-      gender: null,
-      profession: null,
+      gender: '',
+      profession: '',
       username: '',
       password: '',
       repeatPassword: '',
@@ -32,32 +33,11 @@ class RegistrationForm extends Component {
 
   }
   handleClick() {
-    debugger
-    let errors2 = {};
-    if (!validator.isNull(this.state.mail)) {
-      if (!validator.isEmail(this.state.mail)) {
-        errors2.mail = 'Invalid email address';
-      }
-    } else {
-      errors2.mail = 'Required field';
-    }
-    if (!validator.isNull(this.state.firstName)) {
-      if (!validator.isAlpha(this.state.firstName)) {
-        errors2.name = 'Invalid name';
-      }
-    } else {
-      errors2.name = 'Required field';
-    }
-    if(!validator.isNull(this.state.lastName)) {
-      if (!validator.isAlpha(this.state.lastName)) {
-        errors2.lastName = 'Invalid last name';
-      }
-    } else{
-        errors2.lastName = 'Required field';
-    }
-    this.setState({errors: errors2});
+    this.validateBeforeCreation();
+
       //submitUser(this.state);
   }
+
   fillProfessions(data) {
     let opt = [];
     if (data !== null) {
@@ -70,13 +50,52 @@ class RegistrationForm extends Component {
       this.forceUpdate();
     }
   }
+  validateEmptyFields(fieldValue){
+    if(!validator.isNull(fieldValue)){
+      return false;
+    }else{
+      return true;
+    }
+  }
+  validateDate(dateValue){
+    if(!validator.isDate(dateValue)){
+      return 'Invalid field';
+    }
+  }
+  validateMail(mail){
+    if(!validator.isEmail(mail)){
+      return 'Invalid field';
+    }
+  }
+  validateNames(name){
+    if(!validator.isAlpha(name)){
+      return 'Invalid field';
+    }
+  }
   validateBeforeCreation() {
       debugger
-      if (!/.+@.+\..+/.test(this.state.mail)) {
-      //if(!validator.isEmail(this.state.mail)){
-        this.setState({error :'Invalid mail'});
-        console.log('enbtreo');
+    let errors2 = {};
+
+    errors2.mail = this.validateEmptyFields(this.state.mail) ? 'Required field' : this.validateMail(this.state.mail);
+    //errors2.mail = this.validateMail(this.state.mail);
+    errors2.name = this.validateEmptyFields(this.state.firstName) ? 'Required field' : this.validateNames(this.state.firstName);
+    errors2.lastName = this.validateEmptyFields(this.state.lastName) ? 'Required field' : this.validateNames(this.state.lastName);
+    errors2.date = this.validateEmptyFields(this.state.date)  ? 'Required field' : this.validateDate(this.state.date);
+
+    //validate that both of the PASSWORD fields have the same value
+    if((!validator.isNull(this.state.password)) && (!validator.isNull(this.state.repeatPassword))){
+      if(this.state.password !== this.state.repeatPassword){
+        errors2.password = 'The passwords don&#39;t match';
       }
+    }else{
+        errors2.password = 'Required fields';
+    }
+    errors2.gender = this.validateEmptyFields(this.state.gender);
+    errors2.nationality = this.validateEmptyFields(this.state.nationality);
+    errors2.profession = this.validateEmptyFields(this.state.profession);
+
+    this.setState({errors: errors2});
+
   }
   firstNameChanged(event) {
     let first = event.target.value;
@@ -178,6 +197,7 @@ class RegistrationForm extends Component {
                     <label for="inputdateofbirth" className="col-md-4 control-label"> Date of Birth</label>
                     <div className="col-md-8">
                      <input type="date" className="form-control" id="inputname" ref="birthDate" placeholder="" onChange={this.dateChanged.bind(this)}></input>
+                      <label htmlFor="inputdateofbirth">{this.state.errors.date}</label>
                     </div>
                   </div>
                   <div className="form-group">
@@ -192,19 +212,20 @@ class RegistrationForm extends Component {
                         Female
                       </label>
                     </div>
+                    <label htmlFor="inputgender">{this.state.errors.gender}</label>
                   </div>
                   <div className="form-group">
-                    <label for="inputUsername" className="col-md-4">Nationality</label>
-                    <div className="col-md-8">
+                    <label for="cmbNationality" className="col-md-4">Nationality</label>
+                    <div className="col-md-8" id="cmbNationality">
                       <NationalitiesSelect  onchange={this.nationalityChanged.bind(this)}></NationalitiesSelect>
                     </div>
+                    <label htmlFor="cmbNationality">{this.state.errors.nationality}</label>
                   </div>
                   <div className="form-group">
                     <label for="inputemail" className="col-md-4">E-mail</label>
                     <div className="col-md-8">
                       <input type="text" className="form-control" id="inputemail" placeholder=" E-mail "
                              ref="mail" onChange={this.emailChanged.bind(this)}></input>
-
                     </div>
                     <label htmlFor="inputemail">{this.state.errors.mail}</label>
                   </div>
@@ -212,10 +233,11 @@ class RegistrationForm extends Component {
                     <label for="inputprofession" className="col-md-4">Profession</label>
                     <div className="col-md-8">
                       <select  className="form-control" id="inputprofession" ref="profession" onChange={this.professionChanged.bind(this)}>
-                        <option value ="" default>  </option>
+                        <option value ="" default> Choose a profession </option>
                         {this.state.professions}
                       </select>
                     </div>
+                    <label htmlFor="inputprofession">{this.state.errors.profession}</label>
                   </div>
                   <div className="form-group">
                     <label for="inputusername" className="col-md-4">User name</label>
@@ -234,14 +256,13 @@ class RegistrationForm extends Component {
                     <label for="inputconfirmpassword" className="col-md-4">Confirm Password</label>
                     <div className="col-md-8">
                       <input type="password" name="" className="form-control" ref="repeatPassword" onChange={this.repeatPasswordChanged.bind(this)}></input>
-                      <label htmlFor="inputconfirmpassword">{this.state.errors.password}</label>
                     </div>
+                    <label htmlFor="inputconfirmpassword">{this.state.errors.password}</label>
                   </div>
                   <div className="form-group">
                     <div className="col-md-12">
                       <input type="button" onClick={this.handleClick.bind(this)}
                              className="btn btn-success" value="Register"></input>
-
                     </div>
                   </div>
                 </form>
