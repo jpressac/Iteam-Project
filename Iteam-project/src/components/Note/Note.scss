@@ -1,19 +1,9 @@
-@import url(http://fonts.googleapis.com/css?family=Shadows+Into+Light);
-
-body,
-html,
-div.board,
-div#react-container {
-    height: 100%;
-    overflow: hidden;
-}
-
 .note {
     height: 150px;
     width: 150px;
     background-color: pink;
     margin: 2px 0;
-    position: relative;
+    position:absolute;
     cursor: 'move';
     -webkit-box-shadow: 5px 5px 15px 0 rgba(0, 0, 0, .2);
     box-shadow: 5px 5px 15px 0 rgba(0, 0, 0, .2);

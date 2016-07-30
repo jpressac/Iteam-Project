@@ -7,22 +7,22 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class Nationalities {
 
-	private List<String> nationalities;
+    private List<String> nationalities;
 
-	public Nationalities() {
-		nationalities = new ArrayList<>();
-	}
+    public Nationalities() {
+        nationalities = new ArrayList<>();
+    }
 
-	public List<String> getNationalities() {
-		return nationalities;
-	}
+    public List<String> getNationalities() {
+        return nationalities;
+    }
 
-	public void setNationalities(List<String> nationalities) {
-		this.nationalities = nationalities;
-	}
+    public void setNationalities(List<String> nationalities) {
+        this.nationalities = nationalities;
+    }
 
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
-	}
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
 }

@@ -23,85 +23,85 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class UtilitiesRepositoryImpl implements UtilitiesRepository {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(UtilitiesRepositoryImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UtilitiesRepositoryImpl.class);
 
-	private static final String NATIONALITIES_ID = "nationalities";
-	private static final String PROFESSION_FIELD = "profession";
+    private static final String NATIONALITIES_ID = "nationalities";
+    private static final String PROFESSION_FIELD = "profession";
 
-	private ElasticsearchClient elasticsearchClient;
-	private ExternalConfigurationProperties configuration;
+    private ElasticsearchClient elasticsearchClient;
+    private ExternalConfigurationProperties configuration;
 
-	@Override
-	public boolean insertNationalities(Nationalities nationalities) {
+    @Override
+    public boolean insertNationalities(Nationalities nationalities) {
 
-		String data = JSONUtils.ObjectToJSON(nationalities);
+        String data = JSONUtils.ObjectToJSON(nationalities);
 
-		IndexResponse indexResponse = elasticsearchClient.insertData(data, configuration.getElasticsearchIndexUtility(),
-				configuration.getElasticsearchIndexTypeUtility(), NATIONALITIES_ID);
+        IndexResponse indexResponse = elasticsearchClient.insertData(data, configuration.getElasticsearchIndexUtility(),
+                configuration.getElasticsearchIndexTypeUtility(), NATIONALITIES_ID);
 
-		if (indexResponse != null && indexResponse.isCreated()) {
-			LOGGER.info("Nationalities created");
-			return true;
-		}
+        if (indexResponse != null && indexResponse.isCreated()) {
+            LOGGER.info("Nationalities created");
+            return true;
+        }
 
-		LOGGER.warn("Nationalities cannot be created - Nationalities: '{}'", nationalities.toString());
-		return false;
+        LOGGER.warn("Nationalities cannot be created - Nationalities: '{}'", nationalities.toString());
+        return false;
 
-	}
+    }
 
-	@Override
-	public Nationalities getNationalities() {
+    @Override
+    public Nationalities getNationalities() {
 
-		GetResponse response = elasticsearchClient.getDocument(configuration.getElasticsearchIndexUtility(),
-				configuration.getElasticsearchIndexTypeUtility(), NATIONALITIES_ID);
+        GetResponse response = elasticsearchClient.getDocument(configuration.getElasticsearchIndexUtility(),
+                configuration.getElasticsearchIndexTypeUtility(), NATIONALITIES_ID);
 
-		if (response != null && response.isExists()) {
+        if (response != null && response.isExists()) {
 
-			Nationalities nationalities = (Nationalities) JSONUtils.JSONToObject(response.getSourceAsString(),
-					Nationalities.class);
+            Nationalities nationalities = (Nationalities) JSONUtils.JSONToObject(response.getSourceAsString(),
+                    Nationalities.class);
 
-			LOGGER.debug("Nationalities retrieve successfully - '{}'", nationalities.toString());
+            LOGGER.debug("Nationalities retrieve successfully - '{}'", nationalities.toString());
 
-			return nationalities;
-		}
+            return nationalities;
+        }
 
-		LOGGER.warn("Nationalities cannot be retrieved");
+        LOGGER.warn("Nationalities cannot be retrieved");
 
-		return null;
-	}
+        return null;
+    }
 
-	@Override
-	public List<String> getProfessions() {
+    @Override
+    public List<String> getProfessions() {
 
-		List<String> professionsList = new ArrayList<>();
+        List<String> professionsList = new ArrayList<>();
 
-		AbstractAggregationBuilder agrgregationBuilder = AggregationBuilders.terms("professionAgg")
-				.field(PROFESSION_FIELD).order(Order.term(true));
+        AbstractAggregationBuilder agrgregationBuilder = AggregationBuilders.terms("professionAgg")
+                .field(PROFESSION_FIELD).order(Order.term(true));
 
-		SearchResponse response = elasticsearchClient.search(configuration.getElasticsearchIndexUserName(),
-				configuration.getElasticsaerchIndexTypeTeam(), null, agrgregationBuilder, 0);
+        SearchResponse response = elasticsearchClient.search(configuration.getElasticsearchIndexUserName(),
+                configuration.getElasticsearchIndexUserTypeName(), null, agrgregationBuilder, 0);
 
-		if (response != null) {
-			Terms term = response.getAggregations().get("professionAgg");
-			List<Bucket> buckets = term.getBuckets();
+        if (response != null) {
+            Terms term = response.getAggregations().get("professionAgg");
+            List<Bucket> buckets = term.getBuckets();
 
-			buckets.forEach(b -> {
-				professionsList.add(b.getKeyAsString());
-			});
-		}
+            buckets.forEach(b -> {
+                professionsList.add(b.getKeyAsString());
+            });
+        }
 
-		LOGGER.debug("Professions list: '{}'", professionsList.toString());
+        LOGGER.debug("Professions list: '{}'", professionsList.toString());
 
-		return professionsList;
-	}
+        return professionsList;
+    }
 
-	@Autowired
-	private void setElasticsearchClient(ElasticsearchClient elasticsearchClient) {
-		this.elasticsearchClient = elasticsearchClient;
-	}
+    @Autowired
+    private void setElasticsearchClient(ElasticsearchClient elasticsearchClient) {
+        this.elasticsearchClient = elasticsearchClient;
+    }
 
-	@Autowired
-	private void setConfiguration(ExternalConfigurationProperties configuration) {
-		this.configuration = configuration;
-	}
+    @Autowired
+    private void setConfiguration(ExternalConfigurationProperties configuration) {
+        this.configuration = configuration;
+    }
 }

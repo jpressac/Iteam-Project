@@ -21,63 +21,58 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class TeamController {
 
-	private TeamServiceImpl teamService;
+    private TeamServiceImpl teamService;
 
-	/**
-	 * Create a new team based on the parameter information.
-	 * 
-	 * @param team,
-	 *            the team to create.
-	 * @return 200 OK if it was successful, 400 if not.
-	 */
-	@RequestMapping(value = "/team/create", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-	public ResponseEntity<Boolean> createTeam(@RequestBody @Valid Team team) {
-		boolean success = teamService.putTeam(team);
+    /**
+     * Create a new team based on the parameter information.
+     * 
+     * @param team,
+     *            the team to create.
+     * @return 200 OK if it was successful.
+     */
+    @RequestMapping(value = "/team/create", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+    public ResponseEntity<Void> createTeam(@RequestBody @Valid Team team) {
+        return checkResult(teamService.putTeam(team));
+    }
 
-		if (success) {
-			return new ResponseEntity<Boolean>(success, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<Boolean>(success, HttpStatus.BAD_REQUEST);
-		}
-	}
+    /**
+     * Delete an entire team based on a team owner a his name.
+     * 
+     * @param ownerName,
+     *            the team owner.
+     * @param teamName,
+     *            the team name.
+     * @return 200 OK if it was successful.
+     */
+    @RequestMapping(value = "/team/delete", method = RequestMethod.DELETE)
+    public ResponseEntity<Void> deleteTeam(@RequestParam(value = "ownerName", required = true) String ownerName,
+            @RequestParam(value = "teamName", required = true) String teamName) {
 
-	/**
-	 * Delete an entire team based on a team owner a his name.
-	 * 
-	 * @param ownerName,
-	 *            the team owner.
-	 * @param teamName,
-	 *            the team name.
-	 * @return 200 OK if it was successful, 400 if not.
-	 */
-	@RequestMapping(value = "/team/delete", method = RequestMethod.DELETE)
-	public ResponseEntity<Boolean> deleteTeam(@RequestParam(value = "ownerName", required = true) String ownerName,
-			@RequestParam(value = "teamName", required = true) String teamName) {
-		// TODO: add validations Valid.istrue()
+        return checkResult(teamService.deleteTeam(ownerName, teamName));
+    }
 
-		boolean success = teamService.deleteTeam(ownerName, teamName);
+    /**
+     * Apply filters to users for creating teams
+     * 
+     * @param filter,
+     *            a filter list to apply to users.
+     * @return a list of user.
+     */
+    @RequestMapping(value = "/team/select", method = RequestMethod.GET)
+    public List<User> filterTeam(@RequestParam(value = "filter") FilterList filter) {
+        return teamService.filterToCreateTeam(filter);
+    }
 
-		if (success) {
-			return new ResponseEntity<Boolean>(success, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<Boolean>(success, HttpStatus.BAD_REQUEST);
-		}
-	}
+    private ResponseEntity<Void> checkResult(boolean flag) {
+        if (flag) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
-	/**
-	 * Apply filters to users for creating teams
-	 * 
-	 * @param filter,
-	 *            a filter list to apply to users.
-	 * @return a list of user.
-	 */
-	@RequestMapping(value = "/team/select", method = RequestMethod.GET)
-	public List<User> filterTeam(@RequestParam(value = "filter") FilterList filter) {
-		return teamService.filterToCreateTeam(filter);
-	}
-
-	@Autowired
-	private void setTeamService(TeamServiceImpl teamService) {
-		this.teamService = teamService;
-	}
+    @Autowired
+    private void setTeamService(TeamServiceImpl teamService) {
+        this.teamService = teamService;
+    }
 }

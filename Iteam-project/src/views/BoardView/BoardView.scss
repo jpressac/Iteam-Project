@@ -1,5 +1,3 @@
-@import url(http://fonts.googleapis.com/css?family=Shadows+Into+Light);
-
 .formContainer {
 display : inline-block;
 margin-left: 400px;
@@ -7,8 +5,9 @@ margin-top: 20px
 }
 .formContent
 {
-  background-color: #ffff99;
-  margin-left: 250px;
-  height: 100%;
-  overflow: auto;
+  background-color: hsla(0, 100%,100%, 0.6);
+background-size: cover;
+  width: 100%;
+  height:100%;
+
 }

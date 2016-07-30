@@ -1,8 +1,8 @@
 
 import React from 'react'
-import meeting from '../assets/Creativeteam.png'
-import report from '../assets/report2.png'
-import team from '../assets/table.png'
+import team from '../assets/group.jpg'
+import  meeting from '../assets/Creativeteam_opt.jpg'
+import  report from '../assets/group4_opt.jpg'
 import classes from './HomeView.scss'
 import {Grid, Row, Col, Image, Carousel} from 'react-bootstrap'
 import RegistrationForm from '../../../components/RegistrationForm'
@@ -13,39 +13,50 @@ import ReactDOM from 'react-dom';
 export class HomeView extends React.Component {
   render(){
     return(
-      <div className={classes.homeDiv} >
+      <div className={"container",classes.homeDiv} >
+      <div className={classes.text} style={{marginTop:20}}>
+      <label className={classes.label}>START NOW</label>
+      <p style={{fontSize:25, marginTop:-20}}> MAKE REMOTES TEAM MEETINGS IN REAL TIME </p>
+      </div>
 
-      <Carousel class ={classes.carouselDiv }>
-   <Carousel.Item >
-     <img  alt="team" src={team} className={classes.image }/>
-     <Carousel.Caption className={classes.carouselText}>
-             <h3 >CHOOSE YOUR TEAM</h3>
-             <p>You can use filters to choose the participants</p>
+              <div id="home-carousel" className ={"carousel slide", classes.carouselDiv } data-ride="carousel">
 
-           </Carousel.Caption>
-     </Carousel.Item>
+                <div className={"carousel-inner"} style={{marginLeft:230}}>
+                        <div className="item active">
+                          <img  alt="team" src={team} className={classes.image}/>
+                            <div className={"carousel-caption", classes.carouselText}>
+                                  <h2>CHOOSE YOUR TEAM</h2>
+                                  <p>You can use filters to choose the participants</p>
 
-     <Carousel.Item>
-       <img  alt="meeting" src={meeting} className={ classes.image }/>
-       <Carousel.Caption className={classes.carouselText}>
-               <h3 >START YOUR MEETING</h3>
-               <p>Create your meeting and show your best ideas</p>
+                          </div>
+                        </div>
+                        <div className="item">
+                          <img  alt="team" src={meeting} className={classes.image }/>
+                              <div className={"carousel-caption", classes.carouselText}>
+                                  <h2>START YOUR MEETING</h2>
+                                    <p>Create your meeting and show your best ideas</p>
 
-             </Carousel.Caption>
-       </Carousel.Item>
-       <Carousel.Item>
-         <img  alt="report" src={report} className={ classes.image }/>
-         <Carousel.Caption className={classes.carouselText}>
-                 <h3 >GET REPORTS AND RESULTS OF YOUR IDEAS</h3>
-                 <p>you can select the best idea and get reports and feedback from participants </p>
+                          </div>
+                        </div>
+                        <div className="item">
+                          <img  alt="team" src={report} className={classes.image }/>
+                          <div className={"carousel-caption", classes.carouselText}>
 
-               </Carousel.Caption>
-         </Carousel.Item>
-   </Carousel>
+                                  <h2>GET REPORTS AND RESULTS OF YOUR IDEAS </h2>
+                                    <p>you can select the best idea and get reports and feedback from participants</p>
 
-
-
+                          </div>
+                        </div>
+                    </div>
+                <nav id="nav-arrows" className="nav-arrows hidden-xs hidden-sm visible-md visible-lg">
+                <a className="sl-prev hidden-xs" href="#home-carousel" data-slide="prev">
+                    <i className="fa fa-angle-left fa-3x"></i>  </a>
+                <a className="sl-next" href="#home-carousel" data-slide="next">
+                <i className="fa fa-angle-right fa-3x"></i>  </a>
+                </nav>
 </div>
+
+              </div>
 
 
 )

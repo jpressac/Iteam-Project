@@ -12,25 +12,25 @@ import org.springframework.stereotype.Component;
 @Component
 public class IteamUserDetailService implements UserDetailsService {
 
-	private UserRepositoryImpl userRepository;
-	private static final String ROLE = "ROLE_ADMIN";
+    private UserRepositoryImpl userRepository;
+    private static final String ROLE = "ROLE_ADMIN";
 
-	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-		org.iteam.data.model.User user = userRepository.getUser(username);
+        org.iteam.data.model.User user = userRepository.getUser(username);
 
-		if (user == null) {
-			throw new UsernameNotFoundException("User not fould" + username);
-		}
+        if (user == null) {
+            throw new UsernameNotFoundException("User not fould" + username);
+        }
 
-		return new User(user.getUsername(), user.getPassword(),
-				AuthorityUtils.createAuthorityList(new String[] { ROLE }));
+        return new User(user.getUsername(), user.getPassword(),
+                AuthorityUtils.createAuthorityList(new String[] { ROLE }));
 
-	}
+    }
 
-	@Autowired
-	private void setUserRepository(UserRepositoryImpl userRepository) {
-		this.userRepository = userRepository;
-	}
+    @Autowired
+    private void setUserRepository(UserRepositoryImpl userRepository) {
+        this.userRepository = userRepository;
+    }
 }
