@@ -7,7 +7,7 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.iteam.configuration.ExternalConfigurationProperties;
+import org.iteam.configuration.StringUtilities;
 import org.iteam.data.dal.client.ElasticsearchClient;
 import org.iteam.data.model.User;
 import org.iteam.exceptions.JsonParsingException;
@@ -34,7 +34,6 @@ public class UserRepositoryImpl implements UserRepsoitory {
 	private static final String USER_GENDER_FEMALE = "female";
 
 	private ElasticsearchClient elasticsearchClient;
-	private ExternalConfigurationProperties configuration;
 
 	@Override
 	public User getUser(String username) {
@@ -43,8 +42,7 @@ public class UserRepositoryImpl implements UserRepsoitory {
 		query.must(QueryBuilders.termQuery(USER_NAME_FIELD, username))
 				.must(QueryBuilders.termQuery(LOGICAL_DELETE_FIELD, false));
 
-		SearchResponse response = elasticsearchClient.search(configuration.getElasticsearchIndexUserName(),
-				configuration.getElasticsearchIndexUserTypeName(), query);
+		SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_USER, query);
 
 		if (response != null && response.getHits().getTotalHits() == 1) {
 			return (User) JSONUtils.JSONToObject(response.getHits().getAt(0).getSourceAsString(), User.class);
@@ -65,9 +63,8 @@ public class UserRepositoryImpl implements UserRepsoitory {
 
 		String data = JSONUtils.ObjectToJSON(user);
 
-		IndexResponse indexResponse = elasticsearchClient.insertData(data,
-				configuration.getElasticsearchIndexUserName(), configuration.getElasticsearchIndexUserTypeName(),
-				user.getUsername());
+		IndexResponse indexResponse = elasticsearchClient.insertData(data, StringUtilities.INDEX_USER,
+				StringUtilities.INDEX_TYPE_USER, user.getUsername());
 
 		if (indexResponse != null && indexResponse.isCreated()) {
 			LOGGER.info("User created");
@@ -81,8 +78,8 @@ public class UserRepositoryImpl implements UserRepsoitory {
 	@Override
 	public boolean checkUserExistance(String username) {
 
-		GetResponse response = elasticsearchClient.getDocument(configuration.getElasticsearchIndexUserName(),
-				configuration.getElasticsearchIndexUserTypeName(), username);
+		GetResponse response = elasticsearchClient.getDocument(StringUtilities.INDEX_USER,
+				StringUtilities.INDEX_TYPE_USER, username);
 
 		if (response != null && response.isExists()) {
 			return true;
@@ -94,8 +91,7 @@ public class UserRepositoryImpl implements UserRepsoitory {
 	public boolean modifyUser(String doc, String username) {
 
 		// TODO: verify how to validate update response.
-		elasticsearchClient.modifyData(doc, configuration.getElasticsearchIndexUserName(),
-				configuration.getElasticsearchIndexUserTypeName(), username);
+		elasticsearchClient.modifyData(doc, StringUtilities.INDEX_USER, StringUtilities.INDEX_TYPE_USER, username);
 
 		LOGGER.info("User modified");
 		return true;
@@ -105,8 +101,7 @@ public class UserRepositoryImpl implements UserRepsoitory {
 	public boolean logicalDelete(String doc, String username) {
 
 		// TODO: verify how to validate update response.
-		elasticsearchClient.logicalDelete(doc, configuration.getElasticsearchIndexUserName(),
-				configuration.getElasticsearchIndexUserTypeName(), username);
+		elasticsearchClient.logicalDelete(doc, StringUtilities.INDEX_USER, StringUtilities.INDEX_TYPE_USER, username);
 		LOGGER.info("User deleted");
 		return true;
 	}
@@ -114,10 +109,5 @@ public class UserRepositoryImpl implements UserRepsoitory {
 	@Autowired
 	private void setElasticsearchClient(ElasticsearchClient elasticsearchClient) {
 		this.elasticsearchClient = elasticsearchClient;
-	}
-
-	@Autowired
-	private void setConfiguration(ExternalConfigurationProperties configuration) {
-		this.configuration = configuration;
 	}
 }

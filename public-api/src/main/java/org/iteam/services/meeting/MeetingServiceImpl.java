@@ -1,7 +1,8 @@
 package org.iteam.services.meeting;
 
+import org.iteam.data.dal.meeting.MeetingRepository;
 import org.iteam.data.dal.meeting.MeetingRepositoryImpl;
-import org.iteam.data.model.InfoMeeting;
+import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.Meeting;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,16 +10,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class MeetingServiceImpl implements MeetingService {
 
-	private MeetingRepositoryImpl meetingRepositoryImpl;
+	private MeetingRepository meetingRepositoryImpl;
 
 	@Override
-	public InfoMeeting createMeeting(Meeting meeting) {
-		String meetingId = meetingRepositoryImpl.createMeeting(meeting);
-		if (meetingId != null) {
-			return new InfoMeeting(meetingId, meeting.getProgrammedDate(), meeting.getTopic(), meeting.getTeam(),
-					meeting.getDescription());
-		}
-		return new InfoMeeting();
+	public boolean createMeeting(Meeting meeting) {
+		return meetingRepositoryImpl.createMeeting(meeting);
+	}
+
+	@Override
+	public boolean savedIdeas(IdeasDTO ideas) {
+		return meetingRepositoryImpl.saveIdeas(ideas);
 	}
 
 	@Autowired
@@ -26,4 +27,8 @@ public class MeetingServiceImpl implements MeetingService {
 		this.meetingRepositoryImpl = meetingRepositoryImpl;
 	}
 
+	@Override
+	public void generateReport(String meetingId) {
+		meetingRepositoryImpl.generateBasicReport(meetingId);
+	}
 }

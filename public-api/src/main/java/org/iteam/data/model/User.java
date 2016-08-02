@@ -11,6 +11,7 @@ public class User {
 
 	// TODO: add creation/modification date
 	private String username;
+	// TODO: password must not be returned to the UI
 	private String password;
 	private String name;
 	private String lastName;

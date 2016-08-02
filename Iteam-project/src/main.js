@@ -35,7 +35,7 @@ const routes = makeRoutes(store)
 fetchUser().then( () => {
   store.dispatch(push(PATHS.LOGGEDIN.HOME))
 }, () => {
-  store.dispatch(push(PATHS.COMMON.LOGIN))
+  store.dispatch(push(PATHS.COMMON.HOME))
 })
 
 // Now that redux and react-router have been configured, we can render the

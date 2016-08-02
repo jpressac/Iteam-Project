@@ -22,11 +22,6 @@ public class AuthenticationController {
 		return "application";
 	}
 
-	@RequestMapping("/application/nmember/home")
-	public String signout(Model model) {
-		return "application";
-	}
-
 	@RequestMapping("/application/**")
 	public String rootLogged(Model model) {
 		return "redirect:/application";
