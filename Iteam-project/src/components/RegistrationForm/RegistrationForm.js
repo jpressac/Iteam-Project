@@ -33,9 +33,10 @@ class RegistrationForm extends Component {
 
   }
   handleClick() {
-    this.validateBeforeCreation();
+    if(this.validateBeforeCreation()){
+      submitUser(this.state);
 
-      //submitUser(this.state);
+    }
   }
 
   fillProfessions(data) {
@@ -73,11 +74,9 @@ class RegistrationForm extends Component {
     }
   }
   validateBeforeCreation() {
-      debugger
     let errors2 = {};
-
+    let ban = true;
     errors2.mail = this.validateEmptyFields(this.state.mail) ? 'Required field' : this.validateMail(this.state.mail);
-    //errors2.mail = this.validateMail(this.state.mail);
     errors2.name = this.validateEmptyFields(this.state.firstName) ? 'Required field' : this.validateNames(this.state.firstName);
     errors2.lastName = this.validateEmptyFields(this.state.lastName) ? 'Required field' : this.validateNames(this.state.lastName);
     errors2.date = this.validateEmptyFields(this.state.date)  ? 'Required field' : this.validateDate(this.state.date);
@@ -90,13 +89,25 @@ class RegistrationForm extends Component {
     }else{
         errors2.password = 'Required fields';
     }
-    errors2.gender = this.validateEmptyFields(this.state.gender);
-    errors2.nationality = this.validateEmptyFields(this.state.nationality);
-    errors2.profession = this.validateEmptyFields(this.state.profession);
-
+    if(this.validateEmptyFields(this.state.gender)){
+      errors2.gender = 'Required field'  ;
+    }
+    if(this.validateEmptyFields(this.state.nationality)){
+      errors2.nationality = 'Required field';
+    }
+    if(this.validateEmptyFields(this.state.profession)) {
+      errors2.profession = 'Required field';
+    }
+    
+    Object.keys(errors2).forEach(function(key) {
+      if(errors2[key] !== undefined){
+        ban = false;
+      }
+    });
     this.setState({errors: errors2});
-
+    return ban;
   }
+
   firstNameChanged(event) {
     let first = event.target.value;
     if(first !== ''){
