@@ -2,44 +2,45 @@ import React, {Component} from 'react';
 import {submitUser} from '../../redux/RegistrationForm/actions.js'
 import NationalitiesSelect from '../NationalitiesSelect'
 import axios from 'axios'
+import validator from 'validator'
 
 class RegistrationForm extends Component {
+
   constructor(props) {
     super(props);
 
     this.state = {
-      firstName: null,
-      lastName: null,
-      nationality: null,
-      date: null,
-      mail: null,
-      male: null,
-      female: null,
-      profession: null,
-      username: null,
-      password: null,
-      repeatPassword: null,
-      professions: []
+      firstName: '',
+      lastName: '',
+      nationality: '',
+      date: '',
+      mail: '',
+      gender: '',
+      profession: '',
+      username: '',
+      password: '',
+      repeatPassword: '',
+      professions: [],
+      errors: {}
     };
 
   }
   componentDidMount() {
     let opt = [];
-    debugger
     axios.get('http://localhost:8080/utilities/professions').then(function (response) {
-      console.log(response.data);
-      debugger
       this.fillProfessions(response.data);
-  }.bind(this));
+    }.bind(this));
 
   }
   handleClick() {
+    if(this.validateBeforeCreation()){
+      submitUser(this.state);
 
-    submitUser(this.state);
+    }
   }
+
   fillProfessions(data) {
     let opt = [];
-    debugger
     if (data !== null) {
       data.map(function (option, index) {
         opt.push(
@@ -50,6 +51,63 @@ class RegistrationForm extends Component {
       this.forceUpdate();
     }
   }
+  validateEmptyFields(fieldValue){
+    if(!validator.isNull(fieldValue)){
+      return false;
+    }else{
+      return true;
+    }
+  }
+  validateDate(dateValue){
+    if(!validator.isDate(dateValue)){
+      return 'Invalid field';
+    }
+  }
+  validateMail(mail){
+    if(!validator.isEmail(mail)){
+      return 'Invalid field';
+    }
+  }
+  validateNames(name){
+    if(!validator.isAlpha(name)){
+      return 'Invalid field';
+    }
+  }
+  validateBeforeCreation() {
+    let errors2 = {};
+    let ban = true;
+    errors2.mail = this.validateEmptyFields(this.state.mail) ? 'Required field' : this.validateMail(this.state.mail);
+    errors2.name = this.validateEmptyFields(this.state.firstName) ? 'Required field' : this.validateNames(this.state.firstName);
+    errors2.lastName = this.validateEmptyFields(this.state.lastName) ? 'Required field' : this.validateNames(this.state.lastName);
+    errors2.date = this.validateEmptyFields(this.state.date)  ? 'Required field' : this.validateDate(this.state.date);
+
+    //validate that both of the PASSWORD fields have the same value
+    if((!validator.isNull(this.state.password)) && (!validator.isNull(this.state.repeatPassword))){
+      if(this.state.password !== this.state.repeatPassword){
+        errors2.password = 'The passwords don&#39;t match';
+      }
+    }else{
+        errors2.password = 'Required fields';
+    }
+    if(this.validateEmptyFields(this.state.gender)){
+      errors2.gender = 'Required field'  ;
+    }
+    if(this.validateEmptyFields(this.state.nationality)){
+      errors2.nationality = 'Required field';
+    }
+    if(this.validateEmptyFields(this.state.profession)) {
+      errors2.profession = 'Required field';
+    }
+    
+    Object.keys(errors2).forEach(function(key) {
+      if(errors2[key] !== undefined){
+        ban = false;
+      }
+    });
+    this.setState({errors: errors2});
+    return ban;
+  }
+
   firstNameChanged(event) {
     let first = event.target.value;
     if(first !== ''){
@@ -95,17 +153,17 @@ class RegistrationForm extends Component {
   maleCheckboxChanged(event) {
     let checked = event.target.checked;
     if (checked) {
-      this.setState({male: true});
+      this.setState({gender: 'male'});
     } else {
-      this.setState({male: false});
+      this.setState({gender: 'female'});
     }
   }
   femaleCheckboxChanged(event) {
     let checked = event.target.checked;
     if(checked){
-      this.setState({female: true });
+      this.setState({gender: 'female' });
     }else{
-      this.setState({female: false });
+      this.setState({gender: 'male' });
     }
   }
   nationalityChanged(event){
@@ -132,21 +190,25 @@ class RegistrationForm extends Component {
                   <div className="form-group">
                     <label for="inputfirstname" className="col-md-4 control-label">First Name</label>
                     <div className="col-md-8">
-                      <input type="text" className="form-control" id="inputfirstname" placeholder="Enter First Name..."
+                      <input type="text" className="form-control" id="inputfirstname"
                              ref="firstName" onChange={this.firstNameChanged.bind(this)}/>
+
+                      <label htmlFor="inputemail">{this.state.errors.name}</label>
                     </div>
                   </div>
                   <div className="form-group">
                     <label for="inputlastname" className="col-md-4 control-label" >Last Name</label>
                     <div className="col-md-8">
-                      <input type="text" className="form-control" id="inputlastname" placeholder="Enter Last Name..."
+                      <input type="text" className="form-control" id="inputlastname"
                              ref="lastName" onChange={this.lastNameChanged.bind(this)}/>
+                      <label htmlFor="inputlastname" className="control-label">{this.state.errors.lastName}</label>
                     </div>
                   </div>
                   <div className="form-group">
                     <label for="inputdateofbirth" className="col-md-4 control-label"> Date of Birth</label>
                     <div className="col-md-8">
                      <input type="date" className="form-control" id="inputname" ref="birthDate" placeholder="" onChange={this.dateChanged.bind(this)}></input>
+                      <label htmlFor="inputdateofbirth">{this.state.errors.date}</label>
                     </div>
                   </div>
                   <div className="form-group">
@@ -161,12 +223,14 @@ class RegistrationForm extends Component {
                         Female
                       </label>
                     </div>
+                    <label htmlFor="inputgender">{this.state.errors.gender}</label>
                   </div>
                   <div className="form-group">
-                    <label for="inputUsername" className="col-md-4">Nationality</label>
-                    <div className="col-md-8">
+                    <label for="cmbNationality" className="col-md-4">Nationality</label>
+                    <div className="col-md-8" id="cmbNationality">
                       <NationalitiesSelect  onchange={this.nationalityChanged.bind(this)}></NationalitiesSelect>
                     </div>
+                    <label htmlFor="cmbNationality">{this.state.errors.nationality}</label>
                   </div>
                   <div className="form-group">
                     <label for="inputemail" className="col-md-4">E-mail</label>
@@ -174,15 +238,17 @@ class RegistrationForm extends Component {
                       <input type="text" className="form-control" id="inputemail" placeholder=" E-mail "
                              ref="mail" onChange={this.emailChanged.bind(this)}></input>
                     </div>
+                    <label htmlFor="inputemail">{this.state.errors.mail}</label>
                   </div>
                   <div className="form-group">
                     <label for="inputprofession" className="col-md-4">Profession</label>
                     <div className="col-md-8">
                       <select  className="form-control" id="inputprofession" ref="profession" onChange={this.professionChanged.bind(this)}>
-                        <option value ="" default>  </option>
+                        <option value ="" default> Choose a profession </option>
                         {this.state.professions}
                       </select>
                     </div>
+                    <label htmlFor="inputprofession">{this.state.errors.profession}</label>
                   </div>
                   <div className="form-group">
                     <label for="inputusername" className="col-md-4">User name</label>
@@ -202,12 +268,12 @@ class RegistrationForm extends Component {
                     <div className="col-md-8">
                       <input type="password" name="" className="form-control" ref="repeatPassword" onChange={this.repeatPasswordChanged.bind(this)}></input>
                     </div>
+                    <label htmlFor="inputconfirmpassword">{this.state.errors.password}</label>
                   </div>
                   <div className="form-group">
                     <div className="col-md-12">
                       <input type="button" onClick={this.handleClick.bind(this)}
                              className="btn btn-success" value="Register"></input>
-
                     </div>
                   </div>
                 </form>
@@ -218,5 +284,4 @@ class RegistrationForm extends Component {
       </div>);
   };
 }
-
 export default RegistrationForm

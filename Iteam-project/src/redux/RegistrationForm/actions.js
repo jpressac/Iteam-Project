@@ -22,14 +22,13 @@ export function submit() {
 }
 
 export function submitUser(data){
-  console.log('Me ejecute');
-  console.log(data.username);
   axios.post('http://localhost:8080/user', {
         username: data.username,
         password: data.password,
         nationality: data.nationality,
         bornDate:  data.date ,
         mail : data.mail,
+        gender:data.gender,
         nationality: data.nationality,
         hobbies: [""],
         profession: data.profession,
