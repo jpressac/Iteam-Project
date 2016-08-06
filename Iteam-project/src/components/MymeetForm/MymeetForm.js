@@ -1,10 +1,11 @@
 import React, {Component} from 'react'
 import TextBox from '../Form/TextBox/TextBox.js'
-import {Form, FormGroup, Button, FormControl, ControlLabel, Col} from 'react-bootstrap'
+import {Form, FormGroup, FormControl, ControlLabel, Col} from 'react-bootstrap'
 import classes from './MymeetForm.scss'
 import {getUserData} from '../../redux/modules/ProfileData'
 import axios from 'axios'
-import { List, ListItem, ListSubHeader, ListDivider, ListCheckbox } from 'react-toolbox/lib/list';
+import { List, ListItem, ListSubHeader, ListDivider, ListCheckbox } from 'react-toolbox/lib/list'
+import {Button, IconButton} from 'react-toolbox/lib/button';
 
 class MymeetForm extends React.Component {
 
@@ -15,8 +16,9 @@ class MymeetForm extends React.Component {
               <div className={classes.label}  >
                     <label>MY MEETINGS</label>
             </div>
-             
 
+
+   <Button icon='+' label='Add this' flat primary />
               <List selectable ripple>
        <ListSubHeader caption='Explore characters' />
        <ListItem

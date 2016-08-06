@@ -1,7 +1,10 @@
 package org.iteam.controllers.rest;
 
+import javax.validation.Valid;
+
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.Meeting;
+import org.iteam.services.meeting.MeetingService;
 import org.iteam.services.meeting.MeetingServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -18,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class MeetingController {
 
-    private MeetingServiceImpl meetingServiceImpl;
+    private MeetingService meetingServiceImpl;
 
     /**
      * Create a new meeting, given the meeting information.
@@ -37,20 +41,34 @@ public class MeetingController {
      * 
      * @param ideas
      *            all the ideas.
-     * @return 200 OK if it was successful
+     * @return 200 OK if it was successful.
      */
     @RequestMapping(value = "/meeting/ideas/save", method = RequestMethod.POST)
-    public ResponseEntity<Void> saveIdeas(@RequestBody IdeasDTO ideas) {
+    public ResponseEntity<Void> saveIdeas(@RequestBody @Valid IdeasDTO ideas) {
 
         return checkResult(meetingServiceImpl.savedIdeas(ideas));
     }
 
     private ResponseEntity<Void> checkResult(boolean flag) {
-        if (flag) {
+        if(flag) {
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    /**
+     * Generate the standard report by the given meeting.
+     * 
+     * @param meetingId
+     *            the id of the meeting.
+     * @return 204 NO CONTENT
+     */
+    @RequestMapping(value = "/meeting/report", method = RequestMethod.GET)
+    public ResponseEntity<Void> generateReport(@RequestParam(value = "meetingId", required = true) String meetingId) {
+        meetingServiceImpl.generateReport(meetingId);
+
+        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }
 
     @Autowired
