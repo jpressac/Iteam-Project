@@ -36,8 +36,10 @@ class TeamSugestionForm extends React.Component {
     }
     this.setState({usernames: newMap});
     console.log(_this.state.usernames);
+    console.log(this.state.users);
     _this.forceUpdate();
   }
+  //TODO: use a set<string> for filling the table with columns that details the filter applied
 
   searchUsers() {
     var _this = this;
