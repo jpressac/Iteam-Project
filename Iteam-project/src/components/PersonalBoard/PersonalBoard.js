@@ -4,6 +4,8 @@ import classes from "./PersonalBoard.scss";
 import Note from "../Note/Note";
 import axios from "axios";
 import {ItemTypes} from "../Constants/Constants";
+import {Button} from 'react-toolbox';
+import {Stomp} from "../../../node_modules/stompjs/lib/stomp";
 
 
 const NoteTarget = {
@@ -19,6 +21,37 @@ const NoteTarget = {
 
 class PersonalBoard extends Component {
 
+  componentDidMount(){
+    this.connect();
+  }
+  connect() {
+  var socket = new SockJS('/channel');
+  stompClient = Stomp.over(socket);
+  stompClient.connect({}, function(frame) {
+    setConnected(true);
+    console.log('Connected: ' + frame);
+    stompClient.subscribe('/topic/' + 13, (data)=> {
+      console.log(data);
+    });
+  });
+}
+
+  disconnect() {
+  if (stompClient != null) {
+    stompClient.disconnect();
+  }
+  setConnected(false);
+  console.log("Disconnected");
+}
+
+  sendNote() {
+  stompClient.send("/channel/" + 13, {},JSON.stringify(
+      { "channel": "1",
+        "payload" : "Hello motherfucker"
+      })
+  );
+}
+
   render() {
     let notemap = this.state.notes;
     const {connectDropTarget} = this.props;
@@ -33,6 +66,7 @@ class PersonalBoard extends Component {
                       onClick={this.add.bind(this, "New note")}>
                 <span className="glyphicon glyphicon-plus"></span> ADD NOTE
               </button>
+              <Button label="Send Note" accent onClick={this.sendNote.bind(this)} ></Button>
             </div>
           </div>
         </div>
