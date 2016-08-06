@@ -23,22 +23,20 @@ class MeetingView extends React.Component {
     }
   componentDidMount(){
     getTeamData().then( () => {
-      axios.get('http://localhost:8080/team'
-                          ).then(function(response){
-                          this.setState({ team: response.team} );
-                          this.fillfields();
-
-                    }.bind(this)).catch(function(response){
-                      console.log(response.error);
-                    });
-    })
-  }
+        this.setState({ team: response.team} );
+        this.fillfields();
+        },
+        () =>{
+          console.log(response.error)
+        }
+      )
+    }
 
   render(){
 
     return(
       <div className={"container"}>
-          <div className={classes.label2}  style={{marginTop:20}}>
+          <div className={classes.label2}  >
           <label>CREATE MEETING</label>
           </div>
 
