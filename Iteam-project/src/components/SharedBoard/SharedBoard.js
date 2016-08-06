@@ -1,10 +1,13 @@
-import React, {Component, PropTypes} from 'react';
-import {DropTarget} from 'react-dnd';
-import classes from './Board.scss';
-import Note from '../Note/Note';
-import axios from 'axios'
-import BootstrapModal from '../BootstrapModal'
-import {ItemTypes} from '../Constants/Constants';
+/**
+ * Created by Usuario on 06/08/2016.
+ */
+import React, {Component, PropTypes} from "react";
+import {DropTarget} from "react-dnd";
+import classes from "../PersonalBoard/PersonalBoard.scss";
+import Note from "../Note/Note";
+import axios from "axios";
+import BootstrapModal from "../BootstrapModal";
+import {ItemTypes} from "../Constants/Constants";
 
 
 const NoteTarget = {
@@ -13,48 +16,38 @@ const NoteTarget = {
     const delta = monitor.getDifferenceFromInitialOffset();
     const left = Math.round(item.left + delta.x);
     const top = Math.round(item.top + delta.y);
-    console.log("BELU ESTUVO AQUI ")
     component.updatePosition(item.id, left, top);
   }
 };
 
 
-class Board extends Component {
+class SharedBoard extends Component {
 
   render() {
-    let notemap = this.state.notes
+    let notemap = this.state.notes;
     const {connectDropTarget} = this.props;
-    const {notes} = this.state;
+
     return connectDropTarget(
       <div className={classes.board}>
-        <label className={classes.label1}>My personal board</label>
-
+        <label className={classes.label1}>SHARED BOARD</label>
         <div className="col-md-12">
-          <div className="row">
-            <div className="col-md-4">
-              <button type="button" className={" btn btn-primary",classes.button}
-                      onClick={this.add.bind(this, "New note")}>
-                <span className="glyphicon glyphicon-plus"></span> ADD NOTE
-              </button>
-            </div>
-            <div className="col-md-4">
-              <button type="button" className={" btn btn-success", classes.button} onClick={this.saveNotes.bind(this)}>
-                SAVE
-              </button>
-              <BootstrapModal ref="mymodal" message={this.state.message}></BootstrapModal>
-            </div>
-            <div className="col-md-4">
-              <button type="button" className={" btn btn-success", classes.button}
-                      onClick={this.generateReport.bind(this)}> GENERATE REPORT
-              </button>
-              <BootstrapModal ref="mymodal" message={this.state.message}></BootstrapModal>
-            </div>
+          <div className="col-md-4">
+            <button type="button" className={" btn btn-success"} onClick={this.saveNotes.bind(this)}>
+              SAVE
+            </button>
+            <BootstrapModal ref="mymodal" message={this.state.message}></BootstrapModal>
+          </div>
+          <div className="col-md-4">
+            <button type="button" className={" btn btn-success"}
+                    onClick={this.generateReport.bind(this)}> GENERATE REPORT
+            </button>
+            <BootstrapModal ref="mymodal" message={this.state.message}></BootstrapModal>
           </div>
         </div>
         <div className={classes.Notecontainer}>
           {Object.keys(notemap).map((key) => {
-              console.log(notemap[key].left + ' key:' + key)
-              console.log(notemap[key].top + ' key:' + key)
+              console.log(notemap[key].left + ' key:' + key);
+              console.log(notemap[key].top + ' key:' + key);
               return (
                 <Note key={key}
                       id={key}
@@ -70,6 +63,7 @@ class Board extends Component {
       </div>
     );
   }
+
 
   nextId() {
     this.uniqueId = this.uniqueId || 0;
@@ -88,7 +82,7 @@ class Board extends Component {
         meetingId: notemap[key].meetingId
       }
       );
-    })
+    });
     axios.post('http://localhost:8080/meeting/ideas/save', {
       ideas
     }).then(function (response) {
@@ -97,7 +91,7 @@ class Board extends Component {
       this.refs.mymodal.openModal();
     }.bind(this)).catch(function (response) {
       console.log(response.status);
-    })
+    });
     console.log(ideas);
   }
 
@@ -109,7 +103,7 @@ class Board extends Component {
     }).then(
       function (response) {
         console.log(response.data);
-        _this.fillUsersTable(response.data);
+        this.fillUsersTable(response.data);
       }
     ).catch(
       function (response) {
@@ -117,18 +111,18 @@ class Board extends Component {
       })
   }
 
-  generateRandomNumber() {
+  static generateRandomNumber() {
     return Math.floor(Math.random() * 200) + 1;
   }
 
   add(text) {
     let map = this.state.notes;
-    let id = this.nextId()
+    let id = this.nextId();
     map[id] =
     {
       id: id,
-      left: this.generateRandomNumber(),
-      top: this.generateRandomNumber(),
+      left: SharedBoard.generateRandomNumber(),
+      top: SharedBoard.generateRandomNumber(),
       username: "belen",
       content: 'No comments',
       comments: ['My first note :)'],
@@ -136,30 +130,26 @@ class Board extends Component {
       meetingId: 'meeting123'
     };
 
-    this.setState({notes: map})
-    //this.forceUpdate();
+    this.setState({notes: map});
   }
 
   update(newText, id) {
-    let map = this.state.notes
+    let map = this.state.notes;
     map[id].content = newText;
-    this.setState({notes: map})
-    //this.forceUpdate();
+    this.setState({notes: map});
   }
 
   updatePosition(id, left, top) {
-    let map = this.state.notes
+    let map = this.state.notes;
     map[id].left = left;
     map[id].top = top;
-    this.setState({notes: map})
-    //this.forceUpdate();
+    this.setState({notes: map});
   }
 
   remove(id) {
-    let map = this.state.notes
-    delete map[id]
-    this.setState({notes: map})
-    //this.forceUpdate();
+    let map = this.state.notes;
+    delete map[id];
+    this.setState({notes: map});
   }
 
   constructor(props) {
@@ -169,12 +159,13 @@ class Board extends Component {
   ;
 }
 
-Board.propTypes = {
-  connectDropTarget: PropTypes.func.isRequired};
+SharedBoard.propTypes = {
+  connectDropTarget: PropTypes.func.isRequired
+};
 
 export default DropTarget(ItemTypes.NOTE, NoteTarget,
   connect =>
     ( {
       connectDropTarget: connect.dropTarget()
     }
-    ))(Board);
+    ))(SharedBoard);
