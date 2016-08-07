@@ -7,6 +7,8 @@ import {ItemTypes} from "../Constants/Constants";
 import {Button} from 'react-toolbox';
 import {Stomp} from "../../../node_modules/stompjs/lib/stomp";
 
+export const SOCKET = new SockJS('ws:/localhost:8080/channel');
+export const STOMP_CLIENT = Stomp.over(SOCKET);
 
 const NoteTarget = {
   drop(props, monitor, component) {
@@ -21,31 +23,25 @@ const NoteTarget = {
 
 class PersonalBoard extends Component {
 
-  componentDidMount(){
-    this.connect();
-  }
-  connect() {
-  var socket = new SockJS('/channel');
-  stompClient = Stomp.over(socket);
-  stompClient.connect({}, function(frame) {
-    setConnected(true);
-    console.log('Connected: ' + frame);
-    stompClient.subscribe('/topic/' + 13, (data)=> {
-      console.log(data);
-    });
-  });
-}
 
-  disconnect() {
-  if (stompClient != null) {
-    stompClient.disconnect();
+  connect() {
+    STOMP_CLIENT.connect({}, function (frame) {
+      console.log('Connected: ' + frame);
+      STOMP_CLIENT.subscribe('/topic/' + 13, (data)=> {
+
+      });
+    });
   }
-  setConnected(false);
+
+  disconnect(){
+    if (STOMP_CLIENT != null) {
+      STOMP_CLIENT.disconnect();
+    }
   console.log("Disconnected");
 }
 
-  sendNote() {
-  stompClient.send("/channel/" + 13, {},JSON.stringify(
+  sendNote(){
+    STOMP_CLIENT.send("/channel/" + 13, {},JSON.stringify(
       { "channel": "1",
         "payload" : "Hello motherfucker"
       })
@@ -66,6 +62,7 @@ class PersonalBoard extends Component {
                       onClick={this.add.bind(this, "New note")}>
                 <span className="glyphicon glyphicon-plus"></span> ADD NOTE
               </button>
+              <Button label="Connect" accent onClick={this.connect.bind(this)} ></Button>
               <Button label="Send Note" accent onClick={this.sendNote.bind(this)} ></Button>
             </div>
           </div>
