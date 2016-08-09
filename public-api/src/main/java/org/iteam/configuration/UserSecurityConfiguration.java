@@ -33,24 +33,22 @@ public class UserSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().antMatchers(HttpMethod.POST, "/user").permitAll()
-                .antMatchers(HttpMethod.GET, "/user/authenticated").permitAll()
-                .antMatchers(HttpMethod.GET, "/utilities/nationality/get").permitAll()
+        http.headers().frameOptions().sameOrigin().httpStrictTransportSecurity().disable().and().authorizeRequests()
+                .antMatchers(HttpMethod.POST, "/user").permitAll().antMatchers(HttpMethod.GET, "/user/authenticated")
+                .permitAll().antMatchers(HttpMethod.GET, "/utilities/nationality/get").permitAll()
                 .antMatchers(HttpMethod.POST, "/utilities/nationality/insert").permitAll()
-                .antMatchers("/channel/*").permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**/*").permitAll().anyRequest().authenticated().and().formLogin()
                 .loginPage("/application/nmember/login").defaultSuccessUrl("/application/member/home", true).permitAll()
                 .and().httpBasic().and().csrf().disable().logout().logoutSuccessUrl("/application/nmember/home")
                 .deleteCookies("JSESSIONID").and().sessionManagement();
     }
-
+    //
     // @Bean
     // public WebMvcConfigurer corsConfigurer() {
     // return new WebMvcConfigurerAdapter() {
     // @Override
     // public void addCorsMappings(CorsRegistry registry) {
-    // registry.addMapping("/**").allowedOrigins("http://localhost:8080").allowedMethods("GET",
-    // "POST");
+    // registry.addMapping("/**/*").allowedOrigins("http://localhost:8080");
     // }
     // };
     // }

@@ -2,13 +2,9 @@ import React, {Component, PropTypes} from "react";
 import {DropTarget} from "react-dnd";
 import classes from "./PersonalBoard.scss";
 import Note from "../Note/Note";
-import axios from "axios";
 import {ItemTypes} from "../Constants/Constants";
 import {Button} from 'react-toolbox';
 import {Stomp} from "../../../node_modules/stompjs/lib/stomp";
-
-export const SOCKET = new SockJS('ws:/localhost:8080/channel');
-export const STOMP_CLIENT = Stomp.over(SOCKET);
 
 const NoteTarget = {
   drop(props, monitor, component) {
@@ -19,72 +15,16 @@ const NoteTarget = {
     component.updatePosition(item.id, left, top);
   }
 };
-
+var stompClient;
 
 class PersonalBoard extends Component {
 
 
-  connect() {
-    STOMP_CLIENT.connect({}, function (frame) {
-      console.log('Connected: ' + frame);
-      STOMP_CLIENT.subscribe('/topic/' + 13, (data)=> {
-
-      });
-    });
-  }
-
-  disconnect(){
-    if (STOMP_CLIENT != null) {
-      STOMP_CLIENT.disconnect();
+  constructor(props) {
+    super(props);
+    this.state = {
+      notes: {}
     }
-  console.log("Disconnected");
-}
-
-  sendNote(){
-    STOMP_CLIENT.send("/channel/" + 13, {},JSON.stringify(
-      { "channel": "1",
-        "payload" : "Hello motherfucker"
-      })
-  );
-}
-
-  render() {
-    let notemap = this.state.notes;
-    const {connectDropTarget} = this.props;
-
-    return connectDropTarget(
-      <div className={classes.board}>
-        <label className={classes.label1}>PERSONAL BOARD</label>
-        <div className="col-md-12">
-          <div className="row">
-            <div className="col-md-4">
-              <button type="button" className={" btn btn-primary"}
-                      onClick={this.add.bind(this, "New note")}>
-                <span className="glyphicon glyphicon-plus"></span> ADD NOTE
-              </button>
-              <Button label="Connect" accent onClick={this.connect.bind(this)} ></Button>
-              <Button label="Send Note" accent onClick={this.sendNote.bind(this)} ></Button>
-            </div>
-          </div>
-        </div>
-        <div className={classes.Notecontainer}>
-          {Object.keys(notemap).map((key) => {
-              console.log(notemap[key].left + ' key:' + key);
-              console.log(notemap[key].top + ' key:' + key);
-              return (
-                <Note key={key}
-                      id={key}
-                      onChange={this.update.bind(this)}
-                      onRemove={this.remove.bind(this)}
-                      left={notemap[key].left}
-                      top={notemap[key].top}
-                >{notemap[key].content}</Note>
-              );
-            }
-          )}
-        </div>
-      </div>
-    );
   }
 
 
@@ -135,11 +75,80 @@ class PersonalBoard extends Component {
     this.setState({notes: map});
   }
 
-  constructor(props) {
-    super(props);
-    this.state = {notes: {}}
+  //este metodo deberia estar dentro del component did mount,
+  connect() {
+
+    var SockJs = require('sockjs-client');
+    require('stompjs');
+
+    var socket = SockJs('/channel');
+    stompClient = Stomp.over(socket);
+
+    stompClient.connect({}, function (frame) {
+      console.log('Connected: ' + frame);
+      //en el 13 va el meeting id
+      stompClient.subscribe('/topic/' + 13, (data)=> {
+      });
+    });
   }
-  ;
+
+  //este metodo deberia estar en el component que se ejecute ultimo
+  disconnect(){
+    if (stompClient != null) {
+      stompClient.disconnect();
+    }
+  console.log("Disconnected");
+}
+
+  sendNote(){
+
+    //en el 13 va el meeting id y en el channel va tambien el meetingid
+    stompClient.send("/channel/" + 13, {},JSON.stringify(
+      { "channel": "13",
+        "payload" : "Hello motherfucker"
+      })
+  );
+}
+
+  render() {
+    let notemap = this.state.notes;
+    const {connectDropTarget} = this.props;
+
+    return connectDropTarget(
+      <div className={classes.board}>
+        <label className={classes.label1}>PERSONAL BOARD</label>
+        <div className="col-md-12">
+          <div className="row">
+            <div className="col-md-4">
+              <button type="button" className={" btn btn-primary"}
+                      onClick={this.add.bind(this, "New note")}>
+                <span className="glyphicon glyphicon-plus"/> ADD NOTE
+              </button>
+              <Button label="Connect" accent onClick={this.connect.bind(this)} />
+              <Button label="Send Note" accent onClick={this.sendNote.bind(this)} />
+            </div>
+          </div>
+        </div>
+        <div className={classes.Notecontainer}>
+          {Object.keys(notemap).map((key) => {
+              console.log(notemap[key].left + ' key:' + key);
+              console.log(notemap[key].top + ' key:' + key);
+              return (
+                <Note key={key}
+                      id={key}
+                      onChange={this.update.bind(this)}
+                      onRemove={this.remove.bind(this)}
+                      left={notemap[key].left}
+                      top={notemap[key].top}
+                >{notemap[key].content}</Note>
+              );
+            }
+          )}
+        </div>
+      </div>
+    );
+  }
+
 }
 
 PersonalBoard.propTypes = {
