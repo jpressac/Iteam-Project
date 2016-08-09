@@ -4,7 +4,7 @@ import classes from "./PersonalBoard.scss";
 import Note from "../Note/Note";
 import {ItemTypes} from "../Constants/Constants";
 import {Button} from 'react-toolbox';
-import {Stomp} from "../../../node_modules/stompjs/lib/stomp";
+import {connect, sendNote} from '../../websocket/websocket'
 
 const NoteTarget = {
   drop(props, monitor, component) {
@@ -15,7 +15,6 @@ const NoteTarget = {
     component.updatePosition(item.id, left, top);
   }
 };
-var stompClient;
 
 class PersonalBoard extends Component {
 
@@ -75,41 +74,6 @@ class PersonalBoard extends Component {
     this.setState({notes: map});
   }
 
-  //este metodo deberia estar dentro del component did mount,
-  connect() {
-
-    var SockJs = require('sockjs-client');
-    require('stompjs');
-
-    var socket = SockJs('/channel');
-    stompClient = Stomp.over(socket);
-
-    stompClient.connect({}, function (frame) {
-      console.log('Connected: ' + frame);
-      //en el 13 va el meeting id
-      stompClient.subscribe('/topic/' + 13, (data)=> {
-      });
-    });
-  }
-
-  //este metodo deberia estar en el component que se ejecute ultimo
-  disconnect(){
-    if (stompClient != null) {
-      stompClient.disconnect();
-    }
-  console.log("Disconnected");
-}
-
-  sendNote(){
-
-    //en el 13 va el meeting id y en el channel va tambien el meetingid
-    stompClient.send("/channel/" + 13, {},JSON.stringify(
-      { "channel": "13",
-        "payload" : "Hello motherfucker"
-      })
-  );
-}
-
   render() {
     let notemap = this.state.notes;
     const {connectDropTarget} = this.props;
@@ -124,8 +88,8 @@ class PersonalBoard extends Component {
                       onClick={this.add.bind(this, "New note")}>
                 <span className="glyphicon glyphicon-plus"/> ADD NOTE
               </button>
-              <Button label="Connect" accent onClick={this.connect.bind(this)} />
-              <Button label="Send Note" accent onClick={this.sendNote.bind(this)} />
+              <Button label="Connect" accent onClick={connect} />
+              <Button label="Send Note" accent onClick={sendNote} />
             </div>
           </div>
         </div>
