@@ -4,7 +4,8 @@ import classes from "./PersonalBoard.scss";
 import Note from "../Note/Note";
 import {ItemTypes} from "../Constants/Constants";
 import {Button} from 'react-toolbox';
-import {Stomp} from "../../../node_modules/stompjs/lib/stomp";
+import {connect, sendNote} from '../../websocket/websocket'
+import { addNote, deleteNote, like, unlike, editNote } from '../../redux/reducers/BoardReducer';
 
 const NoteTarget = {
   drop(props, monitor, component) {
@@ -15,10 +16,15 @@ const NoteTarget = {
     component.updatePosition(item.id, left, top);
   }
 };
-var stompClient;
+const actionsToProps = dispatch => ({
+  addNote: (text) => dispatch(addNote(text)),
+  deleteNote: note => dispatch(deleteNote(note)),
+  like: note => dispatch(like(note)),
+  unlike: note => dispatch(unlike(note)),
+  edit: (note, content) => dispatch(editNote(note, content))
+});
 
 class PersonalBoard extends Component {
-
 
   constructor(props) {
     super(props);
@@ -74,42 +80,9 @@ class PersonalBoard extends Component {
     delete map[id];
     this.setState({notes: map});
   }
-
-  //este metodo deberia estar dentro del component did mount,
-  connect() {
-
-    var SockJs = require('sockjs-client');
-    require('stompjs');
-
-    var socket = SockJs('/channel');
-    stompClient = Stomp.over(socket);
-
-    stompClient.connect({}, function (frame) {
-      console.log('Connected: ' + frame);
-      //en el 13 va el meeting id
-      stompClient.subscribe('/topic/' + 13, (data)=> {
-      });
-    });
+  onSendNote(){
+    sendNote(this.state.notes[0].content);
   }
-
-  //este metodo deberia estar en el component que se ejecute ultimo
-  disconnect(){
-    if (stompClient != null) {
-      stompClient.disconnect();
-    }
-  console.log("Disconnected");
-}
-
-  sendNote(){
-
-    //en el 13 va el meeting id y en el channel va tambien el meetingid
-    stompClient.send("/channel/" + 13, {},JSON.stringify(
-      { "channel": "13",
-        "payload" : "Hello motherfucker"
-      })
-  );
-}
-
   render() {
     let notemap = this.state.notes;
     const {connectDropTarget} = this.props;
@@ -124,8 +97,8 @@ class PersonalBoard extends Component {
                       onClick={this.add.bind(this, "New note")}>
                 <span className="glyphicon glyphicon-plus"/> ADD NOTE
               </button>
-              <Button label="Connect" accent onClick={this.connect.bind(this)} />
-              <Button label="Send Note" accent onClick={this.sendNote.bind(this)} />
+              <Button label="Connect" accent onClick={connect} />
+              <Button label="Send Note" accent onClick={this.onSendNote.bind(this)} />
             </div>
           </div>
         </div>
@@ -152,7 +125,12 @@ class PersonalBoard extends Component {
 }
 
 PersonalBoard.propTypes = {
-  connectDropTarget: PropTypes.func.isRequired
+  connectDropTarget: PropTypes.func.isRequired,
+  addNote: noop,
+  deleteNote: noop,
+  like: noop,
+  unlike: noop,
+  editNote: noop,
 };
 
 export default DropTarget(ItemTypes.NOTE, NoteTarget,

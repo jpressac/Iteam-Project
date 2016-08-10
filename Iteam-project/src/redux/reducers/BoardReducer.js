@@ -20,6 +20,8 @@ export default function  boardReducer(state=[], action){
 
     case DELETE_NOTE:
       return state.filter(p => p.id !== action.payload.id);
+    default:
+      return state;
   }
 }
 
@@ -27,4 +29,4 @@ export const addNote = createAction('RECEIVE_NOTE', (content) => ({content}));
 export const deleteNote = createAction('DELETE_NOTE');
 export const like = createAction('RECEIVE_LIKE', note => ({ note, like: true }));
 export const unlike = createAction('RECEIVE_LIKE', note => ({ note, like: false }));
-export const editPost = createAction('EDIT_NOTE', (note, content) => ({ note, content }));
+export const editNote = createAction('EDIT_NOTE', (note, content) => ({ note, content }));

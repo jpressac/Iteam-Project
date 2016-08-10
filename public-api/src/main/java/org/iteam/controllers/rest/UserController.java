@@ -35,7 +35,7 @@ public class UserController {
     @RequestMapping(value = "/user/authenticated", method = RequestMethod.GET)
     public ResponseEntity<Void> getUserAuthenticated() {
 
-        return checkResult(USER_NOT_LOGGED_IN.equals(SecurityContextHolder.getContext().getAuthentication().getName()),
+        return checkResult(!USER_NOT_LOGGED_IN.equals(SecurityContextHolder.getContext().getAuthentication().getName()),
                 HttpStatus.UNAUTHORIZED);
     }
 
@@ -107,7 +107,7 @@ public class UserController {
     }
 
     private ResponseEntity<Void> checkResult(boolean flag, HttpStatus errorCode) {
-        if(!flag) {
+        if(flag) {
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(errorCode);
