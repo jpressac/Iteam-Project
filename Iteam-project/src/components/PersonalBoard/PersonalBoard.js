@@ -4,10 +4,11 @@ import classes from "./PersonalBoard.scss";
 import Note from "../Note/Note";
 import {ItemTypes} from "../Constants/Constants";
 import {Button} from 'react-toolbox';
-import {connect, sendNote} from '../../websocket/websocket'
-import { addNote, deleteNote, like, unlike, editNote } from '../../redux/reducers/BoardReducer';
+//import {connect as con, sendNote} from '../../websocket/websocket'
+import {connect} from 'react-redux'
+import { addNote, deleteNote, like, unlike, editNote } from '../../redux/reducers/Login/LoginReducer';
 
-const NoteTarget = {
+/*const NoteTarget = {
   drop(props, monitor, component) {
     const item = monitor.getItem();
     const delta = monitor.getDifferenceFromInitialOffset();
@@ -15,14 +16,11 @@ const NoteTarget = {
     const top = Math.round(item.top + delta.y);
     component.updatePosition(item.id, left, top);
   }
-};
-const actionsToProps = dispatch => ({
-  addNote: (text) => dispatch(addNote(text)),
-  deleteNote: note => dispatch(deleteNote(note)),
-  like: note => dispatch(like(note)),
-  unlike: note => dispatch(unlike(note)),
-  edit: (note, content) => dispatch(editNote(note, content))
-});
+};*/
+
+const stateToProps = state => ({
+  user: state.user
+})
 
 class PersonalBoard extends Component {
 
@@ -32,7 +30,6 @@ class PersonalBoard extends Component {
       notes: {}
     }
   }
-
 
   nextId() {
     this.uniqueId = this.uniqueId || 0;
@@ -52,7 +49,7 @@ class PersonalBoard extends Component {
       id: id,
       left: PersonalBoard.generateRandomNumber(),
       top: PersonalBoard.generateRandomNumber(),
-      username: "belen",
+      username: this.props.user,
       content: 'No comments',
       comments: ['My first note :)'],
       ranking: 10,
@@ -60,6 +57,7 @@ class PersonalBoard extends Component {
     };
 
     this.setState({notes: map});
+    console.log(this.state.notes);
   }
 
   update(newText, id) {
@@ -85,9 +83,9 @@ class PersonalBoard extends Component {
   }
   render() {
     let notemap = this.state.notes;
-    const {connectDropTarget} = this.props;
-
-    return connectDropTarget(
+    //const {connectDropTarget} = this.props;
+//connectDropTarget
+    return (
       <div className={classes.board}>
         <label className={classes.label1}>PERSONAL BOARD</label>
         <div className="col-md-12">
@@ -113,6 +111,8 @@ class PersonalBoard extends Component {
                       onRemove={this.remove.bind(this)}
                       left={notemap[key].left}
                       top={notemap[key].top}
+
+
                 >{notemap[key].content}</Note>
               );
             }
@@ -125,17 +125,15 @@ class PersonalBoard extends Component {
 }
 
 PersonalBoard.propTypes = {
-  connectDropTarget: PropTypes.func.isRequired,
-  addNote: noop,
-  deleteNote: noop,
-  like: noop,
-  unlike: noop,
-  editNote: noop,
+  //connectDropTarget: PropTypes.func.isRequired,
+  user: PropTypes.any
 };
 
-export default DropTarget(ItemTypes.NOTE, NoteTarget,
-  connect =>
-    ( {
-      connectDropTarget: connect.dropTarget()
-    }
-    ))(PersonalBoard);
+// export default DropTarget(ItemTypes.NOTE, NoteTarget,
+//   connect =>
+//     ( {
+//       connectDropTarget: connect.dropTarget()
+//     }
+//     ))(PersonalBoard);
+
+export default connect(stateToProps)(PersonalBoard)
