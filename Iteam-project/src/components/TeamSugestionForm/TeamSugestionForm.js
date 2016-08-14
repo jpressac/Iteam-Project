@@ -169,7 +169,7 @@ class TeamSugestionForm extends React.Component {
       );
     }.bind(this));
     return (
-      <form className={"form-horizontal", classes.form}>
+      <form className="form-horizontal">
         <div className="row">
           <div className="form-horizontal">
             <div className="form-group" style={{marginRight:400}}>
@@ -183,7 +183,7 @@ class TeamSugestionForm extends React.Component {
                 </div>
               </div>
             </div>
-            <div className={"form-group", classes.filter}>
+            <div className="form-group">
               <div className="col-md-8">
                 <div className="row">
                   <label for="filterselect" className="col-md-2 control-label">Filters <i

@@ -285,7 +285,7 @@ if (!__DEV__) {
   })
 
   webpackConfig.plugins.push(
-    new ExtractTextPlugin('react-toolbox.css', {
+    new ExtractTextPlugin('[name].css', {
       allChunks: true
     })
   )

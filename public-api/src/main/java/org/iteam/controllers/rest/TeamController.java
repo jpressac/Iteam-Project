@@ -6,7 +6,7 @@ import javax.validation.Valid;
 
 import org.iteam.data.model.FilterList;
 import org.iteam.data.model.Team;
-import org.iteam.data.model.User;
+import org.iteam.data.model.UserDTO;
 import org.iteam.services.team.TeamServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -61,7 +61,7 @@ public class TeamController {
      * @return a list of user.
      */
     @RequestMapping(value = "/team/select", method = RequestMethod.GET)
-    public List<User> filterTeam(@RequestParam(value = "filter") FilterList filter) {
+    public List<UserDTO> filterTeam(@RequestParam(value = "filter") FilterList filter) {
         return teamService.filterToCreateTeam(filter);
     }
 

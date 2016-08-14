@@ -62,6 +62,8 @@ dependencies {
 		exclude module: "logbak-core"
 		exclude module: "log4j-over-slf4j"
 	}
+	compile("org.springframework.boot:spring-boot-starter-websocket")
+   	compile("org.springframework:spring-messaging")
 	
 	compile("org.slf4j:slf4j-simple:${slf4jVersion}")
 	

@@ -42,14 +42,13 @@ public class UserSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and().httpBasic().and().csrf().disable().logout().logoutSuccessUrl("/application/nmember/home")
                 .deleteCookies("JSESSIONID").and().sessionManagement();
     }
-
+    //
     // @Bean
     // public WebMvcConfigurer corsConfigurer() {
     // return new WebMvcConfigurerAdapter() {
     // @Override
     // public void addCorsMappings(CorsRegistry registry) {
-    // registry.addMapping("/**").allowedOrigins("http://localhost:8080").allowedMethods("GET",
-    // "POST");
+    // registry.addMapping("/**/*").allowedOrigins("http://localhost:8080");
     // }
     // };
     // }

@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.iteam.data.model.FilterList;
 import org.iteam.data.model.Team;
-import org.iteam.data.model.User;
+import org.iteam.data.model.UserDTO;
 
 /**
  * Manage all the operations that can be done with a team.
@@ -37,7 +37,7 @@ public interface TeamService {
      *            the list of filters to apply.
      * @return a list of user that apply to one or more filter.
      */
-    public List<User> filterToCreateTeam(FilterList filterList);
+    public List<UserDTO> filterToCreateTeam(FilterList filterList);
 
 	/**
 	 * Get the list of teams given an owner.

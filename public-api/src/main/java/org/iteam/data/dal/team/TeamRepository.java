@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.iteam.data.model.FilterList;
 import org.iteam.data.model.Team;
-import org.iteam.data.model.User;
+import org.iteam.data.model.UserDTO;
 
 /**
  * Repository for team.
@@ -39,7 +39,7 @@ public interface TeamRepository {
      *            the filter list to apply.
      * @return a list of users that match one or more filters.
      */
-    public List<User> filterToCreateTeam(FilterList filterList);
+    public List<UserDTO> filterToCreateTeam(FilterList filterList);
 
     /**
      * Get the list of teams given an owner.

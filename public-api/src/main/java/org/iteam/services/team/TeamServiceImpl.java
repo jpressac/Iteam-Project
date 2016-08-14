@@ -5,7 +5,7 @@ import java.util.List;
 import org.iteam.data.dal.team.TeamRepositoryImpl;
 import org.iteam.data.model.FilterList;
 import org.iteam.data.model.Team;
-import org.iteam.data.model.User;
+import org.iteam.data.model.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +25,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public List<User> filterToCreateTeam(FilterList filterList) {
+    public List<UserDTO> filterToCreateTeam(FilterList filterList) {
         return teamRepository.filterToCreateTeam(filterList);
     }
 
