@@ -1,7 +1,7 @@
 package org.iteam.services.user;
 
 import org.iteam.data.dal.user.UserRepositoryImpl;
-import org.iteam.data.model.User;
+import org.iteam.data.model.UserDTO;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,7 +18,7 @@ public class UserServiceImplTest {
 	@Mock
 	private UserRepositoryImpl userRepositoryImpl;
 
-	private User user;
+	private UserDTO user;
 	private boolean flag;
 	private String userName;
 	private String doc;
@@ -150,7 +150,7 @@ public class UserServiceImplTest {
 	}
 
 	private void givenARealUser() {
-		user = new User();
+		user = new UserDTO();
 		Mockito.when(userRepositoryImpl.setUser(user)).thenReturn(true);
 	}
 }

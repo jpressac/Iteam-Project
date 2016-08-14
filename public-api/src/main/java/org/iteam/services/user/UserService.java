@@ -1,6 +1,6 @@
 package org.iteam.services.user;
 
-import org.iteam.data.model.User;
+import org.iteam.data.model.UserDTO;
 
 public interface UserService {
 
@@ -11,7 +11,7 @@ public interface UserService {
      *            the user name
      * @return a user which contains all the information about him.
      */
-    public User getUser(String username);
+    public UserDTO getUser(String username);
 
     /**
      * Insert a new user into the database
@@ -20,7 +20,7 @@ public interface UserService {
      *            the user to be inserted @return, true if the insertion was
      *            successfully, false otherwise
      */
-    public boolean setUser(User user);
+    public boolean setUser(UserDTO user);
 
     /**
      * Check if an specific user name already exists.

@@ -15,7 +15,7 @@ import org.iteam.data.dal.client.ElasticsearchClientImpl;
 import org.iteam.data.model.Filter;
 import org.iteam.data.model.FilterList;
 import org.iteam.data.model.Team;
-import org.iteam.data.model.User;
+import org.iteam.data.model.UserDTO;
 import org.iteam.services.utils.JSONUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,15 +75,15 @@ public class TeamRepositoryImpl implements TeamRepository {
     }
 
     @Override
-    public List<User> filterToCreateTeam(FilterList filterList) {
+    public List<UserDTO> filterToCreateTeam(FilterList filterList) {
 
-        List<User> userList = new ArrayList<>();
+        List<UserDTO> userList = new ArrayList<>();
 
         SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_USER,
                 applyFiltersToQuery(filterList));
         if(response != null) {
             for(SearchHit hit : response.getHits()) {
-                User user = (User) JSONUtils.JSONToObject(hit.getSourceAsString(), User.class);
+                UserDTO user = (UserDTO) JSONUtils.JSONToObject(hit.getSourceAsString(), UserDTO.class);
                 userList.add(user);
             }
         }
