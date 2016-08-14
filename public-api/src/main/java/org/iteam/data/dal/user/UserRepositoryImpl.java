@@ -9,7 +9,7 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.iteam.configuration.StringUtilities;
 import org.iteam.data.dal.client.ElasticsearchClient;
-import org.iteam.data.model.User;
+import org.iteam.data.model.UserDTO;
 import org.iteam.exceptions.JsonParsingException;
 import org.iteam.services.utils.JSONUtils;
 import org.slf4j.Logger;
@@ -36,7 +36,7 @@ public class UserRepositoryImpl implements UserRepsoitory {
 	private ElasticsearchClient elasticsearchClient;
 
 	@Override
-	public User getUser(String username) {
+	public UserDTO getUser(String username) {
 
 		BoolQueryBuilder query = QueryBuilders.boolQuery();
 		query.must(QueryBuilders.termQuery(USER_NAME_FIELD, username))
@@ -45,13 +45,13 @@ public class UserRepositoryImpl implements UserRepsoitory {
 		SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_USER, query);
 
 		if (response != null && response.getHits().getTotalHits() == 1) {
-			return (User) JSONUtils.JSONToObject(response.getHits().getAt(0).getSourceAsString(), User.class);
+			return (UserDTO) JSONUtils.JSONToObject(response.getHits().getAt(0).getSourceAsString(), UserDTO.class);
 		}
 		return null;
 	}
 
 	@Override
-	public boolean setUser(User user) {
+	public boolean setUser(UserDTO user) {
 
 		user.setPassword(PASSWORD_ENCODER.encode(user.getPassword()));
 

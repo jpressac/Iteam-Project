@@ -2,7 +2,7 @@ package org.iteam.controllers.rest;
 
 import javax.validation.Valid;
 
-import org.iteam.data.model.User;
+import org.iteam.data.model.UserDTO;
 import org.iteam.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,7 +35,7 @@ public class UserController {
     @RequestMapping(value = "/user/authenticated", method = RequestMethod.GET)
     public ResponseEntity<Void> getUserAuthenticated() {
 
-        return checkResult(USER_NOT_LOGGED_IN.equals(SecurityContextHolder.getContext().getAuthentication().getName()),
+        return checkResult(!USER_NOT_LOGGED_IN.equals(SecurityContextHolder.getContext().getAuthentication().getName()),
                 HttpStatus.UNAUTHORIZED);
     }
 
@@ -45,7 +45,7 @@ public class UserController {
      * @return a User.
      */
     @RequestMapping(value = "/user", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
-    public User getUser() {
+    public UserDTO getUser() {
         return userServiceImpl.getUser(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
@@ -57,7 +57,7 @@ public class UserController {
      * @return 200 OK if it was successful.
      */
     @RequestMapping(value = "/user", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-    public ResponseEntity<Void> insertUser(@RequestBody @Valid User user) {
+    public ResponseEntity<Void> insertUser(@RequestBody @Valid UserDTO user) {
 
         return checkResult(userServiceImpl.setUser(user), HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -108,9 +108,9 @@ public class UserController {
 
     private ResponseEntity<Void> checkResult(boolean flag, HttpStatus errorCode) {
         if(!flag) {
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
             return new ResponseEntity<>(errorCode);
+        } else {
+            return new ResponseEntity<>(HttpStatus.OK);
         }
     }
 

@@ -6,7 +6,7 @@ import java.util.List;
 import org.iteam.data.dal.team.TeamRepositoryImpl;
 import org.iteam.data.model.FilterList;
 import org.iteam.data.model.Team;
-import org.iteam.data.model.User;
+import org.iteam.data.model.UserDTO;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +28,7 @@ public class TeamServiceImplTest {
 	private String ownerName;
 	private String teamName;
 	private FilterList filterList;
-	private List<User> userList;
+	private List<UserDTO> userList;
 
 	@Before
 	public void init() {
@@ -64,8 +64,8 @@ public class TeamServiceImplTest {
 
 	private void whenFilterTeamIsCalled() {
 
-		List<User> userListAfterFilter = new ArrayList<>();
-		userListAfterFilter.add(new User());
+		List<UserDTO> userListAfterFilter = new ArrayList<>();
+		userListAfterFilter.add(new UserDTO());
 
 		Mockito.when(teamRepository.filterToCreateTeam(filterList)).thenReturn(userListAfterFilter);
 

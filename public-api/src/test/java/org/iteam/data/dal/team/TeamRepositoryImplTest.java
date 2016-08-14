@@ -14,7 +14,7 @@ import org.iteam.data.dal.client.ElasticsearchClientImpl;
 import org.iteam.data.model.Filter;
 import org.iteam.data.model.FilterList;
 import org.iteam.data.model.Team;
-import org.iteam.data.model.User;
+import org.iteam.data.model.UserDTO;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,7 +43,7 @@ public class TeamRepositoryImplTest {
     private String ownerName;
     private String teamName;
     private FilterList filterList;
-    private List<User> userList;
+    private List<UserDTO> userList;
     private List<Team> teamList;
 
     @Before
