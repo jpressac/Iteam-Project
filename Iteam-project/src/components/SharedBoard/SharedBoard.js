@@ -58,7 +58,7 @@ class SharedBoard extends Component {
                       onChange={this.update.bind(this)}
                       onRemove={this.remove.bind(this)}
                       onAddComment={this.onChangeComment.bind(this)}
-                      onViewComments={this.getComments.bind(this)}
+                      onEditRanking={this.updateRancking.bind(this)}
                       left={notemap[key].left}
                       top={notemap[key].top}
                       boardType="shared"
@@ -75,11 +75,6 @@ class SharedBoard extends Component {
   nextId() {
     this.uniqueId = this.uniqueId || 0;
     return this.uniqueId++;
-  }
-
-  getComments(id) {
-    let map = this.state.notes;
-    return map[id].comments;
   }
 
   saveNotes() {
@@ -137,7 +132,7 @@ class SharedBoard extends Component {
       top: SharedBoard.generateRandomNumber(),
       username: "belen",
       content: text,
-      comments: ['My first comment :)'],
+      comments: "No comments",
       ranking: 10,
       meetingId: 'meeting123'
     };
@@ -151,9 +146,9 @@ class SharedBoard extends Component {
     this.setState({notes: map});
   }
 
-  onChangeComment(newText, id) {
+  onChangeComment(commentText, id) {
     let map = this.state.notes;
-    map[id].comments.push(newText);
+    map[id].comments= commentText;
     this.setState({notes: map});
   }
 
@@ -168,6 +163,12 @@ class SharedBoard extends Component {
     let map = this.state.notes;
     delete map[id];
     this.setState({notes: map});
+  }
+  
+  updateRancking(vote, id){
+    let map = this.state.notes;
+    map[id].ranking += vote
+    this.setState({note:map})
   }
 
   constructor(props) {
@@ -197,8 +198,8 @@ class SharedBoard extends Component {
       left: SharedBoard.generateRandomNumber(),
       top: SharedBoard.generateRandomNumber(),
       username: "belen",
-      content: 'No comments',
-      comments: ['My first note :)'],
+      content: 'Title',
+      comments: 'My first note :)',
       ranking: 10,
       meetingId: 'meeting123',
       boardType: "shared"

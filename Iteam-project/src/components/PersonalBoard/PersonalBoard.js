@@ -36,7 +36,7 @@ class PersonalBoard extends Component {
         <div className={classes.Notecontainer}>
           {Object.keys(notemap).map((key) => {
               console.log(notemap[key].left + ' key:' + key);
-              console.log(notemap[key].boardType + ' key:' + key);
+              console.log(notemap[key].top + ' key:' + key);
               return (
                 <Note key={key}
                       id={key}
@@ -44,6 +44,7 @@ class PersonalBoard extends Component {
                       onRemove={this.remove.bind(this)}
                       left={notemap[key].left}
                       top={notemap[key].top}
+                      subtitle = {notemap[key].subtitle}
                       boardType={notemap[key].boardType}
                 >{notemap[key].content}</Note>
               );
@@ -74,6 +75,7 @@ class PersonalBoard extends Component {
       top: PersonalBoard.generateRandomNumber(),
       username: "belen",
       content: 'No comments',
+      subtitle: "No subtitle",
       comments: ['My first note :)'],
       ranking: 10,
       meetingId: 'meeting123',
@@ -83,9 +85,10 @@ class PersonalBoard extends Component {
     this.setState({notes: map});
   }
 
-  update(newText, id) {
+  update(titleText, subtitleText, id) {
     let map = this.state.notes;
-    map[id].content = newText;
+    map[id].content = titleText;
+    map[id].subtitle = subtitleText;
     this.setState({notes: map});
   }
 

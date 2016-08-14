@@ -4,6 +4,7 @@ import {ItemTypes} from '../Constants/Constants';
 import {DragSource} from 'react-dnd';
 import NoteComment from '../NoteComment/NoteComment';
 import {Button, IconButton} from 'react-toolbox/lib/button';
+import {Card, CardMedia, CardTitle, CardText, CardActions} from 'react-toolbox/lib/card';
 
 
 const NoteSource = {
@@ -21,8 +22,7 @@ const style = {
 class Note extends Component {
 
   render() {
-    const {connectDragSource, isDragging, id, left, top, boardType, children} = this.props;
-    var commentsString = this.state.AmountComments.toString();
+    const {connectDragSource, isDragging, id, left, top, subtitle, boardType, children} = this.props;
     if (isDragging) {
       return null;
     }
@@ -30,21 +30,32 @@ class Note extends Component {
       switch (this.state.view) {
         case 'editing':
           return (
-            <div className={classes.note}
+            <div className={classes.card}
                  style={{ ...style, left, top }}>
-              <textarea ref="newText" defaultValue={this.props.children} className="form-control"></textarea>
-              <Button icon='save' onClick={this.save.bind(this)}/>
+              <Card>
+                <textarea ref="titleText" defaultValue={this.props.children} className="form-control"></textarea>
+                <textarea ref="subtitleText" defaultValue={this.props.subtitle} className="form-control"></textarea>
+                <CardActions>
+                  <Button label="SAVE" onClick={this.save.bind(this)}/>
+                  <Button label="CANCEL" onClick={this.cancelComment.bind(this)}/>
+                </CardActions>
+              </Card>
             </div>
           );
         case 'normal':
           return connectDragSource(
-            <div className={classes.note}
+            <div className={classes.card}
                  style={{ ...style, left, top }}>
-              <p>{this.props.children}</p>
-                              <span>
-                                <Button icon='e' floating accent mini onClick={this.edit.bind(this)}/>
-                                <Button icon='-' floating accent mini onClick={this.remove.bind(this)}/>
-                               </span>
+              <Card >
+                <CardTitle
+                  title={this.props.children}
+                  subtitle={this.props.subtitle}
+                />
+                <CardActions>
+                  <Button label="EDIT" onClick={this.edit.bind(this)}/>
+                  <Button label="DELETE" onClick={this.remove.bind(this)}/>
+                </CardActions>
+              </Card>
             </div>
           );
       }
@@ -52,42 +63,36 @@ class Note extends Component {
       switch (this.state.view) {
         case 'normal':
           return connectDragSource(
-            <div className={classes.note}
+            <div className={classes.card}
                  style={{ ...style, left, top }}>
-              <p>{this.props.children}</p>
-                              <span>
-                                <Button icon='-' floating accent mini onClick={this.remove.bind(this)}/>
-                                <IconButton icon='c' onClick={this.comment.bind(this)}/>
-                                <Button label={commentsString} onClick={this.viewComments.bind(this)}/>
-                                <IconButton icon='t'/>
-                                <IconButton icon='f'/>
-                               </span>
+              <Card >
+                <CardTitle
+                  title={this.props.children}
+                  subtitle={this.props.subtitle}
+                />
+                <CardText>{this.props.comments}</CardText>
+                <CardActions>
+                  <Button label="COMMENT" onClick={this.comment.bind(this)}/>
+                  <Button label="DELETE" onClick={this.remove.bind(this)}/>
+                </CardActions>
+              </Card>
             </div>
           );
         case 'comment':
           return (
-            <div className={classes.note}
+            <div className={classes.card}
                  style={{ ...style, left, top }}>
-              <p>{this.props.children}</p>
-              <Button icon='save' onClick={this.saveComment.bind(this)}/>
-              <Button icon='cancel' onClick={this.cancelComment.bind(this)}/>
-            </div>
-          );
-
-        case 'editcomment':
-          return (
-            <div className={classes.note}
-                 style={{ ...style, left, top }}>
-              <p>{this.props.children}</p>
-              <Button icon='save' onClick={this.saveComment.bind(this)}/>
-            </div>
-          );
-
-        case 'viewComments':
-          return (
-            <div className={classes.note}
-                 style={{ ...style, left, top }}>
-              <NoteComment comments={this.props.comments}/>
+              <Card >
+                <CardTitle
+                  title={this.props.children}
+                  subtitle={this.props.subtitle}
+                />
+                <textarea ref="commentText" defaultValue={this.props.comments} className="form-control"></textarea>
+                <CardActions>
+                  <Button label="SAVE" onClick={this.saveComment.bind(this)}/>
+                  <Button label="CANCEL" onClick={this.cancelComment.bind(this)}/>
+                </CardActions>
+              </Card>
             </div>
           );
       }
@@ -99,23 +104,19 @@ class Note extends Component {
   }
 
   save() {
-    this.props.onChange(this.refs.newText.value, this.props.id);
+    this.props.onChange(this.refs.titleText.value, this.refs.subtitleText.value, this.props.id);
     this.setState({view: 'normal'})
   }
 
   saveComment() {
     this.props.onAddComment(this.refs.commentText.value, this.props.id);
     this.setState({
-      view: 'normal',
-      AmountComments: this.state.AmountComments + 1
+      view: 'normal'
     })
-    console.log('amount comments: ' + this.state.AmountComments)
   }
 
   cancelComment() {
-    this.setState({
-      view: 'normal'
-    })
+    this.setState({ view: 'normal'})
   }
 
   remove() {
@@ -127,42 +128,17 @@ class Note extends Component {
     this.setState({view: 'comment'})
   }
 
-  viewComments() {
-    let allComments = this.props.onViewComments(this.props.id);
-    this.setState({
-      view: 'viewComments',
-      comments: allComments
-    })
-  }
 
-  editComment() {
-
-  }
-
-  removeComment() {
-
-  }
-
-
-  // ranking(){
-  //   {this.props.ranking(this.refs.like.value)}
-  //   this.setState({editing:false})
-  // }
-  // categorize(){
-  //   this.props.categorize(this.refs.categText.value)}
-  //   this.setState({editing:false})
-  // }
 
   constructor(props) {
     super(props);
     this.state = {
       view: 'normal',
       board: props.boardType,
-      AmountComments: 0,
-      comments: props.comments
-
     }
   }
+
+
 }
 
 Note.propTypes = {
@@ -174,6 +150,7 @@ Note.propTypes = {
   username: PropTypes.string,
   boardType: PropTypes.string,
   comments: PropTypes.array,
+  subtitle: PropTypes.string,
   children: PropTypes.node
 };
 
