@@ -4,7 +4,7 @@ export const CREATE_SESSION = 'CREATE_SESSION';
 export const JOIN_SESSION = 'JOIN_SESSION';
 export const LEAVE_SESSION = 'LEAVE_SESSION';
 
-export default function reducer(state= {
+export default function sessionReducer(state= {
   id: null,
   name: null,
   clients: []
@@ -15,6 +15,7 @@ export default function reducer(state= {
     case LEAVE_SESSION:
   }
 }
+
 
 export const createSession= createAction('CREATE_SESSION', user => ({}));
 export const joinSession = createAction('JOIN_SESSION', (user, sessionId) => ({}));

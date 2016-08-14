@@ -33,9 +33,9 @@ public class UserSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.headers().frameOptions().sameOrigin().httpStrictTransportSecurity().disable().and().authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/user").permitAll().antMatchers(HttpMethod.GET, "/user/authenticated")
-                .permitAll().antMatchers(HttpMethod.GET, "/utilities/nationality/get").permitAll()
+        http.authorizeRequests().antMatchers(HttpMethod.POST, "/user").permitAll()
+                .antMatchers(HttpMethod.GET, "/user/authenticated").permitAll()
+                .antMatchers(HttpMethod.GET, "/utilities/nationality/get").permitAll()
                 .antMatchers(HttpMethod.POST, "/utilities/nationality/insert").permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**/*").permitAll().anyRequest().authenticated().and().formLogin()
                 .loginPage("/application/nmember/login").defaultSuccessUrl("/application/member/home", true).permitAll()
