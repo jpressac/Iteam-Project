@@ -34,6 +34,8 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
     private static final String IDEA_MEETING_ID_FIELD = "meetingId";
     private static final String RANKING_ID_FIELD = "ranking";
+    private static final String MEETING_TEAM_USER_FIELD = "team.members";
+    private static final String PROGRAMMED_DATE_FIELD = "programmedDate";
 
     @Override
     public boolean createMeeting(Meeting meeting) {
@@ -116,9 +118,31 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
     }
 
+    @Override
+    public List<Meeting> getMeetingUser(String username) {
+        LOGGER.info("Getting meeting by user: '{}'", username);
+
+        SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING,
+                QueryBuilders.termQuery(MEETING_TEAM_USER_FIELD, username),
+                SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD).order(SortOrder.ASC));
+
+        List<Meeting> meetingList = new ArrayList<>();
+
+        if(response != null) {
+            for(SearchHit hit : response.getHits()) {
+                LOGGER.debug("User '{}' meeting: '{}'", username, hit.getSourceAsString());
+                Meeting meeting = (Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class);
+                meetingList.add(meeting);
+            }
+        }
+
+        LOGGER.debug("User '{}' list of meetings: '{}'", username, meetingList.toString());
+
+        return meetingList;
+    }
+
     @Autowired
     private void setElasticsearchClientImpl(ElasticsearchClientImpl elasticsearchClientImpl) {
         this.elasticsearchClientImpl = elasticsearchClientImpl;
     }
-
 }
