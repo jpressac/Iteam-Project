@@ -42,6 +42,7 @@ class PersonalBoard extends Component {
                       id={key}
                       onChange={this.update.bind(this)}
                       onRemove={this.remove.bind(this)}
+                      onSend ={this.send.bind(this)}
                       left={notemap[key].left}
                       top={notemap[key].top}
                       subtitle = {notemap[key].subtitle}
@@ -103,6 +104,12 @@ class PersonalBoard extends Component {
     let map = this.state.notes;
     delete map[id];
     this.setState({notes: map});
+  }
+
+  Send(id){
+    let map = this.state.notes;
+    // TODO add send to shared board
+    this.remove(id)
   }
 
   constructor(props) {

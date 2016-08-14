@@ -54,6 +54,7 @@ class Note extends Component {
                 <CardActions>
                   <Button label="EDIT" onClick={this.edit.bind(this)}/>
                   <Button label="DELETE" onClick={this.remove.bind(this)}/>
+                  <Button label="SEND TO SHARED" onClick={this.send.bind(this)}/>
                 </CardActions>
               </Card>
             </div>
@@ -98,6 +99,10 @@ class Note extends Component {
       }
   }
 
+  send(){
+    this.props.onSend(this.props.id);
+    this.setState({view: 'normal'})
+  }
 
   edit() {
     this.setState({view: 'editing'})
