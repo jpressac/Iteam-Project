@@ -2,7 +2,7 @@ import React, {Component, PropTypes} from "react";
 import {DropTarget} from "react-dnd";
 import classes from "./PersonalBoard.scss";
 import Note from "../Note/Note";
-import axios from "axios";
+import {Button} from 'react-toolbox/lib/button';
 import {ItemTypes} from "../Constants/Constants";
 
 
@@ -29,17 +29,14 @@ class PersonalBoard extends Component {
         <div className="col-md-12">
           <div className="row">
             <div className="col-md-4">
-              <button type="button" className={" btn btn-primary"}
-                      onClick={this.add.bind(this, "New note")}>
-                <span className="glyphicon glyphicon-plus"></span> ADD NOTE
-              </button>
+              <Button label="Add note" onClick={this.add.bind(this, "New note")}/>
             </div>
           </div>
         </div>
         <div className={classes.Notecontainer}>
           {Object.keys(notemap).map((key) => {
               console.log(notemap[key].left + ' key:' + key);
-              console.log(notemap[key].top + ' key:' + key);
+              console.log(notemap[key].boardType + ' key:' + key);
               return (
                 <Note key={key}
                       id={key}
@@ -47,6 +44,7 @@ class PersonalBoard extends Component {
                       onRemove={this.remove.bind(this)}
                       left={notemap[key].left}
                       top={notemap[key].top}
+                      boardType={notemap[key].boardType}
                 >{notemap[key].content}</Note>
               );
             }
@@ -55,7 +53,6 @@ class PersonalBoard extends Component {
       </div>
     );
   }
-
 
   nextId() {
     this.uniqueId = this.uniqueId || 0;
@@ -79,7 +76,8 @@ class PersonalBoard extends Component {
       content: 'No comments',
       comments: ['My first note :)'],
       ranking: 10,
-      meetingId: 'meeting123'
+      meetingId: 'meeting123',
+      boardType:"personal"
     };
 
     this.setState({notes: map});

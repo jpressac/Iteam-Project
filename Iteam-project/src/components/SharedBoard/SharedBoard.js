@@ -8,6 +8,7 @@ import Note from "../Note/Note";
 import axios from "axios";
 import BootstrapModal from "../BootstrapModal";
 import {ItemTypes} from "../Constants/Constants";
+import {Button} from 'react-toolbox/lib/button';
 
 
 const NoteTarget = {
@@ -32,6 +33,9 @@ class SharedBoard extends Component {
         <label className={classes.label1}>SHARED BOARD</label>
         <div className="col-md-12">
           <div className="col-md-4">
+            <div className="col-md-4">
+              <button type="button" onClick={this.add.bind(this, "New note")}>add</button>
+            </div>
             <button type="button" className={" btn btn-success"} onClick={this.saveNotes.bind(this)}>
               SAVE
             </button>
@@ -53,8 +57,12 @@ class SharedBoard extends Component {
                       id={key}
                       onChange={this.update.bind(this)}
                       onRemove={this.remove.bind(this)}
+                      onAddComment={this.onChangeComment.bind(this)}
+                      onViewComments={this.getComments.bind(this)}
                       left={notemap[key].left}
                       top={notemap[key].top}
+                      boardType="shared"
+                      comments={notemap[key].comments}
                 >{notemap[key].content}</Note>
               );
             }
@@ -64,10 +72,14 @@ class SharedBoard extends Component {
     );
   }
 
-
   nextId() {
     this.uniqueId = this.uniqueId || 0;
     return this.uniqueId++;
+  }
+
+  getComments(id) {
+    let map = this.state.notes;
+    return map[id].comments;
   }
 
   saveNotes() {
@@ -124,8 +136,8 @@ class SharedBoard extends Component {
       left: SharedBoard.generateRandomNumber(),
       top: SharedBoard.generateRandomNumber(),
       username: "belen",
-      content: 'No comments',
-      comments: ['My first note :)'],
+      content: text,
+      comments: ['My first comment :)'],
       ranking: 10,
       meetingId: 'meeting123'
     };
@@ -136,6 +148,12 @@ class SharedBoard extends Component {
   update(newText, id) {
     let map = this.state.notes;
     map[id].content = newText;
+    this.setState({notes: map});
+  }
+
+  onChangeComment(newText, id) {
+    let map = this.state.notes;
+    map[id].comments.push(newText);
     this.setState({notes: map});
   }
 
@@ -157,6 +175,37 @@ class SharedBoard extends Component {
     this.state = {notes: {}}
   }
   ;
+
+
+  //POR CUESTIONES DE CODE TEST
+  nextId() {
+    this.uniqueId = this.uniqueId || 0;
+    return this.uniqueId++;
+  }
+
+
+  static generateRandomNumber() {
+    return Math.floor(Math.random() * 200) + 1;
+  }
+
+  add(text) {
+    let map = this.state.notes;
+    let id = this.nextId();
+    map[id] =
+    {
+      id: id,
+      left: SharedBoard.generateRandomNumber(),
+      top: SharedBoard.generateRandomNumber(),
+      username: "belen",
+      content: 'No comments',
+      comments: ['My first note :)'],
+      ranking: 10,
+      meetingId: 'meeting123',
+      boardType: "shared"
+    };
+
+    this.setState({notes: map});
+  }
 }
 
 SharedBoard.propTypes = {
