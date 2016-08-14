@@ -37,6 +37,7 @@ public class UserRepositoryImpl implements UserRepsoitory {
 
 	@Override
 	public User getUser(String username) {
+		LOGGER.info("getting user'{}'", username);
 
 		BoolQueryBuilder query = QueryBuilders.boolQuery();
 		query.must(QueryBuilders.termQuery(USER_NAME_FIELD, username))

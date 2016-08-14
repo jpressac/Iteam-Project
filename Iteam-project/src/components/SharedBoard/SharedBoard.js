@@ -23,6 +23,7 @@ const NoteTarget = {
 
 class SharedBoard extends Component {
 
+  componentDidMount
   render() {
     let notemap = this.state.notes;
     const {connectDropTarget} = this.props;
