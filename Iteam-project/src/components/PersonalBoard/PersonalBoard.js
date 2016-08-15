@@ -4,11 +4,12 @@ import classes from "./PersonalBoard.scss";
 import Note from "../Note/Note";
 import {ItemTypes} from "../Constants/Constants";
 import {Button} from 'react-toolbox';
+import flow from 'lodash/flow'
 //import {connect as con, sendNote} from '../../websocket/websocket'
 import {connect} from 'react-redux'
-import { addNote, deleteNote, like, unlike, editNote } from '../../redux/reducers/Login/LoginReducer';
+import {addNote, deleteNote, like, unlike, editNote} from '../../redux/reducers/Login/LoginReducer';
 
-/*const NoteTarget = {
+const NoteTarget = {
   drop(props, monitor, component) {
     const item = monitor.getItem();
     const delta = monitor.getDifferenceFromInitialOffset();
@@ -16,11 +17,13 @@ import { addNote, deleteNote, like, unlike, editNote } from '../../redux/reducer
     const top = Math.round(item.top + delta.y);
     component.updatePosition(item.id, left, top);
   }
-};*/
+};
 
-const stateToProps = state => ({
-  user: state.user
-})
+const mapStateToProps = (state) => {
+  return {
+    user: state.loginReducer.user.user.username
+  }
+}
 
 class PersonalBoard extends Component {
 
@@ -78,14 +81,15 @@ class PersonalBoard extends Component {
     delete map[id];
     this.setState({notes: map});
   }
-  onSendNote(){
+
+  onSendNote() {
     sendNote(this.state.notes[0].content);
   }
+
   render() {
     let notemap = this.state.notes;
-    //const {connectDropTarget} = this.props;
-//connectDropTarget
-    return (
+    const {connectDropTarget} = this.props;
+    return connectDropTarget(
       <div className={classes.board}>
         <label className={classes.label1}>PERSONAL BOARD</label>
         <div className="col-md-12">
@@ -95,8 +99,8 @@ class PersonalBoard extends Component {
                       onClick={this.add.bind(this, "New note")}>
                 <span className="glyphicon glyphicon-plus"/> ADD NOTE
               </button>
-              <Button label="Connect" accent onClick={connect} />
-              <Button label="Send Note" accent onClick={this.onSendNote.bind(this)} />
+              <Button label="Connect" accent onClick={connect}/>
+              <Button label="Send Note" accent onClick={this.onSendNote.bind(this)}/>
             </div>
           </div>
         </div>
@@ -125,15 +129,14 @@ class PersonalBoard extends Component {
 }
 
 PersonalBoard.propTypes = {
-  //connectDropTarget: PropTypes.func.isRequired,
+  connectDropTarget: PropTypes.func.isRequired,
   user: PropTypes.any
 };
 
-// export default DropTarget(ItemTypes.NOTE, NoteTarget,
-//   connect =>
-//     ( {
-//       connectDropTarget: connect.dropTarget()
-//     }
-//     ))(PersonalBoard);
-
-export default connect(stateToProps)(PersonalBoard)
+export default flow(
+  DropTarget(ItemTypes.NOTE, NoteTarget,
+    connection =>
+      ( {
+        connectDropTarget: connection.dropTarget()
+      }
+      )), connect(mapStateToProps))(PersonalBoard);

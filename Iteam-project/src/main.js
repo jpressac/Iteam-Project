@@ -9,6 +9,7 @@ import configureStore from './redux/configureStore'
 import { PATHS } from './constants/routes'
 import { userExists , fetchUser} from './redux/modules/UserAuthenticated'
 import {push} from 'react-router-redux'
+import axios from 'axios'
 import {loginUser, logoutUser} from './redux/reducers/Login/LoginReducer'
 
 // Configure history for react-router
@@ -34,9 +35,10 @@ const routes = makeRoutes(store)
 
 userExists().then( () => {
   store.dispatch(push(PATHS.LOGGEDIN.HOME))
-  fetchUser().then((response)=> {
-    store.dispatch(loginUser(response))
-  });
+  axios.get('http://localhost:8080/user')
+    .then((response) => {
+      store.dispatch(loginUser(response.data))
+    })
 }, () => {
   store.dispatch(push(PATHS.COMMON.LOGIN))
 })
