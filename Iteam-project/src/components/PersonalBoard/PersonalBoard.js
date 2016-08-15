@@ -4,7 +4,7 @@ import classes from "./PersonalBoard.scss";
 import Note from "../Note/Note";
 import {Button} from 'react-toolbox/lib/button';
 import {ItemTypes} from "../Constants/Constants";
-
+import {connect, sendNote} from '../../websocket/websocket'
 
 const NoteTarget = {
   drop(props, monitor, component) {
@@ -42,10 +42,10 @@ class PersonalBoard extends Component {
                       id={key}
                       onChange={this.update.bind(this)}
                       onRemove={this.remove.bind(this)}
-                      onSend ={this.send.bind(this)}
+                      onSend={this.send.bind(this)}
                       left={notemap[key].left}
                       top={notemap[key].top}
-                      subtitle = {notemap[key].subtitle}
+                      subtitle={notemap[key].subtitle}
                       boardType={notemap[key].boardType}
                 >{notemap[key].content}</Note>
               );
@@ -67,6 +67,7 @@ class PersonalBoard extends Component {
   }
 
   add(text) {
+    debugger;
     let map = this.state.notes;
     let id = this.nextId();
     map[id] =
@@ -75,12 +76,12 @@ class PersonalBoard extends Component {
       left: PersonalBoard.generateRandomNumber(),
       top: PersonalBoard.generateRandomNumber(),
       username: "belen",
-      content: 'No comments',
+      content: text,
       subtitle: "No subtitle",
-      comments: ['My first note :)'],
+      comments: "No comments",
       ranking: 10,
       meetingId: 'meeting123',
-      boardType:"personal"
+      boardType: "personal"
     };
 
     this.setState({notes: map});
@@ -106,10 +107,21 @@ class PersonalBoard extends Component {
     this.setState({notes: map});
   }
 
-  Send(id){
+  send(id) {
     let map = this.state.notes;
-    // TODO add send to shared board
+    // send to shared board
+    sendNote(JSON.stringify(
+      {
+        "title": map[id].title,
+        "subtitle": map[id].subtitle
+      })
+    );
     this.remove(id)
+  }
+
+  componentDidMount() {
+    //Connect with socket
+    connect();
   }
 
   constructor(props) {

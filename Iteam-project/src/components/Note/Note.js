@@ -2,8 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import classes from './Note.scss';
 import {ItemTypes} from '../Constants/Constants';
 import {DragSource} from 'react-dnd';
-import NoteComment from '../NoteComment/NoteComment';
-import {Button, IconButton} from 'react-toolbox/lib/button';
+import {Button} from 'react-toolbox/lib/button';
 import {Card, CardMedia, CardTitle, CardText, CardActions} from 'react-toolbox/lib/card';
 
 
@@ -99,7 +98,8 @@ class Note extends Component {
       }
   }
 
-  send(){
+  send() {
+    debugger;
     this.props.onSend(this.props.id);
     this.setState({view: 'normal'})
   }
@@ -121,7 +121,7 @@ class Note extends Component {
   }
 
   cancelComment() {
-    this.setState({ view: 'normal'})
+    this.setState({view: 'normal'})
   }
 
   remove() {
@@ -134,12 +134,11 @@ class Note extends Component {
   }
 
 
-
   constructor(props) {
     super(props);
     this.state = {
       view: 'normal',
-      board: props.boardType,
+      board: props.boardType
     }
   }
 

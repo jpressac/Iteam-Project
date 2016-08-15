@@ -8,7 +8,7 @@ import Note from "../Note/Note";
 import axios from "axios";
 import BootstrapModal from "../BootstrapModal";
 import {ItemTypes} from "../Constants/Constants";
-import {Button} from 'react-toolbox/lib/button';
+import {connect, stompSubscribe} from "../../websocket/websocket"
 
 
 const NoteTarget = {
@@ -164,7 +164,7 @@ class SharedBoard extends Component {
     delete map[id];
     this.setState({notes: map});
   }
-  
+
   updateRancking(vote, id){
     let map = this.state.notes;
     map[id].ranking += vote
@@ -177,8 +177,6 @@ class SharedBoard extends Component {
   }
   ;
 
-
-  //POR CUESTIONES DE CODE TEST
   nextId() {
     this.uniqueId = this.uniqueId || 0;
     return this.uniqueId++;
@@ -189,7 +187,11 @@ class SharedBoard extends Component {
     return Math.floor(Math.random() * 200) + 1;
   }
 
-  add(text) {
+  recieveNote(payload){
+    this.add(payload.title, payload.subtitle);
+  }
+
+  add(title, subtitle) {
     let map = this.state.notes;
     let id = this.nextId();
     map[id] =
@@ -198,15 +200,23 @@ class SharedBoard extends Component {
       left: SharedBoard.generateRandomNumber(),
       top: SharedBoard.generateRandomNumber(),
       username: "belen",
-      content: 'Title',
-      comments: 'My first note :)',
-      ranking: 10,
+      content: title,
+      subtitle: subtitle,
+      comments: 'add comments',
+      ranking: 0,
       meetingId: 'meeting123',
       boardType: "shared"
     };
-
     this.setState({notes: map});
   }
+
+  componentDidMount(){
+    //Connect with socket
+    connect();
+    stompSubscribe()
+  }
+
+
 }
 
 SharedBoard.propTypes = {
