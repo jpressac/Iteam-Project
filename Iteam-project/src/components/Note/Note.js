@@ -2,6 +2,8 @@ import React, {Component, PropTypes} from 'react';
 import classes from './Note.scss';
 import {ItemTypes} from '../Constants/Constants';
 import {DragSource} from 'react-dnd';
+import {Button} from 'react-toolbox/lib/button';
+import {Card, CardMedia, CardTitle, CardText, CardActions} from 'react-toolbox/lib/card';
 
 
 const NoteSource = {
@@ -19,92 +21,128 @@ const style = {
 class Note extends Component {
 
   render() {
-    const {connectDragSource, isDragging, id, left, top, children} = this.props;
-    var noteState = this.state.editing
+    const {connectDragSource, isDragging, id, left, top, subtitle, boardType, children} = this.props;
     if (isDragging) {
       return null;
     }
-    switch (noteState) {
-      case "editing":
-        return (
-          <div className={classes.note}
-               style={{ ...style, left, top }}>
-            <textarea ref="newText" defaultValue={this.props.children} className="form-control"></textarea>
-            <button onClick={this.save.bind(this)} className="btn btn-success btn-sm glyphicon glyphicon-floppy-disk"/>
-          </div>
-        );
-      case "no":
-        return connectDragSource(
-          <div className={classes.note}
-               style={{ ...style, left, top }}>
-            <p>{this.props.children}</p>
-                              <span>
-                                   <button onClick={this.edit.bind(this)}
-                                           className="btn btn-primary glyphicon glyphicon-pencil"/>
-                                   <button onClick={this.remove.bind(this)}
-                                           className="btn btn-danger glyphicon glyphicon-trash"/>
-                                   <button onClick={this.comment.bind(this)}
-                                           className="btn btn-default glyphicon glyphicon-comment"/>
-                                   <button className="btn btn-default glyphicon glyphicon-thumbs-up"/>
-                                   <button className="btn btn-default glyphicon glyphicon-tag"/>
-                               </span>
-          </div>
-        );
-      case "commenting":
-        return (
-          <div className={classes.note}
-               style={{ ...style, left, top }}>
-            <p>{this.props.children}</p>
-            <textarea ref="commentText" defaultValue="comment" className="form-control">hola</textarea>
-            <button onClick={this.saveComment.bind(this)}
-                    className="btn btn-success btn-sm glyphicon glyphicon-floppy-disk"/>
-          </div>
-        );
-    }
+    if (this.state.board === 'personal')
+      switch (this.state.view) {
+        case 'editing':
+          return (
+            <div className={classes.card}
+                 style={{ ...style, left, top }}>
+              <Card>
+                <textarea ref="titleText" defaultValue={this.props.children} className="form-control"></textarea>
+                <textarea ref="subtitleText" defaultValue={this.props.subtitle} className="form-control"></textarea>
+                <CardActions>
+                  <Button label="SAVE" onClick={this.save.bind(this)}/>
+                  <Button label="CANCEL" onClick={this.cancelComment.bind(this)}/>
+                </CardActions>
+              </Card>
+            </div>
+          );
+        case 'normal':
+          return connectDragSource(
+            <div className={classes.card}
+                 style={{ ...style, left, top }}>
+              <Card >
+                <CardTitle
+                  title={this.props.children}
+                  subtitle={this.props.subtitle}
+                />
+                <CardActions>
+                  <Button label="EDIT" onClick={this.edit.bind(this)}/>
+                  <Button label="DELETE" onClick={this.remove.bind(this)}/>
+                  <Button label="SEND TO SHARED" onClick={this.send.bind(this)}/>
+                </CardActions>
+              </Card>
+            </div>
+          );
+      }
+    else
+      switch (this.state.view) {
+        case 'normal':
+          return connectDragSource(
+            <div className={classes.card}
+                 style={{ ...style, left, top }}>
+              <Card >
+                <CardTitle
+                  title={this.props.children}
+                  subtitle={this.props.subtitle}
+                />
+                <CardText>{this.props.comments}</CardText>
+                <CardActions>
+                  <Button label="COMMENT" onClick={this.comment.bind(this)}/>
+                  <Button label="DELETE" onClick={this.remove.bind(this)}/>
+                </CardActions>
+              </Card>
+            </div>
+          );
+        case 'comment':
+          return (
+            <div className={classes.card}
+                 style={{ ...style, left, top }}>
+              <Card >
+                <CardTitle
+                  title={this.props.children}
+                  subtitle={this.props.subtitle}
+                />
+                <textarea ref="commentText" defaultValue={this.props.comments} className="form-control"></textarea>
+                <CardActions>
+                  <Button label="SAVE" onClick={this.saveComment.bind(this)}/>
+                  <Button label="CANCEL" onClick={this.cancelComment.bind(this)}/>
+                </CardActions>
+              </Card>
+            </div>
+          );
+      }
+  }
+
+  send() {
+    debugger;
+    this.props.onSend(this.props.id);
+    this.setState({view: 'normal'})
   }
 
   edit() {
-    this.setState({editing: 'editing'})
+    this.setState({view: 'editing'})
   }
 
   save() {
-    {
-      this.props.onChange(this.refs.newText.value, this.props.id)
-    }
-    this.setState({editing: 'no'})
+    this.props.onChange(this.refs.titleText.value, this.refs.subtitleText.value, this.props.id);
+    this.setState({view: 'normal'})
   }
 
   saveComment() {
-    {
-      this.props.onChangeComment(this.refs.commentText.value, this.props.id)
-    }
-    this.setState({editing: 'no'})
+    this.props.onAddComment(this.refs.commentText.value, this.props.id);
+    this.setState({
+      view: 'normal'
+    })
+  }
+
+  cancelComment() {
+    this.setState({view: 'normal'})
   }
 
   remove() {
-    {
-      this.props.onRemove(this.props.id)
-    }
-    this.setState({editing: 'no'})
+    this.props.onRemove(this.props.id);
+    this.setState({view: 'normal'})
   }
 
   comment() {
-    this.setState({editing: 'commenting'})
+    this.setState({view: 'comment'})
   }
 
-  // ranking(){
-  //   {this.props.ranking(this.refs.like.value)}
-  //   this.setState({editing:false})
-  // }
-  // categorize(){
-  //   this.props.categorize(this.refs.categText.value)}
-  //   this.setState({editing:false})
-  // }
 
   constructor(props) {
     super(props);
-    this.state = {editing: 'no'}
+    this.state = {
+      view: 'normal',
+      board: props.boardType
+    }
   }
+
+
 }
 
 Note.propTypes = {
@@ -114,10 +152,16 @@ Note.propTypes = {
   left: PropTypes.any.isRequired,
   top: PropTypes.any.isRequired,
   username: PropTypes.string,
+  boardType: PropTypes.string,
+  comments: PropTypes.array,
+  subtitle: PropTypes.string,
   children: PropTypes.node
 };
 
-export default DragSource(ItemTypes.NOTE, NoteSource, (connect, monitor) => ({
-  connectDragSource: connect.dragSource(),
-  isDragging: monitor.isDragging()
-}))(Note);
+export default DragSource(ItemTypes.NOTE,
+  NoteSource, (connect, monitor) => ( {
+    connectDragSource: connect.dragSource(),
+    isDragging: monitor.isDragging()
+  }
+  ))
+(Note);

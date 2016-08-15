@@ -5,7 +5,7 @@ import Note from "../Note/Note";
 import {ItemTypes} from "../Constants/Constants";
 import {Button} from 'react-toolbox';
 import flow from 'lodash/flow'
-//import {connect as con, sendNote} from '../../websocket/websocket'
+import {connect as con, sendNote} from '../../websocket/websocket'
 import {connect} from 'react-redux'
 import {addNote, deleteNote, like, unlike, editNote} from '../../redux/reducers/Login/LoginReducer';
 
@@ -27,11 +27,41 @@ const mapStateToProps = (state) => {
 
 class PersonalBoard extends Component {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      notes: {}
-    }
+  render() {
+    let notemap = this.state.notes;
+    const {connectDropTarget} = this.props;
+
+    return connectDropTarget(
+      <div className={classes.board}>
+        <label className={classes.label1}>PERSONAL BOARD</label>
+        <div className="col-md-12">
+          <div className="row">
+            <div className="col-md-4">
+              <Button label="Add note" onClick={this.add.bind(this, "New note")}/>
+            </div>
+          </div>
+        </div>
+        <div className={classes.Notecontainer}>
+          {Object.keys(notemap).map((key) => {
+              console.log(notemap[key].left + ' key:' + key);
+              console.log(notemap[key].top + ' key:' + key);
+              return (
+                <Note key={key}
+                      id={key}
+                      onChange={this.update.bind(this)}
+                      onRemove={this.remove.bind(this)}
+                      onSend={this.send.bind(this)}
+                      left={notemap[key].left}
+                      top={notemap[key].top}
+                      subtitle={notemap[key].subtitle}
+                      boardType={notemap[key].boardType}
+                >{notemap[key].content}</Note>
+              );
+            }
+          )}
+        </div>
+      </div>
+    );
   }
 
   nextId() {
@@ -53,19 +83,21 @@ class PersonalBoard extends Component {
       left: PersonalBoard.generateRandomNumber(),
       top: PersonalBoard.generateRandomNumber(),
       username: this.props.user,
-      content: 'No comments',
-      comments: ['My first note :)'],
+      content: text,
+      subtitle: "No subtitle",
+      comments: "No comments",
       ranking: 10,
-      meetingId: 'meeting123'
+      meetingId: 'meeting123',
+      boardType: "personal"
     };
 
     this.setState({notes: map});
-    console.log(this.state.notes);
   }
 
-  update(newText, id) {
+  update(titleText, subtitleText, id) {
     let map = this.state.notes;
-    map[id].content = newText;
+    map[id].content = titleText;
+    map[id].subtitle = subtitleText;
     this.setState({notes: map});
   }
 
@@ -82,50 +114,28 @@ class PersonalBoard extends Component {
     this.setState({notes: map});
   }
 
-  onSendNote() {
-    sendNote(this.state.notes[0].content);
-  }
-
-  render() {
-    let notemap = this.state.notes;
-    const {connectDropTarget} = this.props;
-    return connectDropTarget(
-      <div className={classes.board}>
-        <label className={classes.label1}>PERSONAL BOARD</label>
-        <div className="col-md-12">
-          <div className="row">
-            <div className="col-md-4">
-              <button type="button" className={" btn btn-primary"}
-                      onClick={this.add.bind(this, "New note")}>
-                <span className="glyphicon glyphicon-plus"/> ADD NOTE
-              </button>
-              <Button label="Connect" accent onClick={connect}/>
-              <Button label="Send Note" accent onClick={this.onSendNote.bind(this)}/>
-            </div>
-          </div>
-        </div>
-        <div className={classes.Notecontainer}>
-          {Object.keys(notemap).map((key) => {
-              console.log(notemap[key].left + ' key:' + key);
-              console.log(notemap[key].top + ' key:' + key);
-              return (
-                <Note key={key}
-                      id={key}
-                      onChange={this.update.bind(this)}
-                      onRemove={this.remove.bind(this)}
-                      left={notemap[key].left}
-                      top={notemap[key].top}
-
-
-                >{notemap[key].content}</Note>
-              );
-            }
-          )}
-        </div>
-      </div>
+  send(id) {
+    let map = this.state.notes;
+    // send to shared board
+    sendNote(JSON.stringify(
+      {
+        "title": map[id].title,
+        "subtitle": map[id].subtitle
+      })
     );
+    this.remove(id)
   }
 
+  componentDidMount() {
+    //Connect with socket
+    con();
+  }
+
+  constructor(props) {
+    super(props);
+    this.state = {notes: {}}
+  }
+  ;
 }
 
 PersonalBoard.propTypes = {

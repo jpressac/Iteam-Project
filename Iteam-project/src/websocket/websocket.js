@@ -15,6 +15,11 @@ export function connect(){
   });
 }
 
+export function stompSubscribe(){
+  stompClient.subscribe('/topic/' + 13, (data)=> { 
+  });
+}
+
 export function sendNote(content){
   //en el 13 va el meeting id y en el channel va tambien el meetingid
   stompClient.send("/channel", {},JSON.stringify(
