@@ -8,7 +8,7 @@ import Note from "../Note/Note";
 import axios from "axios";
 import BootstrapModal from "../BootstrapModal";
 import {ItemTypes} from "../Constants/Constants";
-import {connect, stompSubscribe} from "../../websocket/websocket"
+import {connectAndSubscribe as conAndSub, disconnect} from '../../websocket/websocket'
 
 
 const NoteTarget = {
@@ -24,7 +24,6 @@ const NoteTarget = {
 
 class SharedBoard extends Component {
 
-  componentDidMount
   render() {
     let notemap = this.state.notes;
     const {connectDropTarget} = this.props;
@@ -34,19 +33,14 @@ class SharedBoard extends Component {
         <label className={classes.label1}>SHARED BOARD</label>
         <div className="col-md-12">
           <div className="col-md-4">
-            <div className="col-md-4">
-              <button type="button" onClick={this.add.bind(this, "New note")}>add</button>
-            </div>
             <button type="button" className={" btn btn-success"} onClick={this.saveNotes.bind(this)}>
               SAVE
             </button>
-            <BootstrapModal ref="mymodal" message={this.state.message}></BootstrapModal>
           </div>
           <div className="col-md-4">
             <button type="button" className={" btn btn-success"}
                     onClick={this.generateReport.bind(this)}> GENERATE REPORT
             </button>
-            <BootstrapModal ref="mymodal" message={this.state.message}></BootstrapModal>
           </div>
         </div>
         <div className={classes.Notecontainer}>
@@ -56,15 +50,15 @@ class SharedBoard extends Component {
               return (
                 <Note key={key}
                       id={key}
-                      onChange={this.update.bind(this)}
                       onRemove={this.remove.bind(this)}
                       onAddComment={this.onChangeComment.bind(this)}
-                      onEditRanking={this.updateRancking.bind(this)}
                       left={notemap[key].left}
                       top={notemap[key].top}
                       boardType="shared"
                       comments={notemap[key].comments}
-                >{notemap[key].content}</Note>
+                      title={notemap[key].title}
+                      subtitle={notemap[key].subtitle}
+                />
               );
             }
           )}
@@ -84,8 +78,8 @@ class SharedBoard extends Component {
       return (
       {
         username: notemap[key].username,
-        content: notemap[key].content,
-        comments: notemap[key].comments,
+        content: notemap[key].title,
+        comments: [notemap[key].comments],
         ranking: notemap[key].ranking,
         meetingId: notemap[key].meetingId
       }
@@ -123,30 +117,6 @@ class SharedBoard extends Component {
     return Math.floor(Math.random() * 200) + 1;
   }
 
-  add(text) {
-    let map = this.state.notes;
-    let id = this.nextId();
-    map[id] =
-    {
-      id: id,
-      left: SharedBoard.generateRandomNumber(),
-      top: SharedBoard.generateRandomNumber(),
-      username: "belen",
-      content: text,
-      comments: "No comments",
-      ranking: 10,
-      meetingId: 'meeting123'
-    };
-
-    this.setState({notes: map});
-  }
-
-  update(newText, id) {
-    let map = this.state.notes;
-    map[id].content = newText;
-    this.setState({notes: map});
-  }
-
   onChangeComment(commentText, id) {
     let map = this.state.notes;
     map[id].comments= commentText;
@@ -175,34 +145,21 @@ class SharedBoard extends Component {
   constructor(props) {
     super(props);
     this.state = {notes: {}}
-  }
-  ;
+  };
 
-  nextId() {
-    this.uniqueId = this.uniqueId || 0;
-    return this.uniqueId++;
-  }
-
-
-  static generateRandomNumber() {
-    return Math.floor(Math.random() * 200) + 1;
-  }
-
-  recieveNote(payload){
-    this.add(payload.title, payload.subtitle);
-  }
-
-  add(title, subtitle) {
+  receiveNote(payload){
     let map = this.state.notes;
     let id = this.nextId();
+    let jsonPayload= JSON.parse(payload);
+    console.log(jsonPayload)
     map[id] =
     {
       id: id,
       left: SharedBoard.generateRandomNumber(),
       top: SharedBoard.generateRandomNumber(),
-      username: "belen",
-      content: title,
-      subtitle: subtitle,
+      username: jsonPayload.username,
+      title: jsonPayload.title,
+      subtitle: jsonPayload.subtitle,
       comments: 'add comments',
       ranking: 0,
       meetingId: 'meeting123',
@@ -213,11 +170,12 @@ class SharedBoard extends Component {
 
   componentDidMount(){
     //Connect with socket
-    connect();
-    stompSubscribe()
+    conAndSub('13', this.receiveNote.bind(this))
   }
 
-
+  componentWillUnmount(){
+    disconnect()
+  }
 }
 
 SharedBoard.propTypes = {

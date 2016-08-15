@@ -32,8 +32,8 @@ class Note extends Component {
             <div className={classes.card}
                  style={{ ...style, left, top }}>
               <Card>
-                <textarea ref="titleText" defaultValue={this.props.children} className="form-control"></textarea>
-                <textarea ref="subtitleText" defaultValue={this.props.subtitle} className="form-control"></textarea>
+                <textarea ref="titleText" defaultValue={this.props.title} className="form-control"/>
+                <textarea ref="subtitleText" defaultValue={this.props.subtitle} className="form-control"/>
                 <CardActions>
                   <Button label="SAVE" onClick={this.save.bind(this)}/>
                   <Button label="CANCEL" onClick={this.cancelComment.bind(this)}/>
@@ -47,13 +47,13 @@ class Note extends Component {
                  style={{ ...style, left, top }}>
               <Card >
                 <CardTitle
-                  title={this.props.children}
+                  title={this.props.title}
                   subtitle={this.props.subtitle}
                 />
                 <CardActions>
                   <Button label="EDIT" onClick={this.edit.bind(this)}/>
                   <Button label="DELETE" onClick={this.remove.bind(this)}/>
-                  <Button label="SEND TO SHARED" onClick={this.send.bind(this)}/>
+                  <Button label="SHARE" onClick={this.send.bind(this)}/>
                 </CardActions>
               </Card>
             </div>
@@ -67,7 +67,7 @@ class Note extends Component {
                  style={{ ...style, left, top }}>
               <Card >
                 <CardTitle
-                  title={this.props.children}
+                  title={this.props.title}
                   subtitle={this.props.subtitle}
                 />
                 <CardText>{this.props.comments}</CardText>
@@ -84,10 +84,10 @@ class Note extends Component {
                  style={{ ...style, left, top }}>
               <Card >
                 <CardTitle
-                  title={this.props.children}
+                  title={this.props.title}
                   subtitle={this.props.subtitle}
                 />
-                <textarea ref="commentText" defaultValue={this.props.comments} className="form-control"></textarea>
+                <textarea ref="commentText" defaultValue={this.props.comments} className="form-control"/>
                 <CardActions>
                   <Button label="SAVE" onClick={this.saveComment.bind(this)}/>
                   <Button label="CANCEL" onClick={this.cancelComment.bind(this)}/>
@@ -99,7 +99,6 @@ class Note extends Component {
   }
 
   send() {
-    debugger;
     this.props.onSend(this.props.id);
     this.setState({view: 'normal'})
   }
@@ -155,7 +154,7 @@ Note.propTypes = {
   boardType: PropTypes.string,
   comments: PropTypes.array,
   subtitle: PropTypes.string,
-  children: PropTypes.node
+  title: PropTypes.string
 };
 
 export default DragSource(ItemTypes.NOTE,

@@ -7,23 +7,36 @@ export function connect(){
   var socket = SockJs('/channel');
   stompClient = Stomp.over(socket);
 
+  //TODO: sacar el console.log
   stompClient.connect({}, function (frame) {
     console.log('Connected: ' + frame);
-    //en el 13 va el meeting id
-    stompClient.subscribe('/topic/' + 13, (data)=> {
+  });
+}
+
+export function connectAndSubscribe(channelId, resolve){
+  var SockJs = require('sockjs-client');
+  require('stompjs');
+
+  var socket = SockJs('/channel');
+  stompClient = Stomp.over(socket);
+
+  //TODO: sacar el console.log
+  stompClient.connect({}, function (frame) {
+    console.log('Connected: ' + frame);
+    stompClient.subscribe('/topic/' + channelId, (data)=> {
+      resolve(data.body)
     });
   });
 }
 
-export function stompSubscribe(){
-  stompClient.subscribe('/topic/' + 13, (data)=> { 
-  });
+export function subscribe(channelId, data){
+
 }
 
-export function sendNote(content){
+export function sendNote(channelId, content){
   //en el 13 va el meeting id y en el channel va tambien el meetingid
   stompClient.send("/channel", {},JSON.stringify(
-    { "channel": "13",
+    { "channel": channelId,
       "payload" : content
     })
   );

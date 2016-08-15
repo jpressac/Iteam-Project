@@ -55,7 +55,7 @@ class PersonalBoard extends Component {
                       top={notemap[key].top}
                       subtitle={notemap[key].subtitle}
                       boardType={notemap[key].boardType}
-                >{notemap[key].content}</Note>
+                      title= {notemap[key].title}/>
               );
             }
           )}
@@ -83,7 +83,7 @@ class PersonalBoard extends Component {
       left: PersonalBoard.generateRandomNumber(),
       top: PersonalBoard.generateRandomNumber(),
       username: this.props.user,
-      content: text,
+      title: text,
       subtitle: "No subtitle",
       comments: "No comments",
       ranking: 10,
@@ -96,7 +96,7 @@ class PersonalBoard extends Component {
 
   update(titleText, subtitleText, id) {
     let map = this.state.notes;
-    map[id].content = titleText;
+    map[id].title = titleText;
     map[id].subtitle = subtitleText;
     this.setState({notes: map});
   }
@@ -117,8 +117,10 @@ class PersonalBoard extends Component {
   send(id) {
     let map = this.state.notes;
     // send to shared board
-    sendNote(JSON.stringify(
+    //TODO, channel es la meeting id
+    sendNote('13', JSON.stringify(
       {
+        "username": map[id].username,
         "title": map[id].title,
         "subtitle": map[id].subtitle
       })
@@ -129,6 +131,10 @@ class PersonalBoard extends Component {
   componentDidMount() {
     //Connect with socket
     con();
+  }
+
+  componentWillUnmount(){
+    disconnect()
   }
 
   constructor(props) {
