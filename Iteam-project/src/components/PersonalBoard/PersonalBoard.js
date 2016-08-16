@@ -7,7 +7,7 @@ import {Button} from 'react-toolbox';
 import flow from 'lodash/flow'
 import {connect as con, sendNote} from '../../websocket/websocket'
 import {connect} from 'react-redux'
-import {addNote, deleteNote, like, unlike, editNote} from '../../redux/reducers/Login/LoginReducer';
+import {addNote, deleteNote, like, unlike, editNote} from '../../redux/reducers/Login/LoginUser';
 
 const NoteTarget = {
   drop(props, monitor, component) {
@@ -21,9 +21,9 @@ const NoteTarget = {
 
 const mapStateToProps = (state) => {
   return {
-    user: state.loginReducer.user.user.username
+    user: state.loginUser.user.username
   }
-}
+};
 
 class PersonalBoard extends Component {
 
@@ -129,7 +129,6 @@ class PersonalBoard extends Component {
   }
 
   componentDidMount() {
-    //Connect with socket
     con();
   }
 

@@ -19,7 +19,7 @@ export class RegistrationFormContainer extends React.Component {
   render(){
     return(
       <div className={classes.form} >
-      <RegistrationForm onSubmit={this.handleSubmit.bind(this)} ></RegistrationForm>
+      <RegistrationForm onSubmit={this.handleSubmit.bind(this)} />
       </div>
 )};
 }
