@@ -14,6 +14,7 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
+import org.iteam.configuration.ExternalConfigurationProperties;
 import org.iteam.configuration.StringUtilities;
 import org.iteam.data.dal.client.ElasticsearchClient;
 import org.iteam.data.dal.client.ElasticsearchClientImpl;
@@ -31,6 +32,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     private static final Logger LOGGER = LoggerFactory.getLogger(MeetingRepositoryImpl.class);
 
     private ElasticsearchClient elasticsearchClientImpl;
+    private ExternalConfigurationProperties configuration;
 
     private static final String IDEA_MEETING_ID_FIELD = "meetingId";
     private static final String RANKING_ID_FIELD = "ranking";
@@ -98,7 +100,8 @@ public class MeetingRepositoryImpl implements MeetingRepository {
             PrintWriter writer = null;
             try {
                 // FIXME: change this code please!!!!
-                writer = new PrintWriter(new FileWriter(String.format("%s/%s", "C:\\ideas", meetingId), true));
+                writer = new PrintWriter(
+                        new FileWriter(String.format("%s/%s", configuration.getPathSaveIdeas(), meetingId), true));
                 writer.append("*****First Report*****");
                 writer.append("\nIdeas order by ranking");
 
@@ -144,5 +147,10 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     @Autowired
     private void setElasticsearchClientImpl(ElasticsearchClientImpl elasticsearchClientImpl) {
         this.elasticsearchClientImpl = elasticsearchClientImpl;
+    }
+
+    @Autowired
+    private void setConfiguration(ExternalConfigurationProperties configuration) {
+        this.configuration = configuration;
     }
 }

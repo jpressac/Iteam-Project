@@ -10,36 +10,48 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ExternalConfigurationProperties {
 
-	@Value("${org.iteam.elasticsearch.host}")
-	private String elasticsearchHost;
+    @Value("${org.iteam.elasticsearch.host}")
+    private String elasticsearchHost;
 
-	@Value("${org.iteam.elasticsearch.port}")
-	private int elasticsearchPort;
+    @Value("${org.iteam.elasticsearch.port}")
+    private int elasticsearchPort;
 
-	@Value("${org.iteam.elasticsearch.cluster.name}")
-	private String elasticsearchClusterName;
+    @Value("${org.iteam.elasticsearch.cluster.name}")
+    private String elasticsearchClusterName;
 
-	public String getElasticsearchHost() {
-		return elasticsearchHost;
-	}
+    @Value("${ort.iteam.ideas.path}")
+    private String pathSaveIdeas;
 
-	public void setElasticsearchHost(String elasticsearchHost) {
-		this.elasticsearchHost = elasticsearchHost;
-	}
+    public String getElasticsearchHost() {
+        return elasticsearchHost;
+    }
 
-	public int getElasticsearchPort() {
-		return elasticsearchPort;
-	}
+    public void setElasticsearchHost(String elasticsearchHost) {
+        this.elasticsearchHost = elasticsearchHost;
+    }
 
-	public void setElasticsearchPort(int elasticsearchPort) {
-		this.elasticsearchPort = elasticsearchPort;
-	}
+    public int getElasticsearchPort() {
+        return elasticsearchPort;
+    }
 
-	public String getElasticsearchClusterName() {
-		return elasticsearchClusterName;
-	}
+    public void setElasticsearchPort(int elasticsearchPort) {
+        this.elasticsearchPort = elasticsearchPort;
+    }
 
-	public void setElasticsearchClusterName(String elasticsearchClusterName) {
-		this.elasticsearchClusterName = elasticsearchClusterName;
-	}
+    public String getElasticsearchClusterName() {
+        return elasticsearchClusterName;
+    }
+
+    public void setElasticsearchClusterName(String elasticsearchClusterName) {
+        this.elasticsearchClusterName = elasticsearchClusterName;
+    }
+
+    public String getPathSaveIdeas() {
+        return pathSaveIdeas;
+    }
+
+    public void setPathSaveIdeas(String pathSaveIdeas) {
+        this.pathSaveIdeas = pathSaveIdeas;
+    }
+
 }

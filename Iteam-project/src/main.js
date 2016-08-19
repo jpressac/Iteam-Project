@@ -10,7 +10,7 @@ import { PATHS } from './constants/routes'
 import { userExists , fetchUser} from './redux/modules/UserAuthenticated'
 import {push} from 'react-router-redux'
 import axios from 'axios'
-import {loginUser, logoutUser} from './redux/reducers/Login/LoginReducer'
+import {user, logoutUser} from './redux/reducers/Login/LoginUser'
 
 // Configure history for react-router
 const browserHistory = useRouterHistory(createBrowserHistory)({
@@ -37,7 +37,7 @@ userExists().then( () => {
   store.dispatch(push(PATHS.LOGGEDIN.HOME))
   axios.get('http://localhost:8080/user')
     .then((response) => {
-      store.dispatch(loginUser(response.data))
+      store.dispatch(user(response.data))
     })
 }, () => {
   store.dispatch(push(PATHS.COMMON.LOGIN))

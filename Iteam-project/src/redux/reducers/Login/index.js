@@ -1,6 +1,3 @@
-import { injectReducer } from '../../../store/reducers'
-import loginReducer from './LoginReducer'
+import loginReducer from './LoginUser'
 
-export default (store) => {
-  injectReducer(store, {key: 'login', loginReducer});
-}
+export default loginReducer
