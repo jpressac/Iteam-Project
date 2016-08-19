@@ -5,11 +5,26 @@ import { Button } from 'react-bootstrap';
 import logo from '../image/logo.png'
 import profile from '../image/profile.jpg'
 import { PATHS } from '../../../constants/routes'
+import {connect} from 'react-redux'
+import Avatar from 'react-toolbox/lib/avatar';
+
+
+const mapStateToProps = (state)=> {
+  if(state.loginReducer.user !== null) {
+    return {
+      user: state.loginReducer.user.user.username
+    }
+  }
+}
 
 class HeaderLog extends Component {
 //   //myFunction() {
 //     document.getElementsByClassName("topnav")[0].classList.toggle("responsive");
 // }
+  constructor(props){
+    super(props);
+  }
+
   render(){
     return(
        <div className={"navbar navbar-inverse navbar-static-top", classes.wrapper}>
@@ -17,9 +32,9 @@ class HeaderLog extends Component {
            <div className={"navbar-header"}>
              <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar3">
 
-               <span className="icon-bar"></span>
-               <span className="icon-bar"></span>
-               <span className="icon-bar"></span>
+               <span className="icon-bar"/>
+               <span className="icon-bar"/>
+               <span className="icon-bar"/>
              </button>
              <a className="navbar-brand" href="#">
              <img src={logo} className={classes.logo} alt="Iteam"/></a>
@@ -38,8 +53,11 @@ class HeaderLog extends Component {
                   <span className="glyphicon glyphicon-paperclip"></span> NEW TEAM </Link></li>
                <li><Link className={classes.menus} to={'/' + PATHS.MENULOGGEDIN.BOARD} activeClassName="active">
                   <span className="glyphicon glyphicon-paperclip"></span> PERSONAL BOARD </Link></li>
+               <li>
+                 <Link className={classes.menus} to={'/' + PATHS.MENUNOTLOGGEDIN.HOME} activeClassName="active">
+                   <span className="glyphicon glyphicon-paperclip">{this.props.user}</span>Logout</Link>
 
-
+               </li>
              </ul>
 
 
@@ -55,4 +73,8 @@ class HeaderLog extends Component {
 };
 }
 
-export default HeaderLog
+HeaderLog.propTypes = {
+  user: PropTypes.any
+};
+
+export default connect(mapStateToProps)(HeaderLog)
