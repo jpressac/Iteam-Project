@@ -1,7 +1,7 @@
 package org.iteam.services.user;
 
 import org.iteam.data.dal.user.UserRepositoryImpl;
-import org.iteam.data.model.User;
+import org.iteam.data.model.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,12 +11,15 @@ public class UserServiceImpl implements UserService {
     private UserRepositoryImpl userRepository;
 
     @Override
-    public User getUser(String username) {
-        return userRepository.getUser(username);
+    public UserDTO getUser(String username) {
+        UserDTO user = userRepository.getUser(username);
+        user.setPassword(null);
+
+        return user;
     }
 
     @Override
-    public boolean setUser(User user) {
+    public boolean setUser(UserDTO user) {
         return userRepository.setUser(user);
     }
 

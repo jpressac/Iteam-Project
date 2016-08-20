@@ -1,6 +1,6 @@
 package org.iteam.data.dal.user;
 
-import org.iteam.data.model.User;
+import org.iteam.data.model.UserDTO;
 
 /**
  * This class controls all the request for getting and setting information about
@@ -16,7 +16,7 @@ public interface UserRepsoitory {
      *            the user name.
      * @return a user which contains all the information about him.
      */
-    public User getUser(String username);
+    public UserDTO getUser(String username);
 
     /**
      * Insert a new user into the database
@@ -25,7 +25,7 @@ public interface UserRepsoitory {
      *            the user to be inserted @return, true if the insertion was
      *            successfully, false otherwise
      */
-    public boolean setUser(User user);
+    public boolean setUser(UserDTO user);
 
     /**
      * Check if an specific user name already exists.

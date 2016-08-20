@@ -73,12 +73,12 @@ public class Advisor {
                         try {
                             filters.addFilter(mapper.treeToValue(arrayNode, Filter.class));
                         } catch (Exception e) {
-                            // TODO: use own exceptions
+                            throw new JsonParsingException("Filter cannot be parsed, JSON malformed");
                         }
                     });
 
                 } catch (IOException e) {
-                    // TODO: use own exceptions
+                    throw new JsonParsingException("JSON parsing error, JSON could not be parsed");
                 }
 
                 setValue(filters);

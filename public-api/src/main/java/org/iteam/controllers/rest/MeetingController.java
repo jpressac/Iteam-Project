@@ -1,5 +1,7 @@
 package org.iteam.controllers.rest;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.iteam.data.model.IdeasDTO;
@@ -69,6 +71,18 @@ public class MeetingController {
         meetingServiceImpl.generateReport(meetingId);
 
         return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+    }
+
+    /**
+     * Get a list of all meetings given a username
+     * 
+     * @param username
+     *            the username of the user
+     * @return the list of meetings by user.
+     */
+    @RequestMapping(value = "/meeting/meetingbyuser")
+    public List<Meeting> getUserMeetings(@RequestParam(value = "username", required = true) String username) {
+        return meetingServiceImpl.getMeetingByUser(username);
     }
 
     @Autowired
