@@ -1,7 +1,7 @@
 package org.iteam.services.user;
 
 import org.iteam.data.dal.user.UserRepositoryImpl;
-import org.iteam.data.model.User;
+import org.iteam.data.model.UserDTO;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,7 +60,7 @@ public class IteamUserDetailServiceTest {
 	}
 
 	private void givenAnUserRepository() {
-		User user = new User();
+		UserDTO user = new UserDTO();
 		user.setUsername("iteam");
 		user.setPassword("admin");
 

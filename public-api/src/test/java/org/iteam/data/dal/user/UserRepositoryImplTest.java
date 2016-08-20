@@ -6,7 +6,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.iteam.data.dal.client.ElasticsearchClientImpl;
-import org.iteam.data.model.User;
+import org.iteam.data.model.UserDTO;
 import org.iteam.exceptions.JsonParsingException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -26,7 +26,7 @@ public class UserRepositoryImplTest {
 	private ElasticsearchClientImpl elasticsearchClient;
 
 	private static final String USER_AS_JSON = "{\"username\":\"iteam\",\"password\":\"005f6e6f2dda2\",\"name\":\"iteamProject\"}";
-	private User user;
+	private UserDTO user;
 	private String username;
 	private boolean flag;
 
@@ -169,7 +169,7 @@ public class UserRepositoryImplTest {
 	}
 
 	private void givenANewUser(String gender) {
-		user = new User();
+		user = new UserDTO();
 		user.setUsername("iteam");
 		user.setPassword("admin");
 		user.setGender(gender);
