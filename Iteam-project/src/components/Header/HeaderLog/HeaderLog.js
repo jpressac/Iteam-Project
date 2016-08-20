@@ -5,8 +5,12 @@ import { Button } from 'react-bootstrap';
 import logo from '../image/logo.png'
 import profile from '../image/profile.jpg'
 import { PATHS } from '../../../constants/routes'
+import LinkR from 'react-toolbox/lib/link';
+import {IconMenu, MenuItem, MenuDivider } from 'react-toolbox/lib/menu';
+
 
 class HeaderLog extends React.Component {
+
 
   render(){
     return(
@@ -24,29 +28,40 @@ class HeaderLog extends React.Component {
            </div>
            <div  className="collapse navbar-collapse navHeaderCollapse " >
                <ul className="nav navbar-nav navbar-right ">
+               <li > <IconMenu icon='Meeting' position='topRight'  className={classes.menu}><b className="caret"></b>
+               <ul>
+                    <li> <Link className={classes.itemMenu} to={'/' + PATHS.MENULOGGEDIN.MYMEETINGS} activeClassName="active"> <MenuItem>My meetings</MenuItem></Link></li>
+                    <li> <Link className={classes.itemMenu} to={'/' + PATHS.MENULOGGEDIN.MEETING} activeClassName="active"> <MenuItem>NEW MEETING</MenuItem></Link></li>
+                     </ul>
+                </IconMenu></li>
 
-               <li ><Link  to={'/' + PATHS.MENUNOTLOGGEDIN.HOME} activeClassName="active">
+                <li > <IconMenu icon='My Profile' position='topLeft' menuRipple><b className="caret"></b>
+                      <Link className={classes.itemMenu} to={'/' + PATHS.MENULOGGEDIN.PROFILE} activeClassName="active"> <MenuItem>MY PROFILE</MenuItem></Link>
+                      <Link className={classes.itemMenu} to={'/' + PATHS.MENULOGGEDIN.PROFILE} activeClassName="active"> <MenuItem>Sing Out</MenuItem></Link>
+                 </IconMenu></li>
+
+               <li ><Link  to={'/' + PATHS.MENULOGGEDIN.HOME} activeClassName="active">
                   <span className="glyphicon glyphicon-home"></span>HOME</Link></li>
 
-                <li className="dropdown"><a href="#" className={"dropdown-toggle"} data-toggle="dropdown" >
-               <img src={profile} className={"img-circle special-img", classes.pro}/> MY PROFILE  <b className="caret"></b></a>
+                <li className="dropdown"><Link className={classes.itemMenu} to={'/' + PATHS.MENULOGGEDIN.PROFILE} activeClassName="active">
+               <img src={profile} className={"img-circle special-img", classes.pro}/> MY PROFILE  <b className="caret"></b></Link>
                <ul className="dropdown-menu">
-                   <li><Link className={classes.itemMenu} to={'/' + PATHS.MENULOGGEDIN.PROFILE}>My profile</Link> </li>
-                   <li><Link className={classes.itemMenu} to={'/' + PATHS.MENULOGGEDIN.PROFILE}>Sing out</Link> </li>
+                   <li><Link className={classes.itemMenu} to={'/' + PATHS.MENULOGGEDIN.PROFILE} activeClassName="active">My profile</Link> </li>
+                   <li><Link className={classes.itemMenu} to={'/' + PATHS.MENULOGGEDIN.PROFILE} activeClassName="active">Sing out</Link> </li>
                </ul>
                </li>
 
-               <li className="dropdown"><a href="#" className={"dropdown-toggle"} data-toggle="dropdown" >
+               <li className="dropdown"><a href="" className={"dropdown-toggle"} data-toggle="dropdown" >
                   <span className="glyphicon glyphicon-paperclip"></span>MEETING <b className="caret"></b></a>
                     <ul className="dropdown-menu">
-                        <li><Link className={classes.itemMenu} to={'/' + PATHS.MENULOGGEDIN.MEETING}>NEW MEETING</Link> </li>
-                        <li><Link className={classes.itemMenu} to={'/' + PATHS.MENULOGGEDIN.MYMEETINGS}>My meetings</Link> </li>
+                        <li><Link className={classes.itemMenu} to={'/' + PATHS.MENULOGGEDIN.MEETING} activeClassName="active">NEW MEETING</Link> </li>
+                        <li><Link className={classes.itemMenu} to={'/' + PATHS.MENULOGGEDIN.MYMEETINGS} activeClassName="active">My meetings</Link> </li>
                     </ul>
                     </li>
 
                <li><Link  to={'/' + PATHS.MENULOGGEDIN.NEWTEAM} activeClassName="active">
                   <span className="glyphicon glyphicon-paperclip"></span> NEW TEAM </Link></li>
-               <li><Link to={'/' + PATHS.MENULOGGEDIN.BOARD} activeClassName="active">
+               <li><Link to={'/' + PATHS.MENULOGGEDIN.MYMEETINGS} activeClassName="active">
                   <span className="glyphicon glyphicon-paperclip"></span> PERSONAL BOARD </Link></li>
 
 

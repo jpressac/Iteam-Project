@@ -37,6 +37,6 @@ export const PATHS = {
    PROFILE : 'application/member/myprofile',
    MEETING : 'application/member/meeting',
    BOARD : 'application/member/personalboard',
-    MYMEETINGS: 'application/member/mymeeting'
+   MYMEETINGS: 'application/member/mymeeting'
  }
 }

@@ -27,14 +27,17 @@ class ProfileForm extends React.Component {
 
     }
   componentDidMount(){
-    getUserData().then( () => {
-        this.setState({ data: response.data} );
-        this.fillfields();
-      },
-      () =>{
-        console.log(response.error)
-      }
-    )
+    getUserData().then( (response) => {
+             axios.get('http://localhost:8080/user'
+                           ).then(function(response){
+                           this.setState({ data: response.data} );
+                           this.fillfields();
+                     }.bind(this)).catch(function(response){
+                     console.log(response.error);
+                   });
+      })
+
+
   }
   render(){
     return(
@@ -80,7 +83,7 @@ class ProfileForm extends React.Component {
                                         </div>
                                             <label for="Birthday"  className={"col-md-2 control-label"} style={{ fontSize: 17}}>Birthday</label>
                                             <div className="col-sm-4">
-                                                <input disabled  className="form-control" ref="birthday" type='textarea'  name='Birthday' style={{marginLeft:10}}></input>
+                                                <input disabled  className="form-control" ref="birthday"  type='date'  name='Birthday' style={{marginLeft:10}}></input>
                                             </div>
                                           </div>
                                   </div>
