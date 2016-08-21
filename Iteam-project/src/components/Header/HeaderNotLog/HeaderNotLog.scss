@@ -6,6 +6,11 @@
     height:90px;
     position:fixed;
     top: 0px;
+    z-index: 1;
+
+}
+.header{
+  height: 20px;
 
 }
 
@@ -18,19 +23,21 @@
 }
 .menus{
   color: #900C3F;
-  border-radius: 30px;
-  border-style: dotted;
-  border-color:white;
+//  border-radius: 30px;
+  //border-style: dotted;
+  //border-color:white;
 margin-left: 20px;
-background-color: #fbdb9d;
-font-size: 15px;
+padding:20px;
+margin:auto;
+//background-color: #fbdb9d;
+font-size: 20px;
 
 }
 .menus:hover
 {
   color: #900C3F;
-  border-radius: 30px;
-  border-style: dotted;
-  border-color:#ffffcc;
+//  border-radius: 30px;
+//  border-style: dotted;
+//  border-color:#ffffcc;
 
 }

@@ -6,7 +6,7 @@ import profile from '../Header/image/profile.jpg'
 import {getUserData} from '../../redux/modules/ProfileData'
 import axios from 'axios'
 
-class ProfileForm extends Component {
+class ProfileForm extends React.Component {
   constructor(props){
     super(props);
     this.state= {
@@ -27,26 +27,27 @@ class ProfileForm extends Component {
 
     }
   componentDidMount(){
-    getUserData().then( () => {
-      axios.get('http://localhost:8080/user'
-                          ).then(function(response){
-                          this.setState({ data: response.data} );
-                          this.fillfields();
+    getUserData().then( (response) => {
+             axios.get('http://localhost:8080/user'
+                           ).then(function(response){
+                           this.setState({ data: response.data} );
+                           this.fillfields();
+                     }.bind(this)).catch(function(response){
+                     console.log(response.error);
+                   });
+      })
 
-                    }.bind(this)).catch(function(response){
-                      console.log(response.error);
-                    });
-    })
+
   }
   render(){
     return(
 
       <div className={"container"}>
 
-                  <div className={classes.label}  style={{marginTop:20}}>
+                  <div className={classes.label}  >
                         <label>MY PROFILE</label>
                         </div>
-                    <div className={"well",classes.well} style={{width:850, height:850}} >
+                    <div className={"well",classes.well} style={{width:850, height:800}} >
                         <label> </label>
 
                       <div className="row" >
@@ -82,7 +83,7 @@ class ProfileForm extends Component {
                                         </div>
                                             <label for="Birthday"  className={"col-md-2 control-label"} style={{ fontSize: 17}}>Birthday</label>
                                             <div className="col-sm-4">
-                                                <input disabled  className="form-control" ref="birthday" type='textarea'  name='Birthday' style={{marginLeft:10}}></input>
+                                                <input disabled  className="form-control" ref="birthday"  type='date'  name='Birthday' style={{marginLeft:10}}></input>
                                             </div>
                                           </div>
                                   </div>

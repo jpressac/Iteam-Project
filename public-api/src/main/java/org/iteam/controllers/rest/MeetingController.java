@@ -43,7 +43,7 @@ public class MeetingController {
      * 
      * @param ideas
      *            all the ideas.
-     * @return 200 OK if it was successful
+     * @return 200 OK if it was successful.
      */
     @RequestMapping(value = "/meeting/ideas/save", method = RequestMethod.POST)
     public ResponseEntity<Void> saveIdeas(@RequestBody @Valid IdeasDTO ideas) {
