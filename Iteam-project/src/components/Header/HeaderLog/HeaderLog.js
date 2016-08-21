@@ -6,13 +6,14 @@ import logo from '../image/logo.png'
 import profile from '../image/profile.jpg'
 import { PATHS } from '../../../constants/routes'
 import {connect} from 'react-redux'
+import AppBar from 'react-toolbox/lib/app_bar'
 import Avatar from 'react-toolbox/lib/avatar';
 
 
 const mapStateToProps = (state)=> {
-  if(state.loginReducer.user !== null) {
+  if(state.loginUser !== null) {
     return {
-      user: state.loginReducer.user.user.username
+      user: state.loginUser.user.name
     }
   }
 }
@@ -41,7 +42,7 @@ class HeaderLog extends Component {
 
            </div>
            <div id="navbar3" className="navbar-collapse collapse" >
-               <ul className="nav navbar-nav navbar-right navbar-brand">
+             <ul className="nav navbar-nav navbar-right navbar-brand">
                <li ><Link className={classes.menus} to={'/' + PATHS.MENUNOTLOGGEDIN.HOME} activeClassName="active">
                   <span className="glyphicon glyphicon-home"></span>HOME</Link></li>
                <li><Link className={classes.menus} to={'/' + PATHS.MENULOGGEDIN.PROFILE} activeClassName="active">
@@ -54,23 +55,14 @@ class HeaderLog extends Component {
                <li><Link className={classes.menus} to={'/' + PATHS.MENULOGGEDIN.BOARD} activeClassName="active">
                   <span className="glyphicon glyphicon-paperclip"></span> PERSONAL BOARD </Link></li>
                <li>
-                 <Link className={classes.menus} to={'/' + PATHS.MENUNOTLOGGEDIN.HOME} activeClassName="active">
-                   <span className="glyphicon glyphicon-paperclip">{this.props.user}</span>Logout</Link>
-
-               </li>
-             </ul>
-
-
+                   <span className="glyphicon glyphicon-paperclip">{this.props.user}</span></li>
+               <li>
+                 <Link className={classes.menus} to={'/' + PATHS.MENUNOTLOGGEDIN.HOME} activeClassName="active">LOGOUT</Link></li>
+            </ul>
            </div>
-
          </div>
-
-       </div>
-
-
-
-);
-};
+       </div>);
+  };
 }
 
 HeaderLog.propTypes = {
