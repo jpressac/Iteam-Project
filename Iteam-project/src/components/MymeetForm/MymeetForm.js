@@ -22,16 +22,18 @@ class MymeetForm extends React.Component {
 
 
       }
-      /*componentDidMount(){
-        getUserData().then( (response) => {
-                 axios.get('http://localhost:8080/user'
+      componentDidMount(){
+        getMeetingData().then( (response) => {
+                 axios.get('http://localhost:8080//meeting/meetingbyuser'
                                ).then(function(response){
                                this.setState({ data: response.data} );
                                this.fillfields();
                          }.bind(this)).catch(function(response){
                          console.log(response.error);
                        });
-          })*/
+          });
+          }
+
 
   render(){
     return(

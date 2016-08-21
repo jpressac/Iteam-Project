@@ -25,7 +25,7 @@ class MeetingView extends React.Component {
 
     }
     componentDidMount(){
-      getUserData().then( (response) => {
+      getTeamData().then( (response) => {
                axios.get('http://localhost:8080/team/byowner'
                              ).then(function(response){
                              this.setState({ data: response.data} );
