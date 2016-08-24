@@ -17,7 +17,7 @@ const NoteTarget = {
     const delta = monitor.getDifferenceFromInitialOffset();
     const left = Math.round(item.left + delta.x);
     const top = Math.round(item.top + delta.y);
-    component.updatePosition(item.id, left, top);
+    component.onUpdatePosition(item.id, left, top);
   }
 };
 
@@ -45,13 +45,12 @@ class SharedBoard extends Component {
         </div>
         <div className={classes.Notecontainer}>
           {Object.keys(notemap).map((key) => {
-              console.log(notemap[key].left + ' key:' + key);
-              console.log(notemap[key].top + ' key:' + key);
               return (
                 <Note key={key}
                       id={key}
                       onRemove={this.remove.bind(this)}
                       onAddComment={this.onChangeComment.bind(this)}
+                      onVote={this.onUpdateRanking.bind(this)}
                       left={notemap[key].left}
                       top={notemap[key].top}
                       boardType="shared"
@@ -88,13 +87,10 @@ class SharedBoard extends Component {
     axios.post('http://localhost:8080/meeting/ideas/save', {
       ideas
     }).then(function (response) {
-      console.log(response.status);
       this.setState({message: '¡Your notes were successfully saved!'});
       this.refs.mymodal.openModal();
     }.bind(this)).catch(function (response) {
-      console.log(response.status);
     });
-    console.log(ideas);
   }
 
   generateReport() {
@@ -104,12 +100,10 @@ class SharedBoard extends Component {
       }
     }).then(
       function (response) {
-        console.log(response.data);
         this.fillUsersTable(response.data);
       }
     ).catch(
       function (response) {
-        console.log(response.error);
       })
   }
 
@@ -119,11 +113,11 @@ class SharedBoard extends Component {
 
   onChangeComment(commentText, id) {
     let map = this.state.notes;
-    map[id].comments= commentText;
+    map[id].comments = commentText;
     this.setState({notes: map});
   }
 
-  updatePosition(id, left, top) {
+  onUpdatePosition(id, left, top) {
     let map = this.state.notes;
     map[id].left = left;
     map[id].top = top;
@@ -136,10 +130,15 @@ class SharedBoard extends Component {
     this.setState({notes: map});
   }
 
-  updateRancking(vote, id){
+  onUpdateRanking(id, vote) {
     let map = this.state.notes;
-    map[id].ranking += vote
-    this.setState({note:map})
+    let note = map[id];
+    console.log('note before ' + note.ranking);
+    if (note.ranking + vote >= 0) {
+      note.ranking += vote;
+      console.log('note after ' + note.ranking);
+    }
+    this.setState({note: map})
   }
 
   constructor(props) {
@@ -147,11 +146,10 @@ class SharedBoard extends Component {
     this.state = {notes: {}}
   };
 
-  receiveNote(payload){
+  receiveNote(payload) {
     let map = this.state.notes;
     let id = this.nextId();
-    let jsonPayload= JSON.parse(payload);
-    console.log(jsonPayload)
+    let jsonPayload = JSON.parse(payload);
     map[id] =
     {
       id: id,
@@ -168,12 +166,12 @@ class SharedBoard extends Component {
     this.setState({notes: map});
   }
 
-  componentDidMount(){
+  componentDidMount() {
     //Connect with socket
     conAndSub('13', this.receiveNote.bind(this))
   }
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     disconnect()
   }
 }

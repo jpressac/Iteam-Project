@@ -74,6 +74,8 @@ class Note extends Component {
                 <CardActions>
                   <Button label="COMMENT" onClick={this.comment.bind(this)}/>
                   <Button label="DELETE" onClick={this.remove.bind(this)}/>
+                  <Button label="VOTE1" onClick={this.updateRanking.bind(this, 1)}/>
+                  <Button label="VOTE2" onClick={this.updateRanking.bind(this, -1)}/>
                 </CardActions>
               </Card>
             </div>
@@ -130,6 +132,12 @@ class Note extends Component {
 
   comment() {
     this.setState({view: 'comment'})
+  }
+
+  updateRanking(vote){
+    console.log('vote note ' + vote);
+    this.props.onVote(this.props.id, vote);
+    this.setState({view: 'normal'})
   }
 
 
