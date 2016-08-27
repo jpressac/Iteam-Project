@@ -6,7 +6,6 @@ import {DropTarget} from "react-dnd";
 import classes from "../PersonalBoard/PersonalBoard.scss";
 import Note from "../Note/Note";
 import axios from "axios";
-import BootstrapModal from "../BootstrapModal";
 import {ItemTypes} from "../Constants/Constants";
 import {connectAndSubscribe as conAndSub, disconnect} from '../../websocket/websocket'
 
@@ -57,6 +56,7 @@ class SharedBoard extends Component {
                       comments={notemap[key].comments}
                       title={notemap[key].title}
                       subtitle={notemap[key].subtitle}
+                      tag={notemap[key].tag}
                 />
               );
             }
@@ -80,7 +80,8 @@ class SharedBoard extends Component {
         content: notemap[key].title,
         comments: [notemap[key].comments],
         ranking: notemap[key].ranking,
-        meetingId: notemap[key].meetingId
+        meetingId: notemap[key].meetingId,
+        tag: notemap[key].tag
       }
       );
     });
@@ -90,6 +91,7 @@ class SharedBoard extends Component {
       this.setState({message: '¡Your notes were successfully saved!'});
       this.refs.mymodal.openModal();
     }.bind(this)).catch(function (response) {
+      //ver que hacer aca
     });
   }
 
@@ -133,10 +135,8 @@ class SharedBoard extends Component {
   onUpdateRanking(id, vote) {
     let map = this.state.notes;
     let note = map[id];
-    console.log('note before ' + note.ranking);
     if (note.ranking + vote >= 0) {
       note.ranking += vote;
-      console.log('note after ' + note.ranking);
     }
     this.setState({note: map})
   }
@@ -158,6 +158,7 @@ class SharedBoard extends Component {
       username: jsonPayload.username,
       title: jsonPayload.title,
       subtitle: jsonPayload.subtitle,
+      tag: jsonPayload.tag,
       comments: 'add comments',
       ranking: 0,
       meetingId: 'meeting123',
