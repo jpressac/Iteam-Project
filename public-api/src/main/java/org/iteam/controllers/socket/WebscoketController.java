@@ -13,22 +13,22 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class WebscoketController {
 
-    private SimpMessagingTemplate template;
+	private SimpMessagingTemplate template;
 
-    /**
-     * One specific channel for webSocket. The message has the id of the
-     * topic/channel that will be listen the subscriber.
-     * 
-     * @param message
-     *            the message that will be send to the topic
-     */
-    @MessageMapping("/channel")
-    public void sendMessage(String channelId, SocketMessage message) {
-        template.convertAndSend("/topic/" + message.getChannel(), message.getPayload());
-    }
+	/**
+	 * One specific channel for webSocket. The message has the id of the
+	 * topic/channel that will be listen the subscriber.
+	 * 
+	 * @param message
+	 *            the message that will be send to the topic
+	 */
+	@MessageMapping("/channel")
+	public void sendMessage(String channelId, SocketMessage message) {
+		template.convertAndSend("/topic/" + message.getAction() + "/" + message.getTopic(), message.getPayload());
+	}
 
-    @Autowired
-    private void setTemplate(SimpMessagingTemplate template) {
-        this.template = template;
-    }
+	@Autowired
+	private void setTemplate(SimpMessagingTemplate template) {
+		this.template = template;
+	}
 }
