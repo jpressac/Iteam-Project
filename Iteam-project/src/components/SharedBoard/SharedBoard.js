@@ -8,7 +8,7 @@ import Note from "../Note/Note";
 import axios from "axios";
 import {ItemTypes} from "../Constants/Constants";
 import {connectAndSubscribe as conAndSub, disconnect} from '../../websocket/websocket'
-
+import BootstrapModal from '../BootstrapModal/BootstrapModal'
 
 const NoteTarget = {
   drop(props, monitor, component) {
@@ -29,6 +29,7 @@ class SharedBoard extends Component {
 
     return connectDropTarget(
       <div className={classes.board}>
+        <BootstrapModal ref="mymodal" message={this.state.message}/>
         <label className={classes.label1}>SHARED BOARD</label>
         <div className="col-md-12">
           <div className="col-md-4">
@@ -73,25 +74,29 @@ class SharedBoard extends Component {
 
   saveNotes() {
     let notemap = this.state.notes;
-    let ideas = Object.keys(notemap).map((key) => {
+    let ideas = Object.values(notemap).map((value) => {
       return (
       {
-        username: notemap[key].username,
-        content: notemap[key].title,
-        comments: [notemap[key].comments],
-        ranking: notemap[key].ranking,
-        meetingId: notemap[key].meetingId,
-        tag: notemap[key].tag
+        username: value.username,
+        title: value.title,
+        subtitle: value.subtitle,
+        comments: value.comments,
+        ranking: value.ranking,
+        meetingId: value.meetingId,
+        tag: value.tag
       }
       );
     });
+    //no tener hardcodeado la url y sacar el axios de aca
     axios.post('http://localhost:8080/meeting/ideas/save', {
       ideas
     }).then(function (response) {
       this.setState({message: '¡Your notes were successfully saved!'});
       this.refs.mymodal.openModal();
+      this.setState({notes:{}})
     }.bind(this)).catch(function (response) {
-      //ver que hacer aca
+      this.setState({message: '¡Your notes were not saved!'});
+      this.refs.mymodal.openModal();
     });
   }
 
@@ -102,10 +107,13 @@ class SharedBoard extends Component {
       }
     }).then(
       function (response) {
-        this.fillUsersTable(response.data);
+        this.setState({message: '¡Your report was successfully generated!'});
+        this.refs.mymodal.openModal();
       }
     ).catch(
       function (response) {
+        this.setState({message: '¡Your report was not generated!'});
+        this.refs.mymodal.openModal();
       })
   }
 
