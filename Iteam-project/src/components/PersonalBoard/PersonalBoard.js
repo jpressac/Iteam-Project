@@ -43,8 +43,6 @@ class PersonalBoard extends Component {
         </div>
         <div className={classes.Notecontainer}>
           {Object.keys(notemap).map((key) => {
-              console.log(notemap[key].left + ' key:' + key);
-              console.log(notemap[key].top + ' key:' + key);
               return (
                 <Note key={key}
                       id={key}

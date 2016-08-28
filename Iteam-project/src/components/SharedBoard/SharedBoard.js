@@ -45,8 +45,6 @@ class SharedBoard extends Component {
         </div>
         <div className={classes.Notecontainer}>
           {Object.keys(notemap).map((key) => {
-              console.log(notemap[key].left + ' key:' + key);
-              console.log(notemap[key].top + ' key:' + key);
               return (
                 <Note key={key}
                       id={key}
@@ -88,13 +86,10 @@ class SharedBoard extends Component {
     axios.post('http://localhost:8080/meeting/ideas/save', {
       ideas
     }).then(function (response) {
-      console.log(response.status);
       this.setState({message: '¡Your notes were successfully saved!'});
       this.refs.mymodal.openModal();
     }.bind(this)).catch(function (response) {
-      console.log(response.status);
     });
-    console.log(ideas);
   }
 
   generateReport() {
@@ -104,12 +99,10 @@ class SharedBoard extends Component {
       }
     }).then(
       function (response) {
-        console.log(response.data);
         this.fillUsersTable(response.data);
       }
     ).catch(
       function (response) {
-        console.log(response.error);
       })
   }
 
@@ -180,8 +173,6 @@ class SharedBoard extends Component {
     let id = this.nextId();
     let jsonPayload = JSON.parse(payload);
     let jsonPayloadMessage =  JSON.parse(jsonPayload.payload);
-    console.log('message: ' + jsonPayload.payload);
-    console.log('message: ' + jsonPayloadMessage);
     switch (jsonPayload.action){
       case "insert":
         map[id] =
@@ -201,9 +192,7 @@ class SharedBoard extends Component {
         break;
 
       case "update":
-        console.log("note id:" + jsonPayloadMessage.id);
         if (map[jsonPayloadMessage.id].comments != jsonPayloadMessage.comments || (map[jsonPayloadMessage.id].left !== jsonPayloadMessage.left && map[jsonPayloadMessage.id].top !== jsonPayloadMessage.top)) {
-          console.log("belu jodida estuvo aqui " + jsonPayloadMessage.id);
           map[jsonPayloadMessage.id] =
           {
             id: jsonPayloadMessage.id,
@@ -218,7 +207,6 @@ class SharedBoard extends Component {
             boardType: "shared"
           };
         }
-        console.log("juan genio " + jsonPayloadMessage.id);
         this.setState({notes: map});
         break;
 
