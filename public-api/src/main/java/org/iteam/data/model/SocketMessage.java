@@ -4,33 +4,24 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class SocketMessage {
 
-    private String payload;
-	private String topic;
-	private String action;
+    private String topic;
+    private SocketPayload message;
 
-    public String getAction() {
-		return action;
-	}
-
-	public void setAction(String action) {
-		this.action = action;
-	}
-
-	public String getPayload() {
-        return payload;
+    public SocketPayload getMessage() {
+        return message;
     }
 
-    public void setPayload(String payload) {
-        this.payload = payload;
+    public void setMessage(SocketPayload message) {
+        this.message = message;
     }
 
-	public String getTopic() {
-		return topic;
-	}
+    public String getTopic() {
+        return topic;
+    }
 
-	public void setTopic(String topic) {
-		this.topic = topic;
-	}
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
 
     @Override
     public String toString() {

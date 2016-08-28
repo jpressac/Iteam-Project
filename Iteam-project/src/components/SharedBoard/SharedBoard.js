@@ -8,7 +8,7 @@ import Note from "../Note/Note";
 import axios from "axios";
 import BootstrapModal from "../BootstrapModal";
 import {ItemTypes} from "../Constants/Constants";
-import {sendNote , disconnect, connectAndSubscribe} from '../../websocket/websocket'
+import {sendNote, disconnect, connectAndSubscribe} from '../../websocket/websocket'
 
 
 const NoteTarget = {
@@ -120,7 +120,7 @@ class SharedBoard extends Component {
   onChangeComment(commentText, id) {
     let map = this.state.notes;
     map[id].comments = commentText;
-    this.sendUpdate(id);
+    this.sendUpdate("update", id);
     this.setState({notes: map});
   }
 
@@ -128,15 +128,20 @@ class SharedBoard extends Component {
     let map = this.state.notes;
     map[id].left = left;
     map[id].top = top;
-    this.sendUpdate(id);
+    this.sendUpdate("update", id);
     this.setState({notes: map});
   }
 
-  remove(id) {
+  remove(action, id) {
     let map = this.state.notes;
     delete map[id];
-    this.sendDelete(id);
     this.setState({notes: map});
+    //TODO, channel es la meeting id
+    sendNote(action, '13', JSON.stringify(
+      {
+        "id": id
+      })
+    );
   }
 
   updateRancking(vote, id) {
@@ -150,10 +155,10 @@ class SharedBoard extends Component {
     this.state = {notes: {}}
   };
 
-  sendUpdate(id) {
+  sendUpdate(action, id) {
     let map = this.state.notes;
     //TODO, channel es la meeting id
-    sendNote("update",'13', JSON.stringify(
+    sendNote(action, '13', JSON.stringify(
       {
         "id": id,
         "username": map[id].username,
@@ -167,18 +172,6 @@ class SharedBoard extends Component {
         "boardType": "shared"
       })
     );
-    this.remove(id)
-  }
-
-  sendDelete(id) {
-    let map = this.state.notes;
-    //TODO, channel es la meeting id
-    sendNote("delete",'13', JSON.stringify(
-      {
-        "id": id
-      })
-    );
-    this.remove(id)
   }
 
 
@@ -186,56 +179,65 @@ class SharedBoard extends Component {
     let map = this.state.notes;
     let id = this.nextId();
     let jsonPayload = JSON.parse(payload);
-    console.log(jsonPayload);
-    map[id] =
-    {
-      id: id,
-      left: SharedBoard.generateRandomNumber(),
-      top: SharedBoard.generateRandomNumber(),
-      username: jsonPayload.username,
-      title: jsonPayload.title,
-      subtitle: jsonPayload.subtitle,
-      comments: 'add comments',
-      ranking: 0,
-      meetingId: 'meeting123',
-      boardType: "shared"
-    };
-    this.setState({notes: map});
-  }
+    let jsonPayloadMessage =  JSON.parse(jsonPayload.payload);
+    console.log('message: ' + jsonPayload.payload);
+    console.log('message: ' + jsonPayloadMessage);
+    switch (jsonPayload.action){
+      case "insert":
+        map[id] =
+        {
+          id: id,
+          left: SharedBoard.generateRandomNumber(),
+          top: SharedBoard.generateRandomNumber(),
+          username: jsonPayloadMessage.username,
+          title: jsonPayloadMessage.title,
+          subtitle: jsonPayloadMessage.subtitle,
+          comments: 'add comments',
+          ranking: 0,
+          meetingId: 'meeting123',
+          boardType: "shared"
+        };
+        this.setState({notes: map});
+        break;
 
-  updateNote(payload) {
-    let map = this.state.notes;
-    let jsonPayload = JSON.parse(payload);
-    console.log(jsonPayload);
-    map[payload.id] =
-    {
-      id: payload.id,
-      left: payload.left,
-      top: payload.top,
-      username: jsonPayload.username,
-      title: jsonPayload.title,
-      subtitle: jsonPayload.subtitle,
-      comments: payload.comments,
-      ranking: payload.ranking,
-      meetingId: 'meeting123',
-      boardType: "shared"
-    };
-    this.setState({notes: map});
-  }
+      case "update":
+        console.log("note id:" + jsonPayloadMessage.id);
+        if (map[jsonPayloadMessage.id].comments != jsonPayloadMessage.comments || (map[jsonPayloadMessage.id].left !== jsonPayloadMessage.left && map[jsonPayloadMessage.id].top !== jsonPayloadMessage.top)) {
+          console.log("belu jodida estuvo aqui " + jsonPayloadMessage.id);
+          map[jsonPayloadMessage.id] =
+          {
+            id: jsonPayloadMessage.id,
+            left: jsonPayloadMessage.left,
+            top: jsonPayloadMessage.top,
+            username: jsonPayloadMessage.username,
+            title: jsonPayloadMessage.title,
+            subtitle: jsonPayloadMessage.subtitle,
+            comments: jsonPayloadMessage.comments,
+            ranking: jsonPayloadMessage.ranking,
+            meetingId: 'meeting123',
+            boardType: "shared"
+          };
+        }
+        console.log("juan genio " + jsonPayloadMessage.id);
+        this.setState({notes: map});
+        break;
 
-  deleteNote(payload) {
-    let map = this.state.notes;
-    let jsonPayload = JSON.parse(payload);
-    console.log(jsonPayload);
-    delete map[payload.id];
-    this.setState({notes: map});
+      case "delete":
+        if (map[jsonPayloadMessage.id] !== null) {
+          delete map[jsonPayloadMessage.id];
+        }
+        this.setState({notes: map});
+        break;
+
+      case "default":
+          //ver que hacer aca, si vale la pena ponerlo o no
+            break;
+    }
   }
 
   componentDidMount() {
     //Connect with socket
-    connectAndSubscribe("insert", '13', this.receiveNote.bind(this));
-    connectAndSubscribe("update", '13', this.updateNote.bind(this));
-    connectAndSubscribe("delete", '13', this.deleteNote.bind(this));
+    connectAndSubscribe('13', this.receiveNote.bind(this));
   }
 
   componentWillUnmount() {

@@ -5,7 +5,7 @@ import Note from "../Note/Note";
 import {ItemTypes} from "../Constants/Constants";
 import {Button} from 'react-toolbox';
 import flow from 'lodash/flow'
-import {connect as con,initWebSocket, sendNote} from '../../websocket/websocket'
+import {connect as con,initWebSocket, sendNote, disconnect} from '../../websocket/websocket'
 import {connect} from 'react-redux'
 import {addNote, deleteNote, like, unlike, editNote} from '../../redux/reducers/Login/LoginUser';
 

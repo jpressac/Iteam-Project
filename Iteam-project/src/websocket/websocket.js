@@ -1,11 +1,7 @@
 var stompClient;
 
 export function connect(){
-
-  //TODO: sacar el console.log
-  stompClient.connect({}, function (frame) {
-    console.log('Connected: ' + frame);
-  });
+  stompClient.connect({}, function (frame) {});
 }
 
 export function initWebSocket(){
@@ -16,18 +12,16 @@ export function initWebSocket(){
   stompClient = Stomp.over(socket);
 }
 
-export function connectAndSubscribe(action, topic, resolve){
+export function connectAndSubscribe(topic, resolve){
   var SockJs = require('sockjs-client');
   require('stompjs');
 
   var socket = SockJs('/channel');
   stompClient = Stomp.over(socket);
-  
+
   //TODO: sacar el console.log
   stompClient.connect({}, function (frame) {
-    console.log('Connected: ' + frame);
-    stompClient.subscribe('/topic/' + action + '/' + topic, (data)=> {
-      console.log("belu estuvo aqui");
+    stompClient.subscribe('/topic/' + topic, (data)=> {
       resolve(data.body)
     });
   });
@@ -37,9 +31,12 @@ export function connectAndSubscribe(action, topic, resolve){
 export function sendNote(action, topic, content){
   //en el 13 va el meeting id y en el channel va tambien el meetingid
   stompClient.send("/channel", {},JSON.stringify(
-    { "action": action,
+    { 
       "topic": topic,
-      "payload" : content
+      "message":{
+        "action": action,
+        "payload" : content
+      }      
     })
   );
 }
@@ -48,6 +45,5 @@ export function disconnect(){
   if (stompClient != null) {
     stompClient.disconnect();
   }
-  console.log("Disconnected");
 }
 
