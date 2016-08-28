@@ -5,7 +5,7 @@ import Note from "../Note/Note";
 import {ItemTypes} from "../Constants/Constants";
 import {Button} from 'react-toolbox';
 import flow from 'lodash/flow'
-import {connect as con, sendNote} from '../../websocket/websocket'
+import {connect as con,initWebSocket, sendNote, disconnect} from '../../websocket/websocket'
 import {connect} from 'react-redux'
 import {addNote, deleteNote, like, unlike, editNote} from '../../redux/reducers/Login/LoginUser';
 
@@ -43,8 +43,6 @@ class PersonalBoard extends Component {
         </div>
         <div className={classes.Notecontainer}>
           {Object.keys(notemap).map((key) => {
-              console.log(notemap[key].left + ' key:' + key);
-              console.log(notemap[key].top + ' key:' + key);
               return (
                 <Note key={key}
                       id={key}
@@ -118,7 +116,7 @@ class PersonalBoard extends Component {
     let map = this.state.notes;
     // send to shared board
     //TODO, channel es la meeting id
-    sendNote('13', JSON.stringify(
+    sendNote("insert",'13', JSON.stringify(
       {
         "username": map[id].username,
         "title": map[id].title,
@@ -129,6 +127,7 @@ class PersonalBoard extends Component {
   }
 
   componentDidMount() {
+    initWebSocket();
     con();
   }
 

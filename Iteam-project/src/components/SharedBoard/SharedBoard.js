@@ -8,7 +8,7 @@ import Note from "../Note/Note";
 import axios from "axios";
 import BootstrapModal from "../BootstrapModal";
 import {ItemTypes} from "../Constants/Constants";
-import {connectAndSubscribe as conAndSub, disconnect} from '../../websocket/websocket'
+import {sendNote, disconnect, connectAndSubscribe} from '../../websocket/websocket'
 
 
 const NoteTarget = {
@@ -45,8 +45,6 @@ class SharedBoard extends Component {
         </div>
         <div className={classes.Notecontainer}>
           {Object.keys(notemap).map((key) => {
-              console.log(notemap[key].left + ' key:' + key);
-              console.log(notemap[key].top + ' key:' + key);
               return (
                 <Note key={key}
                       id={key}
@@ -88,13 +86,10 @@ class SharedBoard extends Component {
     axios.post('http://localhost:8080/meeting/ideas/save', {
       ideas
     }).then(function (response) {
-      console.log(response.status);
       this.setState({message: '¡Your notes were successfully saved!'});
       this.refs.mymodal.openModal();
     }.bind(this)).catch(function (response) {
-      console.log(response.status);
     });
-    console.log(ideas);
   }
 
   generateReport() {
@@ -104,12 +99,10 @@ class SharedBoard extends Component {
       }
     }).then(
       function (response) {
-        console.log(response.data);
         this.fillUsersTable(response.data);
       }
     ).catch(
       function (response) {
-        console.log(response.error);
       })
   }
 
@@ -119,7 +112,8 @@ class SharedBoard extends Component {
 
   onChangeComment(commentText, id) {
     let map = this.state.notes;
-    map[id].comments= commentText;
+    map[id].comments = commentText;
+    this.sendUpdate("update", id);
     this.setState({notes: map});
   }
 
@@ -127,19 +121,26 @@ class SharedBoard extends Component {
     let map = this.state.notes;
     map[id].left = left;
     map[id].top = top;
+    this.sendUpdate("update", id);
     this.setState({notes: map});
   }
 
-  remove(id) {
+  remove(action, id) {
     let map = this.state.notes;
     delete map[id];
     this.setState({notes: map});
+    //TODO, channel es la meeting id
+    sendNote(action, '13', JSON.stringify(
+      {
+        "id": id
+      })
+    );
   }
 
-  updateRancking(vote, id){
+  updateRancking(vote, id) {
     let map = this.state.notes;
-    map[id].ranking += vote
-    this.setState({note:map})
+    map[id].ranking += vote;
+    this.setState({note: map})
   }
 
   constructor(props) {
@@ -147,33 +148,87 @@ class SharedBoard extends Component {
     this.state = {notes: {}}
   };
 
-  receiveNote(payload){
+  sendUpdate(action, id) {
+    let map = this.state.notes;
+    //TODO, channel es la meeting id
+    sendNote(action, '13', JSON.stringify(
+      {
+        "id": id,
+        "username": map[id].username,
+        "title": map[id].title,
+        "subtitle": map[id].subtitle,
+        "left": map[id].left,
+        "top": map[id].top,
+        "comments": map[id].comments,
+        "ranking": map[id].ranking,
+        "meetingId": 'meeting123',
+        "boardType": "shared"
+      })
+    );
+  }
+
+
+  receiveNote(payload) {
     let map = this.state.notes;
     let id = this.nextId();
-    let jsonPayload= JSON.parse(payload);
-    console.log(jsonPayload)
-    map[id] =
-    {
-      id: id,
-      left: SharedBoard.generateRandomNumber(),
-      top: SharedBoard.generateRandomNumber(),
-      username: jsonPayload.username,
-      title: jsonPayload.title,
-      subtitle: jsonPayload.subtitle,
-      comments: 'add comments',
-      ranking: 0,
-      meetingId: 'meeting123',
-      boardType: "shared"
-    };
-    this.setState({notes: map});
+    let jsonPayload = JSON.parse(payload);
+    let jsonPayloadMessage =  JSON.parse(jsonPayload.payload);
+    switch (jsonPayload.action){
+      case "insert":
+        map[id] =
+        {
+          id: id,
+          left: SharedBoard.generateRandomNumber(),
+          top: SharedBoard.generateRandomNumber(),
+          username: jsonPayloadMessage.username,
+          title: jsonPayloadMessage.title,
+          subtitle: jsonPayloadMessage.subtitle,
+          comments: 'add comments',
+          ranking: 0,
+          meetingId: 'meeting123',
+          boardType: "shared"
+        };
+        this.setState({notes: map});
+        break;
+
+      case "update":
+        if (map[jsonPayloadMessage.id].comments != jsonPayloadMessage.comments || (map[jsonPayloadMessage.id].left !== jsonPayloadMessage.left && map[jsonPayloadMessage.id].top !== jsonPayloadMessage.top)) {
+          map[jsonPayloadMessage.id] =
+          {
+            id: jsonPayloadMessage.id,
+            left: jsonPayloadMessage.left,
+            top: jsonPayloadMessage.top,
+            username: jsonPayloadMessage.username,
+            title: jsonPayloadMessage.title,
+            subtitle: jsonPayloadMessage.subtitle,
+            comments: jsonPayloadMessage.comments,
+            ranking: jsonPayloadMessage.ranking,
+            meetingId: 'meeting123',
+            boardType: "shared"
+          };
+        }
+        this.setState({notes: map});
+        break;
+
+      case "delete":
+        if (map[jsonPayloadMessage.id] !== null) {
+          delete map[jsonPayloadMessage.id];
+        }
+        this.setState({notes: map});
+        break;
+
+      case "default":
+          //ver que hacer aca, si vale la pena ponerlo o no
+            break;
+    }
   }
 
-  componentDidMount(){
+  componentDidMount() {
     //Connect with socket
-    conAndSub('13', this.receiveNote.bind(this))
+    connectAndSubscribe('13', this.receiveNote.bind(this));
   }
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     disconnect()
   }
 }
