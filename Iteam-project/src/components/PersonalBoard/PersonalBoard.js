@@ -30,7 +30,7 @@ class PersonalBoard extends Component {
   render() {
     let notemap = this.state.notes;
     const {connectDropTarget} = this.props;
-
+//ver que carajo hace la funcion de map, porque me parece que estamos haciendo cosas de mas al pedo
     return connectDropTarget(
       <div className={classes.board}>
         <label className={classes.label1}>PERSONAL BOARD</label>
@@ -53,7 +53,9 @@ class PersonalBoard extends Component {
                       top={notemap[key].top}
                       subtitle={notemap[key].subtitle}
                       boardType={notemap[key].boardType}
-                      title= {notemap[key].title}/>
+                      title= {notemap[key].title}
+                      tag={notemap[key].tag}
+                />
               );
             }
           )}
@@ -84,7 +86,10 @@ class PersonalBoard extends Component {
       title: text,
       subtitle: "No subtitle",
       comments: "No comments",
-      ranking: 10,
+      //ver que carajo ponemos aca como default
+      tag: "No tag",
+      ranking: 0,
+      //aca va this.props.meeting
       meetingId: 'meeting123',
       boardType: "personal"
     };
@@ -92,10 +97,12 @@ class PersonalBoard extends Component {
     this.setState({notes: map});
   }
 
-  update(titleText, subtitleText, id) {
+  update(titleText, subtitleText, id, tag) {
     let map = this.state.notes;
-    map[id].title = titleText;
-    map[id].subtitle = subtitleText;
+    let note = map[id];
+    note.title = titleText;
+    note.subtitle = subtitleText;
+    note.tag = tag;
     this.setState({notes: map});
   }
 
@@ -115,12 +122,13 @@ class PersonalBoard extends Component {
   send(id) {
     let map = this.state.notes;
     // send to shared board
-    //TODO, channel es la meeting id
+    //TODO, channel es la meeting id, iria this.props.meeting
     sendNote("insert",'13', JSON.stringify(
       {
         "username": map[id].username,
         "title": map[id].title,
-        "subtitle": map[id].subtitle
+        "subtitle": map[id].subtitle,
+        "tag": map[id].tag
       })
     );
     this.remove(id)
@@ -144,7 +152,8 @@ class PersonalBoard extends Component {
 
 PersonalBoard.propTypes = {
   connectDropTarget: PropTypes.func.isRequired,
-  user: PropTypes.any
+  user: PropTypes.any,
+  meeting: PropTypes.string
 };
 
 export default flow(

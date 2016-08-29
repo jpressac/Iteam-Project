@@ -6,10 +6,9 @@ import {DropTarget} from "react-dnd";
 import classes from "../PersonalBoard/PersonalBoard.scss";
 import Note from "../Note/Note";
 import axios from "axios";
-import BootstrapModal from "../BootstrapModal";
 import {ItemTypes} from "../Constants/Constants";
-import {sendNote, disconnect, connectAndSubscribe} from '../../websocket/websocket'
-
+import {connectAndSubscribe, disconnect, sendNote} from '../../websocket/websocket'
+import BootstrapModal from '../BootstrapModal/BootstrapModal'
 
 const NoteTarget = {
   drop(props, monitor, component) {
@@ -17,7 +16,7 @@ const NoteTarget = {
     const delta = monitor.getDifferenceFromInitialOffset();
     const left = Math.round(item.left + delta.x);
     const top = Math.round(item.top + delta.y);
-    component.updatePosition(item.id, left, top);
+    component.onUpdatePosition(item.id, left, top);
   }
 };
 
@@ -30,6 +29,7 @@ class SharedBoard extends Component {
 
     return connectDropTarget(
       <div className={classes.board}>
+        <BootstrapModal ref="mymodal" message={this.state.message}/>
         <label className={classes.label1}>SHARED BOARD</label>
         <div className="col-md-12">
           <div className="col-md-4">
@@ -50,12 +50,14 @@ class SharedBoard extends Component {
                       id={key}
                       onRemove={this.remove.bind(this)}
                       onAddComment={this.onChangeComment.bind(this)}
+                      onVote={this.onUpdateRanking.bind(this)}
                       left={notemap[key].left}
                       top={notemap[key].top}
                       boardType="shared"
                       comments={notemap[key].comments}
                       title={notemap[key].title}
                       subtitle={notemap[key].subtitle}
+                      tag={notemap[key].tag}
                 />
               );
             }
@@ -72,23 +74,29 @@ class SharedBoard extends Component {
 
   saveNotes() {
     let notemap = this.state.notes;
-    let ideas = Object.keys(notemap).map((key) => {
+    let ideas = Object.values(notemap).map((value) => {
       return (
       {
-        username: notemap[key].username,
-        content: notemap[key].title,
-        comments: [notemap[key].comments],
-        ranking: notemap[key].ranking,
-        meetingId: notemap[key].meetingId
+        username: value.username,
+        title: value.title,
+        subtitle: value.subtitle,
+        comments: value.comments,
+        ranking: value.ranking,
+        meetingId: value.meetingId,
+        tag: value.tag
       }
       );
     });
+    //no tener hardcodeado la url y sacar el axios de aca
     axios.post('http://localhost:8080/meeting/ideas/save', {
       ideas
     }).then(function (response) {
       this.setState({message: '¡Your notes were successfully saved!'});
       this.refs.mymodal.openModal();
+      this.setState({notes:{}})
     }.bind(this)).catch(function (response) {
+      this.setState({message: '¡Your notes were not saved!'});
+      this.refs.mymodal.openModal();
     });
   }
 
@@ -99,10 +107,13 @@ class SharedBoard extends Component {
       }
     }).then(
       function (response) {
-        this.fillUsersTable(response.data);
+        this.setState({message: '¡Your report was successfully generated!'});
+        this.refs.mymodal.openModal();
       }
     ).catch(
       function (response) {
+        this.setState({message: '¡Your report was not generated!'});
+        this.refs.mymodal.openModal();
       })
   }
 
@@ -117,7 +128,7 @@ class SharedBoard extends Component {
     this.setState({notes: map});
   }
 
-  updatePosition(id, left, top) {
+  onUpdatePosition(id, left, top) {
     let map = this.state.notes;
     map[id].left = left;
     map[id].top = top;
@@ -137,9 +148,13 @@ class SharedBoard extends Component {
     );
   }
 
-  updateRancking(vote, id) {
+  onUpdateRanking(id, vote) {
     let map = this.state.notes;
-    map[id].ranking += vote;
+    let note = map[id];
+    if (note.ranking + vote >= 0) {
+      note.ranking += vote;
+      this.sendUpdate("update", id)
+    }
     this.setState({note: map})
   }
 
@@ -192,7 +207,8 @@ class SharedBoard extends Component {
         break;
 
       case "update":
-        if (map[jsonPayloadMessage.id].comments != jsonPayloadMessage.comments || (map[jsonPayloadMessage.id].left !== jsonPayloadMessage.left && map[jsonPayloadMessage.id].top !== jsonPayloadMessage.top)) {
+        if (map[jsonPayloadMessage.id].comments != jsonPayloadMessage.comments || (map[jsonPayloadMessage.id].left !== jsonPayloadMessage.left && map[jsonPayloadMessage.id].top !== jsonPayloadMessage.top)
+              || map[jsonPayloadMessage.id].ranking !== jsonPayloadMessage.ranking) {
           map[jsonPayloadMessage.id] =
           {
             id: jsonPayloadMessage.id,
