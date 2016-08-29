@@ -5,10 +5,10 @@
 import Button from 'react-toolbox/lib/button';
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import {logoutUser} from '../../../redux/reducers/Login/LoginUser'
+import {logout} from '../../../redux/reducers/Login/LoginUser'
 
 const mapDispatchToProps = dispatch => ({
-  onClick: () => dispatch(logoutUser())
+  onClick: () => dispatch(logout())
 });
 class LogoutButton extends React.Component {
 
@@ -31,4 +31,4 @@ LogoutButton.propTypes = {
   onClick: PropTypes.func
 };
 
-export default connect(mapDispatchToProps)(LogoutButton)
+export default connect(null,mapDispatchToProps)(LogoutButton)
