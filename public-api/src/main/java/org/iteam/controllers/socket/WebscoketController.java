@@ -24,7 +24,7 @@ public class WebscoketController {
      */
     @MessageMapping("/channel")
     public void sendMessage(String channelId, SocketMessage message) {
-        template.convertAndSend("/topic/" + message.getChannel(), message.getPayload());
+        template.convertAndSend("/topic/" + message.getTopic(), message.getMessage());
     }
 
     @Autowired

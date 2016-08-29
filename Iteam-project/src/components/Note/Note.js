@@ -153,7 +153,7 @@ class Note extends Component {
   }
 
   remove() {
-    this.props.onRemove(this.props.id);
+    this.props.onRemove("delete", this.props.id);
     this.setState({view: 'normal'})
   }
 

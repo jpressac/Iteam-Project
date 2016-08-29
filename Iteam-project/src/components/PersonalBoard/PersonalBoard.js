@@ -5,7 +5,7 @@ import Note from "../Note/Note";
 import {ItemTypes} from "../Constants/Constants";
 import {Button} from 'react-toolbox';
 import flow from 'lodash/flow'
-import {connect as con, sendNote} from '../../websocket/websocket'
+import {connect as con,initWebSocket, sendNote, disconnect} from '../../websocket/websocket'
 import {connect} from 'react-redux'
 import {addNote, deleteNote, like, unlike, editNote} from '../../redux/reducers/Login/LoginUser';
 
@@ -98,7 +98,6 @@ class PersonalBoard extends Component {
   }
 
   update(titleText, subtitleText, id, tag) {
-    // try to replace by this.state.notes[id] para eliminar una variable
     let map = this.state.notes;
     let note = map[id];
     note.title = titleText;
@@ -124,7 +123,7 @@ class PersonalBoard extends Component {
     let map = this.state.notes;
     // send to shared board
     //TODO, channel es la meeting id, iria this.props.meeting
-    sendNote('13', JSON.stringify(
+    sendNote("insert",'13', JSON.stringify(
       {
         "username": map[id].username,
         "title": map[id].title,
@@ -136,6 +135,7 @@ class PersonalBoard extends Component {
   }
 
   componentDidMount() {
+    initWebSocket();
     con();
   }
 
