@@ -6,15 +6,13 @@ export const LOGOUT_SUCCESS = 'LOGOUT_SUCCESS';
 export const LOGOUT_REQUEST = 'LOGOUT_REQUEST';
 
 export const logout = () => {
-  debugger
   return function(dispatch) {
     return axios.post('http://localhost:8080/application/member/logout').then(()=> {
       dispatch(logoutUser())
     });
-    window.location.reload();
   }
-
 }
+
 export default function loginUser(state = null, action) {
   switch (action.type) {
     case LOGIN_USER:
