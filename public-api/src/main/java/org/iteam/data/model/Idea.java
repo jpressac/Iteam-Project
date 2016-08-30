@@ -5,72 +5,88 @@ import java.util.List;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Idea {
 
-	private String username;
-	private String content;
-	private List<String> comments;
-	private Integer ranking;
-	private String meetingId;
+    private String username;
+    private String title;
+    private String comments;
+    private Integer ranking;
+    private String meetingId;
+    private String tag;
+    private String subtitle;
 
-	// TODO: check what is better, where do we store the images, in the database
-	// or file-system.
-	@JsonIgnore
-	private List<byte[]> attachments;
+    // TODO: check what is better, where do we store the images, in the database
+    // or file-system.
+    @JsonIgnore
+    private List<byte[]> attachments;
 
-	public String getUsername() {
-		return username;
-	}
+    public String getUsername() {
+        return username;
+    }
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-	public String getContent() {
-		return content;
-	}
+    public String getComments() {
+        return comments;
+    }
 
-	public void setContent(String content) {
-		this.content = content;
-	}
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
 
-	public List<String> getComments() {
-		return comments;
-	}
+    public Integer getRanking() {
+        return ranking;
+    }
 
-	public void setComments(List<String> comments) {
-		this.comments = comments;
-	}
+    public void setRanking(Integer ranking) {
+        this.ranking = ranking;
+    }
 
-	public Integer getRanking() {
-		return ranking;
-	}
+    public List<byte[]> getAttachments() {
+        return attachments;
+    }
 
-	public void setRanking(Integer ranking) {
-		this.ranking = ranking;
-	}
+    public void setAttachments(List<byte[]> attachments) {
+        this.attachments = attachments;
+    }
 
-	public List<byte[]> getAttachments() {
-		return attachments;
-	}
+    public String getMeetingId() {
+        return meetingId;
+    }
 
-	public void setAttachments(List<byte[]> attachments) {
-		this.attachments = attachments;
-	}
+    public void setMeetingId(String meetingId) {
+        this.meetingId = meetingId;
+    }
 
-	public String getMeetingId() {
-		return meetingId;
-	}
+    public String getTag() {
+        return tag;
+    }
 
-	public void setMeetingId(String meetingId) {
-		this.meetingId = meetingId;
-	}
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
 
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
-	}
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getSubtitle() {
+        return subtitle;
+    }
+
+    public void setSubtitle(String subtitle) {
+        this.subtitle = subtitle;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
 }

@@ -6,10 +6,9 @@ import {DropTarget} from "react-dnd";
 import classes from "../PersonalBoard/PersonalBoard.scss";
 import Note from "../Note/Note";
 import axios from "axios";
-import BootstrapModal from "../BootstrapModal";
 import {ItemTypes} from "../Constants/Constants";
-import {connectAndSubscribe as conAndSub, disconnect} from '../../websocket/websocket'
-
+import {connectAndSubscribe, disconnect, sendNote} from '../../websocket/websocket'
+import BootstrapModal from '../BootstrapModal/BootstrapModal'
 
 const NoteTarget = {
   drop(props, monitor, component) {
@@ -17,7 +16,7 @@ const NoteTarget = {
     const delta = monitor.getDifferenceFromInitialOffset();
     const left = Math.round(item.left + delta.x);
     const top = Math.round(item.top + delta.y);
-    component.updatePosition(item.id, left, top);
+    component.onUpdatePosition(item.id, left, top);
   }
 };
 
@@ -30,6 +29,7 @@ class SharedBoard extends Component {
 
     return connectDropTarget(
       <div className={classes.board}>
+        <BootstrapModal ref="mymodal" message={this.state.message}/>
         <label className={classes.label1}>SHARED BOARD</label>
         <div className="col-md-12">
           <div className="col-md-4">
@@ -45,19 +45,19 @@ class SharedBoard extends Component {
         </div>
         <div className={classes.Notecontainer}>
           {Object.keys(notemap).map((key) => {
-              console.log(notemap[key].left + ' key:' + key);
-              console.log(notemap[key].top + ' key:' + key);
               return (
                 <Note key={key}
                       id={key}
                       onRemove={this.remove.bind(this)}
                       onAddComment={this.onChangeComment.bind(this)}
+                      onVote={this.onUpdateRanking.bind(this)}
                       left={notemap[key].left}
                       top={notemap[key].top}
                       boardType="shared"
                       comments={notemap[key].comments}
                       title={notemap[key].title}
                       subtitle={notemap[key].subtitle}
+                      tag={notemap[key].tag}
                 />
               );
             }
@@ -74,27 +74,30 @@ class SharedBoard extends Component {
 
   saveNotes() {
     let notemap = this.state.notes;
-    let ideas = Object.keys(notemap).map((key) => {
+    let ideas = Object.values(notemap).map((value) => {
       return (
       {
-        username: notemap[key].username,
-        content: notemap[key].title,
-        comments: [notemap[key].comments],
-        ranking: notemap[key].ranking,
-        meetingId: notemap[key].meetingId
+        username: value.username,
+        title: value.title,
+        subtitle: value.subtitle,
+        comments: value.comments,
+        ranking: value.ranking,
+        meetingId: value.meetingId,
+        tag: value.tag
       }
       );
     });
+    //no tener hardcodeado la url y sacar el axios de aca
     axios.post('http://localhost:8080/meeting/ideas/save', {
       ideas
     }).then(function (response) {
-      console.log(response.status);
       this.setState({message: '¡Your notes were successfully saved!'});
       this.refs.mymodal.openModal();
+      this.setState({notes:{}})
     }.bind(this)).catch(function (response) {
-      console.log(response.status);
+      this.setState({message: '¡Your notes were not saved!'});
+      this.refs.mymodal.openModal();
     });
-    console.log(ideas);
   }
 
   generateReport() {
@@ -104,12 +107,13 @@ class SharedBoard extends Component {
       }
     }).then(
       function (response) {
-        console.log(response.data);
-        this.fillUsersTable(response.data);
+        this.setState({message: '¡Your report was successfully generated!'});
+        this.refs.mymodal.openModal();
       }
     ).catch(
       function (response) {
-        console.log(response.error);
+        this.setState({message: '¡Your report was not generated!'});
+        this.refs.mymodal.openModal();
       })
   }
 
@@ -119,27 +123,39 @@ class SharedBoard extends Component {
 
   onChangeComment(commentText, id) {
     let map = this.state.notes;
-    map[id].comments= commentText;
+    map[id].comments = commentText;
+    this.sendUpdate("update", id);
     this.setState({notes: map});
   }
 
-  updatePosition(id, left, top) {
+  onUpdatePosition(id, left, top) {
     let map = this.state.notes;
     map[id].left = left;
     map[id].top = top;
+    this.sendUpdate("update", id);
     this.setState({notes: map});
   }
 
-  remove(id) {
+  remove(action, id) {
     let map = this.state.notes;
     delete map[id];
     this.setState({notes: map});
+    //TODO, channel es la meeting id
+    sendNote(action, '13', JSON.stringify(
+      {
+        "id": id
+      })
+    );
   }
 
-  updateRancking(vote, id){
+  onUpdateRanking(id, vote) {
     let map = this.state.notes;
-    map[id].ranking += vote
-    this.setState({note:map})
+    let note = map[id];
+    if (note.ranking + vote >= 0) {
+      note.ranking += vote;
+      this.sendUpdate("update", id)
+    }
+    this.setState({note: map})
   }
 
   constructor(props) {
@@ -147,33 +163,88 @@ class SharedBoard extends Component {
     this.state = {notes: {}}
   };
 
-  receiveNote(payload){
+  sendUpdate(action, id) {
+    let map = this.state.notes;
+    //TODO, channel es la meeting id
+    sendNote(action, '13', JSON.stringify(
+      {
+        "id": id,
+        "username": map[id].username,
+        "title": map[id].title,
+        "subtitle": map[id].subtitle,
+        "left": map[id].left,
+        "top": map[id].top,
+        "comments": map[id].comments,
+        "ranking": map[id].ranking,
+        "meetingId": 'meeting123',
+        "boardType": "shared"
+      })
+    );
+  }
+
+
+  receiveNote(payload) {
     let map = this.state.notes;
     let id = this.nextId();
-    let jsonPayload= JSON.parse(payload);
-    console.log(jsonPayload)
-    map[id] =
-    {
-      id: id,
-      left: SharedBoard.generateRandomNumber(),
-      top: SharedBoard.generateRandomNumber(),
-      username: jsonPayload.username,
-      title: jsonPayload.title,
-      subtitle: jsonPayload.subtitle,
-      comments: 'add comments',
-      ranking: 0,
-      meetingId: 'meeting123',
-      boardType: "shared"
-    };
-    this.setState({notes: map});
+    let jsonPayload = JSON.parse(payload);
+    let jsonPayloadMessage =  JSON.parse(jsonPayload.payload);
+    switch (jsonPayload.action){
+      case "insert":
+        map[id] =
+        {
+          id: id,
+          left: SharedBoard.generateRandomNumber(),
+          top: SharedBoard.generateRandomNumber(),
+          username: jsonPayloadMessage.username,
+          title: jsonPayloadMessage.title,
+          subtitle: jsonPayloadMessage.subtitle,
+          comments: 'add comments',
+          ranking: 0,
+          meetingId: 'meeting123',
+          boardType: "shared"
+        };
+        this.setState({notes: map});
+        break;
+
+      case "update":
+        if (map[jsonPayloadMessage.id].comments != jsonPayloadMessage.comments || (map[jsonPayloadMessage.id].left !== jsonPayloadMessage.left && map[jsonPayloadMessage.id].top !== jsonPayloadMessage.top)
+              || map[jsonPayloadMessage.id].ranking !== jsonPayloadMessage.ranking) {
+          map[jsonPayloadMessage.id] =
+          {
+            id: jsonPayloadMessage.id,
+            left: jsonPayloadMessage.left,
+            top: jsonPayloadMessage.top,
+            username: jsonPayloadMessage.username,
+            title: jsonPayloadMessage.title,
+            subtitle: jsonPayloadMessage.subtitle,
+            comments: jsonPayloadMessage.comments,
+            ranking: jsonPayloadMessage.ranking,
+            meetingId: 'meeting123',
+            boardType: "shared"
+          };
+        }
+        this.setState({notes: map});
+        break;
+
+      case "delete":
+        if (map[jsonPayloadMessage.id] !== null) {
+          delete map[jsonPayloadMessage.id];
+        }
+        this.setState({notes: map});
+        break;
+
+      case "default":
+          //ver que hacer aca, si vale la pena ponerlo o no
+            break;
+    }
   }
 
-  componentDidMount(){
+  componentDidMount() {
     //Connect with socket
-    conAndSub('13', this.receiveNote.bind(this))
+    connectAndSubscribe('13', this.receiveNote.bind(this));
   }
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     disconnect()
   }
 }

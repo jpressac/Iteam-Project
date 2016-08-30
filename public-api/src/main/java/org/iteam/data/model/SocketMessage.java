@@ -4,23 +4,23 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class SocketMessage {
 
-    private String channel;
-    private String payload;
+    private String topic;
+    private SocketPayload message;
 
-    public String getChannel() {
-        return channel;
+    public SocketPayload getMessage() {
+        return message;
     }
 
-    public void setChannel(String channel) {
-        this.channel = channel;
+    public void setMessage(SocketPayload message) {
+        this.message = message;
     }
 
-    public String getPayload() {
-        return payload;
+    public String getTopic() {
+        return topic;
     }
 
-    public void setPayload(String payload) {
-        this.payload = payload;
+    public void setTopic(String topic) {
+        this.topic = topic;
     }
 
     @Override
