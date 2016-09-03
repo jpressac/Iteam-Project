@@ -14,7 +14,7 @@ buildscript {
 		assertjVersion = '3.3.0'
 		contextSupportVersion = '4.3.0.RELEASE'
 		javaMailVersion = '1.4.7'
-		googleAPIMailVersion = 'v1-rev44-1.22.0'
+		googleAPI = '1.22.0'
 	}
 	repositories {
 		mavenCentral()
@@ -41,7 +41,7 @@ dependencies {
 	compile("org.apache.commons:commons-lang3:${apacheCommonsLang3Version}")
 	compile("org.apache.commons:commons-collections4:${apacheCommonsCollections4Version}")
 	// compile("org.springframework:spring-context-support:${contextSupportVersion}")
-	compile("com.google.apis:google-api-services-gmail:${googleAPIMailVersion}"){
+	compile("com.google.api-client:google-api-client:${googleAPI}"){
 		exclude module: "guava-jdk5"
 	}
 	
