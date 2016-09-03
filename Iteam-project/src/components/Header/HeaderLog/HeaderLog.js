@@ -9,6 +9,8 @@ import {connect} from 'react-redux'
 import AppBar from 'react-toolbox/lib/app_bar'
 import Avatar from 'react-toolbox/lib/avatar';
 import {IconMenu, MenuItem, MenuDivider} from 'react-toolbox/lib/menu';
+import Navigation from 'react-toolbox/lib/navigation';
+
 
 const mapStateToProps = (state)=> {
   if (state.loginUser !== null) {
@@ -33,7 +35,7 @@ class HeaderLog extends Component {
               <img src={logo} className={classes.logo} alt="Iteam"/></a>
 
             <button type="button" className="navbar-toggle navbar-inverse" data-toggle="collapse" data-target=".navHeaderCollapse">
-              <span className="icon-bar"></span>
+              <span className="icon-bar"/>
               <span className="icon-bar"></span>
               <span className="icon-bar"></span>
             </button>
@@ -47,7 +49,7 @@ class HeaderLog extends Component {
 
               </IconMenu></li>
 
-              <li > <IconMenu icon='My Profile' position='topLeft' menuRipple><b className="caret"></b>
+              <li > <IconMenu icon='My Profile' position='topLeft' className={classes.menu} menuRipple><b className="caret"></b>
                 <Link className={classes.itemMenu} to={'/' + PATHS.MENULOGGEDIN.PROFILE} activeClassName="active"> <MenuItem>MY PROFILE</MenuItem></Link>
                 <Link className={classes.itemMenu} to={'/' + PATHS.MENUNOTLOGGEDIN.PROFILE} activeClassName="active"> <MenuItem>Sign Out</MenuItem></Link>
               </IconMenu></li>
@@ -77,6 +79,7 @@ class HeaderLog extends Component {
                 <span className="glyphicon glyphicon-paperclip"></span> PERSONAL BOARD </Link></li>
               <li><span className = "glyphicon glyphicon-paperclip" > {this.props.user}</span > </li>
             </ul>
+
           </div>
         </div>
       </div>);

@@ -36,7 +36,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
     private static final String IDEA_MEETING_ID_FIELD = "meetingId";
     private static final String RANKING_ID_FIELD = "ranking";
-    private static final String MEETING_TEAM_USER_FIELD = "team.members";
+    private static final String MEETING_TEAM_USER_FIELD = "teamAssistant.members";
     private static final String PROGRAMMED_DATE_FIELD = "programmedDate";
 
     @Override
@@ -49,7 +49,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         IndexResponse response = elasticsearchClientImpl.insertData(data, StringUtilities.INDEX_MEETING,
                 StringUtilities.INDEX_TYPE_MEETING);
 
-        if(!response.isCreated()) {
+        if (!response.isCreated()) {
             LOGGER.error("The meeting couldn't be created - Meeting: '{}'", meeting.toString());
             return false;
         }
@@ -73,7 +73,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         BulkResponse response = elasticsearchClientImpl.insertData(dataToInsert, StringUtilities.INDEX_IDEAS,
                 StringUtilities.INDEX_TYPE_IDEAS);
 
-        if(response.hasFailures()) {
+        if (response.hasFailures()) {
 
             LOGGER.error("Ideas bulk insertion has failed - Error: '{}'", response.buildFailureMessage());
             return false;
@@ -94,7 +94,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_IDEAS, queryBuilder,
                 SortBuilders.fieldSort(RANKING_ID_FIELD).order(SortOrder.ASC));
 
-        if(response != null && response.getHits().getTotalHits() > 0) {
+        if (response != null && response.getHits().getTotalHits() > 0) {
             // TODO: make the file writer, generate file in the path given by
             // configuration
             PrintWriter writer = null;
@@ -105,7 +105,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
                 writer.append("*****First Report*****");
                 writer.append("\nIdeas order by ranking");
 
-                for(SearchHit hit : response.getHits()) {
+                for (SearchHit hit : response.getHits()) {
                     writer.append("\n" + hit.getSourceAsString());
                 }
                 writer.close();
@@ -113,7 +113,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
             } catch (IOException e) {
                 LOGGER.error("The report couldn't be processed - Error:", e);
             } finally {
-                if(writer != null) {
+                if (writer != null) {
                     writer.close();
                 }
             }
@@ -131,8 +131,8 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
         List<Meeting> meetingList = new ArrayList<>();
 
-        if(response != null) {
-            for(SearchHit hit : response.getHits()) {
+        if (response != null) {
+            for (SearchHit hit : response.getHits()) {
                 LOGGER.debug("User '{}' meeting: '{}'", username, hit.getSourceAsString());
                 Meeting meeting = (Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class);
                 meetingList.add(meeting);

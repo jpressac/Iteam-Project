@@ -9,17 +9,13 @@ public class Meeting {
 
     private String topic;
     private String meetingId;
-    private String creationDate;
+    // private String creationDate;
     private String programmedDate;
     private String ownerName;
     private Team teamAssistant;
 
-    public String getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(String creationDate) {
-        this.creationDate = creationDate;
+    public String getOwnerName() {
+        return ownerName;
     }
 
     public String getProgrammedDate() {
@@ -28,10 +24,6 @@ public class Meeting {
 
     public void setProgrammedDate(String programmedDate) {
         this.programmedDate = programmedDate;
-    }
-
-    public String getOwnerName() {
-        return ownerName;
     }
 
     public void setOwnerName(String ownerName) {

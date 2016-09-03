@@ -22,16 +22,16 @@ class MymeetForm extends React.Component {
 
 
       }
-      componentDidMount(){
-        getMeetingData().then( (response) => {
-                 axios.get('http://localhost:8080//meeting/meetingbyuser'
-                               ).then(function(response){
-                               this.setState({ data: response.data} );
-                               this.fillfields();
-                         }.bind(this)).catch(function(response){
-                         console.log(response.error);
-                       });
-          });
+            componentDidMount(){
+
+                     axios.get('http://localhost:8080/meeting/meetingbyuser?username=agus'
+                                   ).then(function(response){
+                                   this.setState({ data: response.data} );
+                                   this.fillfields();
+                             }.bind(this)).catch(function(response){
+                             console.log(response.error);
+                           });
+
           }
 
 
@@ -44,30 +44,10 @@ class MymeetForm extends React.Component {
             </div>
 
 
-<input type="text" className="form-control" id="inputname" ref="meet"  style={{marginLeft:10, marginTop:10}}></input>
-              /*<List selectable ripple>
-       <ListSubHeader caption='Explore characters' />
-       <ListItem
+            <input type="text" className="form-control" id="inputname" ref="meet"
+             style={{marginLeft:10, marginTop:10}}></input>
 
-         caption='Dr. Manhattan'
-         legend="Jonathan 'Jon' Osterman"
-         rightIcon='star'
-       />
-       <ListItem
-
-         caption='Ozymandias'
-         legend='Adrian Veidt'
-         rightIcon='star'
-       />
-       <ListItem
-
-         caption='Rorschach'
-         legend='Walter Joseph Kovacs'
-         rightIcon='star'
-       />
-
-     </List>*/
-</div>
+            </div>
 
 )};
 }
