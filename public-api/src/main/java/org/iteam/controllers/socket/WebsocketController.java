@@ -14,33 +14,34 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class WebsocketController {
 
-	private SimpMessagingTemplate template;
+    private SimpMessagingTemplate template;
 
-	private MeetingService meetingService;
+    private MeetingService meetingService;
 
-	/**
-	 * One specific channel for webSocket. The message has the id of the
-	 * topic/channel that will be listening the subscriber.
-	 * 
-	 * @param message
-	 *            the message that will be sent to the topic
-	 */
-	@MessageMapping("/channel")
-	public void sendMessage(String channelId, SocketMessage message) {
-		if (message.getMessage().getAction().equals("updateCache")) {
-			meetingService.updateMeetingInfo(channelId, message.getMessage().getPayload());
-		}
-		template.convertAndSend("/topic/" + message.getTopic(), message.getMessage());
-	}
+    /**
+     * One specific channel for webSocket. The message has the id of the
+     * topic/channel that will be listening the subscriber.
+     * 
+     * @param message
+     *            the message that will be sent to the topic
+     */
+    @MessageMapping("/channel")
+    // TODO:remove channelId
+    public void sendMessage(String channelId, SocketMessage message) {
+        if(message.getMessage().getAction().equals("updateCache")) {
+            meetingService.updateMeetingInfo(message.getTopic(), message.getMessage().getPayload());
+        }
+        template.convertAndSend("/topic/" + message.getTopic(), message.getMessage());
+    }
 
-	@Autowired
-	private void setTemplate(SimpMessagingTemplate template) {
-		this.template = template;
-	}
+    @Autowired
+    private void setTemplate(SimpMessagingTemplate template) {
+        this.template = template;
+    }
 
-	@Autowired
-	private void setMeetingService(MeetingService meetingService) {
-		this.meetingService = meetingService;
-	}
+    @Autowired
+    private void setMeetingService(MeetingService meetingService) {
+        this.meetingService = meetingService;
+    }
 
 }

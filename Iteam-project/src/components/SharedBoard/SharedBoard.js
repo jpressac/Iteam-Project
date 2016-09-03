@@ -183,18 +183,21 @@ class SharedBoard extends Component {
     )
 
   }
-  sendUpdateCache(action, payload){
+
+  sendUpdateCache(action, payload) {
     sendNote(action, '13', JSON.stringify(payload));
 
   }
+
   receiveNote(payload) {
+    debugger;
     let map = this.state.notes;
     let id = this.nextId();
     let jsonPayload = JSON.parse(payload);
     let jsonPayloadMessage;
-    if(jsonPayload.action === 'updateCache'){
+    if (jsonPayload.action === 'updateCache') {
       console.log(jsonPayload.payload);
-    }else {
+    } else {
       jsonPayloadMessage = JSON.parse(jsonPayload.payload);
     }
     switch (jsonPayload.action) {
@@ -213,7 +216,7 @@ class SharedBoard extends Component {
           boardType: "shared"
         };
         this.setState({notes: map});
-
+        this.sendUpdateCache('updateCache', this.state.notes);
         break;
 
       case "update":
@@ -242,6 +245,7 @@ class SharedBoard extends Component {
           delete map[jsonPayloadMessage.id];
         }
         this.setState({notes: map});
+        this.sendUpdateCache('updateCache', this.state.notes);
         break;
 
       case "default":
@@ -253,7 +257,17 @@ class SharedBoard extends Component {
   componentDidMount() {
     //Connect with socket
     connectAndSubscribe('13', this.receiveNote.bind(this));
-    axios.get('http://localhost:8080/meeting/meetinginfo?meetingId=13');
+  }
+
+  componentWillMount(){
+    axios.get('http://localhost:8080/meeting/meetinginfo?meetingId=13').then((response) => {
+      console.log('hola puteta ' + response.data);
+      if(response.data !== ""){
+        this.setState({notes: response.data});
+      }
+    }).catch((response) => {
+      console.log('error ' + response)
+    })
   }
 
   componentWillUnmount() {
