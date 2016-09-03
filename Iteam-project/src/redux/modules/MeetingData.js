@@ -1,12 +1,12 @@
 import axios from 'axios'
 
 
-/*Return all the names of the teams*/
+/*Return if a user is authenticated or not*/
 
-export function getTeamData(){
+export function getMeetingData(){
   return new Promise((resolve, reject) => {
     //TODO: usar parametros para la http request
-      axios.get('http://localhost:8080/team/byowner')
+      axios.get('http://localhost:8080/')
       .then(() => {
         resolve()
       }, () => {

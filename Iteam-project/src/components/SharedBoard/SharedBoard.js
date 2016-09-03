@@ -93,7 +93,7 @@ class SharedBoard extends Component {
     }).then(function (response) {
       this.setState({message: '¡Your notes were successfully saved!'});
       this.refs.mymodal.openModal();
-      this.setState({notes:{}})
+      this.setState({notes: {}})
     }.bind(this)).catch(function (response) {
       this.setState({message: '¡Your notes were not saved!'});
       this.refs.mymodal.openModal();
@@ -178,17 +178,29 @@ class SharedBoard extends Component {
         "ranking": map[id].ranking,
         "meetingId": 'meeting123',
         "boardType": "shared"
-      })
-    );
+      }
+      )
+    )
+
   }
 
+  sendUpdateCache(action, payload) {
+    sendNote(action, '13', JSON.stringify(payload));
+
+  }
 
   receiveNote(payload) {
+    debugger;
     let map = this.state.notes;
     let id = this.nextId();
     let jsonPayload = JSON.parse(payload);
-    let jsonPayloadMessage =  JSON.parse(jsonPayload.payload);
-    switch (jsonPayload.action){
+    let jsonPayloadMessage;
+    if (jsonPayload.action === 'updateCache') {
+      console.log(jsonPayload.payload);
+    } else {
+      jsonPayloadMessage = JSON.parse(jsonPayload.payload);
+    }
+    switch (jsonPayload.action) {
       case "insert":
         map[id] =
         {
@@ -204,11 +216,12 @@ class SharedBoard extends Component {
           boardType: "shared"
         };
         this.setState({notes: map});
+        this.sendUpdateCache('updateCache', this.state.notes);
         break;
 
       case "update":
         if (map[jsonPayloadMessage.id].comments != jsonPayloadMessage.comments || (map[jsonPayloadMessage.id].left !== jsonPayloadMessage.left && map[jsonPayloadMessage.id].top !== jsonPayloadMessage.top)
-              || map[jsonPayloadMessage.id].ranking !== jsonPayloadMessage.ranking) {
+          || map[jsonPayloadMessage.id].ranking !== jsonPayloadMessage.ranking) {
           map[jsonPayloadMessage.id] =
           {
             id: jsonPayloadMessage.id,
@@ -224,6 +237,7 @@ class SharedBoard extends Component {
           };
         }
         this.setState({notes: map});
+        this.sendUpdateCache('updateCache', this.state.notes);
         break;
 
       case "delete":
@@ -231,17 +245,29 @@ class SharedBoard extends Component {
           delete map[jsonPayloadMessage.id];
         }
         this.setState({notes: map});
+        this.sendUpdateCache('updateCache', this.state.notes);
         break;
 
       case "default":
-          //ver que hacer aca, si vale la pena ponerlo o no
-            break;
+        //ver que hacer aca, si vale la pena ponerlo o no
+        break;
     }
   }
 
   componentDidMount() {
     //Connect with socket
     connectAndSubscribe('13', this.receiveNote.bind(this));
+  }
+
+  componentWillMount(){
+    axios.get('http://localhost:8080/meeting/meetinginfo?meetingId=13').then((response) => {
+      console.log('hola puteta ' + response.data);
+      if(response.data !== ""){
+        this.setState({notes: response.data});
+      }
+    }).catch((response) => {
+      console.log('error ' + response)
+    })
   }
 
   componentWillUnmount() {

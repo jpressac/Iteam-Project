@@ -5,40 +5,41 @@ import classes from './meetingView.scss'
 import  Calendar from '../../components/DateCalendar'
 import {getTeamData} from '../../redux/modules/TeamName'
 import axios from 'axios'
+import TimePicker from 'react-toolbox/lib/time_picker';
 
 
 class MeetingView extends React.Component {
 
+
   constructor(props){
     super(props);
     this.state= {
-      team: {}
+      data: {}
       }
+
     }
     fillfields() {
-      let team= this.state.team;
-      this.refs.team.value= team.name;
+      let data= this.state.data;
+      this.refs.name.value= data.name;
 
 
     }
-  componentDidMount(){
-    getTeamData().then( () => {
-      axios.get('http://localhost:8080/team'
-                          ).then(function(response){
-                          this.setState({ team: response.team} );
-                          this.fillfields();
-
-                    }.bind(this)).catch(function(response){
-                      console.log(response.error);
-                    });
-    })
-  }
+    componentDidMount(){
+      getTeamData().then( (response) => {
+               axios.get('http://localhost:8080/team/byowner'
+                             ).then(function(response){
+                             this.setState({ data: response.data} );
+                             this.fillfields();
+                       }.bind(this)).catch(function(response){
+                       console.log(response.error);
+                     });
+        })}
 
   render(){
 
     return(
       <div className={"container"}>
-          <div className={classes.label2}  style={{marginTop:20}}>
+          <div className={classes.label2}  >
           <label>CREATE MEETING</label>
           </div>
 
@@ -68,10 +69,17 @@ class MeetingView extends React.Component {
                     <div className="row">
                       <label for="date" className="col-md-4 col-sm-4 col-xs-6  control-label" style={{marginLeft:20, marginTop:20, fontSize: 17}}>Select date <i className="	glyphicon glyphicon-calendar"></i></label>
                       <div className={"col-md-3 col-sm-3 col-xs-6 "} >
-                        <input type="date" className="form-control" id="inputname" ref="name" placeholder="YYYY-MM-DD"  style={{marginLeft:10, marginTop:20}}></input>
-                      </div>
+                        </div>
                     </div>
                   </div>
+                  <div className="col-md-10">
+                      <div className="row">
+                        <label for="date" className="col-md-4 col-sm-4 col-xs-6  control-label" style={{marginLeft:20, marginTop:20, fontSize: 17}}>Select time <i className="	glyphicon glyphicon-calendar"></i></label>
+                        <div className={"col-md-3 col-sm-3 col-xs-6 "} >
+                          <input type="date" className="form-control" id="inputname" ref="name" placeholder="YYYY-MM-DD"  style={{marginLeft:10, marginTop:20}}></input>
+                        </div>
+                      </div>
+                    </div>
                 <div className="col-md-10">
                   <div className="row">
                     <label for="team" className="col-md-4 col-sm-4 col-xs-6 control-label" style={{marginLeft:20, marginTop:20, fontSize: 17}}>Select Team <i className="	glyphicon glyphicon-user"></i></label>

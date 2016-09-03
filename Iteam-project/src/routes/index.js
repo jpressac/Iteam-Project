@@ -1,3 +1,4 @@
+// We only need to import the modules necessary for initial render
 import React from 'react'
 import { Route, IndexRoute } from 'react-router'
 import NotLoggedIn from '../layouts/NotLoggedIn/'
@@ -12,6 +13,8 @@ import TeamCreationView from '../views/TeamCreationView'
 import MeetingView from '../views/MeetingView'
 import BoardView from '../views/BoardView/BoardView'
 import ProfileView from '../views/ProfileView/ProfileView'
+import MymeetView from '../views/MymeetView/MymeetView'
+
 
 export const createRoutes = (store) => (
 
@@ -31,8 +34,39 @@ export const createRoutes = (store) => (
        <Route path={PATHS.LOGGEDIN.MEETING} component={MeetingView} />
        <Route path={PATHS.LOGGEDIN.BOARD} component={BoardView} />
        <Route path={PATHS.LOGGEDIN.PROFILE} component={ProfileView} />
+       <Route path={PATHS.LOGGEDIN.MYMEETINGS} component={MymeetView} />
      </Route>
    </Route>
-   );
+   )
+
+
+
+/*path: '/',
+component: CoreLayout,
+indexRoute: ContactView,
+childRoutes: [
+  CounterRoute(store)
+]
+*/
+
+
+
+/*  Note: childRoutes can be chunked or otherwise loaded programmatically
+    using getChildRoutes with the following signature:
+
+    getChildRoutes (location, cb) {
+      require.ensure([], (require) => {
+        cb(null, [
+          // Remove imports!
+          require('./Counter').default(store)
+        ])
+      })
+    }
+
+    However, this is not necessary for code-splitting! It simply provides
+    an API for async route definitions. Your code splitting should occur
+    inside the route `getComponent` function, since it is only invoked
+    when the route exists and matches.
+*/
 
 export default createRoutes

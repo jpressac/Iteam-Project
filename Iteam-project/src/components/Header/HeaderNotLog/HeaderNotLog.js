@@ -5,25 +5,24 @@ import { Button } from 'react-bootstrap';
 import logo from '../image/logo.png'
 import { PATHS } from '../../../constants/routes'
 
-class HeaderNotLog extends Component {
+class HeaderNotLog extends React.Component {
   render(){
     return(
-    
-         <div className={"navbar navbar-inverse navbar-static-top", classes.wrapper}>
-         <div className="container">
-           <div className={"navbar-header"}>
-             <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar3">
-
-               <span className="icon-bar"></span>
-               <span className="icon-bar"></span>
-               <span className="icon-bar"></span>
-             </button>
+      <div className={"navbar navbar-default navbar-static-top"} role="navigation">
+      <div className="container">
+       <div className={"navbar-header", classes.header}>
              <a className="navbar-brand" href="#">
              <img src={logo} className={classes.logo} alt="Iteam"/></a>
 
+           <button type="button" className="navbar-toggle navbar-inverse" data-toggle="collapse" data-target=".navHeaderCollapse">
+           <span class="icon-bar"></span>
+           <span class="icon-bar"></span>
+           <span class="icon-bar"></span>
+           </button>
            </div>
-           <div id="navbar3" className="navbar-collapse collapse" >
-               <ul className="nav navbar-nav navbar-right navbar-brand">
+           <div  className="collapse navbar-collapse navHeaderCollapse navbar-right" >
+               <ul className="nav navbar-nav navbar-right ">
+
                <li ><Link className={classes.menus} to={'/' + PATHS.MENUNOTLOGGEDIN.HOME} activeClassName="active">
                   <span className="glyphicon glyphicon-home"></span>HOME</Link></li>
                <li><Link className={classes.menus} to={'/' + PATHS.MENUNOTLOGGEDIN.ABOUT} activeClassName="active">

@@ -34,17 +34,13 @@ const history = syncHistoryWithStore(browserHistory, store, {
 const routes = makeRoutes(store)
 
 userExists().then( () => {
-  console.log('history ' + window.location.href);
-  store.dispatch(push(PATHS.LOGGEDIN.HOME));
-  console.log('history ' + window.location.href);
+  store.dispatch(push("/application/member/home"))
   axios.get('http://localhost:8080/user')
     .then((response) => {
       store.dispatch(user(response.data))
     })
 }, () => {
-  console.log('history ' + window.location.href);
-  store.dispatch(push(PATHS.COMMON.LOGIN))
-  console.log('history ' + window.location.href);
+  store.dispatch(push("/application/nmember/login"))
 })
 
 // Now that redux and react-router have been configured, we can render the
