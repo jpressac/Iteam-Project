@@ -75,7 +75,7 @@ class HeaderLog extends Component {
 
               <li><Link  to={'/' + PATHS.MENULOGGEDIN.NEWTEAM} activeClassName="active">
                 <span className="glyphicon glyphicon-paperclip"></span> NEW TEAM </Link></li>
-              <li><Link to={'/' + PATHS.MENULOGGEDIN.MYMEETINGS} activeClassName="active">
+              <li><Link to={'/' + PATHS.MENULOGGEDIN.BOARD} activeClassName="active">
                 <span className="glyphicon glyphicon-paperclip"></span> PERSONAL BOARD </Link></li>
               <li><span className = "glyphicon glyphicon-paperclip" > {this.props.user}</span > </li>
               <li>

@@ -2,6 +2,16 @@ import React, {Component} from 'react'
 import classes from './LoginForm.scss'
 import {PATHS} from '../../constants/routes'
 import {Link} from 'react-router'
+//import GoogleLogin from 'react-google-login'
+
+/*var onSignIn = function (response) {
+  debugger;
+  console.log('puto el que lee  ' + response.wc);
+  console.log('puto el que lee  ' + response.hg);
+  console.log('puto el que lee  ' + response.el);
+  console.log('puto el que lee ' + response);
+
+};*/
 
 class LoginForm extends Component {
 
@@ -57,24 +67,22 @@ class LoginForm extends Component {
                   <div className="row">
                     <div className="checkbox col-md-7  col-sm-6 col-xs-8">
                       <label>
-                        <input type="checkbox"/> Remember me </label>
+                        <input type="checkbox"/>
+                        Remember me
+                      </label>
                     </div>
                     <div className="col-md-5 col-sm-6 col-xs-8">
-                      <button type="submit" className={"btn btn-primary", classes.btn} style={{marginLeft: 10}}>
-                        <span className="glyphicon glyphicon-ok"/> SIGN IN
-                      </button>
+                       <button type="submit" className={"btn btn-primary", classes.btn} style={{marginLeft: 10}}>
+                         <span className="glyphicon glyphicon-ok"/> SIGN IN
+                       </button>
                     </div>
                   </div>
                 </div>
-
               </div>
             </div>
-
           </div>
         </form>
       </div>
-
-
     );
   };
 }
