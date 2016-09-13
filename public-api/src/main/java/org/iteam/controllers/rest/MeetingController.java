@@ -87,7 +87,6 @@ public class MeetingController {
 
 	@RequestMapping(value = "/meeting/meetinginfo", method = RequestMethod.GET)
 	public String getMeetingInfo(@RequestParam(value = "meetingId", required = true) String meetingId) {
-		// TODO Check if it is a valid Meeting ID
 		return meetingServiceImpl.getMeetingInfo(meetingId);
 	}
 

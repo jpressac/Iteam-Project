@@ -1,29 +1,22 @@
 package org.iteam.services.meeting;
 
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
-import javax.annotation.PostConstruct;
 
 import org.iteam.data.dal.meeting.MeetingRepository;
 import org.iteam.data.dal.meeting.MeetingRepositoryImpl;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.Meeting;
+import org.iteam.exceptions.MeetingInfoNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MeetingServiceImpl implements MeetingService {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(MeetingServiceImpl.class);
 	private MeetingRepository meetingRepositoryImpl;
-
-	private ConcurrentMap<String, String> meetingInfo;
-
-	@PostConstruct
-	private void initialize() {
-		meetingInfo = new ConcurrentHashMap<>();
-	}
 
 	@Override
 	public boolean createMeeting(Meeting meeting) {
@@ -52,15 +45,19 @@ public class MeetingServiceImpl implements MeetingService {
 
 	@Override
 	public String getMeetingInfo(String meetingId) {
-		synchronized (meetingInfo) {
-			return meetingInfo.get(meetingId);
+
+		String result = meetingRepositoryImpl.getMeetingInfo(meetingId);
+		if (result == null) {
+			LOGGER.error("Error when retrieving meeting info of meeting '{}'", meetingId);
+			throw new MeetingInfoNotFoundException("Error when retrieving meeting info");
 		}
+		return result;
+
 	}
 
 	@Override
 	public void updateMeetingInfo(String meetingId, String info) {
-		synchronized (meetingInfo) {
-			meetingInfo.put(meetingId, info);
-		}
+		meetingRepositoryImpl.saveMeetingInfo(info, meetingId);
+
 	}
 }

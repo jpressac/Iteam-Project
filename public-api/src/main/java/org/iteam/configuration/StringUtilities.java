@@ -12,4 +12,7 @@ public final class StringUtilities {
 	public static final String INDEX_TYPE_MEETING = "meetingdata";
 	public static final String INDEX_IDEAS = "iteamideas";
 	public static final String INDEX_TYPE_IDEAS = "ideasdata";
+	public static final String INDEX_MEETING_INFO = "meetinginfo";
+	public static final String INDEX_TYPE_MEETING_INFO = "meetinginfodata";
+
 }
