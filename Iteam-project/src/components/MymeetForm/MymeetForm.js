@@ -20,6 +20,8 @@ const mapStateToProps = (state) => {
 
 class MymeetForm extends Component {
   state = {time};
+  state2 = {date1: datetime};
+  state3 = {active: false};
 
   constructor(props) {
     super(props);
@@ -34,14 +36,22 @@ class MymeetForm extends Component {
     this.setState({time: time});
   };
 
-  handleToggle = () => {
+  dateChange = (item, value) => {
+    this.setState({...this.state2, [item]: value});
+  };
+
+  handleToggleDialog = () => {
     this.setState({active: !this.state.active});
+  };
+  handleToggleDateTime = () => {
+    this.setState({active: !this.state3.active});
   };
 
 
   actions = [
-    {label: "Cancel", onClick: this.handleToggle},
-    {label: "Save", onClick: this.handleToggle}
+    {label: "Cancel", onClick: this.handleToggleDialog},
+    {label: "Save", onClick: this.handleToggleDialog},
+    {label: "OK", onClick: this.handleToggleDateTime}
   ];
 
 
@@ -63,7 +73,7 @@ class MymeetForm extends Component {
     let meetingmap = this.state.data;
     let meetingTime = new Date;
     let mt = new Date;
-    let dateTime= new Date;
+    let dateTime = new Date;
     let fullDate;
     return (
       <div className={"container"}>
@@ -72,17 +82,17 @@ class MymeetForm extends Component {
         </div>
         <List selectable ripple>
           {Object.keys(meetingmap).map((key) => {
-            meetingTime= meetingmap[key].programmedDate;
-            console.log('meeting:' + meetingTime);
-            mt = Date.parse(meetingTime);
-            dateTime = new Date(mt);
-            console.log('meeting parse:' + mt);
-            fullDate= dateTime.getFullYear() + '/' + dateTime.getDay() +'/' + dateTime.getHours();
+              meetingTime = meetingmap[key].programmedDate;
+              console.log('meeting:' + meetingTime);
+              mt = Date.parse(meetingTime);
+              dateTime = new Date(mt);
+              console.log('meeting parse:' + mt);
+              fullDate = dateTime.getFullYear() + '/' + dateTime.getDay() + '/' + dateTime.getHours();
               return (
                 <div>
                   <ListItem
                     caption={meetingmap[key].topic}
-                    legend= {fullDate}
+                    legend={fullDate}
                     onClick={this.handleToggle}>
                   </ListItem>
                   <Dialog
@@ -91,12 +101,16 @@ class MymeetForm extends Component {
                     onEscKeyDown={this.handleToggle}
                     onOverlayClick={this.handleToggle}
                     title={meetingmap[key].topic}>
-                    <Input type='text' label='Date' name='Date' value={dateTime.getDate()} />
-                    <label>Time</label>
-                    <p></p>
+                    <DatePicker label='Select date' sundayFirstDayOfWeek
+                                onChange={this.dateChange.bind(this, 'date1')}
+                                value={dateTime.getDate}/>
+                    <TimePicker label='Select time'
+                                onChange={this.handleChange}
+                                value={dateTime.getHours()}/>
                   </Dialog>
                 </div>
-              );
+              )
+                ;
             }
           )}
         </List>
