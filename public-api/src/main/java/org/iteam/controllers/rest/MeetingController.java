@@ -10,6 +10,7 @@ import org.iteam.services.meeting.MeetingService;
 import org.iteam.services.meeting.MeetingServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,6 +36,18 @@ public class MeetingController {
 	public ResponseEntity<Void> createMeeting(@RequestBody Meeting meeting) {
 
 		return checkResult(meetingServiceImpl.createMeeting(meeting));
+
+	}
+
+	/**
+	 * Update an existed meeting, given the meeting information.
+	 * 
+	 * @return 200 OK if it was successful.
+	 */
+	@RequestMapping(value = "/meeting/update", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+	public ResponseEntity<Void> updateMeeting(@RequestBody Meeting updatedMeeting) {
+
+		return checkResult(meetingServiceImpl.updateMeeting(updatedMeeting));
 
 	}
 

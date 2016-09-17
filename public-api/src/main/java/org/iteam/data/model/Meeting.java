@@ -7,55 +7,64 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Meeting {
 
-    private String topic;
-    private String meetingId;
-    // private String creationDate;
-    private String programmedDate;
-    private String ownerName;
-    private Team teamAssistant;
+	private String topic;
+	private String meetingId;
+	// private String creationDate;
+	private String programmedDate;
+	private String ownerName;
+	private Team teamAssistant;
+	private String description;
 
-    public String getOwnerName() {
-        return ownerName;
-    }
+	public String getOwnerName() {
+		return ownerName;
+	}
 
-    public String getProgrammedDate() {
-        return programmedDate;
-    }
+	public String getProgrammedDate() {
+		return programmedDate;
+	}
 
-    public void setProgrammedDate(String programmedDate) {
-        this.programmedDate = programmedDate;
-    }
+	public void setProgrammedDate(String programmedDate) {
+		this.programmedDate = programmedDate;
+	}
 
-    public void setOwnerName(String ownerName) {
-        this.ownerName = ownerName;
-    }
+	public void setOwnerName(String ownerName) {
+		this.ownerName = ownerName;
+	}
 
-    public String getTopic() {
-        return topic;
-    }
+	public String getTopic() {
+		return topic;
+	}
 
-    public void setTopic(String topic) {
-        this.topic = topic;
-    }
+	public void setTopic(String topic) {
+		this.topic = topic;
+	}
 
-    public String getMeetingId() {
-        return meetingId;
-    }
+	public String getMeetingId() {
+		return meetingId;
+	}
 
-    public void setMeetingId(String meetingId) {
-        this.meetingId = meetingId;
-    }
+	public void setMeetingId(String meetingId) {
+		this.meetingId = meetingId;
+	}
 
-    public Team getTeamAssistant() {
-        return teamAssistant;
-    }
+	public Team getTeamAssistant() {
+		return teamAssistant;
+	}
 
-    public void setTeamAssistant(Team teamAssistant) {
-        this.teamAssistant = teamAssistant;
-    }
+	public void setTeamAssistant(Team teamAssistant) {
+		this.teamAssistant = teamAssistant;
+	}
 
-    @Override
-    public String toString() {
-        return ToStringBuilder.reflectionToString(this);
-    }
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this);
+	}
 }

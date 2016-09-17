@@ -24,6 +24,11 @@ public class MeetingServiceImpl implements MeetingService {
 	}
 
 	@Override
+	public boolean updateMeeting(Meeting updatedMeeting) {
+		return meetingRepositoryImpl.updateMeeting(updatedMeeting);
+	}
+
+	@Override
 	public boolean savedIdeas(IdeasDTO ideas) {
 		return meetingRepositoryImpl.saveIdeas(ideas);
 	}

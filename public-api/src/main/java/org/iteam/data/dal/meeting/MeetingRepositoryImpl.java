@@ -5,12 +5,14 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -47,6 +49,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 		LOGGER.info("Creating new meeting");
 		LOGGER.debug("Meeting: '{}'", meeting.toString());
 
+		meeting.setMeetingId(UUID.randomUUID().toString());
 		String data = JSONUtils.ObjectToJSON(meeting);
 
 		IndexResponse response = elasticsearchClientImpl.insertData(data, StringUtilities.INDEX_MEETING,
@@ -58,6 +61,23 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 		}
 		return true;
 
+	}
+
+	@Override
+	public boolean updateMeeting(Meeting updatedMeeting) {
+		LOGGER.info("Updating meeting");
+		LOGGER.debug("Meeting: '{}'", updatedMeeting.toString());
+
+		String data = JSONUtils.ObjectToJSON(updatedMeeting);
+
+		UpdateResponse response = elasticsearchClientImpl.modifyData(data, StringUtilities.INDEX_MEETING,
+				StringUtilities.INDEX_TYPE_MEETING, updatedMeeting.getMeetingId());
+
+		if (!response.isCreated()) {
+			LOGGER.error("The meeting couldn't be updated - Meeting: '{}'", updatedMeeting.toString());
+			return false;
+		}
+		return true;
 	}
 
 	@Override
