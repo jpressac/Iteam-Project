@@ -5,6 +5,7 @@ import java.util.Date;
 import org.assertj.core.util.Lists;
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.iteam.data.dal.client.ElasticsearchClientImpl;
@@ -109,6 +110,58 @@ public class MeetingRepositoryImplTest {
 		whenGetMeetingInfoIsCalled();
 		thenVerifyGetMeetingInfoIsCalled();
 		thenCheckInfoIsEmpty();
+	}
+
+	@Test
+	public void deleteMeetingInfoSuccess() {
+		givenAMeetingId();
+		givenAnElasticsearchDeleteResponseSuccess();
+		whenDeleteMeetingInfoIsCalled();
+		thenVerifyDeleteMeetingInfoIsCalled();
+	}
+
+	@Test
+	public void deleteMeetingInfoFail() {
+		givenAMeetingId();
+		givenAnElasticsearchDeleteResponseFail();
+		whenDeleteMeetingInfoIsCalled();
+		thenVerifyDeleteMeetingInfoIsCalled();
+
+	}
+
+	private void givenAnElasticsearchDeleteResponseFail() {
+		DeleteResponse response = Mockito.mock(DeleteResponse.class);
+
+		Mockito.when(response.isFound()).thenReturn(false);
+
+		Mockito.when(elasticsearchClientImpl.delete(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+				.thenReturn(response);
+
+		ReflectionTestUtils.setField(underTest, "elasticsearchClientImpl", elasticsearchClientImpl);
+
+	}
+
+	private void thenVerifyDeleteMeetingInfoIsCalled() {
+		Mockito.verify(elasticsearchClientImpl, Mockito.times(1)).delete(Mockito.anyString(), Mockito.anyString(),
+				Mockito.anyString());
+
+	}
+
+	private void whenDeleteMeetingInfoIsCalled() {
+		underTest.deleteMeetingInfo(meetingId);
+
+	}
+
+	private void givenAnElasticsearchDeleteResponseSuccess() {
+		DeleteResponse response = Mockito.mock(DeleteResponse.class);
+
+		Mockito.when(response.isFound()).thenReturn(true);
+
+		Mockito.when(elasticsearchClientImpl.delete(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+				.thenReturn(response);
+
+		ReflectionTestUtils.setField(underTest, "elasticsearchClientImpl", elasticsearchClientImpl);
+
 	}
 
 	private void thenCheckInfoIsEmpty() {

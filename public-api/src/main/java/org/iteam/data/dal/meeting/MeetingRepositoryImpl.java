@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
@@ -175,6 +176,17 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 			return response.getSourceAsString();
 		}
 		return null;
+	}
+
+	@Override
+	public void deleteMeetingInfo(String meetingId) {
+
+		DeleteResponse response = elasticsearchClientImpl.delete(StringUtilities.INDEX_MEETING_INFO,
+				StringUtilities.INDEX_TYPE_MEETING_INFO, meetingId);
+		if (response.isFound()) {
+			LOGGER.info("Meeting info deleted successfully - '{}'", meetingId);
+		}
+
 	}
 
 	@Autowired

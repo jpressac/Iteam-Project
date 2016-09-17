@@ -36,4 +36,6 @@ public interface MeetingRepository {
 	public void saveMeetingInfo(String data, String meetingId);
 
 	public String getMeetingInfo(String meetingId);
+
+	public void deleteMeetingInfo(String meetingId);
 }

@@ -90,6 +90,11 @@ public class MeetingController {
 		return meetingServiceImpl.getMeetingInfo(meetingId);
 	}
 
+	@RequestMapping(value = "/meeting/deletemeetinginfo", method = RequestMethod.GET)
+	public void deleteMeetingInfo(@RequestParam(value = "meetingId", required = true) String meetingId) {
+		meetingServiceImpl.deleteMeetingInfo(meetingId);
+	}
+
 	@Autowired
 	private void setMeetingServiceImpl(MeetingServiceImpl meetingServiceImpl) {
 		this.meetingServiceImpl = meetingServiceImpl;

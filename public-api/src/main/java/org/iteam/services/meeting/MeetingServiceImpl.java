@@ -60,4 +60,11 @@ public class MeetingServiceImpl implements MeetingService {
 		meetingRepositoryImpl.saveMeetingInfo(info, meetingId);
 
 	}
+
+	@Override
+	public void deleteMeetingInfo(String meetingId) {
+		meetingRepositoryImpl.deleteMeetingInfo(meetingId);
+
+	}
+
 }
