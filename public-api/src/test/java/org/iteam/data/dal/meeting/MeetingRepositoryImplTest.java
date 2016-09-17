@@ -3,7 +3,9 @@ package org.iteam.data.dal.meeting;
 import java.util.Date;
 
 import org.assertj.core.util.Lists;
+import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.iteam.data.dal.client.ElasticsearchClientImpl;
 import org.iteam.data.model.Idea;
@@ -32,6 +34,9 @@ public class MeetingRepositoryImplTest {
 	private boolean success;
 
 	private IdeasDTO ideas;
+	private String meetingData;
+	private String meetingId;
+	private String meetingInfo;
 
 	@Before
 	public void init() {
@@ -68,6 +73,123 @@ public class MeetingRepositoryImplTest {
 		givenAnElasticsearchClientBulkResponse(true);
 		whenSaveIdeasIsCalled();
 		thenCheckStatus(false);
+	}
+
+	@Test
+	public void saveMeetingInfoSuccess() {
+		givenMeetingData();
+		givenAMeetingId();
+		givenAnElasticsearchIndexResponse();
+		whenSaveMeetingInfoIsCalled();
+		thenVerifySaveMeetingInfoIsCalled(1);
+	}
+
+	@Test
+	public void saveMeetingInfoFail() {
+		givenMeetingData();
+		givenAMeetingId();
+		givenAnElasticsearchIndexResponseFailure();
+		whenSaveMeetingInfoIsCalled();
+		thenVerifySaveMeetingInfoIsCalled(6);
+	}
+
+	@Test
+	public void getMeetingInfoSuccess() {
+		givenAMeetingId();
+		givenAnElasticsearchGetResponse();
+		whenGetMeetingInfoIsCalled();
+		thenVerifyGetMeetingInfoIsCalled();
+		thenCheckInfoReceived();
+	}
+
+	@Test
+	public void getMeetingInfoFail() {
+		givenAMeetingId();
+		givenAnElasticsearchGetResponseFailure();
+		whenGetMeetingInfoIsCalled();
+		thenVerifyGetMeetingInfoIsCalled();
+		thenCheckInfoIsEmpty();
+	}
+
+	private void thenCheckInfoIsEmpty() {
+		Assert.assertNull(meetingInfo);
+	}
+
+	private void givenAnElasticsearchGetResponseFailure() {
+		GetResponse response = Mockito.mock(GetResponse.class);
+
+		Mockito.when(response.isExists()).thenReturn(false);
+
+		Mockito.when(elasticsearchClientImpl.getDocument(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+				.thenReturn(response);
+
+		ReflectionTestUtils.setField(underTest, "elasticsearchClientImpl", elasticsearchClientImpl);
+
+	}
+
+	private void thenCheckInfoReceived() {
+		Assert.assertNotNull(meetingInfo);
+
+	}
+
+	private void thenVerifyGetMeetingInfoIsCalled() {
+		Mockito.verify(elasticsearchClientImpl, Mockito.times(1)).getDocument(Mockito.anyString(), Mockito.anyString(),
+				Mockito.anyString());
+
+	}
+
+	private void whenGetMeetingInfoIsCalled() {
+		meetingInfo = underTest.getMeetingInfo(meetingId);
+	}
+
+	private void givenAnElasticsearchGetResponse() {
+
+		GetResponse response = Mockito.mock(GetResponse.class);
+
+		Mockito.when(response.isExists()).thenReturn(true);
+		Mockito.when(response.getSourceAsString()).thenReturn("meeting info being returned");
+
+		Mockito.when(elasticsearchClientImpl.getDocument(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+				.thenReturn(response);
+
+		ReflectionTestUtils.setField(underTest, "elasticsearchClientImpl", elasticsearchClientImpl);
+	}
+
+	private void givenAnElasticsearchIndexResponseFailure() {
+		ElasticsearchException exception = Mockito.mock(ElasticsearchException.class);
+
+		Mockito.when(elasticsearchClientImpl.insertData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
+				Mockito.anyString())).thenThrow(exception, exception, exception, exception, exception);
+
+		ReflectionTestUtils.setField(underTest, "elasticsearchClientImpl", elasticsearchClientImpl);
+	}
+
+	private void givenAMeetingId() {
+		meetingId = "13";
+	}
+
+	private void thenVerifySaveMeetingInfoIsCalled(int times) {
+		Mockito.verify(elasticsearchClientImpl, Mockito.times(times)).insertData(Mockito.anyString(),
+				Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
+	}
+
+	private void whenSaveMeetingInfoIsCalled() {
+		underTest.saveMeetingInfo(meetingData, meetingId);
+	}
+
+	private void givenAnElasticsearchIndexResponse() {
+		IndexResponse response = Mockito.mock(IndexResponse.class);
+
+		Mockito.when(elasticsearchClientImpl.insertData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
+				Mockito.anyString())).thenReturn(response);
+
+		ReflectionTestUtils.setField(underTest, "elasticsearchClientImpl", elasticsearchClientImpl);
+
+	}
+
+	private void givenMeetingData() {
+		meetingData = "Notes";
+
 	}
 
 	private void whenSaveIdeasIsCalled() {

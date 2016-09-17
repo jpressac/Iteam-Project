@@ -9,8 +9,9 @@ import {connect} from 'react-redux'
 import AppBar from 'react-toolbox/lib/app_bar'
 import Avatar from 'react-toolbox/lib/avatar';
 import {IconMenu, MenuItem, MenuDivider} from 'react-toolbox/lib/menu';
+import {logout} from '../../../redux/reducers/Login/LoginUser'
+import LogoutButton from './LogoutButton'
 import Navigation from 'react-toolbox/lib/navigation';
-
 
 const mapStateToProps = (state)=> {
   if (state.loginUser !== null) {
@@ -75,9 +76,12 @@ class HeaderLog extends Component {
 
               <li><Link  to={'/' + PATHS.MENULOGGEDIN.NEWTEAM} activeClassName="active">
                 <span className="glyphicon glyphicon-paperclip"></span> NEW TEAM </Link></li>
-              <li><Link to={'/' + PATHS.MENULOGGEDIN.MYMEETINGS} activeClassName="active">
+              <li><Link to={'/' + PATHS.MENULOGGEDIN.BOARD} activeClassName="active">
                 <span className="glyphicon glyphicon-paperclip"></span> PERSONAL BOARD </Link></li>
               <li><span className = "glyphicon glyphicon-paperclip" > {this.props.user}</span > </li>
+              <li>
+                <LogoutButton ></LogoutButton>
+              </li>
             </ul>
 
           </div>

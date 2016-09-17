@@ -21,3 +21,4 @@ public-api/build/
 *.orig
 Iteam/node_modules/
 Iteam-project/.idea/
+public-api/src/main/resources/static/

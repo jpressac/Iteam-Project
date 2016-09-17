@@ -47,4 +47,8 @@ public interface MeetingService {
      * @return a list with all the meeting for the given user.
      */
     public List<Meeting> getMeetingByUser(String username);
+    
+    public String getMeetingInfo(String meetingId);
+    
+    public void updateMeetingInfo(String meetingId, String info);
 }
