@@ -157,9 +157,7 @@ class TeamSugestionForm extends React.Component {
     this.setState({values: opt});
     this.forceUpdate();
   }
-  goBack(){
-    window.history.back();
-  }
+  
   render() {
     var filterLabels = this.state.filters.map(function (filter, index) {
       return (
@@ -253,8 +251,8 @@ class TeamSugestionForm extends React.Component {
                       onClick={this.createMeeting.bind(this)}>
                 Create
               </button>
-              <button type="button" className="btn btn-primary" style={{marginTop:20}}
-                      onClick={this.goBack()}>
+              <button id="ok" type="button" className="btn btn-primary" style={{marginTop:20}}
+                >
                 OK
               </button>
             </div>
