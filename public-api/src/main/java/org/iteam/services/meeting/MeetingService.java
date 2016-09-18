@@ -53,4 +53,6 @@ public interface MeetingService {
 	public void updateMeetingInfo(String meetingId, String info);
 
 	public boolean updateMeeting(Meeting updatedMeeting);
+
+	public List<Meeting> getMeetingByTeamName(List<String> teamName);
 }

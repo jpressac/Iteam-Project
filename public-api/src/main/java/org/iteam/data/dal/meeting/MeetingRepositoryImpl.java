@@ -40,7 +40,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
 	private static final String IDEA_MEETING_ID_FIELD = "meetingId";
 	private static final String RANKING_ID_FIELD = "ranking";
-	private static final String MEETING_TEAM_USER_FIELD = "team.members";
+	private static final String MEETING_TEAM_NAME_FIELD = "teamName";
 	private static final String PROGRAMMED_DATE_FIELD = "programmedDate";
 	private static final int MAX_RETRIES = 5;
 
@@ -149,11 +149,11 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 		LOGGER.info("Getting meeting by user: '{}'", username);
 
 		SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING,
-				QueryBuilders.termQuery(MEETING_TEAM_USER_FIELD, username),
+				QueryBuilders.termQuery(MEETING_TEAM_NAME_FIELD, username),
 				SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD).order(SortOrder.ASC));
 
 		List<Meeting> meetingList = new ArrayList<>();
-
+		LOGGER.info("meetings: ", response.getHits().toString());
 		if (response != null) {
 			for (SearchHit hit : response.getHits()) {
 				LOGGER.debug("User '{}' meeting: '{}'", username, hit.getSourceAsString());
@@ -164,6 +164,33 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
 		LOGGER.debug("User '{}' list of meetings: '{}'", username, meetingList.toString());
 
+		return meetingList;
+	}
+
+	@Override
+	public List<Meeting> getMeetingByTeamName(List<String> teamName) {
+		List<Meeting> meetingList = new ArrayList<>();
+		if (teamName != null) {
+			for (String teamname : teamName) {
+				LOGGER.info("Getting meeting by team name: '{}'", teamname);
+
+				SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING,
+						QueryBuilders.termQuery(MEETING_TEAM_NAME_FIELD, teamname),
+						SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD).order(SortOrder.ASC));
+
+				LOGGER.info("meetings: ", response.getHits().toString());
+				if (response != null) {
+					for (SearchHit hit : response.getHits()) {
+						LOGGER.debug("Team Name '{}' meeting: '{}'", teamname, hit.getSourceAsString());
+						Meeting meeting = (Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class);
+						meetingList.add(meeting);
+					}
+				}
+
+				LOGGER.debug("Team name '{}' list of meetings: '{}'", teamname, meetingList.toString());
+
+			}
+		}
 		return meetingList;
 	}
 

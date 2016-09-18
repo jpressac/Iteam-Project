@@ -5,7 +5,7 @@ import {connect} from 'react-redux';
 import {List, ListItem} from 'react-toolbox/lib/list';
 import Dialog from 'react-toolbox/lib/dialog';
 import TimePicker from 'react-toolbox/lib/time_picker';
-import Input from 'react-toolbox/lib/input'
+import DatePicker from 'react-toolbox/lib/date_picker';
 
 let time = new Date();
 
@@ -19,25 +19,26 @@ const mapStateToProps = (state) => {
 
 
 class MymeetForm extends Component {
-  state = {time};
-  state2 = {date1: datetime};
-  state3 = {active: false};
 
   constructor(props) {
     super(props);
     this.state = {
+      time: time,
       data: {},
-      active: false
+      date: new Date(),
+      active: false,
+      active2: false
     }
   }
 
   handleChange = (time) => {
-    console.log('Expample Date: ' + time);
+    console.log('Expample Time: ' + time);
     this.setState({time: time});
   };
 
-  dateChange = (item, value) => {
-    this.setState({...this.state2, [item]: value});
+  dateChange = (date) => {
+    console.log('Expample Date: ' + date);
+    this.setState({date:date});
   };
 
   handleToggleDialog = () => {
@@ -59,6 +60,18 @@ class MymeetForm extends Component {
     console.log('Datos de user : ' + meetings);
     this.setState({data: meetings})
   }
+
+  isAdmin(owner){
+    if(this.props.user===owner){
+      return true
+    }
+    return false
+  }
+
+//  startMeeting(date){
+//    var today = new Date.now();
+//    if(today)
+//  }
 
   componentDidMount() {
     console.log('User: ' + this.props.user);
@@ -87,7 +100,7 @@ class MymeetForm extends Component {
               mt = Date.parse(meetingTime);
               dateTime = new Date(mt);
               console.log('meeting parse:' + mt);
-              fullDate = dateTime.getFullYear() + '/' + dateTime.getDay() + '/' + dateTime.getHours();
+              fullDate = dateTime.getFullYear()+ '/' + dateTime.getMonth() + '/' + dateTime.getDay() + ' ' + dateTime.getHours();
               return (
                 <div>
                   <ListItem
@@ -102,7 +115,7 @@ class MymeetForm extends Component {
                     onOverlayClick={this.handleToggle}
                     title={meetingmap[key].topic}>
                     <DatePicker label='Select date' sundayFirstDayOfWeek
-                                onChange={this.dateChange.bind(this, 'date1')}
+                                onChange={this.dateChange()}
                                 value={dateTime.getDate}/>
                     <TimePicker label='Select time'
                                 onChange={this.handleChange}

@@ -8,6 +8,8 @@ import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.Meeting;
 import org.iteam.services.meeting.MeetingService;
 import org.iteam.services.meeting.MeetingServiceImpl;
+import org.iteam.services.team.TeamService;
+import org.iteam.services.team.TeamServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MeetingController {
 
 	private MeetingService meetingServiceImpl;
+	private TeamService teamServiceImpl;
 
 	/**
 	 * Create a new meeting, given the meeting information.
@@ -87,7 +90,9 @@ public class MeetingController {
 	}
 
 	/**
-	 * Get a list of all meetings given a username
+	 * Get a list of all meetings given a username. First get all teams in which
+	 * the user is a member, then get all meetings which those teams are
+	 * included
 	 * 
 	 * @param username
 	 *            the username of the user
@@ -95,7 +100,8 @@ public class MeetingController {
 	 */
 	@RequestMapping(value = "/meeting/meetingbyuser")
 	public List<Meeting> getUserMeetings(@RequestParam(value = "username", required = true) String username) {
-		return meetingServiceImpl.getMeetingByUser(username);
+		List<String> teamName = teamServiceImpl.getTeamByUser(username);
+		return meetingServiceImpl.getMeetingByTeamName(teamName);
 	}
 
 	@RequestMapping(value = "/meeting/meetinginfo", method = RequestMethod.GET)
@@ -106,6 +112,11 @@ public class MeetingController {
 	@Autowired
 	private void setMeetingServiceImpl(MeetingServiceImpl meetingServiceImpl) {
 		this.meetingServiceImpl = meetingServiceImpl;
+	}
+
+	@Autowired
+	private void setTeamServiceImpl(TeamServiceImpl teamServiceImpl) {
+		this.teamServiceImpl = teamServiceImpl;
 	}
 
 }

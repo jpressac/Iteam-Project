@@ -43,6 +43,11 @@ public class MeetingServiceImpl implements MeetingService {
 		return meetingRepositoryImpl.getMeetingUser(username);
 	}
 
+	@Override
+	public List<Meeting> getMeetingByTeamName(List<String> teamName) {
+		return meetingRepositoryImpl.getMeetingByTeamName(teamName);
+	}
+
 	@Autowired
 	private void setMeetingRepositoryImpl(MeetingRepositoryImpl meetingRepositoryImpl) {
 		this.meetingRepositoryImpl = meetingRepositoryImpl;

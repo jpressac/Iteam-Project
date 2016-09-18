@@ -38,4 +38,6 @@ public interface MeetingRepository {
 	public String getMeetingInfo(String meetingId);
 
 	public boolean updateMeeting(Meeting updatedMeeting);
+
+	public List<Meeting> getMeetingByTeamName(List<String> teamName);
 }

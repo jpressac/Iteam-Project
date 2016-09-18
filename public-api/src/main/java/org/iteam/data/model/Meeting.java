@@ -12,7 +12,7 @@ public class Meeting {
 	// private String creationDate;
 	private String programmedDate;
 	private String ownerName;
-	private Team teamAssistant;
+	private String teamName;
 	private String description;
 
 	public String getOwnerName() {
@@ -47,12 +47,12 @@ public class Meeting {
 		this.meetingId = meetingId;
 	}
 
-	public Team getTeamAssistant() {
-		return teamAssistant;
+	public String getTeamName() {
+		return teamName;
 	}
 
-	public void setTeamAssistant(Team teamAssistant) {
-		this.teamAssistant = teamAssistant;
+	public void setTeamName(String teamName) {
+		this.teamName = teamName;
 	}
 
 	public String getDescription() {
