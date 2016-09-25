@@ -10,14 +10,14 @@ import Dialog from 'react-toolbox/lib/dialog';
 
 
 var time = new Date();
-
-const datetime = new Date();
+var programDate = new Date();
+var datetime = new Date();
 const min_datetime = new Date(new Date(datetime).setDate(datetime.getDate()));
 datetime.setFullYear(datetime.getFullYear());
 datetime.setMonth(datetime.getMonth());
 
-datetime.setHours(17);
-datetime.setMinutes(28);
+datetime.setHours(time.getHours());
+datetime.setMinutes(time.getMinutes());
 
 const mapDispatchToProps = dispatch => ({
   onClick: () => dispatch(push('/' + PATHS.MENULOGGEDIN.NEWTEAM))
@@ -32,7 +32,7 @@ const mapStateToProps = (state) => {
 };
 class MeetingView extends Component {
   state1 = {time};
-  state2 = {date1: datetime};
+  state2 = {datetime: datetime};
   //state3 = { active: false  };
 
 
@@ -54,13 +54,27 @@ class MeetingView extends Component {
   //   { label: "OK", onClick: this.handleToggle.bind(this) }
   // ];
 
-  dateChange = (item, value) => {
-    this.setState({...this.state2, [item]: value});
-  };
-
   handleChange = (time) => {
 
-        this.setState({time: time});
+    this.setState({time: time});
+    programDate.setHours(time.getHours());
+    programDate.setMinutes(time.getMinutes());
+    console.log('time ' + datetime);
+
+  };
+
+  dateChange = (datetime) => {
+    this.setState({ datetime: datetime });
+   programDate.setFullYear(datetime.getFullYear());
+    programDate.setMonth(datetime.getMonth());
+    programDate.setDate(datetime.getDate());
+
+
+    programDate.setHours(this.state.time.getHours());
+    programDate.setMinutes(this.state.time.getMinutes());
+
+    console.log('dateTime ' + programDate  );
+
 
   };
 
@@ -87,54 +101,42 @@ class MeetingView extends Component {
   teamChanged(event){
     let actualTeam = event.target.value;
     this.setState({value: actualTeam});
-    console.log(event.target.value);
+
   }
 
-//   validateTeam= () =>{
-//     let e = document.getElementById("inputTeam");
-//     let strUser = e.options[e.selectedIndex].value;
-//     console.log(strUser);
-//
-//     let strUser1 = e.options[e.selectedIndex].text;
-//     console.log(strUser1);
-//     if(strUser==null)
-//     {
-//       alert("Please select a Team or create a new one");
-//     }
-//     else {
-//       alert("Success !! You have selected Course : " + strUser1); ;
-//     }
-// }
-  dateTimeProgrammed(date,time){
-    let IsoString =date.getFullYear() + '-'
-      + pad(date.getMonth() + 1) + '-'
-      + pad(date.getDate()) + 'T'
-      + pad(time.getHours()) + ':'
-      + pad(time.getMinutes()) + ':'
-      + pad(time.getSeconds());
-    if(date.getTimezoneOffset() == 0) IsoString += 'Z';
+  dateTimeProgrammed(datetime)
+    {
 
+      function pad(n) { return n < 10 ? '0' + n : n }
+    let IsoString = datetime.getFullYear() + '-'
+      + pad(datetime.getMonth() + 1) + '-'
+      + pad(datetime.getDate()) + 'T'
+      + pad(datetime.getHours()-3) + ':'
+      + pad(datetime.getMinutes()) + ':'
+      + pad(datetime.getSeconds());
+    if(datetime.getTimezoneOffset() == 0) IsoString += 'Z';
+      programDate = IsoString;
     return IsoString;
-  }
+  };
 
   createMeeting()
   {
-    console.log(dateTimeProgrammed(datetime,time));
+    console.log(programDate);
+  //this.dateTimeProgrammed(programDate);
     let e = document.getElementById("inputTeam");
     let teamName = e.options[e.selectedIndex].text;
     axios.post('http://localhost:8080/meeting/create', {
       topic: this.refs.name.value,
       ownerName:this.props.user ,
-      programmedDate:this.dateTimeProgrammed(datetime,time).bind(this),
+      programmedDate:programDate,
       teamName:teamName,
       description: this.refs.description.value
+
     }).then(function (response) {
       console.log(response.status);
-      console.log(dateTimeProgrammed(datetime,time));
-      this.setState({message: '¡Your meeting was successfully created!'});
-      this.refs.mymodal.openModal();
-    }.bind(this)).catch(function (response) {
+               }.bind(this)).catch(function (response) {
       console.log(response.status);
+
   });
   }
 
@@ -193,7 +195,7 @@ class MeetingView extends Component {
                       className="	glyphicon glyphicon-calendar"></i></label>
                     <div className={"col-md-3 col-sm-3 col-xs-6 "}>
                       <DatePicker label='Select date' sundayFirstDayOfWeek
-                      onChange={this.dateChange.bind(this, 'date1')}  minDate={min_datetime} value={this.state.date1} />
+                      onChange={this.dateChange}  minDate={min_datetime} value={this.state.datetime} />
 
                     </div>
                   </div>
