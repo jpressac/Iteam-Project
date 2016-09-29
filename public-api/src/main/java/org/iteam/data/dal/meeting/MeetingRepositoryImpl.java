@@ -175,20 +175,15 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 				LOGGER.info("Getting meeting by team name: '{}'", teamname);
 
 				SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING,
-						QueryBuilders.termQuery(MEETING_TEAM_NAME_FIELD, teamname),
-						SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD).order(SortOrder.ASC));
+						QueryBuilders.termQuery(MEETING_TEAM_NAME_FIELD, teamname));
 
-				LOGGER.info("meetings: ", response.getHits().toString());
 				if (response != null) {
 					for (SearchHit hit : response.getHits()) {
-						LOGGER.debug("Team Name '{}' meeting: '{}'", teamname, hit.getSourceAsString());
 						Meeting meeting = (Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class);
 						meetingList.add(meeting);
+						LOGGER.info("Meetings: " + meeting.getTopic());
 					}
 				}
-
-				LOGGER.debug("Team name '{}' list of meetings: '{}'", teamname, meetingList.toString());
-
 			}
 		}
 		return meetingList;

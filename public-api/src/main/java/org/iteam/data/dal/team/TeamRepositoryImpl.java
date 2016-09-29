@@ -1,6 +1,7 @@
 package org.iteam.data.dal.team;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -22,6 +23,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+
 @Repository
 public class TeamRepositoryImpl implements TeamRepository {
 
@@ -36,6 +39,12 @@ public class TeamRepositoryImpl implements TeamRepository {
 	@Override
 	public boolean putTeam(Team team) {
 
+		// adds creation Date time ISO8601 format
+		// adds team owner to team member list
+		team.setCreationDate(new ISO8601DateFormat().format(new Date()));
+		List<String> members = team.getMembers();
+		members.add(team.getOwnerName());
+		team.setMembers(members);
 		String data = JSONUtils.ObjectToJSON(team);
 
 		IndexResponse response = elasticsearchClient.insertData(data, StringUtilities.INDEX_TEAM,
@@ -126,21 +135,19 @@ public class TeamRepositoryImpl implements TeamRepository {
 	public List<String> getTeamByUser(String username) {
 		LOGGER.info("Getting teams by user: '{}'", username);
 
-		SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_MEETING,
+		SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_TEAM,
 				QueryBuilders.termQuery(TEAM_MEMBERS_FIELD, username));
 
 		List<String> teamList = new ArrayList<>();
-		LOGGER.info("teams: ", response.toString());
 
 		if (response != null) {
 			for (SearchHit hit : response.getHits()) {
 				LOGGER.debug("User '{}' teams: '{}'", username, hit.getSourceAsString());
 				Team team = (Team) JSONUtils.JSONToObject(hit.getSourceAsString(), Team.class);
 				teamList.add(team.getName());
+				LOGGER.info("teams: " + team.getName());
 			}
 		}
-		LOGGER.debug("User '{}' list of teams: '{}'", username, teamList.toString());
-
 		return teamList;
 
 	}
