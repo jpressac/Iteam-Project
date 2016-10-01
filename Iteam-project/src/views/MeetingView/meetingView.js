@@ -45,14 +45,6 @@ class MeetingView extends Component {
     }
   };
 
-  // handleToggle = () => {
-  //
-  //     this.setState({active: !this.state3.active});
-  // };
-  //
-  // actions = [
-  //   { label: "OK", onClick: this.handleToggle.bind(this) }
-  // ];
 
   dateChange = (item, value) => {
     this.setState({...this.state2, [item]: value});
@@ -90,21 +82,7 @@ class MeetingView extends Component {
     console.log(event.target.value);
   }
 
-//   validateTeam= () =>{
-//     let e = document.getElementById("inputTeam");
-//     let strUser = e.options[e.selectedIndex].value;
-//     console.log(strUser);
-//
-//     let strUser1 = e.options[e.selectedIndex].text;
-//     console.log(strUser1);
-//     if(strUser==null)
-//     {
-//       alert("Please select a Team or create a new one");
-//     }
-//     else {
-//       alert("Success !! You have selected Course : " + strUser1); ;
-//     }
-// }
+
   dateTimeProgrammed(date,time){
     let IsoString =date.getFullYear() + '-'
       + pad(date.getMonth() + 1) + '-'
