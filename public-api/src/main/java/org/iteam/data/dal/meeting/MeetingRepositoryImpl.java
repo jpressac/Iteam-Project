@@ -5,10 +5,14 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
+import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.bulk.BulkResponse;
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -21,6 +25,7 @@ import org.iteam.data.dal.client.ElasticsearchClientImpl;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.Meeting;
 import org.iteam.services.utils.JSONUtils;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,14 +41,17 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
     private static final String IDEA_MEETING_ID_FIELD = "meetingId";
     private static final String RANKING_ID_FIELD = "ranking";
-    private static final String MEETING_TEAM_USER_FIELD = "team.members";
+    private static final String MEETING_TEAM_NAME_FIELD = "teamName";
     private static final String PROGRAMMED_DATE_FIELD = "programmedDate";
+    private static final int MAX_RETRIES = 5;
 
     @Override
     public boolean createMeeting(Meeting meeting) {
         LOGGER.info("Creating new meeting");
         LOGGER.debug("Meeting: '{}'", meeting.toString());
 
+        meeting.setMeetingId(UUID.randomUUID().toString());
+        meeting.setCreationDate(DateTime.now().getMillis());
         String data = JSONUtils.ObjectToJSON(meeting);
 
         IndexResponse response = elasticsearchClientImpl.insertData(data, StringUtilities.INDEX_MEETING,
@@ -55,6 +63,23 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         }
         return true;
 
+    }
+
+    @Override
+    public boolean updateMeeting(Meeting updatedMeeting) {
+        LOGGER.info("Updating meeting");
+        LOGGER.debug("Meeting: '{}'", updatedMeeting.toString());
+
+        String data = JSONUtils.ObjectToJSON(updatedMeeting);
+
+        UpdateResponse response = elasticsearchClientImpl.modifyData(data, StringUtilities.INDEX_MEETING,
+                StringUtilities.INDEX_TYPE_MEETING, updatedMeeting.getMeetingId());
+
+        if(!response.isCreated()) {
+            LOGGER.error("The meeting couldn't be updated - Meeting: '{}'", updatedMeeting.toString());
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -126,11 +151,11 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         LOGGER.info("Getting meeting by user: '{}'", username);
 
         SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING,
-                QueryBuilders.termQuery(MEETING_TEAM_USER_FIELD, username),
+                QueryBuilders.termQuery(MEETING_TEAM_NAME_FIELD, username),
                 SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD).order(SortOrder.ASC));
 
         List<Meeting> meetingList = new ArrayList<>();
-
+        LOGGER.info("meetings: ", response.getHits().toString());
         if(response != null) {
             for(SearchHit hit : response.getHits()) {
                 LOGGER.debug("User '{}' meeting: '{}'", username, hit.getSourceAsString());
@@ -144,6 +169,59 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         return meetingList;
     }
 
+    @Override
+    public List<Meeting> getMeetingByTeamName(List<String> teamName) {
+        List<Meeting> meetingList = new ArrayList<>();
+        LOGGER.info("Getting meeting for teams: '{}'", teamName.toString());
+
+        SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING,
+                QueryBuilders.termsQuery(MEETING_TEAM_NAME_FIELD, teamName));
+
+        long hits = response.getHits().getTotalHits();
+
+        if(hits > 0) {
+            for(SearchHit hit : response.getHits()) {
+                Meeting meeting = (Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class);
+                meetingList.add(meeting);
+                LOGGER.debug("Meetings: " + meeting.getTopic());
+            }
+        }
+
+        LOGGER.info("Successfully retrrieve meetings: '{}'", hits);
+
+        return meetingList;
+    }
+
+    @Override
+    public void saveMeetingInfo(String data, String meetingId) {
+        int count = 0;
+        saveInfoRetry(count, data, meetingId);
+    }
+
+    private void saveInfoRetry(int count, String data, String meetingId) {
+        try {
+            elasticsearchClientImpl.insertData(data, StringUtilities.INDEX_MEETING_INFO,
+                    StringUtilities.INDEX_TYPE_MEETING_INFO, meetingId);
+            LOGGER.info("Meeting info updated - Meeting: '{}'", meetingId);
+        } catch (ElasticsearchException e) {
+            LOGGER.error("Failed to update meeting info - Retry '{}'", count);
+            if(MAX_RETRIES > count) {
+                saveInfoRetry(count += 1, data, meetingId);
+            }
+        }
+    }
+
+    @Override
+    public String getMeetingInfo(String meetingId) {
+
+        GetResponse response = elasticsearchClientImpl.getDocument(StringUtilities.INDEX_MEETING_INFO,
+                StringUtilities.INDEX_TYPE_MEETING_INFO, meetingId);
+        if(response.isExists()) {
+            return response.getSourceAsString();
+        }
+        return null;
+    }
+
     @Autowired
     private void setElasticsearchClientImpl(ElasticsearchClientImpl elasticsearchClientImpl) {
         this.elasticsearchClientImpl = elasticsearchClientImpl;
@@ -153,4 +231,5 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     private void setConfiguration(ExternalConfigurationProperties configuration) {
         this.configuration = configuration;
     }
+
 }

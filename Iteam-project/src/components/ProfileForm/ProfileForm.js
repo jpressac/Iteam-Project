@@ -1,6 +1,4 @@
 import React, {Component} from 'react'
-import TextBox from '../Form/TextBox/TextBox.js'
-import {Form, FormGroup, Button, FormControl, ControlLabel, Col} from 'react-bootstrap'
 import classes from './ProfileForm.scss'
 import profile from '../Header/image/profile.jpg'
 import {getUserData} from '../../redux/modules/ProfileData'

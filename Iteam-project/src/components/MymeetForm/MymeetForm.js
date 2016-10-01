@@ -1,74 +1,141 @@
-import React, {Component} from 'react'
-import TextBox from '../Form/TextBox/TextBox.js'
-import {Form, FormGroup, FormControl, ControlLabel, Col} from 'react-bootstrap'
-import classes from './MymeetForm.scss'
-import {getUserData} from '../../redux/modules/ProfileData'
-import axios from 'axios'
-import { List, ListItem, ListSubHeader, ListDivider, ListCheckbox } from 'react-toolbox/lib/list'
+import React, {Component, PropTypes} from "react";
+import classes from './MymeetForm.scss';
+import axios from 'axios';
+import {connect} from 'react-redux';
+import {List, ListItem} from 'react-toolbox/lib/list';
+import Dialog from 'react-toolbox/lib/dialog';
+import TimePicker from 'react-toolbox/lib/time_picker';
+import DatePicker from 'react-toolbox/lib/date_picker';
+
+let time = new Date();
+
+const mapStateToProps = (state) => {
+  if (state.loginUser !== null) {
+    return {
+      user: state.loginUser.user.name
+    }
+  }
+};
 
 
-class MymeetForm extends React.Component {
+class MymeetForm extends Component {
 
-    constructor(props){
-      super(props);
-      this.state= {
-        data: []
-        }
+  constructor(props) {
+    super(props);
+    this.state = {
+      time: time,
+      data: {},
+      date: new Date(),
+      active: false,
+      active2: false
+    }
+  }
 
-      }
-      fillfields() {
-        let data= this.state.data;
-        this.refs.meet.value= data.ownerName;
+  handleChange = (time) => {
+    console.log('Expample Time: ' + time);
+    this.setState({time: time});
+  };
 
+  dateChange = (date) => {
+    console.log('Expample Date: ' + date);
+    this.setState({date:date});
+  };
 
-      }
-      componentDidMount(){
-        getMeetingData().then( (response) => {
-                 axios.get('http://localhost:8080//meeting/meetingbyuser'
-                               ).then(function(response){
-                               this.setState({ data: response.data} );
-                               this.fillfields();
-                         }.bind(this)).catch(function(response){
-                         console.log(response.error);
-                       });
-          });
-          }
-
-
-  render(){
-    return(
-  <div className={"container"}>
-
-              <div className={classes.label}  >
-                    <label>MY MEETINGS</label>
-            </div>
+  handleToggleDialog = () => {
+    this.setState({active: !this.state.active});
+  };
+  handleToggleDateTime = () => {
+    this.setState({active: !this.state3.active});
+  };
 
 
-<input type="text" className="form-control" id="inputname" ref="meet"  style={{marginLeft:10, marginTop:10}}></input>
-              /*<List selectable ripple>
-       <ListSubHeader caption='Explore characters' />
-       <ListItem
+  actions = [
+    {label: "Cancel", onClick: this.handleToggleDialog},
+    {label: "Save", onClick: this.handleToggleDialog},
+    {label: "OK", onClick: this.handleToggleDateTime}
+  ];
 
-         caption='Dr. Manhattan'
-         legend="Jonathan 'Jon' Osterman"
-         rightIcon='star'
-       />
-       <ListItem
 
-         caption='Ozymandias'
-         legend='Adrian Veidt'
-         rightIcon='star'
-       />
-       <ListItem
+  fillfields(meetings) {
+    console.log('Datos de user : ' + meetings);
+    this.setState({data: meetings})
+  }
 
-         caption='Rorschach'
-         legend='Walter Joseph Kovacs'
-         rightIcon='star'
-       />
+  isAdmin(owner){
+    if(this.props.user===owner){
+      return true
+    }
+    return false
+  }
 
-     </List>*/
-</div>
+//  startMeeting(date){
+//    var today = new Date.now();
+//    if(today)
+//  }
 
-)};
+  componentDidMount() {
+    console.log('User: ' + this.props.user);
+    axios.get('http://localhost:8080/meeting/meetingbyuser?username=' + this.props.user
+    ).then(function (response) {
+      this.fillfields(response.data)
+    }.bind(this));
+  }
+
+
+  render() {
+    let meetingmap = this.state.data;
+    let meetingTime = new Date;
+    let mt = new Date;
+    let dateTime = new Date;
+    let fullDate;
+    return (
+      <div className={"container"}>
+        <div className={classes.label}>
+          <label>MY MEETINGS</label>
+        </div>
+        <List selectable ripple>
+          {Object.keys(meetingmap).map((key) => {
+              meetingTime = meetingmap[key].programmedDate;
+              console.log('meeting:' + meetingTime);
+              mt = Date.parse(meetingTime);
+              dateTime = new Date(mt);
+              console.log('meeting parse:' + mt);
+              fullDate = dateTime.getFullYear()+ '/' + dateTime.getMonth() + '/' + dateTime.getDay() + ' ' + dateTime.getHours();
+              return (
+                <div>
+                  <ListItem
+                    caption={meetingmap[key].topic}
+                    legend={fullDate}
+                    onClick={this.handleToggle}>
+                  </ListItem>
+                  <Dialog
+                    actions={this.actions}
+                    active={this.state.active}
+                    onEscKeyDown={this.handleToggle}
+                    onOverlayClick={this.handleToggle}
+                    title={meetingmap[key].topic}>
+                    <DatePicker label='Select date' sundayFirstDayOfWeek
+                                onChange={this.dateChange()}
+                                value={dateTime.getDate}/>
+                    <TimePicker label='Select time'
+                                onChange={this.handleChange}
+                                value={dateTime.getHours()}/>
+                  </Dialog>
+                </div>
+              )
+                ;
+            }
+          )}
+        </List>
+      </div>
+
+    )
+  };
 }
-export default MymeetForm
+
+
+MymeetForm.propTypes = {
+  user: PropTypes.any
+};
+
+export default connect(mapStateToProps)(MymeetForm);

@@ -1,66 +1,81 @@
 package org.iteam.services.meeting;
 
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
-import javax.annotation.PostConstruct;
 
 import org.iteam.data.dal.meeting.MeetingRepository;
 import org.iteam.data.dal.meeting.MeetingRepositoryImpl;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.Meeting;
+import org.iteam.exceptions.MeetingInfoNotFoundException;
+import org.iteam.services.team.TeamService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MeetingServiceImpl implements MeetingService {
 
-	private MeetingRepository meetingRepositoryImpl;
+    private static final Logger LOGGER = LoggerFactory.getLogger(MeetingServiceImpl.class);
 
-	private ConcurrentMap<String, String> meetingInfo;
+    private MeetingRepository meetingRepositoryImpl;
+    private TeamService teamServiceImpl;
 
-	@PostConstruct
-	private void initialize() {
-		meetingInfo = new ConcurrentHashMap<>();
-	}
+    @Override
+    public boolean createMeeting(Meeting meeting) {
+        return meetingRepositoryImpl.createMeeting(meeting);
+    }
 
-	@Override
-	public boolean createMeeting(Meeting meeting) {
-		return meetingRepositoryImpl.createMeeting(meeting);
-	}
+    @Override
+    public boolean updateMeeting(Meeting updatedMeeting) {
+        return meetingRepositoryImpl.updateMeeting(updatedMeeting);
+    }
 
-	@Override
-	public boolean savedIdeas(IdeasDTO ideas) {
-		return meetingRepositoryImpl.saveIdeas(ideas);
-	}
+    @Override
+    public boolean savedIdeas(IdeasDTO ideas) {
+        return meetingRepositoryImpl.saveIdeas(ideas);
+    }
 
-	@Override
-	public void generateReport(String meetingId) {
-		meetingRepositoryImpl.generateBasicReport(meetingId);
-	}
+    @Override
+    public void generateReport(String meetingId) {
+        meetingRepositoryImpl.generateBasicReport(meetingId);
+    }
 
-	@Override
-	public List<Meeting> getMeetingByUser(String username) {
-		return meetingRepositoryImpl.getMeetingUser(username);
-	}
+    @Override
+    public List<Meeting> getMeetingByUser(String username) {
+        return meetingRepositoryImpl.getMeetingUser(username);
+    }
 
-	@Autowired
-	private void setMeetingRepositoryImpl(MeetingRepositoryImpl meetingRepositoryImpl) {
-		this.meetingRepositoryImpl = meetingRepositoryImpl;
-	}
+    @Override
+    public List<Meeting> getMeetingByTeamName(String username) {
+        List<String> teamName = teamServiceImpl.getTeamByUser(username);
+        return meetingRepositoryImpl.getMeetingByTeamName(teamName);
+    }
 
-	@Override
-	public String getMeetingInfo(String meetingId) {
-		synchronized (meetingInfo) {
-			return meetingInfo.get(meetingId);
-		}
-	}
+    @Override
+    public String getMeetingInfo(String meetingId) {
 
-	@Override
-	public void updateMeetingInfo(String meetingId, String info) {
-		synchronized (meetingInfo) {
-			meetingInfo.put(meetingId, info);
-		}
-	}
+        String result = meetingRepositoryImpl.getMeetingInfo(meetingId);
+        if(result == null) {
+            LOGGER.error("Error when retrieving meeting info of meeting '{}'", meetingId);
+            throw new MeetingInfoNotFoundException("Error when retrieving meeting info");
+        }
+        return result;
+
+    }
+
+    @Override
+    public void updateMeetingInfo(String meetingId, String info) {
+        meetingRepositoryImpl.saveMeetingInfo(info, meetingId);
+    }
+
+    @Autowired
+    private void setMeetingRepositoryImpl(MeetingRepositoryImpl meetingRepositoryImpl) {
+        this.meetingRepositoryImpl = meetingRepositoryImpl;
+    }
+
+    @Autowired
+    private void setTeamServiceImpl(TeamService teamServiceImpl) {
+        this.teamServiceImpl = teamServiceImpl;
+    }
 }

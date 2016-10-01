@@ -1,8 +1,17 @@
 import React, {PropTypes} from 'react';
-import classes from './TeamSugestionForm.scss'
-import axios from 'axios'
-import BootstrapModal from '../BootstrapModal'
+import classes from './TeamSugestionForm.scss';
+import axios from 'axios';
+import BootstrapModal from '../BootstrapModal';
+import {connect} from 'react-redux';
 
+
+const mapStateToProps = (state) => {
+  if (state.loginUser !== null) {
+    return {
+      user: state.loginUser.user.name
+    }
+  }
+};
 
 class TeamSugestionForm extends React.Component {
   constructor(props) {
@@ -67,7 +76,7 @@ class TeamSugestionForm extends React.Component {
     }
     if ((selected.length > 0) && (this.refs.teamName.value !== '')) {
       axios.post('http://localhost:8080/team/create', {
-        ownerName: "valran",
+        ownerName: this.props.user,
         name: this.refs.teamName.value,
         members: selected
       }).then(function (response) {
@@ -251,6 +260,10 @@ class TeamSugestionForm extends React.Component {
                       onClick={this.createMeeting.bind(this)}>
                 Create
               </button>
+              <button id="ok" type="button" className="btn btn-primary" style={{marginTop:20}}
+                >
+                OK
+              </button>
             </div>
           </div>
         </div>
@@ -258,4 +271,10 @@ class TeamSugestionForm extends React.Component {
       </form>);
   }
 }
-export default TeamSugestionForm
+
+TeamSugestionForm.propTypes = {
+  user: PropTypes.any
+};
+
+
+export default connect(mapStateToProps)(TeamSugestionForm);
