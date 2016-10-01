@@ -7,64 +7,72 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Meeting {
 
-	private String topic;
-	private String meetingId;
-	// private String creationDate;
-	private String programmedDate;
-	private String ownerName;
-	private String teamName;
-	private String description;
+    private String topic;
+    private String meetingId;
+    private Long creationDate;
+    private Long programmedDate;
+    private String ownerName;
+    private String teamName;
+    private String description;
 
-	public String getOwnerName() {
-		return ownerName;
-	}
+    public String getOwnerName() {
+        return ownerName;
+    }
 
-	public String getProgrammedDate() {
-		return programmedDate;
-	}
+    public Long getProgrammedDate() {
+        return programmedDate;
+    }
 
-	public void setProgrammedDate(String programmedDate) {
-		this.programmedDate = programmedDate;
-	}
+    public Long getCreationDate() {
+        return creationDate;
+    }
 
-	public void setOwnerName(String ownerName) {
-		this.ownerName = ownerName;
-	}
+    public void setCreationDate(Long creationDate) {
+        this.creationDate = creationDate;
+    }
 
-	public String getTopic() {
-		return topic;
-	}
+    public void setProgrammedDate(Long programmedDate) {
+        this.programmedDate = programmedDate;
+    }
 
-	public void setTopic(String topic) {
-		this.topic = topic;
-	}
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
+    }
 
-	public String getMeetingId() {
-		return meetingId;
-	}
+    public String getTopic() {
+        return topic;
+    }
 
-	public void setMeetingId(String meetingId) {
-		this.meetingId = meetingId;
-	}
+    public void setTopic(String topic) {
+        this.topic = topic;
+    }
 
-	public String getTeamName() {
-		return teamName;
-	}
+    public String getMeetingId() {
+        return meetingId;
+    }
 
-	public void setTeamName(String teamName) {
-		this.teamName = teamName;
-	}
+    public void setMeetingId(String meetingId) {
+        this.meetingId = meetingId;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getTeamName() {
+        return teamName;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setTeamName(String teamName) {
+        this.teamName = teamName;
+    }
 
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
-	}
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
 }

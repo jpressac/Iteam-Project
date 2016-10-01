@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import org.thymeleaf.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 
 @Repository
 public class ElasticsearchClientImpl implements ElasticsearchClient {
@@ -104,19 +104,19 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
 
         search.setIndices(index);
 
-        if(queryBuilder != null) {
+        if(!ObjectUtils.isEmpty(queryBuilder)) {
             search.setQuery(queryBuilder);
         }
 
-        if(aggregationBuilder != null) {
+        if(!ObjectUtils.isEmpty(aggregationBuilder)) {
             search.addAggregation(aggregationBuilder);
         }
 
-        if(size != null) {
+        if(!ObjectUtils.isEmpty(size)) {
             search.setSize(size);
         }
 
-        if(sort != null) {
+        if(!ObjectUtils.isEmpty(sort)) {
             search.addSort(sort);
         }
 
@@ -155,7 +155,7 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
         IndexRequestBuilder indexRequest = client.prepareIndex();
         indexRequest.setIndex(index).setType(type);
 
-        if(id != null || !StringUtils.isEmpty(id)) {
+        if(!ObjectUtils.isEmpty(id)) {
             indexRequest.setId(id);
         }
 
