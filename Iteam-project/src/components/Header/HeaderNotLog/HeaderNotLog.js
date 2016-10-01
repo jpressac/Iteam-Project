@@ -1,18 +1,15 @@
 import React, {Component,PropTypes} from 'react';
 import { IndexLink, Link } from 'react-router'
 import classes from './HeaderNotLog.scss'
-import { Button } from 'react-bootstrap';
-import logo from '../image/logo.png'
 import { PATHS } from '../../../constants/routes'
 
 class HeaderNotLog extends React.Component {
   render(){
     return(
+      <header>
       <div className={"navbar navbar-default navbar-static-top"} role="navigation">
       <div className="container">
        <div className={"navbar-header", classes.header}>
-             <a className="navbar-brand" href="#">
-             <img src={logo} className={classes.logo} alt="Iteam"/></a>
 
            <button type="button" className="navbar-toggle navbar-inverse" data-toggle="collapse" data-target=".navHeaderCollapse">
            <span class="icon-bar"></span>
@@ -44,7 +41,7 @@ class HeaderNotLog extends React.Component {
 
        </div>
 
-
+</header>
 
 );
 };
