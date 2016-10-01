@@ -1,22 +1,25 @@
-//.appBar{
-//  background-color: white;
-//}
+.appBar{
+  background-color: white;
+}
 .logo{
   height: 65px;
   width:150px;
   align-items: center;
 
 }
+.div{
+  display: inline-block;
+}
 .menus{
   color: #900C3F;
   //  border-radius: 30px;
   //border-style: dotted;
   //border-color:white;
-  margin-left: 20px;
-  padding:20px;
+  margin-left: 10px;
+  padding:10px;
 
   //background-color: #fbdb9d;
-  font-size: 20px;
+  font-size: 15px;
 
 }
 .menus:hover
