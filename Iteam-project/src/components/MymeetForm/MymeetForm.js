@@ -72,8 +72,7 @@ class MymeetForm extends Component {
   fillfields(meetings) {
     debugger;
     this.setState({meetings: meetings});
-    let meetmap = this.state.meetings;
-    console.log('Datos de user : ' + meetmap);
+    /*let meetmap = this.state.meetings;
     {
       Object.keys(meetmap).map((key) => {
         meetmap[meetmap[key].meetingId] = {
@@ -82,10 +81,12 @@ class MymeetForm extends Component {
           owner: meetmap[key].ownerName,
           team: meetmap[key].teamName,
           description: meetmap[key].description
-        }
+        };
+        console.log('meeting count:' + meetmap[key].topic)
       });
     }
-    this.setState({meetings: meetmap});
+    this.setState({meetings: meetmap});*/
+    console.log('after: ' + this.state.meetings)
   }
 
   isAdmin(owner) {
@@ -118,23 +119,20 @@ class MymeetForm extends Component {
 
 
   render() {
-    let meetingmap = this.state.meetings;
+    let meetmap = this.state.meetings;
     let meetingTime = new Date;
-    let mt = new Date;
-    let dateTime = new Date;
-    let fullDate;
+
     return (
         <List selectedable ripple>
           <ListSubHeader caption='MY MEETINGS' />
-          {Object.keys(meetingmap).map((key) => {
-              meetingTime = meetingmap[key].programmedDate;
+          {Object.keys(meetmap).map((key) => {
+              meetingTime = meetmap[key].programmedDate;
               var renderDateTime = this.renderDate(meetingTime);
               console.log('render datetime: ' + renderDateTime);
-
               return (
                 <div>
                   <ListItem
-                    caption={meetingmap[key].topic}
+                    caption={meetmap[key].topic}
                     legend={renderDateTime}
                     leftIcon='send'
                     onClick={this.handleToggleDialog}>
@@ -146,7 +144,7 @@ class MymeetForm extends Component {
                       active={this.state.active}
                       onEscKeyDown={this.handleToggleDialog}
                       onOverlayClick={this.handleToggleDialog}
-                      title={meetingmap[key].topic}>
+                      title={meetmap[key].topic}>
                       <DatePicker label='Select date' sundayFirstDayOfWeek
                                   value={new Date(meetingTime)}/>
                       <TimePicker label='Select time'
