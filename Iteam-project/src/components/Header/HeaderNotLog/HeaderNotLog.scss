@@ -1,20 +1,6 @@
-.wrapper {
-  font-weight: bold;
-  //background-color:hsla(0, 100%,100%, 0.6);
+.appBar{
   background-color: white;
-  width: 100%;
-    height:90px;
-    position:fixed;
-    top: 0px;
-    z-index: 1;
-
 }
-.header{
-  height: 20px;
-
-}
-
-
 .logo{
   height: 65px;
   width:150px;
@@ -28,16 +14,19 @@
   //border-color:white;
 margin-left: 20px;
 padding:20px;
-margin:auto;
+
 //background-color: #fbdb9d;
 font-size: 20px;
 
 }
 .menus:hover
 {
-  color: #900C3F;
+  color: white;
 //  border-radius: 30px;
 //  border-style: dotted;
 //  border-color:#ffffcc;
 
+}
+.menus:active{
+  color: #900C3F;
 }
