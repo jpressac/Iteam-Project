@@ -2,10 +2,12 @@ import React, {Component, PropTypes} from "react";
 import classes from './MymeetForm.scss';
 import axios from 'axios';
 import {connect} from 'react-redux';
-import {List, ListItem} from 'react-toolbox/lib/list';
+import {List, ListItem, ListDivider, ListSubHeader} from 'react-toolbox/lib/list';
 import Dialog from 'react-toolbox/lib/dialog';
 import TimePicker from 'react-toolbox/lib/time_picker';
 import DatePicker from 'react-toolbox/lib/date_picker';
+import {push} from 'react-router-redux'
+import {PATHS} from '../../constants/routes'
 
 
 const mapStateToProps = (state) => {
@@ -15,6 +17,10 @@ const mapStateToProps = (state) => {
     }
   }
 };
+
+const mapDispatchToProps = (dispatch) => ({
+  onClick: () => dispatch(push('/' + PATHS.MENULOGGEDIN.BOARD))
+});
 
 
 class MymeetForm extends Component {
@@ -58,7 +64,8 @@ class MymeetForm extends Component {
 
   actions = [
     {label: "Cancel", onClick: this.handleToggleDialog},
-    {label: "Save", onClick: this.handleToggleDialog}
+    {label: "Save", onClick: this.handleToggleDialog},
+    {label: "Join", onClick: this.props.onClick}
   ];
 
 
@@ -85,13 +92,6 @@ class MymeetForm extends Component {
     return this.props.user === owner;
   }
 
-  addZero(i) {
-    if (i < 10) {
-      i = "0" + i;
-    }
-    return i;
-  }
-
   renderDate(meetingTime) {
     let options = {
       year: 'numeric', month: 'numeric', day: 'numeric',
@@ -101,7 +101,7 @@ class MymeetForm extends Component {
 
     return new Intl.DateTimeFormat("en-US", options).format(new Date(meetingTime))
   }
-  
+
 
 //  startMeeting(date){
 //    var today = new Date.now();
@@ -124,15 +124,9 @@ class MymeetForm extends Component {
     let dateTime = new Date;
     let fullDate;
     return (
-      <div className={"container"}>
-        <div className={classes.label}>
-          <label>MY MEETINGS</label>
-        </div>
-        <List selectable ripple>
+        <List selectedable ripple>
+          <ListSubHeader caption='MY MEETINGS' />
           {Object.keys(meetingmap).map((key) => {
-              console.log('meeting id:' + meetingmap[key].meetingId);
-              console.log('meeting key:' + key);
-
               meetingTime = meetingmap[key].programmedDate;
               var renderDateTime = this.renderDate(meetingTime);
               console.log('render datetime: ' + renderDateTime);
@@ -142,8 +136,10 @@ class MymeetForm extends Component {
                   <ListItem
                     caption={meetingmap[key].topic}
                     legend={renderDateTime}
+                    leftIcon='send'
                     onClick={this.handleToggleDialog}>
                   </ListItem>
+                  <ListDivider />
                   <div>
                     <Dialog
                       actions={this.actions}
@@ -162,8 +158,6 @@ class MymeetForm extends Component {
             }
           )}
         </List>
-      </div>
-
     )
   }
   ;
@@ -171,7 +165,8 @@ class MymeetForm extends Component {
 
 
 MymeetForm.propTypes = {
-  user: PropTypes.any
+  onClick: PropTypes.func,
+  user: PropTypes.any,
 };
 
-export default connect(mapStateToProps)(MymeetForm);
+export default connect(mapStateToProps,mapDispatchToProps)(MymeetForm);

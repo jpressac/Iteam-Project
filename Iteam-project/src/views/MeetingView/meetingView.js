@@ -224,7 +224,6 @@ class MeetingView extends Component {
                       <div className="col-md-5">
                         <button type="button" className={"btn btn-primary", classes.btn}
                                 style={{marginTop:40, marginLeft:10}} onClick={this.createMeeting.bind(this)}>
-                      //dialog
                           <span className="glyphicon glyphicon-ok"></span> Create meeting
                         </button>
                       </div>
