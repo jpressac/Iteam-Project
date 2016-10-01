@@ -7,7 +7,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 public class Team {
 
     private String ownerName;
-    private String creationDate;
+    private Long creationDate;
     private String name;
     private List<String> members;
 
@@ -23,11 +23,11 @@ public class Team {
         this.ownerName = ownerName;
     }
 
-    public String getCreationDate() {
+    public Long getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(String creationDate) {
+    public void setCreationDate(Long creationDate) {
         this.creationDate = creationDate;
     }
 
