@@ -38,8 +38,6 @@ public class TeamRepositoryImpl implements TeamRepository {
     @Override
     public boolean putTeam(Team team) {
 
-        // adds creation Date time ISO8601 format
-        // adds team owner to team member list
         team.setCreationDate(DateTime.now().getMillis());
         List<String> members = team.getMembers();
         members.add(team.getOwnerName());

@@ -97,8 +97,6 @@ public class MeetingController {
      */
     @RequestMapping(value = "/meeting/meetingbyuser")
     public List<Meeting> getUserMeetings(@RequestParam(value = "username", required = true) String username) {
-        // FIXME: this should be in meetingService
-
         return meetingServiceImpl.getMeetingByTeamName(username);
     }
 
