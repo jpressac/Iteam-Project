@@ -13,7 +13,7 @@ import {PATHS} from '../../constants/routes'
 const mapStateToProps = (state) => {
   if (state.loginUser !== null) {
     return {
-      user: state.loginUser.user.name
+      user: state.loginUser.user.username
     }
   }
 };
@@ -70,7 +70,6 @@ class MymeetForm extends Component {
 
 
   fillfields(meetings) {
-    debugger;
     this.setState({meetings: meetings});
     /*let meetmap = this.state.meetings;
     {

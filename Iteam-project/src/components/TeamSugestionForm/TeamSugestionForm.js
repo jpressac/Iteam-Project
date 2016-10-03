@@ -213,21 +213,26 @@ class TeamSugestionForm extends React.Component {
           <div className="form-group">
             <div className="col-md-12">
               <div className="row">
-                <div className="col-md-5">
-                  <Dropdown label="Select filter" auto onChange={this.fillFilterValues.bind(this)}source={filtro} value={this.state.value}/>
+                <div className="col-md-4">
+                  <Dropdown label="Select filter" auto onChange={this.fillFilterValues.bind(this)} source={filtro} value={this.state.value}/>
                 </div>
 
-                <div className="col-md-5">
+                <div className="col-md-4">
+
                   <select className="form-control" id="filterValue" ref="filterValue">
                     <option value="" default></option>
                     {this.state.values}
                   </select>
                 </div>
-                <div className="col-md-3">
-                  <Button icon='add' label='Add this' raised primary onClick={this.handleClick.bind(this)}/>
-                                  </div>
               </div>
-            </div>
+              </div>
+                <div className="row">
+                <div className="col-md-4">
+                  <Button icon='add' label='Add this' raised primary onClick={this.handleClick.bind(this)}/>
+                </div>
+
+                </div>
+
           </div>
           <div className="row">
             <div className="col-md-8" style={{marginTop:20}}>
