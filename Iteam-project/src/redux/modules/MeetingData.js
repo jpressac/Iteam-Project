@@ -6,7 +6,7 @@ import axios from 'axios'
 export function getMeetingData(){
   return new Promise((resolve, reject) => {
     //TODO: usar parametros para la http request
-      axios.get('http://localhost:8080/')
+      axios.get('http://localhost:8080/meeting/meetingbyuser')
       .then(() => {
         resolve()
       }, () => {

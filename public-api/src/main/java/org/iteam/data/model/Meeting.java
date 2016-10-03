@@ -9,29 +9,30 @@ public class Meeting {
 
     private String topic;
     private String meetingId;
-    private String creationDate;
-    private String programmedDate;
+    private Long creationDate;
+    private Long programmedDate;
     private String ownerName;
-    private Team teamAssistant;
-
-    public String getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(String creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public String getProgrammedDate() {
-        return programmedDate;
-    }
-
-    public void setProgrammedDate(String programmedDate) {
-        this.programmedDate = programmedDate;
-    }
+    private String teamName;
+    private String description;
 
     public String getOwnerName() {
         return ownerName;
+    }
+
+    public Long getProgrammedDate() {
+        return programmedDate;
+    }
+
+    public Long getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Long creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public void setProgrammedDate(Long programmedDate) {
+        this.programmedDate = programmedDate;
     }
 
     public void setOwnerName(String ownerName) {
@@ -54,12 +55,20 @@ public class Meeting {
         this.meetingId = meetingId;
     }
 
-    public Team getTeamAssistant() {
-        return teamAssistant;
+    public String getTeamName() {
+        return teamName;
     }
 
-    public void setTeamAssistant(Team teamAssistant) {
-        this.teamAssistant = teamAssistant;
+    public void setTeamName(String teamName) {
+        this.teamName = teamName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @Override

@@ -1,3 +1,3 @@
-import MeetingView from './MeetingView.js'
+import MeetingView from './MeetingView'
 
 export default MeetingView
