@@ -3,7 +3,7 @@
  */
 import React, {Component, PropTypes} from "react";
 import {DropTarget} from "react-dnd";
-import classes from "../PersonalBoard/PersonalBoard.scss";
+import classes from "../SharedBoard/SharedBoard.scss";
 import Note from "../Note/Note";
 import axios from "axios";
 import {ItemTypes} from "../Constants/Constants";

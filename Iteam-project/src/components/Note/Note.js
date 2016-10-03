@@ -33,7 +33,7 @@ class Note extends Component {
           return (
             <div className={classes.card}
                  style={{ ...style, left, top }}>
-              <Card>
+              <Card style={{resize: 'both',overflow:'auto' }}>
                 <textarea ref="titleText" defaultValue={this.props.title} className="form-control"/>
                 <textarea ref="subtitleText" defaultValue={this.props.subtitle} className="form-control"/>
                 <textarea ref="tagText" defaultValue={this.props.tag} className="form-control"/>
@@ -52,7 +52,7 @@ class Note extends Component {
           return connectDragSource(
             <div className={classes.card}
                  style={{ ...style, left, top }}>
-              <Card >
+              <Card style={{resize: 'both',overflow:'auto' }}>
                 <Chip deletable>{this.props.tag}</Chip>
                 <CardTitle
                   title={this.props.title}
@@ -62,7 +62,7 @@ class Note extends Component {
                   <Button onClick={this.edit.bind(this)}>
                     <FontIcon value="create"/>
                   </Button>
-                  <Button onClick={this.remove.bind(this)}>
+                  <Button onClick={this.removeFromPersonal.bind(this)}>
                     <FontIcon value="delete_sweep" />
                     </Button>
                   <Button onClick={this.send.bind(this)}>
@@ -78,8 +78,8 @@ class Note extends Component {
         case 'normal':
           return connectDragSource(
             <div className={classes.card}
-                 style={{ ...style, left, top }}>
-              <Card >
+                 style={{ ...style, left, top}}>
+              <Card style={{resize: 'both',overflow:'auto' }}>
                 <Chip deletable>{this.props.tag}</Chip>
                 <CardTitle
                   title={this.props.title}
@@ -90,7 +90,7 @@ class Note extends Component {
                   <Button onClick={this.comment.bind(this)}>
                     <FontIcon value="add"/>
                   </Button>
-                  <Button onClick={this.remove.bind(this)}>
+                  <Button onClick={this.removeFromShared.bind(this)}>
                     <FontIcon value="delete_sweep" />
                   </Button>
                   <Button onClick={this.updateRanking.bind(this, 1)}>
@@ -106,8 +106,8 @@ class Note extends Component {
         case 'comment':
           return (
             <div className={classes.card}
-                 style={{ ...style, left, top }}>
-              <Card >
+                 style={{ ...style, left, top}}>
+              <Card style={{resize: 'both',overflow:'auto' }}>
                 <CardTitle
                   title={this.props.title}
                   subtitle={this.props.subtitle}
@@ -152,8 +152,12 @@ class Note extends Component {
     this.setState({view: 'normal'})
   }
 
-  remove() {
+  removeFromShared() {
     this.props.onRemove("delete", this.props.id);
+    this.setState({view: 'normal'})
+  }
+  removeFromPersonal(){
+    this.props.onRemove(this.props.id);
     this.setState({view: 'normal'})
   }
 

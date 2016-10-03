@@ -9,8 +9,7 @@ export const NotLoggedIn = ({ children }) => (
 
   <div className="text-center">
     <HeaderNotLog />
-  
-    <div className={classes.mainContainer}>
+    <div>
       {children}
     </div>
   </div>
