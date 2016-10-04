@@ -1,11 +1,4 @@
-.formContent {
-    align-content: center;
-    width: auto;
-  background-image:url(http://pain-focus.com/wp-content/uploads/2014/12/iStock_000006145395_Large.jpg) no-repeat ;
-  background-position: center;
-  background-size: cover;
 
-}
 .well{
 background-color:hsla(0, 100%,100%, 0.6);
 border-style: dotted;;
@@ -19,7 +12,7 @@ height: auto;
 }
 .label
 {
-  color: white;
+  color: #900c3f;
   font-family:monospace;
     align-items: center;
     font-size: 60px;
@@ -40,18 +33,4 @@ height: auto;
 }
 
 
-.cover-container {
-align-items: center;
-}
-@media  ( min-width: 1200px)  { margin-left: 80px;
-margin-right: 80px;  }
 
-@media  ( min-width: 992px)  { margin-left: 80px;
-margin-right: 80px;  }
-
-@media (min-width: 320px) {margin-left: auto;
-margin-right: auto;
-align-items: center;
-margin-top: auto;
-
-}

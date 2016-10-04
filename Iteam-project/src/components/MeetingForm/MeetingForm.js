@@ -13,6 +13,7 @@ import Dropdown from 'react-toolbox/lib/dropdown';
 var time = new Date();
 var programDate = new Date();
 var datetime = new Date();
+var teamArray =[];
 const min_datetime = new Date(new Date(datetime).setDate(datetime.getDate()));
 datetime.setFullYear(datetime.getFullYear());
 datetime.setMonth(datetime.getMonth());
@@ -39,9 +40,9 @@ class MeetingView extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      team: [],
-      topic: '',
-      description:''
+       topic: '',
+      description:'',
+      teamsObj: {},
 
     }
   };
@@ -65,13 +66,17 @@ class MeetingView extends Component {
 
     axios.get('http://localhost:8080/team/byowner'
     ).then(function (response) {
-     this.fillTeam(response.data)
-    }.bind(this));
+     this.fillfields(response.data);
+          }.bind(this));
 
   }
 
+  fillfields(teams) {
+    this.setState({teamsObj: teams});
+  }
 
   fillTeam(data) {
+
     let opt = [];
     if (data !== null) {
       data.map(function (obj, index) {
@@ -81,7 +86,6 @@ class MeetingView extends Component {
       }.bind(this));
       this.setState({team: opt});
         this.forceUpdate();
-
 
     }
   }
@@ -118,9 +122,11 @@ class MeetingView extends Component {
   };
 
   render() {
-
+  let teamMap =this.state.teamsObj;
+    let arrayTeam=[];
     const {onClick, goToNewMeeting} =this.props;
     return (
+
       <div className={"container"}>
         <div className={classes.label2}>
           <label>CREATE MEETING</label>
@@ -161,16 +167,23 @@ class MeetingView extends Component {
                 </div>
                 <div className="col-md-10">
                   <div className="row">
-                    <Dropdown label="Select Team" auto onChange={this.teamChanged.bind(this)} source= {team[]}   value={this.state.value} >
+                    {Object.keys(teamMap).map((key) => {
+                      arrayTeam = teamMap[key].name;
+                        return (
+                        <Dropdown label="Select Team" auto onChange={this.teamChanged} source={arrayTeam}
+                                  value={this.state.value}/>
 
-                    </Dropdown>
+                      );
+                    }
+
+                      )}
 
                       <select className="form-control" id="inputTeam" ref="team" onChange={this.teamChanged.bind(this)}
                               style={{marginLeft:10, marginTop:20}}>
                         <option value={this.state.value}/>
                         {this.state.team}
                       </select>
-                    </div>
+
                     <div className="col-md-3 col-sm-4 col-xs-4">
                       <button type="button" className={"btn btn-primary", classes.btnTeam}
                               style={{marginLeft:10, marginTop:20}} onClick={onClick}>
@@ -193,15 +206,15 @@ class MeetingView extends Component {
                       </button>
                     </div>
                   </div>
-                  </div>
+</div>
 
 
-
+</div>
             </form>
         </div>
 
 
-    );
+                      );
   };
 }
 MeetingView.propTypes = {
