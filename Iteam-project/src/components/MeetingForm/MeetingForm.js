@@ -42,7 +42,7 @@ class MeetingView extends Component {
     this.state = {
        topic: '',
       description:'',
-      teamsObj: {},
+      teamsObj: []
 
     }
   };
@@ -66,14 +66,12 @@ class MeetingView extends Component {
 
     axios.get('http://localhost:8080/team/byowner'
     ).then(function (response) {
-     this.fillfields(response.data);
+     this.fillTeam(response.data);
           }.bind(this));
 
   }
 
-  fillfields(teams) {
-    this.setState({teamsObj: teams});
-  }
+
 
   fillTeam(data) {
 
@@ -84,7 +82,7 @@ class MeetingView extends Component {
           <option key={index} value={obj.name}>{obj.name}</option>
         );
       }.bind(this));
-      this.setState({team: opt});
+      this.setState({teamsObj: opt});
         this.forceUpdate();
 
     }
@@ -165,26 +163,17 @@ class MeetingView extends Component {
                                   onChange={this.dateChange} minDate={min_datetime} value={this.state.datetime}/>
                   </div>
                 </div>
-                <div className="col-md-10">
+                <div className="form-group">
+                <div className="col-md-5">
                   <div className="row">
-                    {Object.keys(teamMap).map((key) => {
-                      arrayTeam = teamMap[key].name;
-                        return (
-                        <Dropdown label="Select Team" auto onChange={this.teamChanged} source={arrayTeam}
-                                  value={this.state.value}/>
-
-                      );
-                    }
-
-                      )}
 
                       <select className="form-control" id="inputTeam" ref="team" onChange={this.teamChanged.bind(this)}
                               style={{marginLeft:10, marginTop:20}}>
                         <option value={this.state.value}/>
-                        {this.state.team}
+                        {this.state.teamsObj}
                       </select>
 
-                    <div className="col-md-3 col-sm-4 col-xs-4">
+                    <div className="col-md-3 ">
                       <button type="button" className={"btn btn-primary", classes.btnTeam}
                               style={{marginLeft:10, marginTop:20}} onClick={onClick}>
                         <span className="glyphicon glyphicon-ok"/>
@@ -193,6 +182,7 @@ class MeetingView extends Component {
                     </div>
                   </div>
                 </div>
+                  </div>
                 <div className="col-md-11">
                   <div className="row">
                     <label for="team" className="col-md-4 control-label"

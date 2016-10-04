@@ -14,7 +14,10 @@ export class HomeView extends React.Component {
   render(){
     return(
       <div>
-        <label> HOME</label>
+        <div className={classes.label2}>
+          <label>START NOW</label>
+        </div>
+        <img src={meeting} align="center"/>
       </div>
 
 )
