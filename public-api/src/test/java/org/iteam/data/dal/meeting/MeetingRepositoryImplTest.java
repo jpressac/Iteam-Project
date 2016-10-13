@@ -77,14 +77,6 @@ public class MeetingRepositoryImplTest {
     }
 
     @Test
-    public void saveIdeasFail() {
-        givenIdeas();
-        givenAnElasticsearchClientBulkResponse(true);
-        whenSaveIdeasIsCalled();
-        thenCheckStatus(false);
-    }
-
-    @Test
     public void saveMeetingInfoSuccess() {
         givenMeetingData();
         givenAMeetingId();
