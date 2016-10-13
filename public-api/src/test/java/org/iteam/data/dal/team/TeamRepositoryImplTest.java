@@ -296,8 +296,8 @@ public class TeamRepositoryImplTest {
 
         Mockito.when(response.isCreated()).thenReturn(false);
 
-        Mockito.when(elasticsearchClientImpl.insertData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
-                .thenReturn(response);
+        Mockito.when(elasticsearchClientImpl.insertData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
+                Mockito.anyString())).thenReturn(response);
 
         ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
     }
@@ -322,8 +322,8 @@ public class TeamRepositoryImplTest {
 
         Mockito.when(response.isCreated()).thenReturn(true);
 
-        Mockito.when(elasticsearchClientImpl.insertData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
-                .thenReturn(response);
+        Mockito.when(elasticsearchClientImpl.insertData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
+                Mockito.anyString())).thenReturn(response);
 
         ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
     }

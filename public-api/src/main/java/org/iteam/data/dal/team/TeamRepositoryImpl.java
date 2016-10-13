@@ -2,6 +2,7 @@ package org.iteam.data.dal.team;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexResponse;
@@ -17,6 +18,7 @@ import org.iteam.data.model.FilterList;
 import org.iteam.data.model.Team;
 import org.iteam.data.model.UserDTO;
 import org.iteam.services.utils.JSONUtils;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,15 +32,24 @@ public class TeamRepositoryImpl implements TeamRepository {
     private ElasticsearchClientImpl elasticsearchClient;
     private static final String OWNER_NAME_FIELD = "ownerName";
     private static final String LOGICAL_DELETE_FIELD = "logicalDelete";
-    private static final String TEAM_NAME_FIELD = "teamName";
+    private static final String TEAM_NAME_FIELD = "name";
+    private static final String TEAM_MEMBERS_FIELD = "members";
 
     @Override
     public boolean putTeam(Team team) {
 
+        // adds creation Date time epoch-millis
+        team.setCreationDate(DateTime.now().getMillis());
+
+        // TODO: this code must be on the UI.
+        // List<String> members = team.getMembers();
+        // members.add(team.getOwnerName());
+        // team.setMembers(members);
+
         String data = JSONUtils.ObjectToJSON(team);
 
         IndexResponse response = elasticsearchClient.insertData(data, StringUtilities.INDEX_TEAM,
-                StringUtilities.INDEX_TYPE_TEAM);
+                StringUtilities.INDEX_TYPE_TEAM, UUID.randomUUID().toString());
 
         if(response.isCreated()) {
             LOGGER.info("Team successfully created");
@@ -118,6 +129,26 @@ public class TeamRepositoryImpl implements TeamRepository {
 
         queryBuilder.must(QueryBuilders.termQuery(LOGICAL_DELETE_FIELD, false));
         return queryBuilder.minimumNumberShouldMatch(1);
+
+    }
+
+    @Override
+    public List<String> getTeamByUser(String username) {
+        LOGGER.info("Getting teams by user: '{}'", username);
+
+        SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_TEAM,
+                QueryBuilders.termQuery(TEAM_MEMBERS_FIELD, username));
+
+        List<String> teamList = new ArrayList<>();
+
+        if(response != null) {
+            for(SearchHit hit : response.getHits()) {
+                LOGGER.debug("User '{}' teams: '{}'", username, hit.getSourceAsString());
+                teamList.add(hit.getId());
+                LOGGER.debug("teams: " + hit.getId());
+            }
+        }
+        return teamList;
 
     }
 

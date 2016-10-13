@@ -12,30 +12,35 @@ import org.springframework.stereotype.Service;
 @Service
 public class TeamServiceImpl implements TeamService {
 
-    private TeamRepositoryImpl teamRepository;
+	private TeamRepositoryImpl teamRepository;
 
-    @Override
-    public boolean putTeam(Team team) {
-        return teamRepository.putTeam(team);
-    }
+	@Override
+	public boolean putTeam(Team team) {
+		return teamRepository.putTeam(team);
+	}
 
-    @Override
-    public boolean deleteTeam(String ownerName, String teamName) {
-        return teamRepository.deleteTeam(ownerName, teamName);
-    }
+	@Override
+	public boolean deleteTeam(String ownerName, String teamName) {
+		return teamRepository.deleteTeam(ownerName, teamName);
+	}
 
-    @Override
-    public List<UserDTO> filterToCreateTeam(FilterList filterList) {
-        return teamRepository.filterToCreateTeam(filterList);
-    }
+	@Override
+	public List<UserDTO> filterToCreateTeam(FilterList filterList) {
+		return teamRepository.filterToCreateTeam(filterList);
+	}
 
-    @Override
-    public List<Team> getTeams(String ownerName) {
-        return teamRepository.getTeams(ownerName);
-    }
+	@Override
+	public List<Team> getTeams(String ownerName) {
+		return teamRepository.getTeams(ownerName);
+	}
 
-    @Autowired
-    private void setTeamRepository(TeamRepositoryImpl teamRepository) {
-        this.teamRepository = teamRepository;
-    }
+	@Autowired
+	private void setTeamRepository(TeamRepositoryImpl teamRepository) {
+		this.teamRepository = teamRepository;
+	}
+
+	@Override
+	public List<String> getTeamByUser(String username) {
+		return teamRepository.getTeamByUser(username);
+	}
 }

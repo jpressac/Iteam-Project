@@ -12,32 +12,32 @@ import org.iteam.data.model.UserDTO;
  */
 public interface TeamService {
 
-    /**
-     * Insert a new team
-     * 
-     * @return true if it was successful, false otherwise
-     */
-    public boolean putTeam(Team team);
+	/**
+	 * Insert a new team
+	 * 
+	 * @return true if it was successful, false otherwise
+	 */
+	public boolean putTeam(Team team);
 
-    /**
-     * Delete an existing team.
-     * 
-     * @param ownerName,
-     *            the team owner.
-     * @param teamName,
-     *            the team name.
-     * @return true if it was successful, false otherwise.
-     */
-    public boolean deleteTeam(String ownerName, String teamName);
+	/**
+	 * Delete an existing team.
+	 * 
+	 * @param ownerName,
+	 *            the team owner.
+	 * @param teamName,
+	 *            the team name.
+	 * @return true if it was successful, false otherwise.
+	 */
+	public boolean deleteTeam(String ownerName, String teamName);
 
-    /**
-     * Apply filters to search for users.
-     * 
-     * @param filterList,
-     *            the list of filters to apply.
-     * @return a list of user that apply to one or more filter.
-     */
-    public List<UserDTO> filterToCreateTeam(FilterList filterList);
+	/**
+	 * Apply filters to search for users.
+	 * 
+	 * @param filterList,
+	 *            the list of filters to apply.
+	 * @return a list of user that apply to one or more filter.
+	 */
+	public List<UserDTO> filterToCreateTeam(FilterList filterList);
 
 	/**
 	 * Get the list of teams given an owner.
@@ -47,5 +47,7 @@ public interface TeamService {
 	 * @return a list of teams.
 	 */
 	public List<Team> getTeams(String ownerName);
+
+	public List<String> getTeamByUser(String username);
 
 }
