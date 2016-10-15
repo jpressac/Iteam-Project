@@ -1,7 +1,7 @@
 package org.iteam.services.user;
 
 import org.iteam.data.dal.user.UserRepositoryImpl;
-import org.iteam.data.model.UserDTO;
+import org.iteam.data.dto.UserDTO;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

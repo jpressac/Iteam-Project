@@ -11,10 +11,11 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.iteam.configuration.ExternalConfigurationProperties;
 import org.iteam.data.dal.client.ElasticsearchClientImpl;
-import org.iteam.data.model.Filter;
+import org.iteam.data.dto.Filter;
+import org.iteam.data.dto.Team;
+import org.iteam.data.dto.UserDTO;
 import org.iteam.data.model.FilterList;
-import org.iteam.data.model.Team;
-import org.iteam.data.model.UserDTO;
+import org.iteam.data.model.TeamModel;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -44,7 +45,7 @@ public class TeamRepositoryImplTest {
     private String teamName;
     private FilterList filterList;
     private List<UserDTO> userList;
-    private List<Team> teamList;
+    private List<TeamModel> teamList;
 
     @Before
     public void init() {

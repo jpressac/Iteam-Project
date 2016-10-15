@@ -2,7 +2,7 @@ package org.iteam.data.dal.utilities;
 
 import java.util.List;
 
-import org.iteam.data.model.Nationalities;
+import org.iteam.data.dto.Nationalities;
 
 public interface UtilitiesRepository {
 

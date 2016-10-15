@@ -10,16 +10,17 @@ import {Button, IconButton} from 'react-toolbox/lib/button';
 const mapStateToProps = (state) => {
   if (state.loginUser !== null) {
     return {
-      user: state.loginUser.user.name
+      user: state.loginUser.user.name,
+      fromMeeting: state.meetingReducer
     }
   }
 };
 const filtro = [
-  { value: 1, label: 'Profession' },
-  { value: 2, label: 'Age'},
-  { value: 3, label: 'Nationality' },
-  { value: 4, label: 'Job position'},
-  { value: 5, label: 'Hobbies'}
+  {value: 1, label: 'Profession'},
+  {value: 2, label: 'Age'},
+  {value: 3, label: 'Nationality'},
+  {value: 4, label: 'Job position'},
+  {value: 5, label: 'Hobbies'}
 
 ];
 
@@ -82,7 +83,6 @@ class TeamSugestionForm extends React.Component {
   createMeeting() {
     let usersMap = this.state.usernames;
     let selected = [];
-    debugger
     for (let user in usersMap) {
       if (usersMap[user] == true) {
         selected.push(user);
@@ -127,12 +127,11 @@ class TeamSugestionForm extends React.Component {
     var _this = this;
     let us = [];
     let names = {};
-    debugger
     data.map(function (user, index) {
       us.push(
         <tr key={us.length}>
           <td><input className="no-margin" type="checkbox"
-                     onChange={_this.handleOnChange.bind(_this, user.username)}></input></td>
+                     onChange={_this.handleOnChange.bind(_this, user.username)}/></td>
           <td>{user.lastName}</td>
           <td>{user.name}</td>
         </tr>
@@ -187,12 +186,13 @@ class TeamSugestionForm extends React.Component {
   };
 
   render() {
+    console.log('vengo de meeting: ' + this.props.fromMeeting);
     var filterLabels = this.state.filters.map(function (filter, index) {
       return (
         <span className="tag label label-info" style={{fontSize:14, margin:10, marginTop:50}}>
                 <span key={index}>{filter.field} : {filter.values}</span>
                 <a href='javascript:;' onClick={this.deleteFilter.bind(this,index)}><i
-                  className="remove glyphicon glyphicon-remove-sign glyphicon-white"></i></a>
+                  className="remove glyphicon glyphicon-remove-sign glyphicon-white"/></a>
               </span>
       );
     }.bind(this));
@@ -214,7 +214,8 @@ class TeamSugestionForm extends React.Component {
             <div className="col-md-12">
               <div className="row">
                 <div className="col-md-4">
-                  <Dropdown label="Select filter" auto onChange={this.fillFilterValues.bind(this)} source={filtro} value={this.state.value}/>
+                  <Dropdown label="Select filter" auto onChange={this.fillFilterValues.bind(this)} source={filtro}
+                            value={this.state.value}/>
                 </div>
 
                 <div className="col-md-4">
@@ -225,13 +226,13 @@ class TeamSugestionForm extends React.Component {
                   </select>
                 </div>
               </div>
+            </div>
+            <div className="row">
+              <div className="col-md-4">
+                <Button icon='add' label='Add this' raised primary onClick={this.handleClick.bind(this)}/>
               </div>
-                <div className="row">
-                <div className="col-md-4">
-                  <Button icon='add' label='Add this' raised primary onClick={this.handleClick.bind(this)}/>
-                </div>
 
-                </div>
+            </div>
 
           </div>
           <div className="row">
@@ -245,7 +246,7 @@ class TeamSugestionForm extends React.Component {
           <div className="col-md-2">
             <button type="button" className="btn btn-primary" style={{marginTop:20}}
                     onClick={this.searchUsers.bind(this)}>
-              <span className="glyphicon glyphicon-search"></span> Search
+              <span className="glyphicon glyphicon-search"/> Search
             </button>
           </div>
         </div>
@@ -256,7 +257,7 @@ class TeamSugestionForm extends React.Component {
               <thead>
               <tr>
                 <th style={{"width": "5%"}}>
-                  <input className="no-margin" type="checkbox"></input>
+                  <input className="no-margin" type="checkbox"/>
                 </th>
                 <th style={{"width" : "45%" , "align":"center"}}>Last name</th>
                 <th style={{"width" : "50%"}}>Name</th>
@@ -278,13 +279,14 @@ class TeamSugestionForm extends React.Component {
             </div>
           </div>
         </div>
-        <BootstrapModal ref="mymodal" message={this.state.message}></BootstrapModal>
+        <BootstrapModal ref="mymodal" message={this.state.message}/>
       </form>);
   }
 }
 
 TeamSugestionForm.propTypes = {
-  user: PropTypes.any
+  user: PropTypes.any,
+  fromMeeting: PropTypes.bool
 };
 
 
