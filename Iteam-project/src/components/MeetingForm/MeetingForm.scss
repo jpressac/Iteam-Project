@@ -1,0 +1,117 @@
+.form {
+  align-content: center;
+  overflow-y: auto;
+}
+.label2
+{
+  color: #900C3F;
+  font-family:monospace;
+  align-items: center;
+  font-size: 50px;
+
+
+}
+.btnTeam {
+  border: none;
+  color: white;
+  padding: 4px 7px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 12px;
+  background: #900C3F;
+  border-radius: 4px;
+}
+
+.btn {
+  border: none;
+  color: white;
+  padding: 6px 9px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  background: #900C3F;
+  border-radius: 4px;
+}
+
+.btn:focus, .btn:active:focus, .btn.active:focus {
+  outline: 0 none;
+}
+
+.btnprimary {
+  background: #FF5733;
+  color: #ffffff;
+}
+.well{
+  background-color:hsla(0, 100%,100%, 0.6);
+  border-style: dotted;;
+  border-color: #900C3F;
+  border-width: medium;
+  margin-top: 30px;
+
+  align-items: center;
+  width:auto;
+  height: auto;
+}
+.button{
+  background-color:#900C3F;
+  border-radius: 8px;
+}
+
+
+
+.cover {
+  padding: 0 20px;
+}
+.cover .btn-lg {
+  padding: 10px 20px;
+  font-weight: bold;
+}
+
+
+.post-content {
+
+  top:0;
+  left:0;
+  position: relative;
+  text-align: center;
+  background: none repeat scroll 0 0 #FFffff;
+  overflow-y: auto;
+  margin: auto;
+  margin-top: -54px;
+  text-align:center
+}
+
+
+
+
+.filter{
+  align-items: center;
+  margin-top: 20px;
+
+}
+
+
+.calendar{
+
+  margin-top: 20px;
+}
+
+
+.formContent
+{
+  align-content: center;
+  margin:auto;
+  font-size: 16px;
+  overflow: auto;
+}
+
+
+.input{
+
+  border-style:groove;
+  margin-top: 25px;
+  margin-left: 10px;
+
+}

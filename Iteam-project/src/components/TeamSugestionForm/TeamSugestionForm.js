@@ -3,7 +3,9 @@ import classes from './TeamSugestionForm.scss';
 import axios from 'axios';
 import BootstrapModal from '../BootstrapModal';
 import {connect} from 'react-redux';
-
+import Input from 'react-toolbox/lib/input';
+import Dropdown from 'react-toolbox/lib/dropdown';
+import {Button, IconButton} from 'react-toolbox/lib/button';
 
 const mapStateToProps = (state) => {
   if (state.loginUser !== null) {
@@ -12,11 +14,20 @@ const mapStateToProps = (state) => {
     }
   }
 };
+const filtro = [
+  { value: 1, label: 'Profession' },
+  { value: 2, label: 'Age'},
+  { value: 3, label: 'Nationality' },
+  { value: 4, label: 'Job position'},
+  { value: 5, label: 'Hobbies'}
+
+];
 
 class TeamSugestionForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      teamName: '',
       filters: [],
       users: [],
       selectedUsers: [],
@@ -25,6 +36,7 @@ class TeamSugestionForm extends React.Component {
       message: ''
     }
   }
+
   handleClick(event) {
     if ((this.refs.filterName.value !== '') && (this.refs.filterValue.value !== '')) {
       let valueFields = [];
@@ -34,6 +46,7 @@ class TeamSugestionForm extends React.Component {
       this.forceUpdate();
     }
   }
+
   handleOnChange(username) {
     var _this = this;
     let newMap = {};
@@ -48,6 +61,7 @@ class TeamSugestionForm extends React.Component {
     console.log(this.state.users);
     _this.forceUpdate();
   }
+
   //TODO: use a set<string> for filling the table with columns that details the filter applied
 
   searchUsers() {
@@ -130,8 +144,8 @@ class TeamSugestionForm extends React.Component {
     this.forceUpdate();
   }
 
-  fillFilterValues() {
-    const filter = this.refs.filterName.value;
+  fillFilterValues(value) {
+    const filter = this.state.value;
     let url = '';
     switch (filter) {
       case "Profession":
@@ -147,6 +161,7 @@ class TeamSugestionForm extends React.Component {
       case "Hobbies":
         break;
     }
+    this.setState({value: value});
     if (url !== '') {
       axios.get(url).then(function (response) {
         console.log(response.data);
@@ -167,6 +182,10 @@ class TeamSugestionForm extends React.Component {
     this.forceUpdate();
   }
 
+  handleChange = (teamName, value) => {
+    this.setState({...this.state, [teamName]: value});
+  };
+
   render() {
     var filterLabels = this.state.filters.map(function (filter, index) {
       return (
@@ -184,52 +203,44 @@ class TeamSugestionForm extends React.Component {
             <div className="form-group" style={{marginRight:400}}>
               <div className="col-md-8">
                 <div className="row">
-                  <label for="inputTeamName" className="col-md-4 control-label">Team name</label>
-                  <div className="col-md-4">
-                    <input type="text" className="form-control" id="inputTeamName" ref="teamName"
-                           maxlength="20"></input>
-                  </div>
+                  <Input type='text' label='Name' name='teamName'
+                         value={this.state.teamName} onChange={this.handleChange.bind(this, 'teamName')}
+                         maxLength={16}/>
                 </div>
-              </div>
-            </div>
-            <div className="form-group">
-              <div className="col-md-8">
-                <div className="row">
-                  <label for="filterselect" className="col-md-2 control-label">Filters <i
-                    className="glyphicon glyphicon-filter "></i></label>
-                  <div className="col-md-3">
-                    <select className="form-control" id="filters" data-width="fit" data-live-search="true"
-                            ref="filterName" onChange={this.fillFilterValues.bind(this)}>
-                      <option value="" default></option>
-                      <option value="Profession"> Profession</option>
-                      <option value="Age"> Age</option>
-                      <option value="Nationality"> Nationality</option>
-                      <option value="Job position"> Job position</option>
-                      <option value="Hobbies"> Hobbies</option>
-                    </select>
-                  </div>
-                  <label for="inputvalue" className="col-md-2 control-label">Value</label>
-                  <div className="col-md-3">
-                    <select className="form-control" id="filterValue" ref="filterValue">
-                      <option value="" default></option>
-                      {this.state.values}
-                    </select>
-                  </div>
-                  <div className="col-md-2">
-                    <button type="button" className="btn btn-primary" onClick={this.handleClick.bind(this)}>
-                      <span className="glyphicon glyphicon-plus"></span> Add
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-md-8" style={{marginTop:20}}>
-                {filterLabels}
               </div>
             </div>
           </div>
+          <div className="form-group">
+            <div className="col-md-12">
+              <div className="row">
+                <div className="col-md-4">
+                  <Dropdown label="Select filter" auto onChange={this.fillFilterValues.bind(this)} source={filtro} value={this.state.value}/>
+                </div>
+
+                <div className="col-md-4">
+
+                  <select className="form-control" id="filterValue" ref="filterValue">
+                    <option value="" default></option>
+                    {this.state.values}
+                  </select>
+                </div>
+              </div>
+              </div>
+                <div className="row">
+                <div className="col-md-4">
+                  <Button icon='add' label='Add this' raised primary onClick={this.handleClick.bind(this)}/>
+                </div>
+
+                </div>
+
+          </div>
+          <div className="row">
+            <div className="col-md-8" style={{marginTop:20}}>
+              {filterLabels}
+            </div>
+          </div>
         </div>
+
         <div className="row">
           <div className="col-md-2">
             <button type="button" className="btn btn-primary" style={{marginTop:20}}
@@ -261,7 +272,7 @@ class TeamSugestionForm extends React.Component {
                 Create
               </button>
               <button id="ok" type="button" className="btn btn-primary" style={{marginTop:20}}
-                >
+              >
                 OK
               </button>
             </div>
