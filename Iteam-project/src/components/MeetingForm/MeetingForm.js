@@ -8,8 +8,8 @@ import {connect} from 'react-redux'
 import DatePicker from 'react-toolbox/lib/date_picker';
 import BootstrapModal from '../../components/BootstrapModal/BootstrapModal'
 import Input from 'react-toolbox/lib/input';
-import Dropdown from 'react-toolbox/lib/dropdown';
 import {saveMeeting} from '../../redux/reducers/Meeting/MeetingReducer'
+import {meetingToNewTeam} from '../../redux/reducers/Meeting/MeetingForTeamReducer'
 
 var datetime = new Date();
 const min_datetime = new Date(new Date(datetime).setDate(datetime.getDate()));
@@ -19,13 +19,17 @@ const mapDispatchToProps = dispatch => ({
 
   saveMeetingInfo: (meeting) => dispatch(saveMeeting(meeting)),
 
+  meetingToCreateNewTeam: () => dispatch(meetingToNewTeam()),
+
   goToNewMeeting: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HOME))
 });
 
 const mapStateToProps = (state) => {
   if (state.loginUser !== null) {
     return {
-      user: state.loginUser.user.username
+      user: state.loginUser.user.username,
+      meetingInfoSave: state.meetingReducer,
+      fromMeeting: state.meetingForTeamReducer
     }
   }
 };
@@ -60,6 +64,16 @@ class MeetingView extends Component {
 
   componentDidMount() {
 
+    if(this.props.fromMeeting === true){
+      this.setState({
+        topic: this.props.meetingInfoSave["meeting"]["topic"],
+        description: this.props.meetingInfoSave["meeting"]["description"],
+        programmedDate: this.props.meetingInfoSave["meeting"]["time"],
+        ownerName: this.props.meetingInfoSave["meeting"]["ownerName"],
+        time: this.props.meetingInfoSave["meeting"]["time"]
+      })
+    }
+
     axios.get('http://localhost:8080/team/byowner'
     ).then(function (response) {
       this.fillTeam(response.data);
@@ -78,6 +92,7 @@ class MeetingView extends Component {
         );
       }.bind(this));
       this.setState({teamsObj: opt});
+      this.setState({teamList: data});
       this.forceUpdate();
     }
   }
@@ -89,16 +104,20 @@ class MeetingView extends Component {
   }
 
   createMeeting(goToNewMeeting) {
+    //TODO:teamName must be the teamId and not the team name took it from de dropdown
     let e = document.getElementById("inputTeam");
-    let teamName = e.options[e.selectedIndex].text;
+    let teamNameCombo = e.options[e.selectedIndex].text;
+
+    let teamId = this.searchTeamIdGivenTeamName(teamNameCombo);
+
     axios.post('http://localhost:8080/meeting/create', {
       topic: this.state.topic,
       ownerName: this.props.user,
       programmedDate: this.state.programmedDate.getTime(),
-      teamName: teamName,
-      description: this.state.description
-
+      description: this.state.description,
+      teamName: teamId
     }).then(function (response) {
+      //TODO: use the spinner instead of modal
       this.setState({message: '¡Your meeting was successfully created!'});
       this.refs.meetingModal.openModal();
       goToNewMeeting()
@@ -115,24 +134,26 @@ class MeetingView extends Component {
   };
 
   createTeamAction(){
-    let e = document.getElementById("inputTeam");
-    let teamNameCombo = e.options[e.selectedIndex].text;
-
     let meetingInfo = {
       topic: this.state.topic,
       description: this.state.description,
       ownerName: this.props.user,
-      programmedDate: this.state.programmedDate.getTime(),
-      teamName: teamNameCombo
+      programmedDate: this.state.programmedDate,
+      time: this.state.time
     };
-
-    this.setState({teamName: teamNameCombo});
     this.props.saveMeetingInfo(meetingInfo);
+    this.props.meetingToCreateNewTeam();
+  }
+
+  searchTeamIdGivenTeamName(teamName){
+    let data = this.state.teamList;
+
+    var filtered = data.filter(team => team["team"]["name"] === teamName);
+    
+    return filtered[0]["teamId"]
   }
 
   render() {
-    let teamMap = this.state.teamsObj;
-    let arrayTeam = [];
     const {goToNewMeeting} = this.props;
     return (
 
@@ -215,10 +236,12 @@ class MeetingView extends Component {
   };
 }
 MeetingView.propTypes = {
-  teamFromMeeting: PropTypes.func,
+  meetingToCreateNewTeam: PropTypes.func,
   saveMeetingInfo: PropTypes.func,
   goToNewMeeting: PropTypes.func,
-  user: PropTypes.any
+  user: PropTypes.any,
+  meetingInfoSave: PropTypes.any,
+  fromMeeting: PropTypes.bool
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(MeetingView)

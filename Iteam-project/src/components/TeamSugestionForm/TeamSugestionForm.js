@@ -6,15 +6,25 @@ import {connect} from 'react-redux';
 import Input from 'react-toolbox/lib/input';
 import Dropdown from 'react-toolbox/lib/dropdown';
 import {Button, IconButton} from 'react-toolbox/lib/button';
+import {push} from 'react-router-redux'
+import {PATHS} from '../../constants/routes'
 
 const mapStateToProps = (state) => {
   if (state.loginUser !== null) {
     return {
       user: state.loginUser.user.name,
-      fromMeeting: state.meetingReducer
+      fromMeeting: state.meetingForTeamReducer
     }
   }
 };
+
+const mapDispatchToProps = dispatch => ({
+
+  meeting: () => {dispatch(push('/' + PATHS.MENULOGGEDIN.MEETING))},
+
+  normal: () => {dispatch(push('/' + PATHS.MENULOGGEDIN.HOME))}
+});
+
 const filtro = [
   {value: 1, label: 'Profession'},
   {value: 2, label: 'Age'},
@@ -50,8 +60,7 @@ class TeamSugestionForm extends React.Component {
 
   handleOnChange(username) {
     var _this = this;
-    let newMap = {};
-    newMap = _this.state.usernames;
+    let newMap = _this.state.usernames;
     if (newMap[username] == false) {
       newMap[username] = true;
     } else {
@@ -185,8 +194,15 @@ class TeamSugestionForm extends React.Component {
     this.setState({...this.state, [teamName]: value});
   };
 
+  checkingWhereICame(){
+    if(this.props.fromMeeting === true){
+      this.props.meeting();
+    }else{
+      this.props.normal();
+    }
+  }
+
   render() {
-    console.log('vengo de meeting: ' + this.props.fromMeeting);
     var filterLabels = this.state.filters.map(function (filter, index) {
       return (
         <span className="tag label label-info" style={{fontSize:14, margin:10, marginTop:50}}>
@@ -221,7 +237,7 @@ class TeamSugestionForm extends React.Component {
                 <div className="col-md-4">
 
                   <select className="form-control" id="filterValue" ref="filterValue">
-                    <option value="" default></option>
+                    <option value="" default/>
                     {this.state.values}
                   </select>
                 </div>
@@ -272,8 +288,7 @@ class TeamSugestionForm extends React.Component {
                       onClick={this.createMeeting.bind(this)}>
                 Create
               </button>
-              <button id="ok" type="button" className="btn btn-primary" style={{marginTop:20}}
-              >
+              <button id="ok" type="button" className="btn btn-primary" style={{marginTop:20}} onClick={this.checkingWhereICame.bind(this)}>
                 OK
               </button>
             </div>
@@ -286,8 +301,10 @@ class TeamSugestionForm extends React.Component {
 
 TeamSugestionForm.propTypes = {
   user: PropTypes.any,
-  fromMeeting: PropTypes.bool
+  fromMeeting: PropTypes.bool,
+  meeting: PropTypes.func,
+  normal: PropTypes.func
 };
 
 
-export default connect(mapStateToProps)(TeamSugestionForm);
+export default connect(mapStateToProps, mapDispatchToProps)(TeamSugestionForm);
