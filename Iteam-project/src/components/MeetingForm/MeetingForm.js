@@ -104,26 +104,34 @@ class MeetingView extends Component {
   }
 
   createMeeting(goToNewMeeting) {
-    //TODO:teamName must be the teamId and not the team name took it from de dropdown
+
     let e = document.getElementById("inputTeam");
     let teamNameCombo = e.options[e.selectedIndex].text;
 
-    let teamId = this.searchTeamIdGivenTeamName(teamNameCombo);
-
-    axios.post('http://localhost:8080/meeting/create', {
-      topic: this.state.topic,
-      ownerName: this.props.user,
-      programmedDate: this.state.programmedDate.getTime(),
-      description: this.state.description,
-      teamName: teamId
-    }).then(function (response) {
-      //TODO: use the spinner instead of modal
-      this.setState({message: '¡Your meeting was successfully created!'});
+    let teamId = '';
+    if(this.state.topic === '' || this.state.description === '' || teamNameCombo === ''){
+      this.setState({message: '¡You have to complete the form!'});
       this.refs.meetingModal.openModal();
-      goToNewMeeting()
-    }.bind(this)).catch(function (response) {
 
-    });
+
+    }else {
+      teamId = this.searchTeamIdGivenTeamName(teamNameCombo);
+
+      axios.post('http://localhost:8080/meeting/create', {
+        topic: this.state.topic,
+        ownerName: this.props.user,
+        programmedDate: this.state.programmedDate.getTime(),
+        description: this.state.description,
+        teamName: teamId
+      }).then(function (response) {
+        //TODO: use the spinner instead of modal
+        this.setState({message: '¡Your meeting was successfully created!'});
+        this.refs.meetingModal.openModal();
+        goToNewMeeting()
+      }.bind(this)).catch(function (response) {
+
+      });
+    }
   }
 
   handleChangeTopic = (topic, value) => {
@@ -145,11 +153,11 @@ class MeetingView extends Component {
     this.props.meetingToCreateNewTeam();
   }
 
-  searchTeamIdGivenTeamName(teamName){
+  searchTeamIdGivenTeamName(teamNameCombo){
     let data = this.state.teamList;
 
-    var filtered = data.filter(team => team["team"]["name"] === teamName);
-    
+    var filtered = data.filter(team => team["team"]["name"] === teamNameCombo);
+
     return filtered[0]["teamId"]
   }
 
