@@ -33,11 +33,7 @@ class MymeetForm extends Component {
       meetings: {},
       active: false,
       meet: {},
-      meetEdit: {
-        topic: {state: false, val: ''},
-        programmedDate: {state: false, val: ''},
-        description: {state: false, val: ''}
-      },
+      meetEdit:{},
       editable: true
     }
   }
@@ -48,11 +44,7 @@ class MymeetForm extends Component {
       meet: meeting,
       datetime: meeting.programmedDate,
       time: meeting.programmedDate,
-      meetEdit: {
-        topic: {state: false, val: meeting.topic},
-        programmedDate: {state: false, val: meeting.programmedDate},
-        description: {state: false, val: meeting.description}
-      }
+      meetEdit: meeting
     });
     var datetime = new Date(meeting.programmedDate);
     programDate.setFullYear(datetime.getFullYear());
@@ -159,7 +151,6 @@ class MymeetForm extends Component {
       hour: 'numeric', minute: 'numeric', second: 'numeric',
       hour12: false
     };
-
     return new Intl.DateTimeFormat("en-US", options).format(new Date(meetingTime))
   }
 
@@ -177,29 +168,37 @@ class MymeetForm extends Component {
 
 
   save() {
-    let objToEdit = this.state.meetEdit;
+    let editedMeeting = this.state.meetEdit;
+    let originalMeeting = this.state.meet;
+    let saveMeeting={};
 
-    let obj = Object.keys(objToEdit).map((key) => {
-      let a = {};
-      if (objToEdit[key].state === true) {
-        switch (key) {
-          case 'topic':
-            a.topic = objToEdit[key].val;
-            break;
-          case 'description':
-            a.description = objToEdit[key].val;
-            break;
-          case 'programmedDate':
-            a.programmedDate = objToEdit[key].val;
-            break;
-        }}
-    });
-    obj.meetingID = this.state.meet.meetingId;
-    let jsonObject = JSON.stringify(obj);
+    saveMeeting['meetingId'] = this.state.meet.meetingId;
+
+    let jsonObject={};
+    console.log('orig: ' + originalMeeting.topic);
+    console.log('new: ' + editedMeeting.topic);
+    console.log('new: ' + editedMeeting.topic);
+    if(originalMeeting.topic.localeCompare(editedMeeting.topic)){
+      saveMeeting['topic']= editedMeeting.topic;
+      jsonObject = JSON.stringify(saveMeeting);
+      console.log('topic edited: ' + jsonObject);
+    }
+    if(originalMeeting.description != editedMeeting.description){
+      saveMeeting['description']= editedMeeting.description;
+      jsonObject = JSON.stringify(saveMeeting);
+      console.log('descr edited: ' + jsonObject);
+    }
+    if(originalMeeting.programmedDate !== editedMeeting.programmedDate){
+      saveMeeting['programmedDate']= editedMeeting.programmedDate;
+      jsonObject = JSON.stringify(saveMeeting);
+      console.log('programmed edited: ' + jsonObject);
+    }
+
+    jsonObject = JSON.stringify(saveMeeting);
     console.log('Object edited: ' + jsonObject);
 
 
-    axios.post('http://localhost:8080/meeting/update', {jsonMeeting}).then(
+    axios.post('http://localhost:8080/meeting/update', {jsonObject}).then(
       function (response) {
         this.setState({message: '¡Your meeting was successfully updated!'});
         this.refs.mymodal.openModal();
@@ -214,15 +213,15 @@ class MymeetForm extends Component {
 
   onChangeTopic = (topic) => {
     var newMeeting = this.state.meetEdit;
-    newMeeting.topic.state = true;
-    newMeeting.topic.val = topic;
+    newMeeting.topic = topic;
     this.setState({meetEdit: newMeeting});
+    console.log('orig topic: ' + this.state.meet.topic)
+    console.log('new topic: ' + this.state.meetEdit.topic)
   };
 
   onChangeDescription = (description) => {
     var newMeeting = this.state.meetEdit;
-    newMeeting.description.state = true;
-    newMeeting.description.val = description;
+    newMeeting.description = description;
     this.setState({meetEdit: newMeeting});
   };
 
@@ -233,8 +232,7 @@ class MymeetForm extends Component {
     programDate.setDate(date.getDate());
 
     var newMeeting = this.state.meetEdit;
-    newMeeting.description.state = true;
-    newMeeting.description.val = programDate;
+    newMeeting.description = programDate;
     this.setState({meetEdit: newMeeting});
   };
 
@@ -244,8 +242,7 @@ class MymeetForm extends Component {
     programDate.setMinutes(time.getMinutes());
 
     var newMeeting = this.state.meetEdit;
-    newMeeting.description.state = true;
-    newMeeting.description.val = programDate;
+    newMeeting.description = programDate;
     this.setState({meetEdit: newMeeting});
   };
 
@@ -273,10 +270,10 @@ class MymeetForm extends Component {
                   active={this.state.active}
                   onEscKeyDown={this.handleToggleDialog}
                   onOverlayClick={this.handleToggleDialog}>
-                  <Input type='text' label='Topic' value={this.state.meetEdit.topic.val} maxLength={30}
+                  <Input type='text' label='Topic' value={this.state.meetEdit.topic} maxLength={30}
                          onChange={this.onChangeTopic.bind(this)}/>
 
-                  <Input type='text' label='Description' value={this.state.meetEdit.description.val} maxLength={144}
+                  <Input type='text' label='Description' value={this.state.meetEdit.description} maxLength={144}
                          onChange={this.onChangeDescription.bind(this)}/>
 
                   <DatePicker label='Select date' sundayFirstDayOfWeek value={new Date(this.state.datetime)}
