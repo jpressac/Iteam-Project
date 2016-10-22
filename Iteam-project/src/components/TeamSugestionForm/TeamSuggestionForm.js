@@ -1,5 +1,4 @@
 import React, {PropTypes} from 'react';
-import classes from './TeamSuggestionForm.scss';
 import axios from 'axios';
 import BootstrapModal from '../BootstrapModal';
 import {connect} from 'react-redux';
@@ -31,10 +30,10 @@ const mapDispatchToProps = dispatch => ({
 
 const filtro = [
   {value: 1, label: 'Profession'},
-  {value: 2, label: 'Age'},
-  {value: 3, label: 'Nationality'},
-  {value: 4, label: 'Job position'},
-  {value: 5, label: 'Hobbies'}
+  {value: 2, label: 'Nationality'}
+  // {value: 3, label: 'Age'},
+  // {value: 4, label: 'Job position'},
+  // {value: 5, label: 'Hobbies'}
 
 ];
 
@@ -57,7 +56,7 @@ class TeamSuggestionForm extends React.Component {
   handleClick() {
     if ((this.state.filterName !== '') && (this.state.filteredName !== '')) {
       let valueFields = [];
-      valueFields.push(this.state.filteredName);
+      valueFields.push((this.state.filteredName).toLowerCase());
       this.state.filters.push({field: this.state.filterName.toLowerCase(), values: valueFields});
       this.forceUpdate();
     }
@@ -72,9 +71,6 @@ class TeamSuggestionForm extends React.Component {
   //TODO: use a set<string> for filling the table with columns that details the filter applied
 
   searchUsers() {
-    let filterJson =  JSON.stringify(this.state.filters);
-    console.log('filter json ' + filterJson);
-
     if (this.state.filters.length >= 0) {
       axios.get('http://localhost:8080/team/select',
         {
@@ -163,12 +159,20 @@ class TeamSuggestionForm extends React.Component {
 
     switch (filterLabelName) {
       case "Profession":
-        url = 'http://localhost:8080/utilities/professions';
+
+        axios.get('http://localhost:8080/utilities/professions').then(function (response) {
+          this.setValuesOptionsProfessions(response.data);
+        }.bind(this));
+
         break;
       case "Age":
         break;
       case "Nationality":
-        url = 'http://localhost:8080/utilities/nationality/get';
+
+        axios.get('http://localhost:8080/utilities/nationality/get').then(function (response) {
+          this.setValuesOptionsNationalities(response.data);
+        }.bind(this));
+
         break;
       case "Job position":
         break;
@@ -177,14 +181,9 @@ class TeamSuggestionForm extends React.Component {
     }
     this.setState({value: value});
     this.setState({filterName: filterLabelName});
-    if (url !== '') {
-      axios.get(url).then(function (response) {
-        this.setValuesOptions(response.data);
-      }.bind(this));
-    }
   }
 
-  setValuesOptions(data) {
+  setValuesOptionsNationalities(data) {
 
     let opt = data["nationalities"].map(function (option, index) {
       var rObj = {};
@@ -194,6 +193,17 @@ class TeamSuggestionForm extends React.Component {
     });
     this.setState({values: opt});
   }
+
+  setValuesOptionsProfessions(data) {
+    let opt = data.map(function (option, index) {
+      var rObj = {};
+      rObj["value"] = index;
+      rObj["label"] = option;
+      return rObj;
+    });
+    this.setState({values: opt});
+  }
+
 
   setFilteredValue(value) {
 
