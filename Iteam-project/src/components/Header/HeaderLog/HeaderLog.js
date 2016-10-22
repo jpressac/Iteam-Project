@@ -82,6 +82,8 @@ class HeaderLog extends Component {
               <li>
                 <LogoutButton ></LogoutButton>
               </li>
+              <li><Link  to={'/' + PATHS.MENULOGGEDIN.REPORTS} activeClassName="active">
+              <span className="glyphicon glyphicon-paperclip"></span> REPORTS </Link></li>
             </ul>
 
           </div>
