@@ -6,6 +6,7 @@ import javax.validation.Valid;
 
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.Meeting;
+import org.iteam.data.model.Reports;
 import org.iteam.services.meeting.MeetingService;
 import org.iteam.services.meeting.MeetingServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,10 +81,11 @@ public class MeetingController {
      * @return 204 NO CONTENT
      */
     @RequestMapping(value = "/meeting/report", method = RequestMethod.GET)
-    public ResponseEntity<Void> generateReport(@RequestParam(value = "meetingId", required = true) String meetingId) {
-        meetingServiceImpl.generateReport(meetingId);
+    public ResponseEntity<Reports> generateReport(
+            @RequestParam(value = "meetingId", required = true) String meetingId) {
+        Reports report = meetingServiceImpl.generateReport(meetingId);
 
-        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<Reports>(HttpStatus.NO_CONTENT);
     }
 
     /**
