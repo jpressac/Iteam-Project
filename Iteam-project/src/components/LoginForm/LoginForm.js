@@ -19,7 +19,7 @@ class LoginForm extends Component {
     return (
 
       <div className={"container"}>
-        <div className={classes.label} style={{marginTop: 20}}>
+        <div className={classes.label} style={{marginTop: 50}}>
           <label>LOGIN</label>
         </div>
         <form method="POST" className="form-singin">
