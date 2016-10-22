@@ -6,8 +6,9 @@ import React, {Component,PropTypes} from 'react'
 import { connect } from 'react-redux';
 import Drawer from 'react-toolbox/lib/drawer';
 import Button from 'react-toolbox/lib/button';
-/*
+import classes from './ReportForm.scss';
 
+/*
 var report = new PDFDocument
 
 report.pipe(fs.createWriteStream('output.pdf'))
@@ -16,6 +17,11 @@ report.font('fonts/PalatinoBold.ttf')
   .fontSize(25)
   .text('Meeting report', 100, 100)
 report.end()
+*/
+
+/*const mapStateToProps = state => ({
+  meetingId: state.meetingId
+});
 */
 class ReportForm extends Component {
   constructor(props) {
@@ -32,7 +38,7 @@ class ReportForm extends Component {
     return(
       <div>
         <Button label='Reports bar' raised accent onClick={this.handleToggle} />
-        <Drawer active={this.state.active}
+        <Drawer active={this.state.active} className={classes.drawer}
               type="left"
               onOverlayClick={this.handleToggle}>
           <h2>Report options</h2>
@@ -41,5 +47,10 @@ class ReportForm extends Component {
     );
   }
 }
-
+/*
+ReportForm.propTypes = {
+  meetingId: PropTypes.string
+}
+*/
 export default ReportForm;
+//export default connect(mapStateToProps) (ReportForm);
