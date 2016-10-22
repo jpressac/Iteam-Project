@@ -1,6 +1,6 @@
 package org.iteam.controllers.rest;
 
-import org.iteam.data.model.Nationalities;
+import org.iteam.data.dto.Nationalities;
 import org.iteam.services.utilities.UtilitiesServiceImpl;
 import org.junit.Assert;
 import org.junit.Before;

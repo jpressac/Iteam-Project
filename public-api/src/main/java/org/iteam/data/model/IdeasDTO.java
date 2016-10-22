@@ -3,6 +3,7 @@ package org.iteam.data.model;
 import java.util.List;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.iteam.data.dto.Idea;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 

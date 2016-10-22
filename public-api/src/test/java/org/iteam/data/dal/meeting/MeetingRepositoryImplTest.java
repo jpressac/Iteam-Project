@@ -1,16 +1,21 @@
 package org.iteam.data.dal.meeting;
 
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 import org.assertj.core.util.Lists;
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
 import org.iteam.data.dal.client.ElasticsearchClientImpl;
-import org.iteam.data.model.Idea;
+import org.iteam.data.dto.Idea;
+import org.iteam.data.dto.Meeting;
 import org.iteam.data.model.IdeasDTO;
-import org.iteam.data.model.Meeting;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,214 +29,296 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 
 public class MeetingRepositoryImplTest {
 
-	@InjectMocks
-	private MeetingRepositoryImpl underTest;
+    @InjectMocks
+    private MeetingRepositoryImpl underTest;
 
-	@Mock
-	private ElasticsearchClientImpl elasticsearchClientImpl;
+    @Mock
+    private ElasticsearchClientImpl elasticsearchClientImpl;
 
-	private Meeting meeting;
-	private boolean success;
+    private static final String MEETING_REPRESENTATION = "{\"topic\":\"test\",\"meetingId\":\"1234-456-789\",\"creationDate\":\"12345678987\",\"programmedDate\":\"123456789987\", \"ownerName\":\"test-iteam\", \"teamName\":\"123-456-987\", \"description\":\"es un test\"}";
 
-	private IdeasDTO ideas;
-	private String meetingData;
-	private String meetingId;
-	private String meetingInfo;
+    private Meeting meeting;
+    private boolean success;
 
-	@Before
-	public void init() {
-		MockitoAnnotations.initMocks(this);
-	}
+    private IdeasDTO ideas;
+    private String meetingData;
+    private String meetingId;
+    private String meetingInfo;
 
-	@Test
-	public void createMeetingSuccess() {
-		givenAMeeting();
-		givenAnElasticsearchClient(true);
-		whenCreateMeetingIsCalled();
-		thenCheckStatus(true);
-	}
+    private List<Meeting> meetingList;
 
-	@Test
-	public void createMeetingFailure() {
-		givenAMeeting();
-		givenAnElasticsearchClient(false);
-		whenCreateMeetingIsCalled();
-		thenCheckStatus(false);
-	}
+    @Before
+    public void init() {
+        MockitoAnnotations.initMocks(this);
+    }
 
-	@Test
-	public void saveIdeasSuccess() {
-		givenIdeas();
-		givenAnElasticsearchClientBulkResponse(false);
-		whenSaveIdeasIsCalled();
-		thenCheckStatus(true);
-	}
+    @Test
+    public void createMeetingSuccess() {
+        givenAMeeting();
+        givenAnElasticsearchClient(true);
+        whenCreateMeetingIsCalled();
+        thenCheckStatus(true);
+    }
 
-	@Test
-	public void saveIdeasFail() {
-		givenIdeas();
-		givenAnElasticsearchClientBulkResponse(true);
-		whenSaveIdeasIsCalled();
-		thenCheckStatus(false);
-	}
+    @Test
+    public void createMeetingFailure() {
+        givenAMeeting();
+        givenAnElasticsearchClient(false);
+        whenCreateMeetingIsCalled();
+        thenCheckStatus(false);
+    }
 
-	@Test
-	public void saveMeetingInfoSuccess() {
-		givenMeetingData();
-		givenAMeetingId();
-		givenAnElasticsearchIndexResponse();
-		whenSaveMeetingInfoIsCalled();
-		thenVerifySaveMeetingInfoIsCalled(1);
-	}
+    @Test
+    public void saveIdeasSuccess() {
+        givenIdeas();
+        givenAnElasticsearchClientBulkResponse(false);
+        whenSaveIdeasIsCalled();
+        thenCheckStatus(true);
+    }
 
-	@Test
-	public void saveMeetingInfoFail() {
-		givenMeetingData();
-		givenAMeetingId();
-		givenAnElasticsearchIndexResponseFailure();
-		whenSaveMeetingInfoIsCalled();
-		thenVerifySaveMeetingInfoIsCalled(6);
-	}
+    @Test
+    public void saveMeetingInfoSuccess() {
+        givenMeetingData();
+        givenAMeetingId();
+        givenAnElasticsearchIndexResponse();
+        whenSaveMeetingInfoIsCalled();
+        thenVerifySaveMeetingInfoIsCalled(1);
+    }
 
-	@Test
-	public void getMeetingInfoSuccess() {
-		givenAMeetingId();
-		givenAnElasticsearchGetResponse();
-		whenGetMeetingInfoIsCalled();
-		thenVerifyGetMeetingInfoIsCalled();
-		thenCheckInfoReceived();
-	}
+    @Test
+    public void saveMeetingInfoFail() {
+        givenMeetingData();
+        givenAMeetingId();
+        givenAnElasticsearchIndexResponseFailure();
+        whenSaveMeetingInfoIsCalled();
+        thenVerifySaveMeetingInfoIsCalled(6);
+    }
 
-	@Test
-	public void getMeetingInfoFail() {
-		givenAMeetingId();
-		givenAnElasticsearchGetResponseFailure();
-		whenGetMeetingInfoIsCalled();
-		thenVerifyGetMeetingInfoIsCalled();
-		thenCheckInfoIsEmpty();
-	}
+    @Test
+    public void getMeetingInfoSuccess() {
+        givenAMeetingId();
+        givenAnElasticsearchGetResponse();
+        whenGetMeetingInfoIsCalled();
+        thenVerifyGetMeetingInfoIsCalled();
+        thenCheckInfoReceived();
+    }
 
-	private void thenCheckInfoIsEmpty() {
-		Assert.assertNull(meetingInfo);
-	}
+    @Test
+    public void getMeetingInfoFail() {
+        givenAMeetingId();
+        givenAnElasticsearchGetResponseFailure();
+        whenGetMeetingInfoIsCalled();
+        thenVerifyGetMeetingInfoIsCalled();
+        thenCheckInfoIsEmpty();
+    }
 
-	private void givenAnElasticsearchGetResponseFailure() {
-		GetResponse response = Mockito.mock(GetResponse.class);
+    @Test
+    public void getMeetingByUserSuccess() {
+        givenAnElasticsearchGetMeetingUserSuccess();
+        whenGetMettingByUserIsCalled();
+        thenRetriveMeetings(1);
+        thenVerifyElasticsearchMeetingByUserCalls(1);
+    }
 
-		Mockito.when(response.isExists()).thenReturn(false);
+    @Test
+    public void getMeetingByUserNoMeeting() {
+        givenAnElasticsearchGetMeetingUserEmpty();
+        whenGetMettingByUserIsCalled();
+        thenRetriveMeetings(0);
+        thenVerifyElasticsearchMeetingByUserCalls(1);
+    }
 
-		Mockito.when(elasticsearchClientImpl.getDocument(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
-				.thenReturn(response);
+    @Test
+    public void getMeetingByTeamNoMeetings() {
+        givenAnElasticsearchGetMeetingUserEmpty();
+        whenGetMettingByTeamIsCalled();
+        thenRetriveMeetings(0);
+        thenVerifyElasticsearchMeetingByUserCalls(1);
+    }
 
-		ReflectionTestUtils.setField(underTest, "elasticsearchClientImpl", elasticsearchClientImpl);
+    @Test
+    public void getMeetingByTeamSuccess() {
+        givenAnElasticsearchGetMeetingUserSuccess();
+        whenGetMettingByTeamIsCalled();
+        thenRetriveMeetings(1);
+        thenVerifyElasticsearchMeetingByUserCalls(1);
+    }
 
-	}
+    private void whenGetMettingByTeamIsCalled() {
+        meetingList = underTest.getMeetingByTeamName(Lists.newArrayList("test", "test-iteam"));
+    }
 
-	private void thenCheckInfoReceived() {
-		Assert.assertNotNull(meetingInfo);
+    private void givenAnElasticsearchGetMeetingUserEmpty() {
+        SearchResponse response = Mockito.mock(SearchResponse.class);
+        SearchHits searchHits = Mockito.mock(SearchHits.class);
 
-	}
+        @SuppressWarnings("unchecked")
+        Iterator<SearchHit> iterator = Mockito.mock(Iterator.class);
 
-	private void thenVerifyGetMeetingInfoIsCalled() {
-		Mockito.verify(elasticsearchClientImpl, Mockito.times(1)).getDocument(Mockito.anyString(), Mockito.anyString(),
-				Mockito.anyString());
+        Mockito.when(response.getHits()).thenReturn(searchHits);
+        Mockito.when(searchHits.getTotalHits()).thenReturn(2l);
+        Mockito.when(searchHits.iterator()).thenReturn(iterator);
+        Mockito.when(iterator.hasNext()).thenReturn(false);
 
-	}
+        Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject(), Mockito.anyObject()))
+                .thenReturn(response);
 
-	private void whenGetMeetingInfoIsCalled() {
-		meetingInfo = underTest.getMeetingInfo(meetingId);
-	}
+    }
 
-	private void givenAnElasticsearchGetResponse() {
+    private void thenVerifyElasticsearchMeetingByUserCalls(int times) {
+        Mockito.verify(elasticsearchClientImpl, Mockito.times(times)).search(Mockito.anyString(), Mockito.anyObject(),
+                Mockito.anyObject());
+    }
 
-		GetResponse response = Mockito.mock(GetResponse.class);
+    private void thenRetriveMeetings(int meetingSize) {
+        Assert.assertEquals(meetingSize, meetingList.size());
+    }
 
-		Mockito.when(response.isExists()).thenReturn(true);
-		Mockito.when(response.getSourceAsString()).thenReturn("meeting info being returned");
+    private void whenGetMettingByUserIsCalled() {
+        meetingList = underTest.getMeetingUser("test");
+    }
 
-		Mockito.when(elasticsearchClientImpl.getDocument(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
-				.thenReturn(response);
+    private void givenAnElasticsearchGetMeetingUserSuccess() {
+        SearchResponse response = Mockito.mock(SearchResponse.class);
+        SearchHits searchHits = Mockito.mock(SearchHits.class);
+        SearchHit hit = Mockito.mock(SearchHit.class);
 
-		ReflectionTestUtils.setField(underTest, "elasticsearchClientImpl", elasticsearchClientImpl);
-	}
+        @SuppressWarnings("unchecked")
+        Iterator<SearchHit> iterator = Mockito.mock(Iterator.class);
 
-	private void givenAnElasticsearchIndexResponseFailure() {
-		ElasticsearchException exception = Mockito.mock(ElasticsearchException.class);
+        Mockito.when(response.getHits()).thenReturn(searchHits);
+        Mockito.when(searchHits.getTotalHits()).thenReturn(2l);
+        Mockito.when(searchHits.iterator()).thenReturn(iterator);
+        Mockito.when(iterator.hasNext()).thenReturn(true, false);
+        Mockito.when(iterator.next()).thenReturn(hit);
+        Mockito.when(hit.getSourceAsString()).thenReturn(MEETING_REPRESENTATION);
 
-		Mockito.when(elasticsearchClientImpl.insertData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
-				Mockito.anyString())).thenThrow(exception, exception, exception, exception, exception);
+        Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject(), Mockito.anyObject()))
+                .thenReturn(response);
 
-		ReflectionTestUtils.setField(underTest, "elasticsearchClientImpl", elasticsearchClientImpl);
-	}
+    }
 
-	private void givenAMeetingId() {
-		meetingId = "13";
-	}
+    private void thenCheckInfoIsEmpty() {
+        Assert.assertNull(meetingInfo);
+    }
 
-	private void thenVerifySaveMeetingInfoIsCalled(int times) {
-		Mockito.verify(elasticsearchClientImpl, Mockito.times(times)).insertData(Mockito.anyString(),
-				Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
-	}
+    private void givenAnElasticsearchGetResponseFailure() {
+        GetResponse response = Mockito.mock(GetResponse.class);
 
-	private void whenSaveMeetingInfoIsCalled() {
-		underTest.saveMeetingInfo(meetingData, meetingId);
-	}
+        Mockito.when(response.isExists()).thenReturn(false);
 
-	private void givenAnElasticsearchIndexResponse() {
-		IndexResponse response = Mockito.mock(IndexResponse.class);
+        Mockito.when(elasticsearchClientImpl.getDocument(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(response);
 
-		Mockito.when(elasticsearchClientImpl.insertData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
-				Mockito.anyString())).thenReturn(response);
+        ReflectionTestUtils.setField(underTest, "elasticsearchClientImpl", elasticsearchClientImpl);
 
-		ReflectionTestUtils.setField(underTest, "elasticsearchClientImpl", elasticsearchClientImpl);
+    }
 
-	}
+    private void thenCheckInfoReceived() {
+        Assert.assertNotNull(meetingInfo);
 
-	private void givenMeetingData() {
-		meetingData = "Notes";
+    }
 
-	}
+    private void thenVerifyGetMeetingInfoIsCalled() {
+        Mockito.verify(elasticsearchClientImpl, Mockito.times(1)).getDocument(Mockito.anyString(), Mockito.anyString(),
+                Mockito.anyString());
 
-	private void whenSaveIdeasIsCalled() {
-		success = underTest.saveIdeas(ideas);
-	}
+    }
 
-	@SuppressWarnings("unchecked")
-	private void givenAnElasticsearchClientBulkResponse(boolean fail) {
-		BulkResponse response = Mockito.mock(BulkResponse.class);
+    private void whenGetMeetingInfoIsCalled() {
+        meetingInfo = underTest.getMeetingInfo(meetingId);
+    }
 
-		Mockito.when(response.hasFailures()).thenReturn(fail);
+    private void givenAnElasticsearchGetResponse() {
 
-		Mockito.when(elasticsearchClientImpl.insertData(Mockito.anyList(), Mockito.anyString(), Mockito.anyString()))
-				.thenReturn(response);
+        GetResponse response = Mockito.mock(GetResponse.class);
 
-		ReflectionTestUtils.setField(underTest, "elasticsearchClientImpl", elasticsearchClientImpl);
-	}
+        Mockito.when(response.isExists()).thenReturn(true);
+        Mockito.when(response.getSourceAsString()).thenReturn("meeting info being returned");
 
-	private void givenIdeas() {
-		ideas = new IdeasDTO(Lists.newArrayList(new Idea(), new Idea()), new ISO8601DateFormat().format(new Date()));
-	}
+        Mockito.when(elasticsearchClientImpl.getDocument(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(response);
 
-	private void thenCheckStatus(boolean status) {
-		Assert.assertEquals(status, success);
-	}
+        ReflectionTestUtils.setField(underTest, "elasticsearchClientImpl", elasticsearchClientImpl);
+    }
 
-	private void whenCreateMeetingIsCalled() {
-		success = underTest.createMeeting(meeting);
-	}
+    private void givenAnElasticsearchIndexResponseFailure() {
+        ElasticsearchException exception = Mockito.mock(ElasticsearchException.class);
 
-	private void givenAnElasticsearchClient(boolean created) {
-		IndexResponse response = Mockito.mock(IndexResponse.class);
+        Mockito.when(elasticsearchClientImpl.insertData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
+                Mockito.anyString())).thenThrow(exception, exception, exception, exception, exception);
 
-		Mockito.when(response.isCreated()).thenReturn(created);
+        ReflectionTestUtils.setField(underTest, "elasticsearchClientImpl", elasticsearchClientImpl);
+    }
 
-		Mockito.when(elasticsearchClientImpl.insertData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
-				.thenReturn(response);
+    private void givenAMeetingId() {
+        meetingId = "13";
+    }
 
-		ReflectionTestUtils.setField(underTest, "elasticsearchClientImpl", elasticsearchClientImpl);
-	}
+    private void thenVerifySaveMeetingInfoIsCalled(int times) {
+        Mockito.verify(elasticsearchClientImpl, Mockito.times(times)).insertData(Mockito.anyString(),
+                Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
+    }
 
-	private void givenAMeeting() {
-		meeting = new Meeting();
-	}
+    private void whenSaveMeetingInfoIsCalled() {
+        underTest.saveMeetingInfo(meetingData, meetingId);
+    }
+
+    private void givenAnElasticsearchIndexResponse() {
+        IndexResponse response = Mockito.mock(IndexResponse.class);
+
+        Mockito.when(elasticsearchClientImpl.insertData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
+                Mockito.anyString())).thenReturn(response);
+
+        ReflectionTestUtils.setField(underTest, "elasticsearchClientImpl", elasticsearchClientImpl);
+
+    }
+
+    private void givenMeetingData() {
+        meetingData = "Notes";
+
+    }
+
+    private void whenSaveIdeasIsCalled() {
+        success = underTest.saveIdeas(ideas);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void givenAnElasticsearchClientBulkResponse(boolean fail) {
+        BulkResponse response = Mockito.mock(BulkResponse.class);
+
+        Mockito.when(response.hasFailures()).thenReturn(fail);
+
+        Mockito.when(elasticsearchClientImpl.insertData(Mockito.anyList(), Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(response);
+
+        ReflectionTestUtils.setField(underTest, "elasticsearchClientImpl", elasticsearchClientImpl);
+    }
+
+    private void givenIdeas() {
+        ideas = new IdeasDTO(Lists.newArrayList(new Idea(), new Idea()), new ISO8601DateFormat().format(new Date()));
+    }
+
+    private void thenCheckStatus(boolean status) {
+        Assert.assertEquals(status, success);
+    }
+
+    private void whenCreateMeetingIsCalled() {
+        success = underTest.createMeeting(meeting);
+    }
+
+    private void givenAnElasticsearchClient(boolean created) {
+        IndexResponse response = Mockito.mock(IndexResponse.class);
+
+        Mockito.when(response.isCreated()).thenReturn(created);
+
+        Mockito.when(elasticsearchClientImpl.insertData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(response);
+
+        ReflectionTestUtils.setField(underTest, "elasticsearchClientImpl", elasticsearchClientImpl);
+    }
+
+    private void givenAMeeting() {
+        meeting = new Meeting();
+    }
 }

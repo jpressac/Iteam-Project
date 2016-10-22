@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.elasticsearch.ElasticsearchException;
-import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
@@ -22,8 +21,8 @@ import org.iteam.configuration.ExternalConfigurationProperties;
 import org.iteam.configuration.StringUtilities;
 import org.iteam.data.dal.client.ElasticsearchClient;
 import org.iteam.data.dal.client.ElasticsearchClientImpl;
+import org.iteam.data.dto.Meeting;
 import org.iteam.data.model.IdeasDTO;
-import org.iteam.data.model.Meeting;
 import org.iteam.services.utils.JSONUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -86,6 +85,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     public boolean saveIdeas(IdeasDTO ideas) {
 
         LOGGER.info("Inserting new ideas");
+
         LOGGER.debug("Ideas: '{}'", ideas.toString());
 
         // TODO:check if it's necessary set the insertion date to each idea.
@@ -95,14 +95,9 @@ public class MeetingRepositoryImpl implements MeetingRepository {
             dataToInsert.add(JSONUtils.ObjectToJSON(idea));
         });
 
-        BulkResponse response = elasticsearchClientImpl.insertData(dataToInsert, StringUtilities.INDEX_IDEAS,
-                StringUtilities.INDEX_TYPE_IDEAS);
-
-        if(response.hasFailures()) {
-
-            LOGGER.error("Ideas bulk insertion has failed - Error: '{}'", response.buildFailureMessage());
-            return false;
-        }
+        // TODO:verify how to check if the document was updated or not. The only
+        // way til now is to execute another query an check the modified fields.
+        elasticsearchClientImpl.insertData(dataToInsert, StringUtilities.INDEX_IDEAS, StringUtilities.INDEX_TYPE_IDEAS);
 
         return true;
     }
@@ -155,13 +150,14 @@ public class MeetingRepositoryImpl implements MeetingRepository {
                 SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD).order(SortOrder.ASC));
 
         List<Meeting> meetingList = new ArrayList<>();
-        LOGGER.info("meetings: ", response.getHits().toString());
-        if(response != null) {
-            for(SearchHit hit : response.getHits()) {
-                LOGGER.debug("User '{}' meeting: '{}'", username, hit.getSourceAsString());
-                Meeting meeting = (Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class);
-                meetingList.add(meeting);
-            }
+
+        LOGGER.debug("meetings retrieved: ", response.getHits().getTotalHits());
+
+        for(SearchHit hit : response.getHits()) {
+
+            LOGGER.debug("User '{}' meeting: '{}'", username, hit.getSourceAsString());
+
+            meetingList.add((Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class));
         }
 
         LOGGER.debug("User '{}' list of meetings: '{}'", username, meetingList.toString());
@@ -175,19 +171,18 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         LOGGER.info("Getting meeting for teams: '{}'", teamName.toString());
 
         SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING,
-                QueryBuilders.termsQuery(MEETING_TEAM_NAME_FIELD, teamName));
+                QueryBuilders.termsQuery(MEETING_TEAM_NAME_FIELD, teamName),
+                SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD).order(SortOrder.ASC));
 
-        long hits = response.getHits().getTotalHits();
+        for(SearchHit hit : response.getHits()) {
 
-        if(hits > 0) {
-            for(SearchHit hit : response.getHits()) {
-                Meeting meeting = (Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class);
-                meetingList.add(meeting);
-                LOGGER.debug("Meetings: " + meeting.getTopic());
-            }
+            Meeting meeting = (Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class);
+            meetingList.add(meeting);
+
+            LOGGER.debug("Meetings: " + meeting.getMeetingId());
         }
 
-        LOGGER.info("Successfully retrrieve meetings: '{}'", hits);
+        LOGGER.info("Successfully retrrieve meetings: '{}'", response.getHits().getTotalHits());
 
         return meetingList;
     }

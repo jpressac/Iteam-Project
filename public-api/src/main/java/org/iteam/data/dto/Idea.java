@@ -1,4 +1,4 @@
-package org.iteam.data.model;
+package org.iteam.data.dto;
 
 import java.util.List;
 

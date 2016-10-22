@@ -6,7 +6,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.iteam.data.dal.client.ElasticsearchClientImpl;
-import org.iteam.data.model.UserDTO;
+import org.iteam.data.dto.UserDTO;
 import org.iteam.exceptions.JsonParsingException;
 import org.junit.Assert;
 import org.junit.Before;

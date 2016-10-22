@@ -1,29 +1,44 @@
 import React, {PropTypes} from 'react';
-import classes from './TeamSugestionForm.scss';
+import classes from './TeamSuggestionForm.scss';
 import axios from 'axios';
 import BootstrapModal from '../BootstrapModal';
 import {connect} from 'react-redux';
 import Input from 'react-toolbox/lib/input';
 import Dropdown from 'react-toolbox/lib/dropdown';
 import {Button, IconButton} from 'react-toolbox/lib/button';
+import {push} from 'react-router-redux'
+import {PATHS} from '../../constants/routes'
 
 const mapStateToProps = (state) => {
   if (state.loginUser !== null) {
     return {
-      user: state.loginUser.user.name
+      user: state.loginUser.user.username,
+      fromMeeting: state.meetingForTeamReducer
     }
   }
 };
+
+const mapDispatchToProps = dispatch => ({
+
+  meeting: () => {
+    dispatch(push('/' + PATHS.MENULOGGEDIN.MEETING))
+  },
+
+  normal: () => {
+    dispatch(push('/' + PATHS.MENULOGGEDIN.HOME))
+  }
+});
+
 const filtro = [
-  { value: 1, label: 'Profession' },
-  { value: 2, label: 'Age'},
-  { value: 3, label: 'Nationality' },
-  { value: 4, label: 'Job position'},
-  { value: 5, label: 'Hobbies'}
+  {value: 1, label: 'Profession'},
+  {value: 2, label: 'Age'},
+  {value: 3, label: 'Nationality'},
+  {value: 4, label: 'Job position'},
+  {value: 5, label: 'Hobbies'}
 
 ];
 
-class TeamSugestionForm extends React.Component {
+class TeamSuggestionForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -33,48 +48,41 @@ class TeamSugestionForm extends React.Component {
       selectedUsers: [],
       usernames: {},
       values: [],
-      message: ''
+      message: '',
+      filterName: '',
+      filteredName: ''
     }
   }
 
-  handleClick(event) {
-    if ((this.refs.filterName.value !== '') && (this.refs.filterValue.value !== '')) {
+  handleClick() {
+    if ((this.state.filterName !== '') && (this.state.filteredName !== '')) {
       let valueFields = [];
-      valueFields.push(this.refs.filterValue.value);
-      this.state.filters.push({field: (this.refs.filterName.value).toLowerCase(), values: valueFields});
-      console.log(this.state);
+      valueFields.push(this.state.filteredName);
+      this.state.filters.push({field: this.state.filterName.toLowerCase(), values: valueFields});
       this.forceUpdate();
     }
   }
 
   handleOnChange(username) {
-    var _this = this;
-    let newMap = {};
-    newMap = _this.state.usernames;
-    if (newMap[username] == false) {
-      newMap[username] = true;
-    } else {
-      newMap[username] = false;
-    }
+    let newMap = this.state.usernames;
+    newMap[username] = newMap[username] == false;
     this.setState({usernames: newMap});
-    console.log(_this.state.usernames);
-    console.log(this.state.users);
-    _this.forceUpdate();
   }
 
   //TODO: use a set<string> for filling the table with columns that details the filter applied
 
   searchUsers() {
-    var _this = this;
+    let filterJson =  JSON.stringify(this.state.filters);
+    console.log('filter json ' + filterJson);
+
     if (this.state.filters.length >= 0) {
       axios.get('http://localhost:8080/team/select',
         {
           params: {filter: JSON.stringify(this.state.filters)}
         }).then(function (response) {
-        console.log(response.data);
-        _this.fillUsersTable(response.data);
-      }).catch(function (response) {
-        console.log(response.error);
+        this.fillUsersTable(response.data);
+      }.bind(this)).catch(function (response) {
+        //TODO: handle errors
       });
     }
   }
@@ -82,31 +90,35 @@ class TeamSugestionForm extends React.Component {
   createMeeting() {
     let usersMap = this.state.usernames;
     let selected = [];
-    debugger
     for (let user in usersMap) {
       if (usersMap[user] == true) {
         selected.push(user);
       }
     }
-    if ((selected.length > 0) && (this.refs.teamName.value !== '')) {
+    selected.push(this.props.user);
+
+    if ((selected.length > 0) && (this.state.teamName !== '')) {
       axios.post('http://localhost:8080/team/create', {
         ownerName: this.props.user,
-        name: this.refs.teamName.value,
+        name: this.state.teamName,
         members: selected
       }).then(function (response) {
-        console.log(response.status);
-        this.setState({message: '¡Your team was successfully created!'});
-        this.refs.mymodal.openModal();
+        //TODO: implement a modal with a button that receives a call-function and perform any of the below actions.
+        this.checkWehereItCames()
       }.bind(this)).catch(function (response) {
-        console.log(response.status);
+        //TODO: handle errors
       })
+    } else {
+      this.setState({message: '¡please complete the required fields!'});
+      this.refs.mymodal.openModal();
     }
   }
 
-  validateBeforeCreation() {
-
-    if (this.refs.teamName === '') {
-      //required field add to modal error
+  checkWehereItCames(){
+    if (this.props.fromMeeting === true) {
+      this.props.meeting();
+    } else {
+      this.props.normal();
     }
   }
 
@@ -116,38 +128,40 @@ class TeamSugestionForm extends React.Component {
       if (pos === index) {
         newFilters.splice(index, 1);
       }
-
-    })
+    });
     this.setState({filters: newFilters});
-    this.searchUsers();
-    this.forceUpdate();
+    this.searchUsers.bind(this);
   }
 
   fillUsersTable(data) {
-    var _this = this;
     let us = [];
     let names = {};
-    debugger
     data.map(function (user, index) {
-      us.push(
-        <tr key={us.length}>
-          <td><input className="no-margin" type="checkbox"
-                     onChange={_this.handleOnChange.bind(_this, user.username)}></input></td>
-          <td>{user.lastName}</td>
-          <td>{user.name}</td>
-        </tr>
-      );
-      names[user.username] = false;
-    });
+      if(user.username !== this.props.user){
+        us.push(
+          <tr key={us.length}>
+            <td><input className="no-margin" type="checkbox"
+                       onChange={this.handleOnChange.bind(this, user.username)}/></td>
+            <td>{user.lastName}</td>
+            <td>{user.name}</td>
+          </tr>
+        );
+        names[user.username] = false;
+      }
+    }.bind(this));
+
     this.setState({users: us});
     this.setState({usernames: names});
-    this.forceUpdate();
   }
 
   fillFilterValues(value) {
-    const filter = this.state.value;
+
+    let filtered = filtro.filter(teamFilter => teamFilter["value"] === value);
+
     let url = '';
-    switch (filter) {
+    let filterLabelName = filtered[0]["label"];
+
+    switch (filterLabelName) {
       case "Profession":
         url = 'http://localhost:8080/utilities/professions';
         break;
@@ -162,42 +176,67 @@ class TeamSugestionForm extends React.Component {
         break;
     }
     this.setState({value: value});
+    this.setState({filterName: filterLabelName});
     if (url !== '') {
       axios.get(url).then(function (response) {
-        console.log(response.data);
         this.setValuesOptions(response.data);
-        this.forceUpdate();
       }.bind(this));
     }
   }
 
   setValuesOptions(data) {
-    var opt = [];
-    data.map(function (option, index) {
-      opt.push(
-        <option key={index} value={option}>{option}</option>
-      );
+
+    let opt = data["nationalities"].map(function (option, index) {
+      var rObj = {};
+      rObj["value"] = index;
+      rObj["label"] = option;
+      return rObj;
     });
     this.setState({values: opt});
-    this.forceUpdate();
+  }
+
+  setFilteredValue(value) {
+
+    let filteredLabelObject = this.state.values.filter(filter => filter["value"] == value);
+
+    this.setState({filteredValue: value, filteredName: filteredLabelObject[0]["label"]})
   }
 
   handleChange = (teamName, value) => {
     this.setState({...this.state, [teamName]: value});
   };
 
-  render() {
-    var filterLabels = this.state.filters.map(function (filter, index) {
+  dropdownObjectForFilter() {
+    return (
+      <Dropdown label="Select filter" auto onChange={this.fillFilterValues.bind(this)} source={filtro}
+                value={this.state.value}/>
+    );
+  };
+
+  dropdownObjectFilteredValues() {
+    return (
+      <Dropdown label="Select filter" auto onChange={this.setFilteredValue.bind(this)} source={this.state.values}
+                value={this.state.filteredValue}/>
+    );
+  };
+
+
+  filterLabels() {
+    return this.state.filters.map(function (filter, index) {
       return (
         <span className="tag label label-info" style={{fontSize:14, margin:10, marginTop:50}}>
-                <span key={index}>{filter.field} : {filter.values}</span>
-                <a href='javascript:;' onClick={this.deleteFilter.bind(this,index)}><i
-                  className="remove glyphicon glyphicon-remove-sign glyphicon-white"></i></a>
-              </span>
+          <span key={index}> {filter.field} : {filter.values}</span>
+          <a href='javascript:;' onClick={this.deleteFilter.bind(this, index)}>
+            <i className="remove glyphicon glyphicon-remove-sign glyphicon-white"/>
+          </a>
+        </span>
       );
     }.bind(this));
+  }
+
+  render() {
     return (
-      <form className="form-horizontal">
+      <div className="container">
         <div className="row">
           <div className="form-horizontal">
             <div className="form-group" style={{marginRight:400}}>
@@ -214,29 +253,25 @@ class TeamSugestionForm extends React.Component {
             <div className="col-md-12">
               <div className="row">
                 <div className="col-md-4">
-                  <Dropdown label="Select filter" auto onChange={this.fillFilterValues.bind(this)} source={filtro} value={this.state.value}/>
+                  {this.dropdownObjectForFilter()}
                 </div>
 
                 <div className="col-md-4">
-
-                  <select className="form-control" id="filterValue" ref="filterValue">
-                    <option value="" default></option>
-                    {this.state.values}
-                  </select>
+                  {this.dropdownObjectFilteredValues()}
                 </div>
               </div>
+            </div>
+            <div className="row">
+              <div className="col-md-4">
+                <Button icon='add' label='Add this' raised primary onClick={this.handleClick.bind(this)}/>
               </div>
-                <div className="row">
-                <div className="col-md-4">
-                  <Button icon='add' label='Add this' raised primary onClick={this.handleClick.bind(this)}/>
-                </div>
 
-                </div>
+            </div>
 
           </div>
           <div className="row">
             <div className="col-md-8" style={{marginTop:20}}>
-              {filterLabels}
+              {this.filterLabels()}
             </div>
           </div>
         </div>
@@ -245,7 +280,7 @@ class TeamSugestionForm extends React.Component {
           <div className="col-md-2">
             <button type="button" className="btn btn-primary" style={{marginTop:20}}
                     onClick={this.searchUsers.bind(this)}>
-              <span className="glyphicon glyphicon-search"></span> Search
+              <span className="glyphicon glyphicon-search"/> Search
             </button>
           </div>
         </div>
@@ -256,7 +291,7 @@ class TeamSugestionForm extends React.Component {
               <thead>
               <tr>
                 <th style={{"width": "5%"}}>
-                  <input className="no-margin" type="checkbox"></input>
+                  <input className="no-margin" type="checkbox"/>
                 </th>
                 <th style={{"width" : "45%" , "align":"center"}}>Last name</th>
                 <th style={{"width" : "50%"}}>Name</th>
@@ -271,21 +306,20 @@ class TeamSugestionForm extends React.Component {
                       onClick={this.createMeeting.bind(this)}>
                 Create
               </button>
-              <button id="ok" type="button" className="btn btn-primary" style={{marginTop:20}}
-              >
-                OK
-              </button>
             </div>
           </div>
         </div>
-        <BootstrapModal ref="mymodal" message={this.state.message}></BootstrapModal>
-      </form>);
+        <BootstrapModal ref="mymodal" message={this.state.message}/>
+      </div>);
   }
 }
 
-TeamSugestionForm.propTypes = {
-  user: PropTypes.any
+TeamSuggestionForm.propTypes = {
+  user: PropTypes.any,
+  fromMeeting: PropTypes.bool,
+  meeting: PropTypes.func,
+  normal: PropTypes.func
 };
 
 
-export default connect(mapStateToProps)(TeamSugestionForm);
+export default connect(mapStateToProps, mapDispatchToProps)(TeamSuggestionForm);
