@@ -18,7 +18,7 @@ public class IteamUserDetailService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        org.iteam.data.model.UserDTO user = userRepository.getUser(username);
+        org.iteam.data.dto.UserDTO user = userRepository.getUser(username);
 
         if (user == null) {
             throw new UsernameNotFoundException("User not fould" + username);

@@ -1,5 +1,6 @@
 package org.iteam.data.dal.team;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -13,10 +14,12 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.iteam.configuration.StringUtilities;
 import org.iteam.data.dal.client.ElasticsearchClientImpl;
-import org.iteam.data.model.Filter;
+import org.iteam.data.dto.Filter;
+import org.iteam.data.dto.Team;
+import org.iteam.data.dto.UserDTO;
+import org.iteam.data.model.BiFieldModel;
 import org.iteam.data.model.FilterList;
-import org.iteam.data.model.Team;
-import org.iteam.data.model.UserDTO;
+import org.iteam.data.model.TeamModel;
 import org.iteam.services.utils.JSONUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -24,28 +27,26 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @Repository
 public class TeamRepositoryImpl implements TeamRepository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TeamRepositoryImpl.class);
 
-    private ElasticsearchClientImpl elasticsearchClient;
     private static final String OWNER_NAME_FIELD = "ownerName";
     private static final String LOGICAL_DELETE_FIELD = "logicalDelete";
     private static final String TEAM_NAME_FIELD = "name";
     private static final String TEAM_MEMBERS_FIELD = "members";
+
+    private ElasticsearchClientImpl elasticsearchClient;
 
     @Override
     public boolean putTeam(Team team) {
 
         // adds creation Date time epoch-millis
         team.setCreationDate(DateTime.now().getMillis());
-
-        // TODO: this code must be on the UI.
-        // List<String> members = team.getMembers();
-        // members.add(team.getOwnerName());
-        // team.setMembers(members);
-
         String data = JSONUtils.ObjectToJSON(team);
 
         IndexResponse response = elasticsearchClient.insertData(data, StringUtilities.INDEX_TEAM,
@@ -103,20 +104,20 @@ public class TeamRepositoryImpl implements TeamRepository {
     }
 
     @Override
-    public List<Team> getTeams(String ownerName) {
+    public List<TeamModel> getTeams(String ownerName) {
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
         queryBuilder.must(QueryBuilders.termQuery(OWNER_NAME_FIELD, ownerName));
 
         SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_TEAM, queryBuilder);
 
-        List<Team> teamList = new ArrayList<>();
+        List<TeamModel> teamList = new ArrayList<>();
 
         if(response != null) {
             for(SearchHit hit : response.getHits()) {
-                teamList.add((Team) JSONUtils.JSONToObject(hit.getSourceAsString(), Team.class));
+                teamList.add(
+                        new TeamModel(hit.getId(), (Team) JSONUtils.JSONToObject(hit.getSourceAsString(), Team.class)));
             }
         }
-
         return teamList;
     }
 

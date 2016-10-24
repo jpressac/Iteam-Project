@@ -19,7 +19,6 @@ import org.iteam.configuration.ExternalConfigurationProperties;
 import org.iteam.configuration.StringUtilities;
 import org.iteam.data.dal.client.ElasticsearchClient;
 import org.iteam.data.dal.client.ElasticsearchClientImpl;
-import org.iteam.data.model.Idea;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.Meeting;
 import org.iteam.data.model.Reports;

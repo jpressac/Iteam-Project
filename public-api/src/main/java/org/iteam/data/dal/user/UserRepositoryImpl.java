@@ -9,7 +9,7 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.iteam.configuration.StringUtilities;
 import org.iteam.data.dal.client.ElasticsearchClient;
-import org.iteam.data.model.UserDTO;
+import org.iteam.data.dto.UserDTO;
 import org.iteam.exceptions.JsonParsingException;
 import org.iteam.services.utils.JSONUtils;
 import org.slf4j.Logger;

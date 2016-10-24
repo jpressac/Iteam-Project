@@ -1,6 +1,6 @@
 package org.iteam.data.dal.user;
 
-import org.iteam.data.model.UserDTO;
+import org.iteam.data.dto.UserDTO;
 
 /**
  * This class controls all the request for getting and setting information about

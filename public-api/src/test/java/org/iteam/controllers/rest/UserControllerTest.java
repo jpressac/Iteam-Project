@@ -1,6 +1,6 @@
 package org.iteam.controllers.rest;
 
-import org.iteam.data.model.UserDTO;
+import org.iteam.data.dto.UserDTO;
 import org.iteam.services.user.UserServiceImpl;
 import org.junit.Assert;
 import org.junit.Before;

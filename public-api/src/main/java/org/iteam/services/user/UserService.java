@@ -1,6 +1,6 @@
 package org.iteam.services.user;
 
-import org.iteam.data.model.UserDTO;
+import org.iteam.data.dto.UserDTO;
 
 public interface UserService {
 

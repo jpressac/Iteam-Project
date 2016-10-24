@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.iteam.data.dal.meeting.MeetingRepository;
 import org.iteam.data.dal.meeting.MeetingRepositoryImpl;
+import org.iteam.data.dto.Meeting;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.Meeting;
 import org.iteam.data.model.Reports;

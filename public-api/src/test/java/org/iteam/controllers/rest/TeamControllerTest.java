@@ -1,6 +1,6 @@
 package org.iteam.controllers.rest;
 
-import org.iteam.data.model.Team;
+import org.iteam.data.dto.Team;
 import org.iteam.services.team.TeamServiceImpl;
 import org.junit.Assert;
 import org.junit.Before;
