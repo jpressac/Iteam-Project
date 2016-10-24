@@ -23,6 +23,13 @@ report.end()
   meetingId: state.meetingId
 });
 */
+const mapStateToProps = (state) => {
+  if (state.meetingReducer != null) {
+    return {
+    meetingId : state.meetingReducer.updateMeetingId}
+  }
+}
+  
 class ReportForm extends Component {
   constructor(props) {
     super(props);
@@ -47,10 +54,9 @@ class ReportForm extends Component {
     );
   }
 }
-/*
+
 ReportForm.propTypes = {
   meetingId: PropTypes.string
 }
-*/
-export default ReportForm;
-//export default connect(mapStateToProps) (ReportForm);
+
+export default connect(mapStateToProps) (ReportForm);
