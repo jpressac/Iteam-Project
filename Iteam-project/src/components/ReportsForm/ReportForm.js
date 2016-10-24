@@ -26,10 +26,11 @@ report.end()
 const mapStateToProps = (state) => {
   if (state.meetingReducer != null) {
     return {
-    meetingId : state.meetingReducer.updateMeetingId}
+      meetingId: state.meetingReducer.meetingId
+    }
   }
 }
-  
+
 class ReportForm extends Component {
   constructor(props) {
     super(props);

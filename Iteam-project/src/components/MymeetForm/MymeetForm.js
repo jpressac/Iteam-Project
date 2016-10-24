@@ -26,10 +26,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => ({
   onClick: () => dispatch(push('/' + PATHS.MENULOGGEDIN.BOARD)),
 
-  goToReports: () => {
-    dispatch(push('/' + PATHS.MENULOGGEDIN.REPORTS))
-    store.dispatch(updateMeetingId(this.state.meet))
-  }
+  updateMyMeetingId: (meetingId) => dispatch(updateMeetingId(meetingId))
 
 });
 
@@ -52,6 +49,9 @@ class MymeetForm extends Component {
   }
 
 
+  goToReports(){
+    this.props.updateMyMeetingId(this.state.meet.meetingId);
+  }
 
   handleToggleDialog = (meeting) => {
     this.setState({
@@ -147,7 +147,7 @@ class MymeetForm extends Component {
 
   AdminUserActionsFinish = [
     {label: "Cancel", onClick: this.handleToggleDialog},
-    {label: "View Reports", onClick: this.props.goToReports}
+    {label: "View Reports", onClick: this.goToReports.bind(this)}
   ];
 
   UserActionsJoin = [

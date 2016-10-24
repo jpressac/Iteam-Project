@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.Meeting;
+import org.iteam.data.model.Reports;
 
 /**
  * Handles all the request for the meeting.
@@ -34,8 +35,9 @@ public interface MeetingService {
      * 
      * @param meetingId
      *            the meeting id.
+     * @return
      */
-    public void generateReport(String meetingId);
+    public Reports generateReport(String meetingId);
 
     /**
      *

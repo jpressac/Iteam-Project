@@ -6,6 +6,7 @@ import org.iteam.data.dal.meeting.MeetingRepository;
 import org.iteam.data.dal.meeting.MeetingRepositoryImpl;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.Meeting;
+import org.iteam.data.model.Reports;
 import org.iteam.exceptions.MeetingInfoNotFoundException;
 import org.iteam.services.team.TeamService;
 import org.slf4j.Logger;
@@ -37,8 +38,8 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public void generateReport(String meetingId) {
-        meetingRepositoryImpl.generateBasicReport(meetingId);
+    public Reports generateReport(String meetingId) {
+        return meetingRepositoryImpl.generateBasicReport(meetingId);
     }
 
     @Override
