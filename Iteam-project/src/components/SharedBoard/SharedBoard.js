@@ -263,7 +263,6 @@ class SharedBoard extends Component {
 
   componentWillMount(){
     axios.get('http://localhost:8080/meeting/meetinginfo?meetingId=13').then((response) => {
-      console.log('hola puteta ' + response.data);
       if(response.data !== ""){
         this.setState({notes: response.data});
       }
