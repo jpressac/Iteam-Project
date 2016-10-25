@@ -6,7 +6,6 @@ import javax.validation.Valid;
 
 import org.iteam.data.dto.Meeting;
 import org.iteam.data.model.IdeasDTO;
-import org.iteam.data.model.Meeting;
 import org.iteam.data.model.Reports;
 import org.iteam.services.meeting.MeetingService;
 import org.iteam.services.meeting.MeetingServiceImpl;

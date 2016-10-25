@@ -24,10 +24,10 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => ({
+
   onClick: () => dispatch(push('/' + PATHS.MENULOGGEDIN.BOARD)),
 
   updateMyMeetingId: (meetingId) => dispatch(updateMeetingId(meetingId))
-
 });
 
 
@@ -51,6 +51,11 @@ class MymeetForm extends Component {
 
   goToReports(){
     this.props.updateMyMeetingId(this.state.meet.meetingId);
+  }
+
+  startMeeting(){
+    this.props.updateMyMeetingId(this.state.meet.meetingId);
+    this.props.onClick();
   }
 
   handleToggleDialog = (meeting) => {
@@ -110,32 +115,32 @@ class MymeetForm extends Component {
   showActions(meetingOwner, meetingDate) {
     if (this.isAdmin(meetingOwner)) {
       if (MymeetForm.validateDate(meetingDate)) {
-        return this.AdminActionsEdit;
+        return this.AdminActionsStart;
       }
       else {
         if (MymeetForm.validateStart(meetingDate)) {
-          return this.AdminActionsEdit;
+          return this.AdminActionsStart;
         }
-        return this.AdminActionsEdit;
+        return this.AdminActionsStart;
       }
     }
     else {
       console.log('is user');
       if (MymeetForm.validateDate(meetingDate)) {
-        return this.AdminUserActionsFinish;
+        return this.UserActionsView;
       }
       else {
         if (MymeetForm.validateStart(meetingDate)) {
-          return this.AdminUserActionsFinish;
+          return this.UserActionsJoin;
         }
-        return this.AdminUserActionsFinish;
+        return this.UserActionsView;
       }
     }
   }
 
   AdminActionsStart = [
     {label: "Cancel", onClick: this.handleToggleDialog},
-    {label: "Start", onClick: this.props.onClick}
+    {label: "Start", onClick: this.startMeeting.bind(this)}
   ];
 
   AdminActionsEdit = [

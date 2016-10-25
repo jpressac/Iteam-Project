@@ -21,7 +21,8 @@ const NoteTarget = {
 
 const mapStateToProps = (state) => {
   return {
-    user: state.loginUser.user.username
+    user: state.loginUser.user.username,
+    meetingId: state.meetingReducer.meetingId
   }
 };
 
@@ -89,8 +90,7 @@ class PersonalBoard extends Component {
       //ver que carajo ponemos aca como default
       tag: "No tag",
       ranking: 0,
-      //aca va this.props.meeting
-      meetingId: 'meeting123',
+      meetingId: this.props.meetingId,
       boardType: "personal"
     };
 
@@ -123,7 +123,7 @@ class PersonalBoard extends Component {
     let map = this.state.notes;
     // send to shared board
     //TODO, channel es la meeting id, iria this.props.meeting
-    sendNote("insert",'13', JSON.stringify(
+    sendNote("insert", this.props.meetingId , JSON.stringify(
       {
         "username": map[id].username,
         "title": map[id].title,
@@ -153,7 +153,7 @@ class PersonalBoard extends Component {
 PersonalBoard.propTypes = {
   connectDropTarget: PropTypes.func.isRequired,
   user: PropTypes.any,
-  meeting: PropTypes.string
+  meetingId: PropTypes.string
 };
 
 export default flow(
