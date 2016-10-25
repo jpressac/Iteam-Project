@@ -5,7 +5,7 @@ import {DragSource} from 'react-dnd';
 import {IconButton} from 'react-toolbox/lib/button';
 import {Card, CardTitle, CardText, CardActions} from 'react-toolbox/lib/card';
 import Chip from 'react-toolbox/lib/chip'
-import {createFragment} from 'react'
+import createFragment from 'react-addons-create-fragment'
 
 
 const NoteSource = {
@@ -27,6 +27,7 @@ class Note extends Component {
     this.state = {
       view: 'normal',
       board: props.boardType,
+      tag:[]
     }
   }
 
@@ -43,6 +44,7 @@ class Note extends Component {
                  style={{...style, left, top}}>
               <Card style={{resize: 'both', overflow: 'auto'}}>
                 <textarea ref="titleText" defaultValue={this.props.title} className="form-control"/>
+                <textarea ref="tagText" defaultValue={this.props.tag} className="form-control"/>
                 <textarea ref="subtitleText" defaultValue={this.props.subtitle} className="form-control"/>
                 <CardActions>
                   <IconButton icon="save" onClick={this.save.bind(this)}/>
@@ -56,14 +58,13 @@ class Note extends Component {
             <div className={classes.card}
                  style={{...style, left, top}}>
               <Card style={{resize: 'both', overflow: 'auto'}}>
-                {createFragment(this.state.tag)}
+                <Chip deletable>{this.props.tag}</Chip>
                 <CardTitle
                   title={this.props.title}
                   subtitle={this.props.subtitle}
                 />
                 <CardActions>
                   <IconButton icon="create" onClick={this.edit.bind(this)}/>
-                  <IconButton icon="bookmark" onClick={this.addTag.bind(this)}/>
                   <IconButton icon="delete_sweep" onClick={this.removeFromPersonal.bind(this)}/>
                   <IconButton icon="send" onClick={this.send.bind(this)}/>
                 </CardActions>
@@ -76,7 +77,6 @@ class Note extends Component {
             <div className={classes.card}
                  style={{...style, left, top}}>
               <Card style={{resize: 'both', overflow: 'auto'}}>
-                <textarea ref="tagText" defaultValue={this.props.tag} className="form-control"/>
                 <CardTitle
                   title={this.props.title}
                   subtitle={this.props.subtitle}
@@ -179,7 +179,7 @@ class Note extends Component {
   }
 
   addTag(){
-    this.setState({view: 'tag'});
+    // this.setState({view: 'tag'});
   }
 
   saveTag(){
@@ -191,9 +191,16 @@ class Note extends Component {
     this.setState({view: 'normal'})
   }
 
-  getTags(){
-    let tag = this.state.tag;
-    return tag;
+  renderTag(){
+    let tagArray = this.state.tag;
+
+    if(tagArray.length === 1){
+      return createFragment(this.state.tag)
+    }else{
+      tagArray.map(t => {
+        return createFragment(t)
+      })
+    }
   }
 
   removeTag(){
