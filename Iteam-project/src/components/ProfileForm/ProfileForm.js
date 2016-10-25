@@ -40,7 +40,7 @@ class ProfileForm extends React.Component {
   render(){
     return(
 
-      <div className={"container"}>
+      <div className={"container"}style={{marginTop:70}}>
 
                   <div className={classes.label}  >
                         <label>MY PROFILE</label>

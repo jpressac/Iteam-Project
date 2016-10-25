@@ -7,6 +7,7 @@ import TimePicker from 'react-toolbox/lib/time_picker';
 import DatePicker from 'react-toolbox/lib/date_picker';
 import {push} from 'react-router-redux'
 import {PATHS} from '../../constants/routes'
+import classes from './MymeetForm.scss'
 
 
 const mapStateToProps = (state) => {
@@ -156,8 +157,12 @@ class MymeetForm extends Component {
     let meetingTime = new Date;
 
     return (
-      <List selectable ripple>
-        <ListSubHeader caption='MY MEETINGS'/>
+      <div className={"container"} style={{marginTop:70}}>
+        <div className={classes.label2}>
+          <label>MY MEETING</label>
+        </div>
+      <List selectable ripple >
+        <ListSubHeader />
         {Object.keys(meetmap).map((key) => {
             meetingTime = meetmap[key].programmedDate;
             var renderDateTime = this.renderDate(meetingTime);
@@ -186,6 +191,7 @@ class MymeetForm extends Component {
           }
         )}
       </List>
+        </div>
     )
   }
 

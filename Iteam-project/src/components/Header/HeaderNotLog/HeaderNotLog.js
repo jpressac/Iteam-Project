@@ -31,11 +31,11 @@ class HeaderNotLog extends React.Component {
           <div >
             <img src={logo} style={{height:50,width:100,marginRight:400}}></img>
             <Navigation type="horizontal" theme={themeNav} >
-              <Button icon='bookmark' label='HOME' accent onClick={this.props.home} />
+              <Button icon='home' label='HOME' accent onClick={this.props.home} />
               <Button icon='bookmark' label='ABOUT' accent onClick={this.props.about} />
-              <Button icon='bookmark' label='CONTACT' accent onClick={this.props.contact} />
-              <Button icon='bookmark' label='LOGIN' accent onClick={this.props.login} />
-              
+              <Button icon='contact_phone' label='CONTACT' accent onClick={this.props.contact} />
+              <Button icon='person' label='LOGIN' accent onClick={this.props.login} />
+
 
             </Navigation>
           </div>
