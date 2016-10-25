@@ -7,6 +7,7 @@ import Dropdown from 'react-toolbox/lib/dropdown';
 import {Button, IconButton} from 'react-toolbox/lib/button';
 import {push} from 'react-router-redux'
 import {PATHS} from '../../constants/routes'
+import classes from './TeamSuggestionForm.scss'
 
 const mapStateToProps = (state) => {
   if (state.loginUser !== null) {
@@ -189,6 +190,7 @@ class TeamSuggestionForm extends React.Component {
       var rObj = {};
       rObj["value"] = index;
       rObj["label"] = option;
+
       return rObj;
     });
     this.setState({values: opt});
@@ -208,7 +210,8 @@ class TeamSuggestionForm extends React.Component {
   setFilteredValue(value) {
 
     let filteredLabelObject = this.state.values.filter(filter => filter["value"] == value);
-
+    let json= JSON.stringify(filteredLabelObject);
+    console.log('json ' + json);
     this.setState({filteredValue: value, filteredName: filteredLabelObject[0]["label"]})
   }
 
@@ -246,10 +249,13 @@ class TeamSuggestionForm extends React.Component {
 
   render() {
     return (
-      <div className="container">
+      <div className="container" style={{marginTop:80, marginRight:50}}>
+        <div className={classes.label2}>
+          <label>CREATE TEAM</label>
+        </div>
         <div className="row">
           <div className="form-horizontal">
-            <div className="form-group" style={{marginRight:400}}>
+            <div className="form-group" >
               <div className="col-md-8">
                 <div className="row">
                   <Input type='text' label='Name' name='teamName'

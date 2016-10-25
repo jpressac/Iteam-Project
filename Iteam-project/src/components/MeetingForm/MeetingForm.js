@@ -10,6 +10,8 @@ import BootstrapModal from '../../components/BootstrapModal/BootstrapModal'
 import Input from 'react-toolbox/lib/input';
 import {saveMeeting} from '../../redux/reducers/Meeting/MeetingReducer'
 import {meetingToNewTeam} from '../../redux/reducers/Meeting/MeetingForTeamReducer'
+import Dropdown from 'react-toolbox/lib/dropdown';
+
 
 var datetime = new Date();
 const min_datetime = new Date(new Date(datetime).setDate(datetime.getDate()));
@@ -44,7 +46,8 @@ class MeetingView extends Component {
       programmedDate: new Date(),
       time: new Date(),
       teamName: '',
-      teamsObj: []
+      teamsObj: [],
+      teamSelectedName:''
     }
   };
 
@@ -83,7 +86,7 @@ class MeetingView extends Component {
 
   fillTeam(data) {
 
-    let opt = data.map(function (obj, index) {
+    let opt = data.map(function (option, index) {
       var rObj = {};
       rObj["value"] = index;
       rObj["label"] = option["team"]["name"];
@@ -94,25 +97,22 @@ class MeetingView extends Component {
 
     this.setState({teamsObj: opt});
     this.setState({teamList: data});
+    this.forceUpdate();
   }
 
-  teamChanged(event) {
-    let actualTeam = event.target.value;
-    this.setState({value: actualTeam});
-
-  }
 
   createMeeting(goToNewMeeting) {
 
-    let e = document.getElementById("inputTeam");
-    let teamNameCombo = e.options[e.selectedIndex].text;
+
 
     let teamId = '';
-    if (this.state.topic === '' || this.state.description === '' || teamNameCombo === '') {
+    if (this.state.topic === '' || this.state.description === '' || this.state.teamSelectedName === '') {
       this.setState({message: '¡You have to complete the form!'});
       this.refs.meetingModal.openModal();
+
+
     } else {
-      teamId = this.searchTeamIdGivenTeamName(teamNameCombo);
+      teamId = this.searchTeamIdGivenTeamName(this.state.teamSelectedName);
 
       axios.post('http://localhost:8080/meeting/create', {
         topic: this.state.topic,
@@ -134,6 +134,23 @@ class MeetingView extends Component {
   handleChangeTopic = (topic, value) => {
     this.setState({...this.state, [topic]: value});
   };
+  searchTeamIdGivenTeamName(teamNameCombo) {
+    let data = this.state.teamList;
+
+    var filtered = data.filter(team => team["team"]["name"] === teamNameCombo);
+
+    return filtered[0]["teamId"]
+  }
+
+  comboTeam(value) {
+    let filteredLabelObject = this.state.teamsObj.filter(filter => filter["value"] == value);
+let json= JSON.stringify(filteredLabelObject);
+    console.log('json ' + json);
+    this.setState({teamValue: value, teamSelectedName: filteredLabelObject[0]["label"]})
+
+
+  }
+
   handleChangeDescription = (description, value) => {
     this.setState({...this.state, [description]: value});
   };
@@ -150,26 +167,10 @@ class MeetingView extends Component {
     this.props.meetingToCreateNewTeam();
   }
 
-  searchTeamIdGivenTeamName(teamNameCombo) {
-    let data = this.state.teamList;
-
-    var filtered = data.filter(team => team["team"]["name"] === teamNameCombo);
-
-    return filtered[0]["teamId"]
-  }
-
-
-  setFilteredValue(value) {
-
-    let filteredLabelObject = this.state.values.filter(filter => filter["value"] == value);
-
-    this.setState({filteredValue: value, filteredName: filteredLabelObject[0]["label"]})
-  }
-
-  dropdownObjectForFilter() {
+  dropdownTeam() {
     return (
-      <Dropdown label="Select filter" auto onChange={this.setFilteredValue.bind(this)} source={this.state.teamsObj}
-                value={this.state.filteredValue}/>
+      <Dropdown label="Select team" auto onChange={this.comboTeam.bind(this)} source={this.state.teamsObj}
+                value={this.state.teamValue}/>
     );
   };
 
@@ -177,7 +178,7 @@ class MeetingView extends Component {
     const {goToNewMeeting} = this.props;
     return (
 
-      <div className={"container"}>
+      <div className={"container"} style={{marginTop:70}}>
         <div className={classes.label2}>
           <label>CREATE MEETING</label>
         </div>
@@ -213,20 +214,26 @@ class MeetingView extends Component {
                             onChange={this.dateChange} minDate={min_datetime} value={this.state.programmedDate}/>
               </div>
             </div>
+            </div>
             <div className="form-group">
-              <div className="col-md-5">
+              <div className="col-md-3">
                 <div className="row">
-                  {this.dropdownObjectForFilter()}
-                  <div className="col-md-3 ">
+                  {this.dropdownTeam()}
+                  </div>
+                </div>
+
+                  <div className="row">
+                  <div className="col-md-4 ">
                     <button type="button" className={"btn btn-primary", classes.btnTeam}
                             style={{marginLeft:10, marginTop:20}} onClick={this.createTeamAction.bind(this)}>
                       <span className="glyphicon glyphicon-ok"/>
                       Create Team
                     </button>
                   </div>
+                    </div>
 
-                </div>
-              </div>
+
+
             </div>
 
             <div className="col-md-11">
@@ -243,7 +250,7 @@ class MeetingView extends Component {
                 </div>
               </div>
             </div>
-          </div>
+
         </form>
       </div>
     );
