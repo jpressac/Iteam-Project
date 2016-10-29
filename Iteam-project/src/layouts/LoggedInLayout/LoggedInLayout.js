@@ -8,8 +8,7 @@ import { PATHS } from '../../constants/routes'
 export const LoggedInLayout = ({ children }) => (
   <div className="text-center">
     <HeaderLog />
-
-    <div className={classes.mainContainer}>
+    <div>
       {children}
     </div>
   </div>

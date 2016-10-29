@@ -3,7 +3,7 @@
  */
 import React, {Component, PropTypes} from "react";
 import {DropTarget} from "react-dnd";
-import classes from "../PersonalBoard/PersonalBoard.scss";
+import classes from "../SharedBoard/SharedBoard.scss";
 import Note from "../Note/Note";
 import axios from "axios";
 import {ItemTypes} from "../Constants/Constants";
@@ -39,11 +39,30 @@ const mapDispatchToProps = (dispatch) => ({
 
 class SharedBoard extends Component {
 
-  render() {
-    let notemap = this.state.notes;
-    const {connectDropTarget} = this.props;
 
-    return connectDropTarget(
+  createNotes(noteMap){
+    return  Object.keys(noteMap).map((key) => {
+        return (
+          <Note key={key}
+                id={key}
+                onRemove={this.remove.bind(this)}
+                onAddComment={this.onChangeComment.bind(this)}
+                onVote={this.onUpdateRanking.bind(this)}
+                left={noteMap[key].left}
+                top={noteMap[key].top}
+                boardType="shared"
+                comments={noteMap[key].comments}
+                title={noteMap[key].title}
+                subtitle={noteMap[key].subtitle}
+                tag={noteMap[key].tag}
+          />
+        );
+      });
+  }
+
+
+  render() {
+    return this.props.connectDropTarget(
       <div className={classes.board}>
         <BootstrapModal ref="mymodal" message={this.state.message}/>
         <label className={classes.label1}>SHARED BOARD</label>
@@ -60,24 +79,7 @@ class SharedBoard extends Component {
           </div>
         </div>
         <div className={classes.Notecontainer}>
-          {Object.keys(notemap).map((key) => {
-              return (
-                <Note key={key}
-                      id={key}
-                      onRemove={this.remove.bind(this)}
-                      onAddComment={this.onChangeComment.bind(this)}
-                      onVote={this.onUpdateRanking.bind(this)}
-                      left={notemap[key].left}
-                      top={notemap[key].top}
-                      boardType="shared"
-                      comments={notemap[key].comments}
-                      title={notemap[key].title}
-                      subtitle={notemap[key].subtitle}
-                      tag={notemap[key].tag}
-                />
-              );
-            }
-          )}
+          {this.createNotes(this.state.notes)}
         </div>
       </div>
     );
@@ -206,7 +208,7 @@ class SharedBoard extends Component {
   }
 
   receiveNote(payload) {
-    debugger;
+
     let map = this.state.notes;
     let id = this.nextId();
     let jsonPayload = JSON.parse(payload);

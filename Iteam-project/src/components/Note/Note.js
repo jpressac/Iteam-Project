@@ -2,10 +2,10 @@ import React, {Component, PropTypes} from 'react';
 import classes from './Note.scss';
 import {ItemTypes} from '../Constants/Constants';
 import {DragSource} from 'react-dnd';
-import {Button} from 'react-toolbox/lib/button';
+import {IconButton} from 'react-toolbox/lib/button';
 import {Card, CardTitle, CardText, CardActions} from 'react-toolbox/lib/card';
-import FontIcon from 'react-toolbox/lib/font_icon'
 import Chip from 'react-toolbox/lib/chip'
+// import createFragment from 'react-addons-create-fragment'
 
 
 const NoteSource = {
@@ -22,8 +22,17 @@ const style = {
 
 class Note extends Component {
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      view: 'normal',
+      board: props.boardType,
+      tag:[]
+    }
+  }
+
   render() {
-    const {connectDragSource, isDragging, id, left, top, subtitle, boardType, children} = this.props;
+    const {connectDragSource, isDragging, left, top} = this.props;
     if (isDragging) {
       return null;
     }
@@ -32,18 +41,14 @@ class Note extends Component {
         case 'editing':
           return (
             <div className={classes.card}
-                 style={{ ...style, left, top }}>
-              <Card>
+                 style={{...style, left, top}}>
+              <Card style={{resize: 'both', overflow: 'auto'}}>
                 <textarea ref="titleText" defaultValue={this.props.title} className="form-control"/>
-                <textarea ref="subtitleText" defaultValue={this.props.subtitle} className="form-control"/>
                 <textarea ref="tagText" defaultValue={this.props.tag} className="form-control"/>
+                <textarea ref="subtitleText" defaultValue={this.props.subtitle} className="form-control"/>
                 <CardActions>
-                  <Button onClick={this.save.bind(this)}>
-                    <FontIcon value="save" />
-                  </Button>
-                  <Button onClick={this.cancelComment.bind(this)}>
-                  <FontIcon value="clear" />
-                </Button>
+                  <IconButton icon="save" onClick={this.save.bind(this)}/>
+                  <IconButton icon="clear" onClick={this.cancelComment.bind(this)}/>
                 </CardActions>
               </Card>
             </div>
@@ -51,35 +56,48 @@ class Note extends Component {
         case 'normal':
           return connectDragSource(
             <div className={classes.card}
-                 style={{ ...style, left, top }}>
-              <Card >
+                 style={{...style, left, top}}>
+              <Card style={{resize: 'both', overflow: 'auto'}}>
                 <Chip deletable>{this.props.tag}</Chip>
                 <CardTitle
                   title={this.props.title}
                   subtitle={this.props.subtitle}
                 />
                 <CardActions>
-                  <Button onClick={this.edit.bind(this)}>
-                    <FontIcon value="create"/>
-                  </Button>
-                  <Button onClick={this.remove.bind(this)}>
-                    <FontIcon value="delete_sweep" />
-                    </Button>
-                  <Button onClick={this.send.bind(this)}>
-                    <FontIcon value="send" />
-                  </Button>
+                  <IconButton icon="create" onClick={this.edit.bind(this)}/>
+                  <IconButton icon="delete_sweep" onClick={this.removeFromPersonal.bind(this)}/>
+                  <IconButton icon="send" onClick={this.send.bind(this)}/>
                 </CardActions>
               </Card>
             </div>
           );
+
+        case 'tag':
+          return (
+            <div className={classes.card}
+                 style={{...style, left, top}}>
+              <Card style={{resize: 'both', overflow: 'auto'}}>
+                <CardTitle
+                  title={this.props.title}
+                  subtitle={this.props.subtitle}
+                />
+                <CardActions>
+                  <IconButton icon="save" onClick={this.saveTag.bind(this)}/>
+                  <IconButton icon="clear" onClick={this.cancelComment.bind(this)}/>
+                </CardActions>
+              </Card>
+            </div>
+          );
+
+
       }
     else
       switch (this.state.view) {
         case 'normal':
           return connectDragSource(
             <div className={classes.card}
-                 style={{ ...style, left, top }}>
-              <Card >
+                 style={{...style, left, top}}>
+              <Card style={{resize: 'both', overflow: 'auto'}}>
                 <Chip deletable>{this.props.tag}</Chip>
                 <CardTitle
                   title={this.props.title}
@@ -87,18 +105,10 @@ class Note extends Component {
                 />
                 <CardText>{this.props.comments}</CardText>
                 <CardActions>
-                  <Button onClick={this.comment.bind(this)}>
-                    <FontIcon value="add"/>
-                  </Button>
-                  <Button onClick={this.remove.bind(this)}>
-                    <FontIcon value="delete_sweep" />
-                  </Button>
-                  <Button onClick={this.updateRanking.bind(this, 1)}>
-                    <FontIcon value="thumb_up"/>
-                  </Button>
-                  <Button onClick={this.updateRanking.bind(this, -1)}>
-                    <FontIcon value="thumb_down"/>
-                  </Button>
+                  <IconButton icon="add" onClick={this.comment.bind(this)}/>
+                  <IconButton icon="delete_sweep" onClick={this.removeFromShared.bind(this)}/>
+                  <IconButton icon="thumb_up" onClick={this.updateRanking.bind(this, 1)}/>
+                  <IconButton icon="thumb_down" onClick={this.updateRanking.bind(this, -1)}/>
                 </CardActions>
               </Card>
             </div>
@@ -106,20 +116,16 @@ class Note extends Component {
         case 'comment':
           return (
             <div className={classes.card}
-                 style={{ ...style, left, top }}>
-              <Card >
+                 style={{...style, left, top}}>
+              <Card style={{resize: 'both', overflow: 'auto'}}>
                 <CardTitle
                   title={this.props.title}
                   subtitle={this.props.subtitle}
                 />
                 <textarea ref="commentText" defaultValue={this.props.comments} className="form-control"/>
                 <CardActions>
-                  <Button onClick={this.saveComment.bind(this)}>
-                  <FontIcon value="save" />
-                </Button>
-                <Button onClick={this.cancelComment.bind(this)}>
-                  <FontIcon value="clear" />
-                </Button>
+                  <IconButton icon="save" onClick={this.saveComment.bind(this)}/>
+                  <IconButton icon="clear" onClick={this.cancelComment.bind(this)}/>
                 </CardActions>
               </Card>
             </div>
@@ -137,6 +143,7 @@ class Note extends Component {
   }
 
   save() {
+    //TODO: remove tag from here
     this.props.onChange(this.refs.titleText.value, this.refs.subtitleText.value, this.props.id, this.refs.tagText.value);
     this.setState({view: 'normal'})
   }
@@ -152,8 +159,13 @@ class Note extends Component {
     this.setState({view: 'normal'})
   }
 
-  remove() {
+  removeFromShared() {
     this.props.onRemove("delete", this.props.id);
+    this.setState({view: 'normal'})
+  }
+
+  removeFromPersonal() {
+    this.props.onRemove(this.props.id);
     this.setState({view: 'normal'})
   }
 
@@ -162,20 +174,38 @@ class Note extends Component {
   }
 
   updateRanking(vote) {
-    console.log('vote note ' + vote);
     this.props.onVote(this.props.id, vote);
     this.setState({view: 'normal'})
   }
 
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      view: 'normal',
-      board: props.boardType
-    }
+  addTag(){
+    // this.setState({view: 'tag'});
   }
 
+  saveTag(){
+    let tag = [];
+    tag.push(
+      <Chip deletable>{this.refs.tagText}</Chip>
+    );
+    this.setState({tag: tag});
+    this.setState({view: 'normal'})
+  }
+
+  // renderTag(){
+  //   let tagArray = this.state.tag;
+  //
+  //   if(tagArray.length === 1){
+  //     return createFragment(this.state.tag)
+  //   }else{
+  //     tagArray.map(t => {
+  //       return createFragment(t)
+  //     })
+  //   }
+  // }
+
+  removeTag(){
+    //ver como borrar un tag
+  }
 }
 
 Note.propTypes = {

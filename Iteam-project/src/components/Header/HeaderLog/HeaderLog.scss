@@ -1,35 +1,8 @@
-.appBar{
+.appBar {
   background-color: white;
-}
-.logo{
-  height: 65px;
-  width:150px;
-  align-items: center;
-
-}
-.div{
-  display: inline-block;
-}
-.menus{
-  color: #900C3F;
-  //  border-radius: 30px;
-  //border-style: dotted;
-  //border-color:white;
-  margin-left: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, .26);
   padding:10px;
-
-  //background-color: #fbdb9d;
-  font-size: 15px;
-
-}
-.menus:hover
-{
-  color: #900C3F;
-  //  border-radius: 30px;
-  //  border-style: dotted;
-  //  border-color:#ffffcc;
-
-}
-.menus:active{
-  color: #900C3F;
+  align-items: right;
+  display: inline-block;
+  height: 7rem;
 }

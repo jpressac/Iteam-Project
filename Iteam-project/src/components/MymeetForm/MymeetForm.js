@@ -7,11 +7,13 @@ import TimePicker from 'react-toolbox/lib/time_picker';
 import DatePicker from 'react-toolbox/lib/date_picker';
 import {push} from 'react-router-redux';
 import {PATHS} from '../../constants/routes';
+import classes from './MymeetForm.scss';
 import Input from 'react-toolbox/lib/input';
 import BootstrapModal from '../../components/BootstrapModal/BootstrapModal';
-import {updateMeetingId} from '../../redux/reducers/MeetingReducer/MeetingReducer'
+import {updateMeetingId} from '../../redux/reducers/Meeting/MeetingReducer'
 
 var programDate = new Date();
+
 
 const mapStateToProps = (state) => {
   if (state.loginUser !== null) {
@@ -36,13 +38,15 @@ class MymeetForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      time: new Date(),
       meetings: {},
+      date: new Date(),
       active: false,
-      meet: {},
-      meetEdit: {
-        topic: {state: false, val: ''},
-        programmedDate: {state: false, val: ''},
-        description: {state: false, val: ''}
+      meetEdit: {},
+      editedFields: {
+        topic: false,
+        description: false,
+        programmedDate: false
       },
       editable: true
     }
@@ -50,24 +54,24 @@ class MymeetForm extends Component {
 
 
   goToReports(){
-    this.props.updateMyMeetingId(this.state.meet.meetingId);
+    this.props.updateMyMeetingId(this.state.meetEdit.meetingId);
   }
 
   startMeeting(){
-    this.props.updateMyMeetingId(this.state.meet.meetingId);
+    this.props.updateMyMeetingId(this.state.meetEdit.meetingId);
     this.props.onClick();
   }
 
   handleToggleDialog = (meeting) => {
     this.setState({
       active: !this.state.active,
-      meet: meeting,
       datetime: meeting.programmedDate,
       time: meeting.programmedDate,
-      meetEdit: {
-        topic: {state: false, val: meeting.topic},
-        programmedDate: {state: false, val: meeting.programmedDate},
-        description: {state: false, val: meeting.description}
+      meetEdit: meeting,
+      editedFields: {
+        topic: false,
+        description: false,
+        programmedDate: false
       }
     });
     var datetime = new Date(meeting.programmedDate);
@@ -103,12 +107,7 @@ class MymeetForm extends Component {
     var meetDate_minrange = meetDate.getTime() - 1000000;
     var meetDate_maxrange = meetDate.getTime() + 1000000;
     var dateNow = new Date();
-
-    console.log('min: ' + meetDate_minrange);
-    console.log('max: ' + meetDate_maxrange);
-    console.log('min: ' + dateNow.getTime());
-
-    return meetDate_minrange < dateNow.getTime() < meetDate_maxrange;
+    return meetDate_minrange < dateNow.getTime() && dateNow.getTime() < meetDate_maxrange;
   }
 
 
@@ -121,11 +120,10 @@ class MymeetForm extends Component {
         if (MymeetForm.validateStart(meetingDate)) {
           return this.AdminActionsStart;
         }
-        return this.AdminActionsStart;
+        return this.AdminUserActionsFinish;
       }
     }
     else {
-      console.log('is user');
       if (MymeetForm.validateDate(meetingDate)) {
         return this.UserActionsView;
       }
@@ -175,12 +173,10 @@ class MymeetForm extends Component {
       hour: 'numeric', minute: 'numeric', second: 'numeric',
       hour12: false
     };
-
     return new Intl.DateTimeFormat("en-US", options).format(new Date(meetingTime))
   }
 
   componentDidMount() {
-    console.log('User: ' + this.props.user);
     axios.get('http://localhost:8080/meeting/meetingbyuser?username=' + this.props.user
     ).then(function (response) {
       this.fillfields(response.data)
@@ -193,29 +189,26 @@ class MymeetForm extends Component {
 
 
   save() {
-    let objToEdit = this.state.meetEdit;
+    let editedFields = this.state.editedFields;
+    let editedMeeting = this.state.meetEdit;
+    let saveMeeting = {};
 
-    let obj = Object.keys(objToEdit).map((key) => {
-      let a = {};
-      if (objToEdit[key].state === true) {
-        switch (key) {
-          case 'topic':
-            a.topic = objToEdit[key].val;
-            break;
-          case 'description':
-            a.description = objToEdit[key].val;
-            break;
-          case 'programmedDate':
-            a.programmedDate = objToEdit[key].val;
-            break;
-        }}
-    });
-    obj.meetingID = this.state.meet.meetingId;
-    let jsonObject = JSON.stringify(obj);
-    console.log('Object edited: ' + jsonObject);
+    saveMeeting['meetingId'] = this.state.meetEdit.meetingId;
 
+    if (editedFields.topic === true) {
+      saveMeeting['topic'] = editedMeeting.topic;
+    }
+    if (editedFields.description === true) {
+      saveMeeting['description'] = editedMeeting.description;
+    }
+    if (editedFields.programmedDate === true) {
+      saveMeeting['programmedDate'] = programDate.getTime();
+    }
 
-    axios.post('http://localhost:8080/meeting/update', {jsonMeeting}).then(
+    this.edit.bind(this);
+    this.handleToggleDialog.bind(this);
+
+    axios.post('http://localhost:8080/meeting/update', saveMeeting).then(
       function (response) {
         this.setState({message: '¡Your meeting was successfully updated!'});
         this.refs.mymodal.openModal();
@@ -225,21 +218,28 @@ class MymeetForm extends Component {
         this.setState({message: '¡Ups, there was an error!'});
         this.refs.mymodal.openModal();
       });
-    this.setState({editable: true})
   }
 
   onChangeTopic = (topic) => {
     var newMeeting = this.state.meetEdit;
-    newMeeting.topic.state = true;
-    newMeeting.topic.val = topic;
-    this.setState({meetEdit: newMeeting});
+    newMeeting.topic = topic;
+    var editedState = this.state.editedFields;
+    editedState.topic = true;
+    this.setState({
+      meetEdit: newMeeting,
+      editedFields: editedState
+    });
   };
 
   onChangeDescription = (description) => {
     var newMeeting = this.state.meetEdit;
-    newMeeting.description.state = true;
-    newMeeting.description.val = description;
-    this.setState({meetEdit: newMeeting});
+    newMeeting.description = description;
+    var editedState = this.state.editedFields;
+    editedState.description = true;
+    this.setState({
+      meetEdit: newMeeting,
+      editedFields: editedState
+    });
   };
 
   onChangeProgrammedDate = (date) => {
@@ -249,9 +249,13 @@ class MymeetForm extends Component {
     programDate.setDate(date.getDate());
 
     var newMeeting = this.state.meetEdit;
-    newMeeting.description.state = true;
-    newMeeting.description.val = programDate;
-    this.setState({meetEdit: newMeeting});
+    newMeeting.programmedDate = programDate;
+    var editedState = this.state.editedFields;
+    editedState.programmedDate = true;
+    this.setState({
+      meetEdit: newMeeting,
+      editedFields: editedState
+    });
   };
 
   onChangeProgrammedTime = (time) => {
@@ -260,22 +264,30 @@ class MymeetForm extends Component {
     programDate.setMinutes(time.getMinutes());
 
     var newMeeting = this.state.meetEdit;
-    newMeeting.description.state = true;
-    newMeeting.description.val = programDate;
-    this.setState({meetEdit: newMeeting});
+    newMeeting.programmedDate = programDate;
+    var editedState = this.state.editedFields;
+    editedState.programmedDate = true;
+    this.setState({
+      meetEdit: newMeeting,
+      editedFields: editedState
+    });
   };
+
 
   render() {
     let meetmap = this.state.meetings;
     let meetingTime = new Date;
 
     return (
-      <List selectable ripple>
-        <ListSubHeader caption='MY MEETINGS'/>
+      <div className={"container"} style={{marginTop:70}}>
+        <div className={classes.label2}>
+          <label>MY MEETING</label>
+        </div>
+      <List selectable ripple >
+        <ListSubHeader />
         {Object.keys(meetmap).map((key) => {
             meetingTime = meetmap[key].programmedDate;
             var renderDateTime = this.renderDate(meetingTime);
-            console.log('editable: ' + this.state.editable);
             return (
               <div>
                 <ListItem
@@ -285,15 +297,15 @@ class MymeetForm extends Component {
                   onClick={this.handleToggleDialog.bind(this, meetmap[key])}/>
                 <ListDivider />
                 <Dialog
-                  actions={this.showActions(this.state.meet.ownerName, this.state.meet.programmedDate)}
+                  actions={this.showActions(this.state.meetEdit.ownerName, this.state.meetEdit.programmedDate)}
                   active={this.state.active}
                   onEscKeyDown={this.handleToggleDialog}
                   onOverlayClick={this.handleToggleDialog}>
-                  <Input type='text' label='Topic' value={this.state.meetEdit.topic.val} maxLength={30}
-                         onChange={this.onChangeTopic.bind(this)}/>
+                  <Input type='text' label='Topic' value={this.state.meetEdit.topic} maxLength={30}
+                         onChange={this.onChangeTopic.bind(this)} disabled={this.state.editable}/>
 
-                  <Input type='text' label='Description' value={this.state.meetEdit.description.val} maxLength={144}
-                         onChange={this.onChangeDescription.bind(this)}/>
+                  <Input type='text' label='Description' value={this.state.meetEdit.description} maxLength={144}
+                         onChange={this.onChangeDescription.bind(this)} disabled={this.state.editable}/>
 
                   <DatePicker label='Select date' sundayFirstDayOfWeek value={new Date(this.state.datetime)}
                               readonly={false} onChange={this.onChangeProgrammedDate.bind(this)}/>
@@ -307,6 +319,7 @@ class MymeetForm extends Component {
           }
         )}
       </List>
+        </div>
     )
   }
 

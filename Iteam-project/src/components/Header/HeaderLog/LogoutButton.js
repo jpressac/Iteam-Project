@@ -16,7 +16,7 @@ class LogoutButton extends React.Component {
   render() {
     const {onClick} =this.props;
     return (
-      <div >
+      <div  >
       <form method="POST" action="/application/member/logout">
         <Button type="submit"  >Logout</Button>
       </form>

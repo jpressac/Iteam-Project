@@ -78,10 +78,9 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 		UpdateResponse response = elasticsearchClientImpl.modifyData(data, StringUtilities.INDEX_MEETING,
 				StringUtilities.INDEX_TYPE_MEETING, updatedMeeting.getMeetingId());
 
-		if (!response.isCreated()) {
-			LOGGER.error("The meeting couldn't be updated - Meeting: '{}'", updatedMeeting.toString());
-			return false;
-		}
+		// LOGGER.error("The meeting couldn't be updated - Meeting: '{}'",
+		// updatedMeeting.toString());
+
 		return true;
 	}
 

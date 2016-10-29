@@ -1,14 +1,27 @@
 import React, {Component, PropTypes} from 'react';
 import { Link} from 'react-router'
-import classes from './HeaderLog.scss'
-import logo from '../image/logo.png'
+import logo from '../image/iteamLogo.jpg'
 import {PATHS} from '../../../constants/routes'
-import {connect} from 'react-redux'
 import AppBar from 'react-toolbox/lib/app_bar'
 import Navigation from 'react-toolbox/lib/navigation'
 import LogoutButton from './LogoutButton'
 import {Button, IconButton} from 'react-toolbox/lib/button';
+import {connect} from 'react-redux'
+import {push} from 'react-router-redux'
+import themeAppBar from './HeaderLog.scss'
+import themeNav from './nav.scss'
+import classes from './theme.scss'
+import {fromMeetingOrTeam} from '../../../redux/reducers/Meeting/MeetingForTeamReducer'
 
+const mapDispatchToProps = dispatch => ({
+  home: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HOME)),
+  profile:() => dispatch(push('/' + PATHS.MENULOGGEDIN.PROFILE)),
+  myMeeting:()=> dispatch(push('/' + PATHS.MENULOGGEDIN.MYMEETINGS)),
+  meeting:()=> dispatch(push('/' + PATHS.MENULOGGEDIN.MEETING)),
+  team:()=> dispatch(push('/' + PATHS.MENULOGGEDIN.NEWTEAM)),
+  newMeeting: () => dispatch(fromMeetingOrTeam())
+
+});
 const mapStateToProps = (state)=> {
   if (state.loginUser !== null) {
     return {
@@ -24,36 +37,50 @@ class HeaderLog extends Component {
     super(props);
   }
 
+  goToNewMeeting(){
+    this.props.newMeeting();
+    this.props.meeting();
+  }
+
+  goToNewTeam(){
+    this.props.newMeeting();
+    this.props.team();
+  }
 
 
   render() {
     return (
 
     <header >
-
-      <AppBar fixed flat  >
-        <a href="/home"></a>
-        <div className={classes.div}>
-          <Navigation type='horizontal' accent >
-             <Link id="home"   className={classes.menus}  to={'/' + PATHS.MENULOGGEDIN.HOME} activeClassName="active">HOME</Link>
-            <Link className={classes.menus} to={'/' + PATHS.MENULOGGEDIN.MYMEETINGS} activeClassName="active"> MY MEETINGS</Link>
-            <Link className={classes.menus} to={'/' + PATHS.MENULOGGEDIN.MEETING} activeClassName="active"> NEW MEETING</Link>
-            <Link className={classes.menus} to={'/' + PATHS.MENULOGGEDIN.PROFILE} activeClassName="active"> MY PROFILE</Link>
-            <Link className={classes.menus} to={'/' + PATHS.MENULOGGEDIN.NEWTEAM} activeClassName="active">NEW TEAM </Link>
-            <Link className={classes.menus} to={'/' + PATHS.MENULOGGEDIN.BOARD} activeClassName="active"> PERSONAL BOARD </Link>
-            <span className = "glyphicon glyphicon-user" ><label> {this.props.user}</label></span >
+      <AppBar fixed flat theme={themeAppBar}  >
+        <div >
+          <img src={logo} style={{height:50,width:100,marginRight:300}}/>
+          <Navigation type="horizontal" theme={themeNav} >
+            <ul className={classes.ul}>
+           <li> <Button  label='HOME' accent onClick={this.props.home} /></li>
+            <li><Button label='PROFILE' accent onClick={this.props.profile} /></li>
+            <li><Button  label='MY MEETINGS' accent onClick={this.props.myMeeting} /></li>
+           <li> <Button label='NEW MEETING' accent onClick={this.goToNewMeeting.bind(this)} /></li>
+            <li><Button  label='NEW TEAM' accent onClick={this.goToNewTeam.bind(this)} /></li>
+            <li><span className = "glyphicon glyphicon-user" className={classes.span}><label> {this.props.user}</label></span ></li>
+            <li><LogoutButton /></li>
+              </ul>
           </Navigation>
         </div>
-        <LogoutButton ></LogoutButton>
       </AppBar>
-
   </header>
   );
   };
 }
 
 HeaderLog.propTypes = {
-  user: PropTypes.any
+   home:PropTypes.func,
+  profile:PropTypes.func,
+  myMeeting:PropTypes.func,
+  meeting:PropTypes.func,
+  user: PropTypes.any,
+  team:PropTypes.func,
+  newMeeting: PropTypes.func
 };
 
-export default connect(mapStateToProps)(HeaderLog)
+export default connect(mapStateToProps, mapDispatchToProps)(HeaderLog)
