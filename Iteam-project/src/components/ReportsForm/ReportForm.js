@@ -9,6 +9,7 @@ import Drawer from 'react-toolbox/lib/drawer';
 import Button from 'react-toolbox/lib/button';
 import classes from './ReportForm.scss';
 import BootstrapModal from '../BootstrapModal/BootstrapModal'
+import Idea from './idea'
 /*
  var report = new PDFDocument
 
@@ -88,11 +89,8 @@ class ReportForm extends Component {
 
     return this.state.meetingIdeas.map(function (idea, index) {
       return (
-        <div key={index} style={{fontSize: 14, margin: 10, marginTop: 50}}>
-          <p> {idea["topic"]} </p>
-          <p> {idea["subtitle"]} </p>
-          <p> {idea["ranking"]} </p>
-        </div>
+        <Idea postion={index} title={idea["title"]} content={idea["subtitle"]} ranking={idea["ranking"]} author={idea["username"]} > 
+          </Idea>
       );
     }.bind(this));
   }

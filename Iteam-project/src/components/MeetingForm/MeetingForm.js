@@ -23,7 +23,7 @@ const mapDispatchToProps = dispatch => ({
 
   meetingToCreateNewTeam: () => dispatch(meetingToNewTeam()),
 
-  goToNewMeeting: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HOME))
+  goToNewMeeting: () => dispatch(push('/' + PATHS.MENULOGGEDIN.MYMEETINGS))
 });
 
 const mapStateToProps = (state) => {
