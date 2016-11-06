@@ -3,7 +3,7 @@ import {push} from 'react-router-redux';
 import {PATHS} from '../../../constants/routes';
 
 export const MEETING_NEW_TEAM = 'MEETING_NEW_TEAM';
-export const NEW_TEAM = 'NEW_TEAM';
+export const NEW_TEAM_OR_MEETING = 'NEW_TEAM_OR_MEETING';
 
 export const meetingToNewTeam = () => {
   return function (dispatch) {
@@ -16,7 +16,7 @@ export default function meetingForTeamReducer(state = null, action) {
   switch (action.type) {
     case MEETING_NEW_TEAM:
       return true;
-    case NEW_TEAM:
+    case NEW_TEAM_OR_MEETING:
       return false;
     default:
       return state;
@@ -24,3 +24,4 @@ export default function meetingForTeamReducer(state = null, action) {
 }
 
 export const createTeam = createAction('MEETING_NEW_TEAM');
+export const fromMeetingOrTeam = createAction('NEW_TEAM_OR_MEETING');

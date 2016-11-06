@@ -26,7 +26,7 @@ const mapDispatchToProps = dispatch => ({
 
   meetingToCreateNewTeam: () => dispatch(meetingToNewTeam()),
 
-  goToNewMeeting: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HOME))
+  goToNewMeeting: () => dispatch(push('/' + PATHS.MENULOGGEDIN.MYMEETINGS))
 });
 
 const mapStateToProps = (state) => {
@@ -50,7 +50,7 @@ class MeetingView extends Component {
       time: new Date(),
       teamName: '',
       teamsObj: [],
-      teamSelectedName:''
+      teamSelectedName: ''
     }
   };
 
@@ -97,8 +97,6 @@ class MeetingView extends Component {
 
       return rObj;
     });
-    let json =JSON.stringify(data);
-
 
     this.setState({teamsObj: opt});
     this.setState({teamList: data});
@@ -107,7 +105,6 @@ class MeetingView extends Component {
 
 
   createMeeting(goToNewMeeting) {
-
 
 
     let teamId = '';
@@ -139,6 +136,7 @@ class MeetingView extends Component {
   handleChangeTopic = (topic, value) => {
     this.setState({...this.state, [topic]: value});
   };
+
   searchTeamIdGivenTeamName(teamNameCombo) {
     let data = this.state.teamList;
 
@@ -149,11 +147,7 @@ class MeetingView extends Component {
 
   comboTeam(value) {
     let filteredLabelObject = this.state.teamsObj.filter(filter => filter["value"] == value);
-let json= JSON.stringify(filteredLabelObject);
-    console.log('json ' + json);
     this.setState({teamValue: value, teamSelectedName: filteredLabelObject[0]["label"]})
-
-
   }
 
   handleChangeDescription = (description, value) => {

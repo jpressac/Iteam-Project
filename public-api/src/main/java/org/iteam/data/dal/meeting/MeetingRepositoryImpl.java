@@ -1,8 +1,6 @@
 package org.iteam.data.dal.meeting;
 
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -21,14 +19,20 @@ import org.iteam.configuration.ExternalConfigurationProperties;
 import org.iteam.configuration.StringUtilities;
 import org.iteam.data.dal.client.ElasticsearchClient;
 import org.iteam.data.dal.client.ElasticsearchClientImpl;
+import org.iteam.data.dto.Idea;
 import org.iteam.data.dto.Meeting;
 import org.iteam.data.model.IdeasDTO;
+import org.iteam.data.model.Reports;
 import org.iteam.services.utils.JSONUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Repository
 public class MeetingRepositoryImpl implements MeetingRepository {
@@ -43,6 +47,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     private static final String MEETING_TEAM_NAME_FIELD = "teamName";
     private static final String PROGRAMMED_DATE_FIELD = "programmedDate";
     private static final int MAX_RETRIES = 5;
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Override
     public boolean createMeeting(Meeting meeting) {
@@ -54,9 +59,8 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         String data = JSONUtils.ObjectToJSON(meeting);
 
         IndexResponse response = elasticsearchClientImpl.insertData(data, StringUtilities.INDEX_MEETING,
-                StringUtilities.INDEX_TYPE_MEETING);
-
-        if(!response.isCreated()) {
+                StringUtilities.INDEX_TYPE_MEETING, meeting.getMeetingId());
+        if (!response.isCreated()) {
             LOGGER.error("The meeting couldn't be created - Meeting: '{}'", meeting.toString());
             return false;
         }
@@ -74,10 +78,9 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         UpdateResponse response = elasticsearchClientImpl.modifyData(data, StringUtilities.INDEX_MEETING,
                 StringUtilities.INDEX_TYPE_MEETING, updatedMeeting.getMeetingId());
 
-        if(!response.isCreated()) {
-            LOGGER.error("The meeting couldn't be updated - Meeting: '{}'", updatedMeeting.toString());
-            return false;
-        }
+        // LOGGER.error("The meeting couldn't be updated - Meeting: '{}'",
+        // updatedMeeting.toString());
+
         return true;
     }
 
@@ -103,42 +106,55 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     }
 
     @Override
-    public void generateBasicReport(String meetingId) {
-        LOGGER.info("Generating Report");
+    public Reports generateBasicReport(String meetingId, String fieldOrder, SortOrder sortOrder) {
+        LOGGER.info("Generating Report by " + fieldOrder);
         LOGGER.debug("Generating report for meeting: '{}'", meetingId);
 
-        // TODO: check this in another iterations if there will be more filters.
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
         queryBuilder.must(QueryBuilders.termQuery(IDEA_MEETING_ID_FIELD, meetingId));
 
-        SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_IDEAS, queryBuilder,
-                SortBuilders.fieldSort(RANKING_ID_FIELD).order(SortOrder.ASC));
+        SearchResponse meetingResponse = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING,
+                QueryBuilders.termQuery(IDEA_MEETING_ID_FIELD, meetingId));
 
-        if(response != null && response.getHits().getTotalHits() > 0) {
-            // TODO: make the file writer, generate file in the path given by
-            // configuration
-            PrintWriter writer = null;
+        Reports report = null;
+        List<Idea> ideasList = new ArrayList<>();
+        if (meetingResponse.getHits().getTotalHits() > 0) {
+
             try {
-                // FIXME: change this code please!!!!
-                writer = new PrintWriter(
-                        new FileWriter(String.format("%s/%s", configuration.getPathSaveIdeas(), meetingId), true));
-                writer.append("*****First Report*****");
-                writer.append("\nIdeas order by ranking");
+                JsonNode meetingNode = OBJECT_MAPPER.readTree(meetingResponse.getHits().getAt(0).getSourceAsString());
 
-                for(SearchHit hit : response.getHits()) {
-                    writer.append("\n" + hit.getSourceAsString());
+                SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_IDEAS, queryBuilder,
+                        SortBuilders.fieldSort(fieldOrder).order(sortOrder));
+
+                if (response.getHits().getTotalHits() > 0) {
+                    for (SearchHit hit : response.getHits()) {
+                        ideasList.add((Idea) JSONUtils.JSONToObject(hit.getSourceAsString(), Idea.class));
+                    }
                 }
-                writer.close();
 
+                report = new Reports(meetingNode.at("/topic").asText(), meetingNode.at("/description").asText(),
+                        ideasList);
+
+            } catch (JsonProcessingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             } catch (IOException e) {
-                LOGGER.error("The report couldn't be processed - Error:", e);
-            } finally {
-                if(writer != null) {
-                    writer.close();
-                }
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
         }
 
+        return report;
+    }
+
+    @Override
+    public Reports generateBasicReportByUser(String meetingId) {
+        return generateBasicReport(meetingId, "username", SortOrder.ASC);
+    }
+
+    @Override
+    public Reports generateBasicReportByTag(String meetingId) {
+        return generateBasicReport(meetingId, "tag", SortOrder.ASC);
     }
 
     @Override
@@ -153,7 +169,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
         LOGGER.debug("meetings retrieved: ", response.getHits().getTotalHits());
 
-        for(SearchHit hit : response.getHits()) {
+        for (SearchHit hit : response.getHits()) {
 
             LOGGER.debug("User '{}' meeting: '{}'", username, hit.getSourceAsString());
 
@@ -174,7 +190,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
                 QueryBuilders.termsQuery(MEETING_TEAM_NAME_FIELD, teamName),
                 SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD).order(SortOrder.ASC));
 
-        for(SearchHit hit : response.getHits()) {
+        for (SearchHit hit : response.getHits()) {
 
             Meeting meeting = (Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class);
             meetingList.add(meeting);
@@ -200,7 +216,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
             LOGGER.info("Meeting info updated - Meeting: '{}'", meetingId);
         } catch (ElasticsearchException e) {
             LOGGER.error("Failed to update meeting info - Retry '{}'", count);
-            if(MAX_RETRIES > count) {
+            if (MAX_RETRIES > count) {
                 saveInfoRetry(count += 1, data, meetingId);
             }
         }
@@ -211,7 +227,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
         GetResponse response = elasticsearchClientImpl.getDocument(StringUtilities.INDEX_MEETING_INFO,
                 StringUtilities.INDEX_TYPE_MEETING_INFO, meetingId);
-        if(response.isExists()) {
+        if (response.isExists()) {
             return response.getSourceAsString();
         }
         return null;
@@ -226,5 +242,4 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     private void setConfiguration(ExternalConfigurationProperties configuration) {
         this.configuration = configuration;
     }
-
 }

@@ -3,12 +3,16 @@
  */
 import React, {Component, PropTypes} from "react";
 import {DropTarget} from "react-dnd";
-import classes from "../PersonalBoard/PersonalBoard.scss";
+import classes from "../SharedBoard/SharedBoard.scss";
 import Note from "../Note/Note";
 import axios from "axios";
 import {ItemTypes} from "../Constants/Constants";
 import {connectAndSubscribe, disconnect, sendNote} from '../../websocket/websocket'
 import BootstrapModal from '../BootstrapModal/BootstrapModal'
+import flow from 'lodash/flow'
+import {connect} from 'react-redux'
+import {push} from 'react-router-redux';
+import {PATHS} from '../../constants/routes';
 
 const NoteTarget = {
   drop(props, monitor, component) {
@@ -20,14 +24,45 @@ const NoteTarget = {
   }
 };
 
+const mapStateToProps = (state) => {
+  if (state.meetingReducer != null) {
+    return {
+      meetingId: state.meetingReducer.meetingId
+    }
+  }
+}
+const mapDispatchToProps = (dispatch) => ({
+
+  onClick: () => dispatch(push('/' + PATHS.MENULOGGEDIN.REPORTS))
+
+});
 
 class SharedBoard extends Component {
 
-  render() {
-    let notemap = this.state.notes;
-    const {connectDropTarget} = this.props;
 
-    return connectDropTarget(
+  createNotes(noteMap){
+    return  Object.keys(noteMap).map((key) => {
+        return (
+          <Note key={key}
+                id={key}
+                onRemove={this.remove.bind(this)}
+                onAddComment={this.onChangeComment.bind(this)}
+                onVote={this.onUpdateRanking.bind(this)}
+                left={noteMap[key].left}
+                top={noteMap[key].top}
+                boardType="shared"
+                comments={noteMap[key].comments}
+                title={noteMap[key].title}
+                subtitle={noteMap[key].subtitle}
+                tag={noteMap[key].tag}
+          />
+        );
+      });
+  }
+
+
+  render() {
+    return this.props.connectDropTarget(
       <div className={classes.board}>
         <BootstrapModal ref="mymodal" message={this.state.message}/>
         <label className={classes.label1}>SHARED BOARD</label>
@@ -39,29 +74,12 @@ class SharedBoard extends Component {
           </div>
           <div className="col-md-4">
             <button type="button" className={" btn btn-success"}
-                    onClick={this.generateReport.bind(this)}> GENERATE REPORT
+                    onClick={this.props.onClick}> GENERATE REPORT
             </button>
           </div>
         </div>
         <div className={classes.Notecontainer}>
-          {Object.keys(notemap).map((key) => {
-              return (
-                <Note key={key}
-                      id={key}
-                      onRemove={this.remove.bind(this)}
-                      onAddComment={this.onChangeComment.bind(this)}
-                      onVote={this.onUpdateRanking.bind(this)}
-                      left={notemap[key].left}
-                      top={notemap[key].top}
-                      boardType="shared"
-                      comments={notemap[key].comments}
-                      title={notemap[key].title}
-                      subtitle={notemap[key].subtitle}
-                      tag={notemap[key].tag}
-                />
-              );
-            }
-          )}
+          {this.createNotes(this.state.notes)}
         </div>
       </div>
     );
@@ -103,7 +121,7 @@ class SharedBoard extends Component {
   generateReport() {
     axios.get('http://localhost:8080/meeting/report', {
       params: {
-        meetingId: 'meeting123'
+        meetingId: this.props.meetingId
       }
     }).then(
       function (response) {
@@ -141,7 +159,7 @@ class SharedBoard extends Component {
     delete map[id];
     this.setState({notes: map});
     //TODO, channel es la meeting id
-    sendNote(action, '13', JSON.stringify(
+    sendNote(action, this.props.meetingId , JSON.stringify(
       {
         "id": id
       })
@@ -166,7 +184,7 @@ class SharedBoard extends Component {
   sendUpdate(action, id) {
     let map = this.state.notes;
     //TODO, channel es la meeting id
-    sendNote(action, '13', JSON.stringify(
+    sendNote(action, this.props.meetingId , JSON.stringify(
       {
         "id": id,
         "username": map[id].username,
@@ -185,12 +203,12 @@ class SharedBoard extends Component {
   }
 
   sendUpdateCache(action, payload) {
-    sendNote(action, '13', JSON.stringify(payload));
+    sendNote(action, this.props.meetingId, JSON.stringify(payload));
 
   }
 
   receiveNote(payload) {
-    debugger;
+
     let map = this.state.notes;
     let id = this.nextId();
     let jsonPayload = JSON.parse(payload);
@@ -212,7 +230,7 @@ class SharedBoard extends Component {
           subtitle: jsonPayloadMessage.subtitle,
           comments: 'add comments',
           ranking: 0,
-          meetingId: 'meeting123',
+          meetingId: this.props.meetingId,
           boardType: "shared"
         };
         this.setState({notes: map});
@@ -232,7 +250,7 @@ class SharedBoard extends Component {
             subtitle: jsonPayloadMessage.subtitle,
             comments: jsonPayloadMessage.comments,
             ranking: jsonPayloadMessage.ranking,
-            meetingId: 'meeting123',
+            meetingId: this.props.meetingId,
             boardType: "shared"
           };
         }
@@ -256,12 +274,11 @@ class SharedBoard extends Component {
 
   componentDidMount() {
     //Connect with socket
-    connectAndSubscribe('13', this.receiveNote.bind(this));
+    connectAndSubscribe(this.props.meetingId, this.receiveNote.bind(this));
   }
 
   componentWillMount(){
-    axios.get('http://localhost:8080/meeting/meetinginfo?meetingId=13').then((response) => {
-      console.log('hola puteta ' + response.data);
+    axios.get('http://localhost:8080/meeting/meetinginfo?meetingId=' + this.props.meetingId).then((response) => {
       if(response.data !== ""){
         this.setState({notes: response.data});
       }
@@ -276,12 +293,17 @@ class SharedBoard extends Component {
 }
 
 SharedBoard.propTypes = {
-  connectDropTarget: PropTypes.func.isRequired
+  connectDropTarget: PropTypes.func.isRequired,
+  meetingId: PropTypes.string,
+  onClick : PropTypes.func
 };
 
-export default DropTarget(ItemTypes.NOTE, NoteTarget,
+export default flow(
+  DropTarget(ItemTypes.NOTE, NoteTarget,
   connect =>
     ( {
       connectDropTarget: connect.dropTarget()
     }
-    ))(SharedBoard);
+    )),connect(mapStateToProps,mapDispatchToProps))(SharedBoard);
+
+
