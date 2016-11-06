@@ -2,6 +2,7 @@ package org.iteam.data.dal.meeting;
 
 import java.util.List;
 
+import org.elasticsearch.search.sort.SortOrder;
 import org.iteam.data.dto.Meeting;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.Reports;
@@ -12,33 +13,37 @@ import org.iteam.data.model.Reports;
  */
 public interface MeetingRepository {
 
-	/**
-	 * Create a new meeting, given the information.
-	 * 
-	 * @param meeting
-	 *            the meeting to create
-	 * @return true if it was successful, false otherwise
-	 */
-	public boolean createMeeting(Meeting meeting);
+    /**
+     * Create a new meeting, given the information.
+     * 
+     * @param meeting
+     *            the meeting to create
+     * @return true if it was successful, false otherwise
+     */
+    public boolean createMeeting(Meeting meeting);
 
-	/**
-	 * Save the ideas generated during the meeting.
-	 * 
-	 * @param ideas
-	 *            ideas which have to be saved.
-	 * @return true if it was successful, false otherwise.
-	 */
-	public boolean saveIdeas(IdeasDTO ideas);
+    /**
+     * Save the ideas generated during the meeting.
+     * 
+     * @param ideas
+     *            ideas which have to be saved.
+     * @return true if it was successful, false otherwise.
+     */
+    public boolean saveIdeas(IdeasDTO ideas);
 
-	public Reports generateBasicReport(String meetingId);
+    public Reports generateBasicReport(String meetingId, String fieldOrder, SortOrder sortOrder);
 
-	public List<Meeting> getMeetingUser(String username);
+    public Reports generateBasicReportByUser(String meetingId);
 
-	public void saveMeetingInfo(String data, String meetingId);
+    public Reports generateBasicReportByTag(String meetingId);
 
-	public String getMeetingInfo(String meetingId);
+    public List<Meeting> getMeetingUser(String username);
 
-	public boolean updateMeeting(Meeting updatedMeeting);
+    public void saveMeetingInfo(String data, String meetingId);
 
-	public List<Meeting> getMeetingByTeamName(List<String> teamName);
+    public String getMeetingInfo(String meetingId);
+
+    public boolean updateMeeting(Meeting updatedMeeting);
+
+    public List<Meeting> getMeetingByTeamName(List<String> teamName);
 }
