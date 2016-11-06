@@ -4,27 +4,25 @@ import {PATHS} from '../../constants/routes'
 import {Link} from 'react-router'
 //import GoogleLogin from 'react-google-login'
 
-/*var onSignIn = function (response) {
-  debugger;
-  console.log('puto el que lee  ' + response.wc);
-  console.log('puto el que lee  ' + response.hg);
-  console.log('puto el que lee  ' + response.el);
-  console.log('puto el que lee ' + response);
-
-};*/
 
 class LoginForm extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      userName:'',
+      pass:''
+
+    }
+  };
 
   render() {
     return (
 
       <div className={"container"}>
-        <div className={classes.label} style={{marginTop: 20}}>
+        <div className={classes.label} style={{marginTop: 50}}>
           <label>LOGIN</label>
         </div>
         <form method="POST" className="form-singin">
-          <div className={" well-lg well-sm",classes.well}>
-            <label> </label>
 
             <div className="form-horizontal">
               <div className={"form-group"}>
@@ -80,9 +78,9 @@ class LoginForm extends Component {
                 </div>
               </div>
             </div>
-          </div>
-        </form>
-      </div>
+         </form>
+        </div>
+
     );
   };
 }

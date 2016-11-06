@@ -7,10 +7,12 @@ import TimePicker from 'react-toolbox/lib/time_picker';
 import DatePicker from 'react-toolbox/lib/date_picker';
 import {push} from 'react-router-redux';
 import {PATHS} from '../../constants/routes';
+import classes from './MymeetForm.scss';
 import Input from 'react-toolbox/lib/input';
 import BootstrapModal from '../../components/BootstrapModal/BootstrapModal';
 
 var programDate = new Date();
+
 
 const mapStateToProps = (state) => {
   if (state.loginUser !== null) {
@@ -30,7 +32,9 @@ class MymeetForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      time: new Date(),
       meetings: {},
+      date: new Date(),
       active: false,
       meetEdit: {},
       editedFields: {
@@ -266,8 +270,12 @@ class MymeetForm extends Component {
     let meetingTime = new Date;
 
     return (
-      <List selectable ripple>
-        <ListSubHeader caption='MY MEETINGS'/>
+      <div className={"container"} style={{marginTop:70}}>
+        <div className={classes.label2}>
+          <label>MY MEETING</label>
+        </div>
+      <List selectable ripple >
+        <ListSubHeader />
         {Object.keys(meetmap).map((key) => {
             meetingTime = meetmap[key].programmedDate;
             var renderDateTime = this.renderDate(meetingTime);
@@ -302,6 +310,7 @@ class MymeetForm extends Component {
           }
         )}
       </List>
+        </div>
     )
   }
 

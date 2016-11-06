@@ -2,9 +2,9 @@ package org.iteam.controllers.rest;
 
 import java.util.Date;
 
-import org.iteam.data.model.Idea;
+import org.iteam.data.dto.Idea;
+import org.iteam.data.dto.Meeting;
 import org.iteam.data.model.IdeasDTO;
-import org.iteam.data.model.Meeting;
 import org.iteam.services.meeting.MeetingServiceImpl;
 import org.junit.Assert;
 import org.junit.Before;

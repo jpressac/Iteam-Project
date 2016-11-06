@@ -1,25 +1,35 @@
 import React, {Component, PropTypes} from 'react';
-import {IndexLink, Link} from 'react-router'
-import classes from './HeaderLog.scss'
-import {Button} from 'react-bootstrap';
-import logo from '../image/logo.png'
-import profile from '../image/profile.jpg'
+import { Link} from 'react-router'
+import logo from '../image/iteamLogo.jpg'
 import {PATHS} from '../../../constants/routes'
-import {connect} from 'react-redux'
 import AppBar from 'react-toolbox/lib/app_bar'
-import Avatar from 'react-toolbox/lib/avatar';
-import {IconMenu, MenuItem, MenuDivider} from 'react-toolbox/lib/menu';
-import {logout} from '../../../redux/reducers/Login/LoginUser'
+import Navigation from 'react-toolbox/lib/navigation'
 import LogoutButton from './LogoutButton'
-import Navigation from 'react-toolbox/lib/navigation';
+import {Button, IconButton} from 'react-toolbox/lib/button';
+import {connect} from 'react-redux'
+import {push} from 'react-router-redux'
+import themeAppBar from './HeaderLog.scss'
+import themeNav from './nav.scss'
+import classes from './theme.scss'
+import {fromMeetingOrTeam} from '../../../redux/reducers/Meeting/MeetingForTeamReducer'
 
+const mapDispatchToProps = dispatch => ({
+  home: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HOME)),
+  profile:() => dispatch(push('/' + PATHS.MENULOGGEDIN.PROFILE)),
+  myMeeting:()=> dispatch(push('/' + PATHS.MENULOGGEDIN.MYMEETINGS)),
+  meeting:()=> dispatch(push('/' + PATHS.MENULOGGEDIN.MEETING)),
+  team:()=> dispatch(push('/' + PATHS.MENULOGGEDIN.NEWTEAM)),
+  newMeeting: () => dispatch(fromMeetingOrTeam())
+
+});
 const mapStateToProps = (state)=> {
   if (state.loginUser !== null) {
     return {
-      user: state.loginUser.user.name
+      user: state.loginUser.user.username
     }
   }
-}
+};
+
 
 class HeaderLog extends Component {
 
@@ -27,71 +37,50 @@ class HeaderLog extends Component {
     super(props);
   }
 
+  goToNewMeeting(){
+    this.props.newMeeting();
+    this.props.meeting();
+  }
+
+  goToNewTeam(){
+    this.props.newMeeting();
+    this.props.team();
+  }
+
+
   render() {
     return (
-      <div className={"navbar navbar-default navbar-static-top"} role="navigation">
-        <div className="container">
-          <div className={"navbar-header", classes.header}>
-            <a className="navbar-brand" href="#">
-              <img src={logo} className={classes.logo} alt="Iteam"/></a>
 
-            <button type="button" className="navbar-toggle navbar-inverse" data-toggle="collapse" data-target=".navHeaderCollapse">
-              <span className="icon-bar"/>
-              <span className="icon-bar"></span>
-              <span className="icon-bar"></span>
-            </button>
-          </div>
-          <div  className="collapse navbar-collapse navHeaderCollapse " >
-            <ul className="nav navbar-nav navbar-right ">
-
-              <li > <IconMenu icon='Meeting' position='topRight'  className={classes.menu}><b className="caret"></b>
-                <li> <Link className={classes.itemMenu} to={'/' + PATHS.MENULOGGEDIN.MYMEETINGS} activeClassName="active"> <MenuItem>My meetings</MenuItem></Link></li>
-                <li> <Link className={classes.itemMenu} to={'/' + PATHS.MENULOGGEDIN.MEETING} activeClassName="active"> <MenuItem>NEW MEETING</MenuItem></Link></li>
-
-              </IconMenu></li>
-
-              <li > <IconMenu icon='My Profile' position='topLeft' className={classes.menu} menuRipple><b className="caret"></b>
-                <Link className={classes.itemMenu} to={'/' + PATHS.MENULOGGEDIN.PROFILE} activeClassName="active"> <MenuItem>MY PROFILE</MenuItem></Link>
-                <Link className={classes.itemMenu} to={'/' + PATHS.MENUNOTLOGGEDIN.PROFILE} activeClassName="active"> <MenuItem>Sign Out</MenuItem></Link>
-              </IconMenu></li>
-
-              <li ><Link  to={'/' + PATHS.MENULOGGEDIN.HOME} activeClassName="active">
-                <span className="glyphicon glyphicon-home"></span>HOME</Link></li>
-
-              <li className="dropdown"><Link className={classes.itemMenu} to={'/' + PATHS.MENULOGGEDIN.PROFILE} activeClassName="active">
-                <img src={profile} className={"img-circle special-img", classes.pro}/> MY PROFILE  <b className="caret"></b></Link>
-                <ul className="dropdown-menu">
-                  <li><Link className={classes.itemMenu} to={'/' + PATHS.MENULOGGEDIN.PROFILE} activeClassName="active">My profile</Link> </li>
-                  <li><Link className={classes.itemMenu} to={'/' + PATHS.MENULOGGEDIN.PROFILE} activeClassName="active">Sign out</Link> </li>
-                </ul>
-              </li>
-
-              <li className="dropdown"><a href="" className={"dropdown-toggle"} data-toggle="dropdown" >
-                <span className="glyphicon glyphicon-paperclip"></span>MEETING <b className="caret"></b></a>
-                <ul className="dropdown-menu">
-                  <li><Link className={classes.itemMenu} to={'/' + PATHS.MENULOGGEDIN.MEETING} activeClassName="active">NEW MEETING</Link> </li>
-                  <li><Link className={classes.itemMenu} to={'/' + PATHS.MENULOGGEDIN.MYMEETINGS} activeClassName="active">My meetings</Link> </li>
-                </ul>
-              </li>
-
-              <li><Link  to={'/' + PATHS.MENULOGGEDIN.NEWTEAM} activeClassName="active">
-                <span className="glyphicon glyphicon-paperclip"></span> NEW TEAM </Link></li>
-              <li><Link to={'/' + PATHS.MENULOGGEDIN.BOARD} activeClassName="active">
-                <span className="glyphicon glyphicon-paperclip"></span> PERSONAL BOARD </Link></li>
-              <li><span className = "glyphicon glyphicon-paperclip" > {this.props.user}</span > </li>
-              <li>
-                <LogoutButton ></LogoutButton>
-              </li>
-            </ul>
-
-          </div>
+    <header >
+      <AppBar fixed flat theme={themeAppBar}  >
+        <div >
+          <img src={logo} style={{height:50,width:100,marginRight:300}}/>
+          <Navigation type="horizontal" theme={themeNav} >
+            <ul className={classes.ul}>
+           <li> <Button  label='HOME' accent onClick={this.props.home} /></li>
+            <li><Button label='PROFILE' accent onClick={this.props.profile} /></li>
+            <li><Button  label='MY MEETINGS' accent onClick={this.props.myMeeting} /></li>
+           <li> <Button label='NEW MEETING' accent onClick={this.goToNewMeeting.bind(this)} /></li>
+            <li><Button  label='NEW TEAM' accent onClick={this.goToNewTeam.bind(this)} /></li>
+            <li><span className = "glyphicon glyphicon-user" className={classes.span}><label> {this.props.user}</label></span ></li>
+            <li><LogoutButton /></li>
+              </ul>
+          </Navigation>
         </div>
-      </div>);
+      </AppBar>
+  </header>
+  );
   };
 }
 
 HeaderLog.propTypes = {
-  user: PropTypes.any
+   home:PropTypes.func,
+  profile:PropTypes.func,
+  myMeeting:PropTypes.func,
+  meeting:PropTypes.func,
+  user: PropTypes.any,
+  team:PropTypes.func,
+  newMeeting: PropTypes.func
 };
 
-export default connect(mapStateToProps)(HeaderLog)
+export default connect(mapStateToProps, mapDispatchToProps)(HeaderLog)

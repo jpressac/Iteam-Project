@@ -4,9 +4,10 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.iteam.data.dto.Team;
+import org.iteam.data.dto.UserDTO;
 import org.iteam.data.model.FilterList;
-import org.iteam.data.model.Team;
-import org.iteam.data.model.UserDTO;
+import org.iteam.data.model.TeamModel;
 import org.iteam.services.team.TeamServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -71,7 +72,7 @@ public class TeamController {
      * @return a list of teams.
      */
     @RequestMapping(value = "team/byowner", method = RequestMethod.GET)
-    public List<Team> getTeamByOwner() {
+    public List<TeamModel> getTeamByOwner() {
         return teamService.getTeams(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 

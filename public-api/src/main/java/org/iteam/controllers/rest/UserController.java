@@ -2,7 +2,7 @@ package org.iteam.controllers.rest;
 
 import javax.validation.Valid;
 
-import org.iteam.data.model.UserDTO;
+import org.iteam.data.dto.UserDTO;
 import org.iteam.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

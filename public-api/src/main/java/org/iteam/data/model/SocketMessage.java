@@ -1,6 +1,7 @@
 package org.iteam.data.model;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.iteam.data.dto.SocketPayload;
 
 public class SocketMessage {
 

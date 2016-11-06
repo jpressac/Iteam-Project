@@ -5,7 +5,7 @@ import classes from './BoardView.scss'
 export class BoardView extends React.Component {
   render(){
     return(
-      <div className={classes.formContent} >
+      <div className={classes.container} >
       <BoardForm></BoardForm>
       </div>
 );

@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.iteam.data.dal.team.TeamRepositoryImpl;
+import org.iteam.data.dto.Team;
+import org.iteam.data.dto.UserDTO;
 import org.iteam.data.model.FilterList;
-import org.iteam.data.model.Team;
-import org.iteam.data.model.UserDTO;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

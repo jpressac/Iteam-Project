@@ -1,50 +1,60 @@
 import React, {Component,PropTypes} from 'react';
-import { IndexLink, Link } from 'react-router'
-import classes from './HeaderNotLog.scss'
+import {  Link } from 'react-router'
+import { AppBar } from 'react-toolbox/lib/app_bar'
+import themeAppBar from './HeaderNotLog.scss'
+import themeMenu from './menu.scss'
+import themeNav from './nav.scss'
+import {Button} from 'react-toolbox/lib/button';
+import logo from '../image/iteamLogo.jpg'
 import { PATHS } from '../../../constants/routes'
+import Navigation from 'react-toolbox/lib/navigation'
+import {connect} from 'react-redux'
+import {push} from 'react-router-redux'
+
+const mapDispatchToProps = dispatch => ({
+  home: () => dispatch(push('/' + PATHS.MENUNOTLOGGEDIN.HOME)),
+  about:()=> dispatch(push('/' + PATHS.MENUNOTLOGGEDIN.ABOUT)),
+  contact:()=> dispatch(push('/' + PATHS.MENUNOTLOGGEDIN.CONTACT)),
+  login:()=> dispatch(push('/' + PATHS.MENUNOTLOGGEDIN.LOGIN))
+
+});
 
 class HeaderNotLog extends React.Component {
   render(){
+
     return(
-      <header>
-      <div className={"navbar navbar-default navbar-static-top"} role="navigation">
-      <div className="container">
-       <div className={"navbar-header", classes.header}>
 
-           <button type="button" className="navbar-toggle navbar-inverse" data-toggle="collapse" data-target=".navHeaderCollapse">
-           <span class="icon-bar"></span>
-           <span class="icon-bar"></span>
-           <span class="icon-bar"></span>
-           </button>
-           </div>
-           <div  className="collapse navbar-collapse navHeaderCollapse navbar-right" >
-               <ul className="nav navbar-nav navbar-right ">
+      <header >
 
-               <li ><Link className={classes.menus} to={'/' + PATHS.MENUNOTLOGGEDIN.HOME} activeClassName="active">
-                  <span className="glyphicon glyphicon-home"></span>HOME</Link></li>
-               <li><Link className={classes.menus} to={'/' + PATHS.MENUNOTLOGGEDIN.ABOUT} activeClassName="active">
-                  <span className="glyphicon glyphicon-paperclip"></span>ABOUT</Link></li>
-               <li><Link className={classes.menus} to={'/' + PATHS.MENUNOTLOGGEDIN.CONTACT} activeClassName="active">
-                  <span className="glyphicon glyphicon-paperclip"></span>CONTACT</Link></li>
-               <li></li>
-               <li><Link className={classes.menus} to={'/' + PATHS.MENUNOTLOGGEDIN.REGISTER} activeClassName="active">
-                  <span className="glyphicon glyphicon-user"></span> Register </Link></li>
-               <li><Link className={classes.menus} to={'/' + PATHS.MENUNOTLOGGEDIN.LOGIN} activeClassName="active">
-                  <span className="glyphicon glyphicon-log-in"></span> Login </Link></li>
+        <AppBar fixed flat theme={themeAppBar}  >
 
-             </ul>
+          <div >
+            <img src={logo} style={{height:50,width:100,marginRight:400}}></img>
+            <Navigation type="horizontal" theme={themeNav} >
+              <Button icon='home' label='HOME' accent onClick={this.props.home} />
+              <Button icon='bookmark' label='ABOUT' accent onClick={this.props.about} />
+              <Button icon='contact_phone' label='CONTACT' accent onClick={this.props.contact} />
+              <Button icon='person' label='LOGIN' accent onClick={this.props.login} />
 
 
-           </div>
+            </Navigation>
+          </div>
+        </AppBar>
 
-         </div>
 
-       </div>
+      </header>
 
-</header>
+
 
 );
 };
 }
+HeaderNotLog.propTypes ={
+  home:PropTypes.func,
+  about:PropTypes.func,
+  contact:PropTypes.func,
+  login:PropTypes.func
 
-export default HeaderNotLog
+};
+
+export default connect(null,mapDispatchToProps) (HeaderNotLog)
