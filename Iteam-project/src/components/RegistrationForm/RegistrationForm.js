@@ -3,6 +3,7 @@ import {submitUser} from '../../redux/RegistrationForm/actions.js'
 import NationalitiesSelect from '../NationalitiesSelect'
 import axios from 'axios'
 import validator from 'validator'
+import classes from './RegistrationForm.scss'
 
 class RegistrationForm extends Component {
 
@@ -98,7 +99,7 @@ class RegistrationForm extends Component {
     if(this.validateEmptyFields(this.state.profession)) {
       errors2.profession = 'Required field';
     }
-    
+
     Object.keys(errors2).forEach(function(key) {
       if(errors2[key] !== undefined){
         ban = false;
@@ -178,12 +179,14 @@ class RegistrationForm extends Component {
   render() {
 
     return (
-      <div className="container">
+      <div className="container" style={{marginTop:100}}>
         <div className="row">
           <div className="col-md-6">
             <div className="panel panel-default">
-              <div className="panel-heading">
-                <h4 className="panel-title">Register</h4>
+
+                <div className={classes.label2}>
+                  <label>CREATE YOUR ACCOUNT</label>
+
               </div>
               <div className="panel-body">
                 <form className="form-horizontal">

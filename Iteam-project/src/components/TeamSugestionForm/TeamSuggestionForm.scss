@@ -1,14 +1,24 @@
-.form{
-  margin-top:100px;
-  align-items: center;
-}
+.content{
 
+  background-position-x: center;
+  background-position-y: center;
+  margin:50px;
+  width:700px;
+
+
+}
+.form{
+  width: 700px;
+  background: #eee;
+  padding-left: 50px;
+}
 .label2
 {
   color: #900C3F;
   font-family:monospace;
   align-items: center;
-  font-size: 50px;
+  font-size: 35px;
+  margin:15px;
 
 
 }

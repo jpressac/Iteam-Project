@@ -11,6 +11,7 @@ import {push} from 'react-router-redux'
 import themeAppBar from './HeaderLog.scss'
 import themeNav from './nav.scss'
 import classes from './theme.scss'
+import themeButton from './button.scss'
 
 const mapDispatchToProps = dispatch => ({
   home: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HOME)),
@@ -47,16 +48,16 @@ class HeaderLog extends Component {
         <div >
 
           <img src={logo} style={{height:50,width:100,marginRight:300}}></img>
-           
+
           <Navigation type="horizontal" theme={themeNav} >
             <ul className={classes.ul}>
-           <li> <Button  label='HOME' accent onClick={this.props.home} /></li>
-            <li><Button label='PROFILE' accent onClick={this.props.profile} /></li>
-            <li><Button  label='MY MEETINGS' accent onClick={this.props.myMeeting} /></li>
-           <li> <Button label='NEW MEETING' accent onClick={this.props.meeting} /></li>
-            <li><Button  label='NEW TEAM' accent onClick={this.props.team} /></li>
+           <li> <Button  label='HOME' className={themeButton.button} style={{color:'#900C3F'}} onClick={this.props.home} /></li>
+            <li><Button label='PROFILE' theme={themeButton} style={{color:'#900C3F'}} onClick={this.props.profile} /></li>
+            <li><Button  label='MY MEETINGS' theme={themeButton} style={{color:'#900C3F'}} onClick={this.props.myMeeting} /></li>
+           <li> <Button label='NEW MEETING' theme={themeButton} style={{color:'#900C3F'}} onClick={this.props.meeting} /></li>
+            <li><Button  label='NEW TEAM' theme={themeButton} style={{color:'#900C3F'}} onClick={this.props.team} /></li>
             <li><span className = "glyphicon glyphicon-user" className={classes.span}><label> {this.props.user}</label></span ></li>
-            <li><LogoutButton ></LogoutButton></li>
+            <li><LogoutButton style={{color:'#900C3F',}} ></LogoutButton></li>
               </ul>
           </Navigation>
         </div>

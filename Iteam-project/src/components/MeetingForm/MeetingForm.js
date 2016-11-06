@@ -11,6 +11,9 @@ import Input from 'react-toolbox/lib/input';
 import {saveMeeting} from '../../redux/reducers/Meeting/MeetingReducer'
 import {meetingToNewTeam} from '../../redux/reducers/Meeting/MeetingForTeamReducer'
 import Dropdown from 'react-toolbox/lib/dropdown';
+import themeLabel from './label.scss'
+import themeClock from './face.scss'
+import {Button, IconButton} from 'react-toolbox/lib/button';
 
 
 var datetime = new Date();
@@ -95,7 +98,7 @@ class MeetingView extends Component {
       return rObj;
     });
     let json =JSON.stringify(data);
-    
+
 
     this.setState({teamsObj: opt});
     this.setState({teamList: data});
@@ -171,8 +174,8 @@ let json= JSON.stringify(filteredLabelObject);
 
   dropdownTeam() {
     return (
-      <Dropdown label="Select team" auto onChange={this.comboTeam.bind(this)} source={this.state.teamsObj}
-                value={this.state.teamValue}/>
+      <Dropdown label="Select team" auto theme={themeLabel} style={{color:'#900C3F'}} onChange={this.comboTeam.bind(this)} source={this.state.teamsObj}
+                value={this.state.teamValue} />
     );
   };
 
@@ -180,45 +183,46 @@ let json= JSON.stringify(filteredLabelObject);
     const {goToNewMeeting} = this.props;
     return (
 
-      <div className={"container"} style={{marginTop:70}}>
+      <div className={"container"} style={{marginTop:70, width:700}}>
         <div className={classes.label2}>
           <label>CREATE MEETING</label>
         </div>
         <BootstrapModal ref="meetingModal" message={this.state.message}/>
-        <label> </label>
-        <form className="form-horizontal">
+          <div className={classes.form}>
+        <form className={"form-horizontal"} >
           <div className="form-group">
-            <div className="col-md-5">
+            <div className="col-md-8">
               <div className="row">
-                <Input type='text' label='Topic' name='topic' value={this.state.topic}
-                       onChange={this.handleChangeTopic.bind(this, 'topic')} maxLength={50}/>
+                <Input type='text' label='Topic' theme={themeLabel} name='topic' value={this.state.topic}
+                       onChange={this.handleChangeTopic.bind(this, 'topic')} maxLength={150}/>
               </div>
             </div>
           </div>
           <div className="form-group">
-            <div className="col-md-5">
+            <div className="col-md-8">
               <div className="row">
                 <Input type='text' multiline label='Description' name='description' maxLength={400}
-                       value={this.state.description}
+                       value={this.state.description} theme={themeLabel}
                        onChange={this.handleChangeDescription.bind(this, 'description')}/>
               </div>
             </div>
           </div>
           <div className="form-group">
-            <div className="col-md-3">
-              <div className="row">
-                <TimePicker label='Select time' onChange={this.handleChange} value={this.state.time}/>
+            <div className="col-md-4">
+              <div className="row" style={{color:'#900C3F'}}>
+                <TimePicker label='Select time'  onChange={this.handleChange}
+                  theme={themeLabel} value={this.state.time}/>
               </div>
             </div>
-            <div className="col-md-3">
+            <div className="col-md-4">
               <div className="row">
                 <DatePicker label='Select date' sundayFirstDayOfWeek style={{marginLeft:20}}
-                            onChange={this.dateChange} minDate={min_datetime} value={this.state.programmedDate}/>
+                            onChange={this.dateChange} minDate={min_datetime} theme={themeLabel} value={this.state.programmedDate}/>
               </div>
             </div>
             </div>
             <div className="form-group">
-              <div className="col-md-3">
+              <div className="col-md-4">
                 <div className="row">
                   {this.dropdownTeam()}
                   </div>
@@ -226,34 +230,30 @@ let json= JSON.stringify(filteredLabelObject);
 
                   <div className="row">
                   <div className="col-md-4 ">
-                    <button type="button" className={"btn btn-primary", classes.btnTeam}
-                            style={{marginLeft:10, marginTop:20}} onClick={this.createTeamAction.bind(this)}>
-                      <span className="glyphicon glyphicon-ok"/>
+                    <Button  style={{marginLeft:10, marginTop:20,color:'#900C3F'}} target='_blank' raised
+                             onClick={this.createTeamAction.bind(this)}>
+
                       Create Team
-                    </button>
+                    </Button>
                   </div>
                     </div>
 
-
-
             </div>
 
-            <div className="col-md-11">
+            <div className="col-md-4">
               <div className="row">
-                <label for="team" className="col-md-4 control-label"
-                       style={{marginLeft:20, marginTop:20, fontSize: 17}}> </label>
-                <div className="col-md-5">
-                  <button type="button" className={"btn btn-primary", classes.btn }
-                          style={{marginTop:40, marginLeft:10}} onClick={this.createMeeting.bind(this, goToNewMeeting)}>
 
-                    <span className="glyphicon glyphicon-ok"/>
+                  <Button style={{margin:15,color:'#900C3F'}} target='_blank' raised
+                          onClick={this.createMeeting.bind(this, goToNewMeeting)}>
+
                     Create meeting
-                  </button>
-                </div>
+                  </Button>
+
               </div>
             </div>
 
         </form>
+</div>
       </div>
     );
   };
