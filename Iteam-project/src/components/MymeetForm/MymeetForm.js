@@ -11,6 +11,8 @@ import classes from './MymeetForm.scss';
 import Input from 'react-toolbox/lib/input';
 import BootstrapModal from '../../components/BootstrapModal/BootstrapModal';
 import {updateMeetingId} from '../../redux/reducers/Meeting/MeetingReducer'
+import listItem from './item.scss'
+import list from './list.scss'
 
 var programDate = new Date();
 
@@ -280,11 +282,12 @@ class MymeetForm extends Component {
 
     return (
       <div className={"container"} style={{marginTop:70}}>
+        <div className={classes.content}>
         <div className={classes.label2}>
-          <label>MY MEETING</label>
+          <label>MY MEETINGS</label>
         </div>
-      <List selectable ripple >
-        <ListSubHeader />
+      <List selectable ripple theme={list} >
+        <ListSubHeader className={classes.listSH}/>
         {Object.keys(meetmap).map((key) => {
             meetingTime = meetmap[key].programmedDate;
             var renderDateTime = this.renderDate(meetingTime);
@@ -294,7 +297,8 @@ class MymeetForm extends Component {
                   caption={meetmap[key].topic}
                   legend={renderDateTime}
                   leftIcon='send'
-                  onClick={this.handleToggleDialog.bind(this, meetmap[key])}/>
+                  onClick={this.handleToggleDialog.bind(this, meetmap[key])}
+                theme={listItem}/>
                 <ListDivider />
                 <Dialog
                   actions={this.showActions(this.state.meetEdit.ownerName, this.state.meetEdit.programmedDate)}
@@ -319,6 +323,7 @@ class MymeetForm extends Component {
           }
         )}
       </List>
+          </div>
         </div>
     )
   }
