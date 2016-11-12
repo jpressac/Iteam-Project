@@ -61,20 +61,33 @@ class ReportForm extends Component {
     }.bind(this))
   }
 
-  filterLabels() {
-    return this.state.filters.map(function (filter, index) {
-      return (
-        <span className="tag label label-info" style={{fontSize: 14, margin: 10, marginTop: 50}}>
-          <span key={index}> {filter.field} : {filter.values}</span>
-          <a href='javascript:;' onClick={this.deleteFilter.bind(this, index)}>
-            <i className="remove glyphicon glyphicon-remove-sign glyphicon-white"/>
-          </a>
-        </span>
-      );
-    }.bind(this));
-  }
+  generateUserReport = () => {
+    axios.get('http://localhost:8080/meeting/report/byuser', {
+      params: {
+        meetingId: this.props.meetingId
+      }
+    }).then(function (response) {
+      this.generateHTML(response.data);
+    }.bind(this)).catch(function (response) {
+      this.setState({message: '¡Your report could not be generated!'});
+      this.refs.mymodal.openModal();
+    }.bind(this))
+    }
 
-  generateHTML(data) {
+    generateTagReport = () => {
+      axios.get('http://localhost:8080/meeting/report/bytag', {
+        params: {
+          meetingId: this.props.meetingId
+        }
+      }).then(function (response) {
+        this.generateHTML(response.data);
+      }.bind(this)).catch(function (response) {
+        this.setState({message: '¡Your report could not be generated!'});
+        this.refs.mymodal.openModal();
+      }.bind(this))
+    }
+
+  generateHTML(data){
     let topic = data["topic"];
     let description = data["description"];
     let ideas = data["ideas"];
@@ -86,10 +99,9 @@ class ReportForm extends Component {
     let json = JSON.stringify(this.state.meetingIdeas);
     console.log('ideas ' + json);
 
-
     return this.state.meetingIdeas.map(function (idea, index) {
       return (
-        <Idea postion={index} title={idea["title"]} content={idea["subtitle"]} ranking={idea["ranking"]} author={idea["username"]} > 
+        <Idea postion={index} title={idea["title"]} content={idea["subtitle"]} ranking={idea["ranking"]} author={idea["username"]} >
           </Idea>
       );
     }.bind(this));
@@ -105,6 +117,8 @@ class ReportForm extends Component {
                 onOverlayClick={this.handleToggle}>
           <h2>Report options</h2>
           < Button label="Basic report" raised accent onClick={this.generateRankingReport}/>
+          < Button label="Ideas by user" raised accent onClick={this.generateUserReport}/>
+          < Button label="Ideas by tag" raised accent onClick={this.generateTagReport}/>
         </Drawer>
         <div id="reportHTML" >
           <h1>MEETING TOPIC: {this.state.meetingTopic}</h1>

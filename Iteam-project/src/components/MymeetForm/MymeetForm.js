@@ -118,20 +118,20 @@ class MymeetForm extends Component {
       }
       else {
         if (MymeetForm.validateStart(meetingDate)) {
-          return this.AdminActionsStart;
+          return this.AdminUserActionsFinish;
         }
         return this.AdminUserActionsFinish;
       }
     }
     else {
       if (MymeetForm.validateDate(meetingDate)) {
-        return this.UserActionsView;
+        return this.UserActionsJoin;
       }
       else {
         if (MymeetForm.validateStart(meetingDate)) {
           return this.UserActionsJoin;
         }
-        return this.UserActionsView;
+        return this.UserActionsJoin;
       }
     }
   }
@@ -155,7 +155,7 @@ class MymeetForm extends Component {
 
   UserActionsJoin = [
     {label: "Cancel", onClick: this.handleToggleDialog},
-    {label: "Join", onClick: this.props.onClick}
+    {label: "Join", onClick: this.startMeeting.bind(this)}
   ];
 
   UserActionsView = [

@@ -89,7 +89,7 @@ public class MeetingController {
     }
 
     /**
-     * Generate the standard report by the given meeting.
+     * Generate a report by user for the given meeting.
      * 
      * @param meetingId
      *            the id of the meeting.
@@ -98,22 +98,22 @@ public class MeetingController {
     @RequestMapping(value = "/meeting/report/byuser", method = RequestMethod.GET)
     public ResponseEntity<Reports> generateReportByUser(
             @RequestParam(value = "meetingId", required = true) String meetingId) {
-        Reports report = meetingServiceImpl.generateReport(meetingId);
+        Reports report = meetingServiceImpl.generateReportByUser(meetingId);
 
         return new ResponseEntity<Reports>(report, HttpStatus.OK);
     }
 
     /**
-     * Generate the standard report by the given meeting.
+     * Generate a report by tags for the given meeting.
      * 
      * @param meetingId
      *            the id of the meeting.
      * @return 204 NO CONTENT
      */
-    @RequestMapping(value = "/meeting/report/byuser", method = RequestMethod.GET)
-    public ResponseEntity<Reports> generateReportBy(
+    @RequestMapping(value = "/meeting/report/bytag", method = RequestMethod.GET)
+    public ResponseEntity<Reports> generateReportByTag(
             @RequestParam(value = "meetingId", required = true) String meetingId) {
-        Reports report = meetingServiceImpl.generateReport(meetingId);
+        Reports report = meetingServiceImpl.generateReportByTag(meetingId);
 
         return new ResponseEntity<Reports>(report, HttpStatus.OK);
     }
