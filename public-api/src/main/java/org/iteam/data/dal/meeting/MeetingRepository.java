@@ -2,8 +2,10 @@ package org.iteam.data.dal.meeting;
 
 import java.util.List;
 
+import org.elasticsearch.search.sort.SortOrder;
 import org.iteam.data.dto.Meeting;
 import org.iteam.data.model.IdeasDTO;
+import org.iteam.data.model.Reports;
 
 /**
  * Handles all operations for the meeting.
@@ -29,7 +31,11 @@ public interface MeetingRepository {
      */
     public boolean saveIdeas(IdeasDTO ideas);
 
-    public void generateBasicReport(String meetingId);
+    public Reports generateBasicReport(String meetingId, String fieldOrder, SortOrder sortOrder);
+
+    public Reports generateBasicReportByUser(String meetingId);
+
+    public Reports generateBasicReportByTag(String meetingId);
 
     public List<Meeting> getMeetingUser(String username);
 

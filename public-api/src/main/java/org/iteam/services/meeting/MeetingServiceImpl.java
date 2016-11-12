@@ -2,10 +2,12 @@ package org.iteam.services.meeting;
 
 import java.util.List;
 
+import org.elasticsearch.search.sort.SortOrder;
 import org.iteam.data.dal.meeting.MeetingRepository;
 import org.iteam.data.dal.meeting.MeetingRepositoryImpl;
 import org.iteam.data.dto.Meeting;
 import org.iteam.data.model.IdeasDTO;
+import org.iteam.data.model.Reports;
 import org.iteam.exceptions.MeetingInfoNotFoundException;
 import org.iteam.services.team.TeamService;
 import org.slf4j.Logger;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 public class MeetingServiceImpl implements MeetingService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MeetingServiceImpl.class);
+    private static final String RANKING_ID_FIELD = "ranking";
 
     private MeetingRepository meetingRepositoryImpl;
     private TeamService teamServiceImpl;
@@ -37,8 +40,8 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public void generateReport(String meetingId) {
-        meetingRepositoryImpl.generateBasicReport(meetingId);
+    public Reports generateReport(String meetingId) {
+        return meetingRepositoryImpl.generateBasicReport(meetingId, RANKING_ID_FIELD, SortOrder.ASC);
     }
 
     @Override
@@ -56,7 +59,7 @@ public class MeetingServiceImpl implements MeetingService {
     public String getMeetingInfo(String meetingId) {
 
         String result = meetingRepositoryImpl.getMeetingInfo(meetingId);
-        if(result == null) {
+        if (result == null) {
             LOGGER.error("Error when retrieving meeting info of meeting '{}'", meetingId);
             throw new MeetingInfoNotFoundException("Error when retrieving meeting info");
         }
@@ -77,5 +80,15 @@ public class MeetingServiceImpl implements MeetingService {
     @Autowired
     private void setTeamServiceImpl(TeamService teamServiceImpl) {
         this.teamServiceImpl = teamServiceImpl;
+    }
+
+    @Override
+    public Reports generateReportByUser(String meetingId) {
+        return meetingRepositoryImpl.generateBasicReportByUser(meetingId);
+    }
+
+    @Override
+    public Reports generateReportByTag(String meetingId) {
+        return meetingRepositoryImpl.generateBasicReportByTag(meetingId);
     }
 }

@@ -5,7 +5,7 @@ import {DragSource} from 'react-dnd';
 import {IconButton} from 'react-toolbox/lib/button';
 import {Card, CardTitle, CardText, CardActions} from 'react-toolbox/lib/card';
 import Chip from 'react-toolbox/lib/chip'
-import createFragment from 'react-addons-create-fragment'
+// import createFragment from 'react-addons-create-fragment'
 
 
 const NoteSource = {
@@ -191,17 +191,17 @@ class Note extends Component {
     this.setState({view: 'normal'})
   }
 
-  renderTag(){
-    let tagArray = this.state.tag;
-
-    if(tagArray.length === 1){
-      return createFragment(this.state.tag)
-    }else{
-      tagArray.map(t => {
-        return createFragment(t)
-      })
-    }
-  }
+  // renderTag(){
+  //   let tagArray = this.state.tag;
+  //
+  //   if(tagArray.length === 1){
+  //     return createFragment(this.state.tag)
+  //   }else{
+  //     tagArray.map(t => {
+  //       return createFragment(t)
+  //     })
+  //   }
+  // }
 
   removeTag(){
     //ver como borrar un tag

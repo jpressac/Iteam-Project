@@ -15,7 +15,8 @@ const mapDispatchToProps = dispatch => ({
   home: () => dispatch(push('/' + PATHS.MENUNOTLOGGEDIN.HOME)),
   about:()=> dispatch(push('/' + PATHS.MENUNOTLOGGEDIN.ABOUT)),
   contact:()=> dispatch(push('/' + PATHS.MENUNOTLOGGEDIN.CONTACT)),
-  login:()=> dispatch(push('/' + PATHS.MENUNOTLOGGEDIN.LOGIN))
+  login:()=> dispatch(push('/' + PATHS.MENUNOTLOGGEDIN.LOGIN)),
+  register:()=> dispatch(push('/' + PATHS.MENUNOTLOGGEDIN.REGISTER))
 
 });
 
@@ -31,10 +32,11 @@ class HeaderNotLog extends React.Component {
           <div >
             <img src={logo} style={{height:50,width:100,marginRight:400}}></img>
             <Navigation type="horizontal" theme={themeNav} >
-              <Button icon='home' label='HOME' accent onClick={this.props.home} />
-              <Button icon='bookmark' label='ABOUT' accent onClick={this.props.about} />
-              <Button icon='contact_phone' label='CONTACT' accent onClick={this.props.contact} />
-              <Button icon='person' label='LOGIN' accent onClick={this.props.login} />
+              <Button icon='home' label='HOME' style={{color:'#900C3F'}} onClick={this.props.home} />
+              <Button icon='create' label='REGISTER' style={{color:'#900C3F'}} onClick={this.props.register} />
+              <Button icon='bookmark' label='ABOUT' style={{color:'#900C3F'}} onClick={this.props.about} />
+              <Button icon='contact_phone' label='CONTACT' style={{color:'#900C3F'}} onClick={this.props.contact} />
+              <Button icon='person' label='LOGIN' style={{color:'white',background:'#900C3F'}} onClick={this.props.login} />
 
 
             </Navigation>
@@ -51,6 +53,7 @@ class HeaderNotLog extends React.Component {
 }
 HeaderNotLog.propTypes ={
   home:PropTypes.func,
+  register:PropTypes.func,
   about:PropTypes.func,
   contact:PropTypes.func,
   login:PropTypes.func

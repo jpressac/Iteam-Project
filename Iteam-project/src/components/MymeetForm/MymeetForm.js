@@ -10,6 +10,9 @@ import {PATHS} from '../../constants/routes';
 import classes from './MymeetForm.scss';
 import Input from 'react-toolbox/lib/input';
 import BootstrapModal from '../../components/BootstrapModal/BootstrapModal';
+import {updateMeetingId} from '../../redux/reducers/Meeting/MeetingReducer'
+import listItem from './item.scss'
+import list from './list.scss'
 
 var programDate = new Date();
 
@@ -19,11 +22,16 @@ const mapStateToProps = (state) => {
     return {
       user: state.loginUser.user.username
     }
+
   }
+
 };
 
 const mapDispatchToProps = (dispatch) => ({
-  onClick: () => dispatch(push('/' + PATHS.MENULOGGEDIN.BOARD))
+
+  onClick: () => dispatch(push('/' + PATHS.MENULOGGEDIN.BOARD)),
+
+  updateMyMeetingId: (meetingId) => dispatch(updateMeetingId(meetingId))
 });
 
 
@@ -44,6 +52,16 @@ class MymeetForm extends Component {
       },
       editable: true
     }
+  }
+
+
+  goToReports(){
+    this.props.updateMyMeetingId(this.state.meetEdit.meetingId);
+  }
+
+  startMeeting(){
+    this.props.updateMyMeetingId(this.state.meetEdit.meetingId);
+    this.props.onClick();
   }
 
   handleToggleDialog = (meeting) => {
@@ -91,44 +109,38 @@ class MymeetForm extends Component {
     var meetDate_minrange = meetDate.getTime() - 1000000;
     var meetDate_maxrange = meetDate.getTime() + 1000000;
     var dateNow = new Date();
-
-    console.log('min: ' + meetDate_minrange);
-    console.log('max: ' + meetDate_maxrange);
-    console.log('min: ' + dateNow.getTime());
-
-    return meetDate_minrange < dateNow.getTime() < meetDate_maxrange;
+    return meetDate_minrange < dateNow.getTime() && dateNow.getTime() < meetDate_maxrange;
   }
 
 
   showActions(meetingOwner, meetingDate) {
     if (this.isAdmin(meetingOwner)) {
       if (MymeetForm.validateDate(meetingDate)) {
-        return this.AdminActionsEdit;
+        return this.AdminActionsStart;
       }
       else {
         if (MymeetForm.validateStart(meetingDate)) {
-          return this.AdminActionsEdit;
+          return this.AdminActionsStart;
         }
-        return this.AdminActionsEdit;
+        return this.AdminUserActionsFinish;
       }
     }
     else {
-      console.log('is user');
       if (MymeetForm.validateDate(meetingDate)) {
-        return this.AdminActionsEdit;
+        return this.UserActionsView;
       }
       else {
         if (MymeetForm.validateStart(meetingDate)) {
-          return this.AdminActionsEdit;
+          return this.UserActionsJoin;
         }
-        return this.AdminActionsEdit;
+        return this.UserActionsView;
       }
     }
   }
 
   AdminActionsStart = [
     {label: "Cancel", onClick: this.handleToggleDialog},
-    {label: "Start", onClick: this.props.onClick}
+    {label: "Start", onClick: this.startMeeting.bind(this)}
   ];
 
   AdminActionsEdit = [
@@ -140,7 +152,7 @@ class MymeetForm extends Component {
 
   AdminUserActionsFinish = [
     {label: "Cancel", onClick: this.handleToggleDialog},
-    {label: "View Reports", onClick: this.handleToggleDialog}
+    {label: "View Reports", onClick: this.goToReports.bind(this)}
   ];
 
   UserActionsJoin = [
@@ -167,7 +179,6 @@ class MymeetForm extends Component {
   }
 
   componentDidMount() {
-    console.log('User: ' + this.props.user);
     axios.get('http://localhost:8080/meeting/meetingbyuser?username=' + this.props.user
     ).then(function (response) {
       this.fillfields(response.data)
@@ -271,11 +282,12 @@ class MymeetForm extends Component {
 
     return (
       <div className={"container"} style={{marginTop:70}}>
+        <div className={classes.content}>
         <div className={classes.label2}>
-          <label>MY MEETING</label>
+          <label>MY MEETINGS</label>
         </div>
-      <List selectable ripple >
-        <ListSubHeader />
+      <List selectable ripple theme={list} >
+        <ListSubHeader className={classes.listSH}/>
         {Object.keys(meetmap).map((key) => {
             meetingTime = meetmap[key].programmedDate;
             var renderDateTime = this.renderDate(meetingTime);
@@ -285,7 +297,8 @@ class MymeetForm extends Component {
                   caption={meetmap[key].topic}
                   legend={renderDateTime}
                   leftIcon='send'
-                  onClick={this.handleToggleDialog.bind(this, meetmap[key])}/>
+                  onClick={this.handleToggleDialog.bind(this, meetmap[key])}
+                theme={listItem}/>
                 <ListDivider />
                 <Dialog
                   actions={this.showActions(this.state.meetEdit.ownerName, this.state.meetEdit.programmedDate)}
@@ -310,6 +323,7 @@ class MymeetForm extends Component {
           }
         )}
       </List>
+          </div>
         </div>
     )
   }
@@ -319,7 +333,8 @@ class MymeetForm extends Component {
 
 MymeetForm.propTypes = {
   onClick: PropTypes.func,
-  user: PropTypes.any
+  user: PropTypes.any,
+  goToReports: PropTypes.func
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(MymeetForm);

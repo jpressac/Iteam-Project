@@ -19,13 +19,13 @@ public class UserDTO {
     private String lastName;
     private String gender;
     private String nationality;
-    private String bornDate;
+    private Long bornDate;
     private List<String> hobbies;
     private String profession;
     private String mbtiTest;
     private String discTest;
     private boolean logicalDelete = false;
-    private String insertionDate;
+    private Long insertionDate;
     private String mail;
 
     public UserDTO(boolean logicalDelete) {
@@ -76,11 +76,11 @@ public class UserDTO {
         this.nationality = nationality;
     }
 
-    public String getBornDate() {
+    public Long getBornDate() {
         return bornDate;
     }
 
-    public void setBornDate(String bornDate) {
+    public void setBornDate(Long bornDate) {
         this.bornDate = bornDate;
     }
 
@@ -132,11 +132,11 @@ public class UserDTO {
         this.mail = mail;
     }
 
-    public String getInsertionDate() {
+    public Long getInsertionDate() {
         return insertionDate;
     }
 
-    public void setInsertionDate(String insertionDate) {
+    public void setInsertionDate(Long insertionDate) {
         this.insertionDate = insertionDate;
     }
 
