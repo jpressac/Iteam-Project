@@ -171,7 +171,6 @@ class MymeetForm extends Component {
     this.setState({editable: false})
   }
 
-
   save() {
     let editedFields = this.state.editedFields;
     let editedMeeting = this.state.meetEdit;
@@ -194,7 +193,7 @@ class MymeetForm extends Component {
     ).catch(
       function (response) {});
 
-    this.setState({active: !this.state.active})
+    this.setState({active: !this.state.active});
   }
 
   onChangeTopic = (topic) => {
@@ -252,8 +251,12 @@ class MymeetForm extends Component {
 
 
   render() {
-    let meetmap = this.state.meetings;
+    let meets = this.state.meetings;
     let meetingTime = new Date;
+
+    var meetmap = [].slice.call(meets).sort(function(a, b){
+      return a.programmedDate-b.programmedDate
+    });
 
     return (
       <div className={"container"} style={{marginTop:70}}>
