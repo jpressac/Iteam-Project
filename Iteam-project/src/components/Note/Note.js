@@ -43,8 +43,8 @@ class Note extends Component {
             <div className={classes.card}
                  style={{...style, left, top}}>
               <Card style={{resize: 'both', overflow: 'auto'}}>
-                <textarea ref="titleText" defaultValue={this.props.title} className="form-control"/>
                 <textarea ref="tagText" defaultValue={this.props.tag} className="form-control"/>
+                <textarea ref="titleText" defaultValue={this.props.title} className="form-control"/>
                 <textarea ref="subtitleText" defaultValue={this.props.subtitle} className="form-control"/>
                 <CardActions>
                   <IconButton icon="save" onClick={this.save.bind(this)}/>

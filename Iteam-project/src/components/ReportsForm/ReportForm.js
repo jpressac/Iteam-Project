@@ -2,7 +2,7 @@
  * Created by Randanne on 15/10/2016.
  */
 import React, {Component, PropTypes} from 'react'
-//import PDFDocument from 'pdfkit'
+import jsPDF from 'jspdf'
 import {connect} from 'react-redux';
 import axios from 'axios';
 import Drawer from 'react-toolbox/lib/drawer';
@@ -10,16 +10,16 @@ import Button from 'react-toolbox/lib/button';
 import classes from './ReportForm.scss';
 import BootstrapModal from '../BootstrapModal/BootstrapModal'
 import Idea from './idea'
-/*
- var report = new PDFDocument
 
- report.pipe(fs.createWriteStream('output.pdf'))
+const report = new jsPDF()
 
- report.font('fonts/PalatinoBold.ttf')
- .fontSize(25)
- .text('Meeting report', 100, 100)
- report.end()
- */
+var specialElementHandlers = {
+  '#editor': function (element, renderer) {
+    return true;
+  }
+};
+
+
 
 /*const mapStateToProps = state => ({
  meetingId: state.meetingId
@@ -40,7 +40,8 @@ class ReportForm extends Component {
       active: true,
       meetingTopic: '',
       meetingDescription: '',
-      meetingIdeas: []
+      meetingIdeas: [],
+      selectedReport: ''
     }
   }
 
@@ -54,12 +55,13 @@ class ReportForm extends Component {
         meetingId: this.props.meetingId
       }
     }).then(function (response) {
+      this.setState({selectedReport: '3'});
       this.generateHTML(response.data);
     }.bind(this)).catch(function (response) {
       this.setState({message: '¡Your report could not be generated!'});
       this.refs.mymodal.openModal();
     }.bind(this))
-  }
+  };
 
   generateUserReport = () => {
     axios.get('http://localhost:8080/meeting/report/byuser', {
@@ -67,12 +69,13 @@ class ReportForm extends Component {
         meetingId: this.props.meetingId
       }
     }).then(function (response) {
+      this.setState({selectedReport: '2'});
       this.generateHTML(response.data);
     }.bind(this)).catch(function (response) {
       this.setState({message: '¡Your report could not be generated!'});
       this.refs.mymodal.openModal();
     }.bind(this))
-    }
+    };
 
     generateTagReport = () => {
       axios.get('http://localhost:8080/meeting/report/bytag', {
@@ -80,12 +83,13 @@ class ReportForm extends Component {
           meetingId: this.props.meetingId
         }
       }).then(function (response) {
+        this.setState({selectedReport: '1'});
         this.generateHTML(response.data);
       }.bind(this)).catch(function (response) {
         this.setState({message: '¡Your report could not be generated!'});
         this.refs.mymodal.openModal();
       }.bind(this))
-    }
+    };
 
   generateHTML(data){
     let topic = data["topic"];
@@ -98,14 +102,23 @@ class ReportForm extends Component {
   getIdeas() {
     let json = JSON.stringify(this.state.meetingIdeas);
     console.log('ideas ' + json);
+    console.log('selected report' + this.state.selectedReport);
 
     return this.state.meetingIdeas.map(function (idea, index) {
       return (
-        <Idea postion={index} title={idea["title"]} content={idea["subtitle"]} ranking={idea["ranking"]} author={idea["username"]} >
+        <Idea postion={index} reportType={this.state.selectedReport} title={idea["title"]} content={idea["subtitle"]} ranking={idea["ranking"]} author={idea["username"]} comments={idea["comments"]} tag={idea["tag"]} >
           </Idea>
       );
     }.bind(this));
   }
+
+  generatePDF =() => {
+    report.fromHTML(document.getElementById('reportHTML').innerHTML, 15, 15, {
+      'width': 190,
+      'elementHandlers': specialElementHandlers
+    });
+    report.save('report.pdf');
+  };
 
   render() {
     return (
@@ -119,6 +132,7 @@ class ReportForm extends Component {
           < Button label="Basic report" raised accent onClick={this.generateRankingReport}/>
           < Button label="Ideas by user" raised accent onClick={this.generateUserReport}/>
           < Button label="Ideas by tag" raised accent onClick={this.generateTagReport}/>
+          < Button label="Download PDF" raised accent onClick={this.generatePDF}/>
         </Drawer>
         <div id="reportHTML" >
           <h1>MEETING TOPIC: {this.state.meetingTopic}</h1>
