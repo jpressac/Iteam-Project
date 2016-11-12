@@ -98,9 +98,15 @@ public class MeetingRepositoryImpl implements MeetingRepository {
             dataToInsert.add(JSONUtils.ObjectToJSON(idea));
         });
 
-        // TODO:verify how to check if the document was updated or not. The only
-        // way til now is to execute another query an check the modified fields.
+        // TODO: we need to make it async, so if the ideas cannot be save we
+        // can't delete the index meetingInfo,
+        // could we implement a retry politic.
         elasticsearchClientImpl.insertData(dataToInsert, StringUtilities.INDEX_IDEAS, StringUtilities.INDEX_TYPE_IDEAS);
+
+        // TODO: maybe this is not the best way to get the meeting id, try
+        // meeting id by parameters.
+        elasticsearchClientImpl.delete(StringUtilities.INDEX_MEETING_INFO, StringUtilities.INDEX_TYPE_MEETING_INFO,
+                ideas.getIdeas().get(0).getMeetingId());
 
         return true;
     }
