@@ -22,16 +22,20 @@ export function submit() {
 }
 
 export function submitUser(data){
+
+  let hobbiesList = data.hobbies.split(',');
+
+
   axios.post('http://localhost:8080/user', {
         username: data.username,
         password: data.password,
         nationality: data.nationality,
         bornDate:  data.date ,
         mail : data.mail,
-        gender:data.gender,
+        gender:data.genderValue,
         nationality: data.nationality,
-        hobbies: [""],
-        profession: data.profession,
+        hobbies: hobbiesList,
+        profession: data.professionName,
         name: data.firstName,
         lastName: data.lastName
   } ).then(function(response){

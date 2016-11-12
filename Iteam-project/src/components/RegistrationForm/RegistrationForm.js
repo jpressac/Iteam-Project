@@ -3,17 +3,13 @@ import {submitUser} from '../../redux/RegistrationForm/actions.js'
 import axios from 'axios'
 import user from './user.png'
 import classes from './RegistrationForm.scss'
-import { RadioGroup, RadioButton } from 'react-toolbox/lib/radio';
+import {RadioGroup, RadioButton} from 'react-toolbox/lib/radio';
 import DatePicker from 'react-toolbox/lib/date_picker';
-import {Button, IconButton} from 'react-toolbox/lib/button';
 import Dropdown from 'react-toolbox/lib/dropdown';
-import Checkbox from 'react-toolbox/lib/checkbox';
 import Input from 'react-toolbox/lib/input';
 import themeLabel from './label.scss'
 import Tooltip from 'react-toolbox/lib/tooltip';
-
-
-var datetime = new Date();
+import {Button, IconButton} from 'react-toolbox/lib/'
 
 const TooltipInput = Tooltip(Input);
 
@@ -29,7 +25,7 @@ class RegistrationForm extends Component {
       nationalityValue: [],
       date: new Date(),
       mail: '',
-      genderValue:'male',
+      genderValue: 'male',
       professionName: '',
       professionValue: [],
       hobbies: '',
@@ -42,23 +38,20 @@ class RegistrationForm extends Component {
   }
 
   componentDidMount() {
-    let opt = [];
+
     axios.get('http://localhost:8080/utilities/professions').then(function (response) {
       this.setValuesOptionsProfessions(response.data);
     }.bind(this));
+
     axios.get('http://localhost:8080/utilities/nationality/get').then(function (response) {
       this.setValuesOptionsNationalities(response.data);
     }.bind(this));
 
   }
 
-  handleClick() {
-    if (this.validateBeforeCreation()) {
-      submitUser(this.state);
-
-    }
+  saveUser() {
+    submitUser(this.state);
   }
-
 
 
   maleCheckboxChanged(event) {
@@ -113,7 +106,7 @@ class RegistrationForm extends Component {
 
   dropdownProfession() {
     return (
-      <Dropdown label="Select profession" auto theme={themeLabel} style={{color:'#900C3F'}}
+      <Dropdown label="Select profession" auto theme={themeLabel} style={{color: '#900C3F'}}
                 onChange={this.comboProfession.bind(this)} required
                 source={this.state.professionValue} value={this.state.Value}/>
     );
@@ -125,9 +118,7 @@ class RegistrationForm extends Component {
   }
 
   setValuesOptionsNationalities(data) {
-    let json= JSON.stringify(data);
-    console.log(json);
-    let opt = data.map(function (option, index) {
+    let opt = data["nationalities"].map(function (option, index) {
       var rObj = {};
       rObj["value"] = index;
       rObj["label"] = option;
@@ -138,11 +129,12 @@ class RegistrationForm extends Component {
 
   dropdownNationalities() {
     return (
-      <Dropdown label="Select Nationality" auto theme={themeLabel} style={{color:'#900C3F'}} required
+      <Dropdown label="Select Nationality" auto theme={themeLabel} style={{color: '#900C3F'}} required
                 onChange={this.comboNationality.bind(this)}
                 source={this.state.nationalityValue} value={this.state.nValue}/>
     );
   };
+
   handleChangeHobbies = (hobbies, value) => {
     this.setState({...this.state, [hobbies]: value});
   };
@@ -150,20 +142,26 @@ class RegistrationForm extends Component {
   handleChangeMail = (mail, value) => {
     this.setState({...this.state, [mail]: value});
   };
+
+  handleChangeUsername = (username, value) => {
+    this.setState({...this.state, [username]: value});
+  };
+
   handleChangePassword = (password, value) => {
     this.setState({...this.state, [password]: value});
   };
+
   handleChangeRepeatPassword = (repeatPassword, value) => {
     this.setState({...this.state, [repeatPassword]: value});
   };
+
   handleChangeGender = (genderValue) => {
     this.setState({genderValue});
   };
 
   render() {
-
     return (
-      <div className={"container"} style={{marginTop:80, width:800}}>
+      <div className={"container"} style={{marginTop: 80, width: 800}}>
         <div className={classes.label2}>
           <label>CREATE YOUR ACCOUNT</label>
         </div>
@@ -173,13 +171,13 @@ class RegistrationForm extends Component {
             <div className="form-group">
               <div className="col-md-12">
                 <div className="row">
-                  <img src={user} style={{width:100}}/>
-                    <label>
-                      <span style={{fontWeight:'bold'}}> Add a photo </span>
-                      <p>to help your teammates identify you</p>
-                    </label>
-                  </div>
+                  <img src={user} style={{width: 100}}/>
+                  <label>
+                    <span style={{fontWeight: 'bold'}}> Add a photo </span>
+                    <p>to help your teammates identify you</p>
+                  </label>
                 </div>
+              </div>
             </div>
             <div className="form-group">
               <div className="col-md-12">
@@ -190,7 +188,8 @@ class RegistrationForm extends Component {
                            onChange={this.handleChangeFirstName.bind(this, 'firstName')} maxLength={150}/>
                   </div>
                   <div className="col-md-6">
-                    <Input type='text' label='Last Name' required theme={themeLabel} name='lastName' value={this.state.lastName}
+                    <Input type='text' label='Last Name' required theme={themeLabel} name='lastName'
+                           value={this.state.lastName}
                            onChange={this.handleChangeLastName.bind(this, 'lastName')} maxLength={150}/>
                   </div>
                 </div>
@@ -201,14 +200,14 @@ class RegistrationForm extends Component {
                 <div className="row">
                   <div className="col-md-6">
                     <DatePicker label='Date of birth' sundayFirstDayOfWeek
-                                required  onChange={this.dateChange} theme={themeLabel} value={this.state.date}/>
+                                required onChange={this.dateChange} theme={themeLabel} value={this.state.date}/>
                   </div>
-                    <div className="row">
-                      <div className="col-md-6">
-                        <RadioGroup name='gender' value={this.state.genderValue} onChange={this.handleChangeGender}>
-                          <RadioButton label='Female' value='female' theme={themeLabel}/>
-                          <RadioButton label='Male' value='male' theme={themeLabel}/>
-                          </RadioGroup>
+                  <div className="row">
+                    <div className="col-md-6">
+                      <RadioGroup name='gender' value={this.state.genderValue} onChange={this.handleChangeGender}>
+                        <RadioButton label='Female' value='female' theme={themeLabel}/>
+                        <RadioButton label='Male' value='male' theme={themeLabel}/>
+                      </RadioGroup>
                     </div>
                   </div>
                 </div>
@@ -218,57 +217,66 @@ class RegistrationForm extends Component {
               <div className="col-md-12">
                 <div className="row">
                   <div className="col-md-6">
-                  {this.dropdownProfession()}
-                </div>
+                    {this.dropdownProfession()}
+                  </div>
                   <div className="col-md-6 ">
-                  {this.dropdownNationalities()}
+                    {this.dropdownNationalities()}
+                  </div>
                 </div>
-                </div>
-            </div>
+              </div>
             </div>
             <div className="form-group">
               <div className="col-md-8">
                 <div className="row">
                   <TooltipInput type='text' label='Hobbies' theme={themeLabel} name='hobbies' value={this.state.hobbies}
                                 required onChange={this.handleChangeHobbies.bind(this, 'hobbies')} maxLength={200}
-                                tooltip='Write hobbies separate by commas' />
-                  </div>
+                                tooltip='Write hobbies separate by commas'/>
                 </div>
               </div>
+            </div>
 
             <div className="form-group">
-              <div className="col-md-8">
-                <div className="row">
+              <div className="row">
+                <div className="col-md-6">
                   <Input type='email' label='Email address' icon='email' theme={themeLabel}
                          value={this.state.mail} required onChange={this.handleChangeMail.bind(this, 'mail')}/>
                 </div>
+                <div className="col-md-6">
+                  <Input label='Username' theme={themeLabel}
+                         value={this.state.username} required onChange={this.handleChangeUsername.bind(this, 'username')}/>
+                </div>
               </div>
-              </div>
+            </div>
             <div className="form-group">
               <div className="col-md-12">
                 <div className="col-md-6">
                   <div className="row">
-                  <Input type='password' label='Password' required theme={themeLabel}
-                         value={this.state.password} onChange={this.handleChangePassword.bind(this, 'password')}/>
+                    <Input type='password' label='Password' required theme={themeLabel}
+                           value={this.state.password} onChange={this.handleChangePassword.bind(this, 'password')}/>
+                  </div>
+                </div>
+                <div className="col-md-6">
+                  <div className="row">
+                    <Input type='password' label='Repeat Password' required theme={themeLabel}
+                           value={this.state.repeatPassword}
+                           onChange={this.handleChangeRepeatPassword.bind(this, 'repeatPassword')}/>
+                  </div>
                 </div>
               </div>
+            </div>
+            <div className="form-group">
               <div className="col-md-6">
                 <div className="row">
-                  <Input type='password' label='Repeat Password' required theme={themeLabel}
-                         value={this.state.repeatPassword} onChange={this.handleChangeRepeatPassword.bind(this, 'repeatPassword')}/>
+                  <Button style={{margin: 15, color: '#900C3F'}} target='_blank' raised
+                          onClick={this.saveUser.bind(this)}>
+                    Create
+                  </Button>
                 </div>
               </div>
             </div>
-            </div>
-
           </form>
         </div>
-        </div>
-
-
-
-
-
+      </div>
     );
   };
 }

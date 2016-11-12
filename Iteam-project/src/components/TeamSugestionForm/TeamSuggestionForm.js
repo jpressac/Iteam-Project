@@ -234,7 +234,6 @@ class TeamSuggestionForm extends React.Component {
     return (
       <Dropdown label="Select filter" auto  onChange={this.setFilteredValue.bind(this)} source={this.state.values}
                 flat primary  value={this.state.filteredValue}>
-
         </Dropdown>
     );
   };
@@ -285,7 +284,7 @@ class TeamSuggestionForm extends React.Component {
 
                 <div className="col-md-4">
 
-                  <TooltipButton icon='add' floating  tooltip='Add filter'  style={{background:'#900C3F', color:'white', marginTop:10}}  floating mini
+                  <TooltipButton icon='add'  tooltip='Add filter'  style={{background:'#900C3F', color:'white', marginTop:10}}  floating mini
                                  onClick={this.handleClick.bind(this)} />
 
               </div>
@@ -304,8 +303,8 @@ class TeamSuggestionForm extends React.Component {
               <div className="row">
                 <div className="col-md-12">
                   <div className="col-md-2">
-                   
-                    <TooltipButton icon='search' floating  tooltip='Search members' style={{background:'#900C3F', color:'white'}}
+
+                    <TooltipButton icon='search'  tooltip='Search members' style={{background:'#900C3F', color:'white'}}
                                    floating  onClick={this.searchUsers.bind(this)}/>
                   </div>
                     <div className="col-md-8">
