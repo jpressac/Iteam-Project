@@ -49,27 +49,16 @@ class RegistrationForm extends Component {
 
   }
 
+  validatePassword() {
+    if (this.state.password === this.state.repeatPassword) {
+      return '';
+    } else {
+      return 'Passwords must match'
+    }
+  }
+
   saveUser() {
     submitUser(this.state);
-  }
-
-
-  maleCheckboxChanged(event) {
-    let checked = event.target.checked;
-    if (checked) {
-      this.setState({gender: 'male'});
-    } else {
-      this.setState({gender: 'female'});
-    }
-  }
-
-  femaleCheckboxChanged(event) {
-    let checked = event.target.checked;
-    if (checked) {
-      this.setState({gender: 'female'});
-    } else {
-      this.setState({gender: 'male'});
-    }
   }
 
   handleChangeFirstName = (firstName, value) => {
@@ -83,9 +72,6 @@ class RegistrationForm extends Component {
     this.state.date.setMonth(datetime.getMonth());
     this.state.date.setDate(datetime.getDate());
 
-  };
-  handleChange = (field, value) => {
-    this.setState({[field]: value});
   };
 
   comboProfession(value) {
@@ -156,7 +142,7 @@ class RegistrationForm extends Component {
   };
 
   handleChangeGender = (genderValue) => {
-    this.setState({genderValue});
+    this.setState({genderValue: genderValue});
   };
 
   render() {
@@ -200,11 +186,12 @@ class RegistrationForm extends Component {
                 <div className="row">
                   <div className="col-md-6">
                     <DatePicker label='Date of birth' sundayFirstDayOfWeek
-                                required onChange={this.dateChange} theme={themeLabel} value={this.state.date}/>
+                                required onChange={this.dateChange} theme={themeLabel} value={this.state.date} maxDate={Date.now()}/>
                   </div>
                   <div className="row">
                     <div className="col-md-6">
-                      <RadioGroup name='gender' value={this.state.genderValue} onChange={this.handleChangeGender}>
+                      <RadioGroup name='gender' value={this.state.genderValue}
+                                  onChange={this.handleChangeGender.bind(this)}>
                         <RadioButton label='Female' value='female' theme={themeLabel}/>
                         <RadioButton label='Male' value='male' theme={themeLabel}/>
                       </RadioGroup>
@@ -243,7 +230,8 @@ class RegistrationForm extends Component {
                 </div>
                 <div className="col-md-6">
                   <Input label='Username' theme={themeLabel}
-                         value={this.state.username} required onChange={this.handleChangeUsername.bind(this, 'username')}/>
+                         value={this.state.username} required
+                         onChange={this.handleChangeUsername.bind(this, 'username')}/>
                 </div>
               </div>
             </div>
@@ -252,14 +240,16 @@ class RegistrationForm extends Component {
                 <div className="col-md-6">
                   <div className="row">
                     <Input type='password' label='Password' required theme={themeLabel}
-                           value={this.state.password} onChange={this.handleChangePassword.bind(this, 'password')}/>
+                           value={this.state.password} onChange={this.handleChangePassword.bind(this, 'password')}
+                           error={this.validatePassword()}/>
                   </div>
                 </div>
                 <div className="col-md-6">
                   <div className="row">
                     <Input type='password' label='Repeat Password' required theme={themeLabel}
                            value={this.state.repeatPassword}
-                           onChange={this.handleChangeRepeatPassword.bind(this, 'repeatPassword')}/>
+                           onChange={this.handleChangeRepeatPassword.bind(this, 'repeatPassword')}
+                           error={this.validatePassword()}/>
                   </div>
                 </div>
               </div>
@@ -277,7 +267,8 @@ class RegistrationForm extends Component {
           </form>
         </div>
       </div>
-    );
+    )
+      ;
   };
 }
 export default RegistrationForm
