@@ -30,7 +30,7 @@ export function submitUser(data){
         username: data.username,
         password: data.password,
         nationality: data.nationality,
-        bornDate:  data.date ,
+        bornDate:  data.date.getTime() ,
         mail : data.mail,
         gender:data.genderValue,
         nationality: data.nationality,
