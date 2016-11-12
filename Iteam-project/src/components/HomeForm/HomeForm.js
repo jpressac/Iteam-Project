@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import classes from './HomeForm.scss'
-import Slider from 'react-slick';
+
 import img1 from '../LoginForm/image/table.png'
 import button from './button.scss';
 import button2 from './button2.scss';

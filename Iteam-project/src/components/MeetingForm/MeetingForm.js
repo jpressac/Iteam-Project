@@ -168,8 +168,8 @@ class MeetingView extends Component {
 
   dropdownTeam() {
     return (
-      <Dropdown label="Select team" auto theme={themeLabel} style={{color:'#900C3F'}} onChange={this.comboTeam.bind(this)} source={this.state.teamsObj}
-                value={this.state.teamValue} />
+      <Dropdown label="Select team" auto theme={themeLabel} style={{color:'#900C3F'}} onChange={this.comboTeam.bind(this)} 
+                source={this.state.teamsObj}   value={this.state.teamValue} />
     );
   };
 
