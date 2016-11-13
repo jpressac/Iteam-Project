@@ -19,7 +19,7 @@ export const TEAM = {
 };
 
 export const MEETING = {
-  MEETING_CREATE : URL + '/meeting/update',
+  MEETING_CREATE : URL + '/meeting/create',
   MEETING_IDEAS_SAVE : URL + '/meeting/ideas/save',
   MEETING_UPDATE : URL + '/meeting/update',
   MEETING_REPORT : URL + '/meeting/report',
