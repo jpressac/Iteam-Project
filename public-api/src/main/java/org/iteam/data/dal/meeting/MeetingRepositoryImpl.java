@@ -25,10 +25,12 @@ import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.Reports;
 import org.iteam.services.utils.JSONUtils;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.ObjectUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -56,10 +58,13 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
         meeting.setMeetingId(UUID.randomUUID().toString());
         meeting.setCreationDate(DateTime.now().getMillis());
+        DateTime date = new DateTime(meeting.getProgrammedDate());
+        meeting.setProgrammedDate(date.withZone(DateTimeZone.UTC).getMillis());
         String data = JSONUtils.ObjectToJSON(meeting);
 
         IndexResponse response = elasticsearchClientImpl.insertData(data, StringUtilities.INDEX_MEETING,
                 StringUtilities.INDEX_TYPE_MEETING, meeting.getMeetingId());
+
         if (!response.isCreated()) {
             LOGGER.error("The meeting couldn't be created - Meeting: '{}'", meeting.toString());
             return false;
@@ -72,6 +77,11 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     public boolean updateMeeting(Meeting updatedMeeting) {
         LOGGER.info("Updating meeting");
         LOGGER.debug("Meeting: '{}'", updatedMeeting.toString());
+
+        if (!ObjectUtils.isEmpty(updatedMeeting.getProgrammedDate())) {
+            DateTime date = new DateTime(updatedMeeting.getProgrammedDate());
+            updatedMeeting.setProgrammedDate(date.withZone(DateTimeZone.UTC).getMillis());
+        }
 
         String data = JSONUtils.ObjectToJSON(updatedMeeting);
 
