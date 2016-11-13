@@ -15,6 +15,7 @@ import {push} from 'react-router-redux';
 import {PATHS} from '../../constants/routes';
 import Drawer from 'react-toolbox/lib/drawer';
 import { IconButton } from 'react-toolbox/lib/button';
+import Clients from '../BoardSidebar/users'
 
 const NoteTarget = {
   drop(props, monitor, component) {
@@ -54,7 +55,7 @@ class SharedBoard extends Component {
     //Connect with socket
     connectAndSubscribe(this.props.meetingId, this.receiveNote.bind(this));
     //Get team participants for sidebar
-    getTeam(this.props.meetingId);
+    this.getTeam(this.props.meetingId);
   }
 
   componentWillMount(){
@@ -74,26 +75,26 @@ class SharedBoard extends Component {
   }
   createNotes(noteMap){
     return  Object.keys(noteMap).map((key) => {
-        return (
-          <Note key={key}
-                id={key}
-                onRemove={this.remove.bind(this)}
-                onAddComment={this.onChangeComment.bind(this)}
-                onVote={this.onUpdateRanking.bind(this)}
-                left={noteMap[key].left}
-                top={noteMap[key].top}
-                boardType="shared"
-                comments={noteMap[key].comments}
-                title={noteMap[key].title}
-                subtitle={noteMap[key].subtitle}
-                tag={noteMap[key].tag}
-          />
-        );
-      });
+      return (
+        <Note key={key}
+              id={key}
+              onRemove={this.remove.bind(this)}
+              onAddComment={this.onChangeComment.bind(this)}
+              onVote={this.onUpdateRanking.bind(this)}
+              left={noteMap[key].left}
+              top={noteMap[key].top}
+              boardType="shared"
+              comments={noteMap[key].comments}
+              title={noteMap[key].title}
+              subtitle={noteMap[key].subtitle}
+              tag={noteMap[key].tag}
+        />
+      );
+    });
   }
 
   //Method for generating note unique ID
- nextId() {
+  nextId() {
     this.uniqueId = this.uniqueId || 0;
     return this.uniqueId++;
   }
@@ -185,23 +186,31 @@ class SharedBoard extends Component {
   }
 
   getTeam = (meetingId) => {
-    axios.get('http://localhost:8080/team/users/bymeeting?meetingId' + meetingId
+    axios.get('http://localhost:8080/team/users/bymeeting?meetingId=' + meetingId
     ).then(function (response) {
       console.log('TEAM INFO' + JSON.stringify(response.data));
       this.setState({teamName: response.data["teamId"]});
-      getTeamParticipants(response.data["teamUsers"]);
+      this.getTeamParticipants(response.data["teamUsers"]);
+      console.log('State' + this.state.teamName);
     }.bind(this));
   };
 
   getTeamParticipants = (teamParticipants) => {
-    consolole.log(teamParticipants);
-    let partincipantInfo = teamParticipants.map(function(index,participant) {
-      return userInfo={
-        username: participant.username,
-        status: false
-      }
+
+    console.log(teamParticipants);
+    let participantInfo = teamParticipants.map(function(participant,index) {
+      let userInfo = {};
+      console.log(JSON.stringify(index));
+      console.log(JSON.stringify(participant));
+      console.log('USER' + participant["username"]);
+      console.log('USER' + participant.username);
+
+      userInfo["username"] = participant["username"];
+      userInfo["status"] = 'false';
+      return userInfo;
     });
-    this.setState({participants:partincipantInfo})
+    this.setState({participants:participantInfo})
+    console.log('PARTI' + this.state.participants);
   };
   sendUpdate(action, id) {
     let map = this.state.notes;
@@ -340,10 +349,9 @@ SharedBoard.propTypes = {
 
 export default flow(
   DropTarget(ItemTypes.NOTE, NoteTarget,
-  connect =>
-    ( {
-      connectDropTarget: connect.dropTarget()
-    }
-    )),connect(mapStateToProps,mapDispatchToProps))(SharedBoard);
-
+    connect =>
+      ( {
+        connectDropTarget: connect.dropTarget()
+      }
+      )),connect(mapStateToProps,mapDispatchToProps))(SharedBoard);
 

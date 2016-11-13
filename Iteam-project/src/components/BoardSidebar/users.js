@@ -5,37 +5,44 @@ import avatar from './generic-avatar.png';
 
 //TODO const getGravatar = client => `https://www.gravatar.com/avatar/${md5(client)}?d=retro`;
 
-class User extends Component {
-
+class Clients extends Component {
   constructor(props) {
     super(props);
+
+  }
+
+  render() {
+    return (
+      <List selectable ripple>
+        <ListSubHeader caption={this.props.teamName}/>
+        {this.renderClient(this.props.clients)}
+      </List>
+    );
+  }
+
+  renderClient = (clients) => {
+
+    console.log('HOLA');
+    console.log(JSON.stringify(clients));
+    return clients.map(client=> {
+      console.log(client.username);
+      return (<ListItem
+        key={client}
+        avatar={avatar}
+        caption={client.username}
+        legend={client.status}
+        rightIcon='person'
+      />);
+    });
+
   }
 }
-const renderClient = client => (
-  <ListItem
-    key={client}
-    avatar={avatar}
-    caption={client.username}
-    legend={client.status}
-    rightIcon='person'
-  />
-);
-
-const Clients = () => (
-  <List selectable ripple>
-    <ListSubHeader caption={this.props.teamName} />
-    {this.props.clients.map(renderClient)}
-  </List>
-);
 
 Clients.propTypes = {
   clients: PropTypes.array,
   teamName:PropTypes.string
 };
 
-Clients.defaultProps = {
-  clients: [],
-  teamName:''
-};
 
-export default (Clients);
+
+export default Clients;
