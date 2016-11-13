@@ -44,11 +44,12 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     private ElasticsearchClient elasticsearchClientImpl;
     private ExternalConfigurationProperties configuration;
 
-	private static final String IDEA_MEETING_ID_FIELD = "meetingId";
-	private static final String RANKING_ID_FIELD = "ranking";
-	private static final String MEETING_TEAM_NAME_FIELD = "teamName";
-	private static final String PROGRAMMED_DATE_FIELD = "programmedDate";
-	private static final int MAX_RETRIES = 5;
+    private static final String IDEA_MEETING_ID_FIELD = "meetingId";
+    private static final String RANKING_ID_FIELD = "ranking";
+    private static final String MEETING_TEAM_NAME_FIELD = "teamName";
+    private static final String PROGRAMMED_DATE_FIELD = "programmedDate";
+    private static final int MAX_RETRIES = 5;
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Override
     public boolean createMeeting(Meeting meeting) {
