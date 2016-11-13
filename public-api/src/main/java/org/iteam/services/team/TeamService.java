@@ -50,6 +50,13 @@ public interface TeamService {
      */
     public List<TeamModel> getTeams(String ownerName);
 
+    /**
+     * Retrieve the the list of teams in that the user is part of.
+     * 
+     * @param username
+     *            the username.
+     * @return the list of team names.
+     */
     public List<String> getTeamByUser(String username);
 
     /**

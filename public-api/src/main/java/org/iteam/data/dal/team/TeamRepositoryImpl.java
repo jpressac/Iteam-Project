@@ -171,11 +171,11 @@ public class TeamRepositoryImpl implements TeamRepository {
 
             if(teamResponse.isExists()) {
 
-                teamUserModel.setTeamId(teamResponse.getId());
-
                 LOGGER.debug("Team retrieved '{}'", teamResponse.toString());
 
                 Team team = (Team) JSONUtils.JSONToObject(teamResponse.getSourceAsString(), Team.class);
+
+                teamUserModel.setTeamId(team.getName());
 
                 BoolQueryBuilder query = QueryBuilders.boolQuery();
 

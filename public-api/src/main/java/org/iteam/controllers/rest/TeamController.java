@@ -77,6 +77,14 @@ public class TeamController {
         return teamService.getTeams(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
+    /**
+     * Get the team id and the list of members with their personal information,
+     * given a meeting id.
+     * 
+     * @param meetingId
+     *            the id of the meeting.
+     * @return a model representation of the information.
+     */
     @RequestMapping(value = "team/users/bymeeting", method = RequestMethod.GET)
     public TeamUserModel getTeamUserInformation(@RequestParam(value = "meetingId", required = true) String meetingId) {
         return teamService.getTeamUserInformationByMeeting(meetingId);

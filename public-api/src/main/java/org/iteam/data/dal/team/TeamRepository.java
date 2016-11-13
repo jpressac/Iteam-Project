@@ -52,6 +52,13 @@ public interface TeamRepository {
      */
     public List<TeamModel> getTeams(String ownerName);
 
+    /**
+     * Retrieved the list of teams where a user is part of.
+     * 
+     * @param username
+     *            the username.
+     * @return the list of team names.
+     */
     public List<String> getTeamByUser(String username);
 
     /**
