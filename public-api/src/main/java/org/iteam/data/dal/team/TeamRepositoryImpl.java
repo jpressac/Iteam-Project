@@ -1,6 +1,5 @@
 package org.iteam.data.dal.team;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -17,7 +16,6 @@ import org.iteam.data.dal.client.ElasticsearchClientImpl;
 import org.iteam.data.dto.Filter;
 import org.iteam.data.dto.Team;
 import org.iteam.data.dto.UserDTO;
-import org.iteam.data.model.BiFieldModel;
 import org.iteam.data.model.FilterList;
 import org.iteam.data.model.TeamModel;
 import org.iteam.services.utils.JSONUtils;
@@ -26,9 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Repository
 public class TeamRepositoryImpl implements TeamRepository {
