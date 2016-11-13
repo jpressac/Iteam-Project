@@ -68,11 +68,42 @@ public interface MeetingService {
      */
     public List<Meeting> getMeetingByUser(String username);
 
+    /**
+     * Retrieve the meeting ideas
+     * 
+     * @param meetingId
+     *            the id of the meeting.
+     * @return the json raw representation for the ideas.
+     */
     public String getMeetingInfo(String meetingId);
 
+    /**
+     * Save the ideas of a meeting, it's just temporary.
+     * 
+     * @param meetingId
+     *            the id of the meeting.
+     * 
+     * @param info
+     *            the list of ideas in json raw format.
+     */
     public void updateMeetingInfo(String meetingId, String info);
 
+    /**
+     * Update the meeting Information
+     * 
+     * @param updatedMeeting
+     *            meeting information, fields that will not be updated has to be
+     *            null.
+     * @return true if it's succes, false otherwise.
+     */
     public boolean updateMeeting(Meeting updatedMeeting);
 
+    /**
+     * Retrieve the meetings given a list of team names.
+     * 
+     * @param teamName
+     *            a list with all team names.
+     * @return a list of meetings.
+     */
     public List<Meeting> getMeetingByTeamName(String username);
 }
