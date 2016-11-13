@@ -13,8 +13,7 @@ import BootstrapModal from '../../components/BootstrapModal/BootstrapModal';
 import ListItem1 from './ListItem1.scss'
 import ListItem2 from './ListItem2.scss'
 import {updateMeetingId} from '../../redux/reducers/Meeting/MeetingReducer'
-import listItem from './item.scss'
-import list from './list.scss'
+import {MEETING} from '../../constants/HostConfiguration'
 
 var programDate = new Date();
 
@@ -177,8 +176,7 @@ class MymeetForm extends Component {
   }
 
   componentDidMount() {
-    axios.get('http://localhost:8080/meeting/meetingbyuser?username=' + this.props.user
-    ).then(function (response) {
+    axios.get(MEETING.MEETING_BY_USER, {params: {username: this.props.user}}).then(function (response) {
       this.fillfields(response.data)
     }.bind(this));
   }
@@ -204,7 +202,7 @@ class MymeetForm extends Component {
       saveMeeting['programmedDate'] = programDate.getTime();
     }
 
-    axios.post('http://localhost:8080/meeting/update', saveMeeting).then(
+    axios.post(MEETING.MEETING_UPDATE, saveMeeting).then(
       function (response) {}
     ).catch(
       function (response) {});

@@ -10,6 +10,7 @@ import Input from 'react-toolbox/lib/input';
 import themeLabel from './label.scss'
 import Tooltip from 'react-toolbox/lib/tooltip';
 import {Button, IconButton} from 'react-toolbox/lib/'
+import {UTILITIES} from '../../constants/HostConfiguration';
 
 const TooltipInput = Tooltip(Input);
 
@@ -39,11 +40,11 @@ class RegistrationForm extends Component {
 
   componentDidMount() {
 
-    axios.get('http://localhost:8080/utilities/professions').then(function (response) {
+    axios.get(UTILITIES.PROFESSIONS).then(function (response) {
       this.setValuesOptionsProfessions(response.data);
     }.bind(this));
 
-    axios.get('http://localhost:8080/utilities/nationality/get').then(function (response) {
+    axios.get(UTILITIES.NATIONALITIES).then(function (response) {
       this.setValuesOptionsNationalities(response.data);
     }.bind(this));
 

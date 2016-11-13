@@ -1,5 +1,6 @@
 import {FORM_SUBMIT , FORM_RESET, FORM_UPDATE_VALUE} from '../../constants/RegistrationFormActions/actions.js';
 import axios from 'axios'
+import {USER, UTILITIES} from '../../constants/HostConfiguration'
 
  //----ACTION CREATORS-----
 export function update(name, value) {
@@ -26,7 +27,7 @@ export function submitUser(data){
   let hobbiesList = data.hobbies.split(',');
 
 
-  axios.post('http://localhost:8080/user', {
+  axios.post(USER.GET_USER, {
         username: data.username,
         password: data.password,
         nationality: data.nationality,
@@ -45,7 +46,7 @@ export function submitUser(data){
   })
 }
 export function getNationalities(){
-  axios.get('http://localhost:8080/user/nationality').then(function(response){
+  axios.get(UTILITIES.NATIONALITIES).then(function(response){
     console.log(response.status);
     console.log('me ejecute exitosamente');
     return response.status;

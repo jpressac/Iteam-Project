@@ -10,6 +10,8 @@ import Button from 'react-toolbox/lib/button';
 import classes from './ReportForm.scss';
 import BootstrapModal from '../BootstrapModal/BootstrapModal'
 import Idea from './idea'
+import {MEETING} from '../../constants/HostConfiguration';
+
 /*
  var report = new PDFDocument
 
@@ -49,7 +51,7 @@ class ReportForm extends Component {
   };
 
   generateRankingReport = () => {
-    axios.get('http://localhost:8080/meeting/report', {
+    axios.get(MEETING.MEETING_REPORT, {
       params: {
         meetingId: this.props.meetingId
       }
@@ -89,7 +91,7 @@ class ReportForm extends Component {
 
     return this.state.meetingIdeas.map(function (idea, index) {
       return (
-        <Idea postion={index} title={idea["title"]} content={idea["subtitle"]} ranking={idea["ranking"]} author={idea["username"]} > 
+        <Idea postion={index} title={idea["title"]} content={idea["subtitle"]} ranking={idea["ranking"]} author={idea["username"]} >
           </Idea>
       );
     }.bind(this));

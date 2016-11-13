@@ -14,6 +14,7 @@ import Dropdown from 'react-toolbox/lib/dropdown';
 import themeLabel from './label.scss'
 import themeClock from './face.scss'
 import {Button, IconButton} from 'react-toolbox/lib/button';
+import {TEAM, MEETING} from '../../constants/HostConfiguration'
 
 
 var datetime = new Date();
@@ -80,7 +81,7 @@ class MeetingView extends Component {
       })
     }
 
-    axios.get('http://localhost:8080/team/byowner'
+    axios.get(TEAM.TEAM_BY_OWNER
     ).then(function (response) {
       this.fillTeam(response.data);
     }.bind(this));
@@ -116,7 +117,7 @@ class MeetingView extends Component {
     } else {
       teamId = this.searchTeamIdGivenTeamName(this.state.teamSelectedName);
 
-      axios.post('http://localhost:8080/meeting/create', {
+      axios.post(MEETING.MEETING_CREATE, {
         topic: this.state.topic,
         ownerName: this.props.user,
         programmedDate: this.state.programmedDate.getTime(),
@@ -168,7 +169,7 @@ class MeetingView extends Component {
 
   dropdownTeam() {
     return (
-      <Dropdown label="Select team" auto theme={themeLabel} style={{color:'#900C3F'}} onChange={this.comboTeam.bind(this)} 
+      <Dropdown label="Select team" auto theme={themeLabel} style={{color:'#900C3F'}} onChange={this.comboTeam.bind(this)}
                 source={this.state.teamsObj}   value={this.state.teamValue} />
     );
   };

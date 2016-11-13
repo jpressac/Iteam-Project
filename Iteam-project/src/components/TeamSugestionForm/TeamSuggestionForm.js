@@ -10,6 +10,7 @@ import {PATHS} from '../../constants/routes'
 import classes from './TeamSuggestionForm.scss'
 import themeLabel from './label.scss'
 import Tooltip from 'react-toolbox/lib/tooltip';
+import {TEAM, UTILITIES} from '../../constants/HostConfiguration'
 
 const mapStateToProps = (state) => {
   if (state.loginUser !== null) {
@@ -77,7 +78,7 @@ class TeamSuggestionForm extends React.Component {
 
   searchUsers() {
     if (this.state.filters.length >= 0) {
-      axios.get('http://localhost:8080/team/select',
+      axios.get(TEAM.TEAM_SELECT,
         {
           params: {filter: JSON.stringify(this.state.filters)}
         }).then(function (response) {
@@ -99,7 +100,7 @@ class TeamSuggestionForm extends React.Component {
     selected.push(this.props.user);
 
     if ((selected.length > 0) && (this.state.teamName !== '')) {
-      axios.post('http://localhost:8080/team/create', {
+      axios.post(TEAM.TEAM_CREATE, {
         ownerName: this.props.user,
         name: this.state.teamName,
         members: selected
@@ -165,7 +166,7 @@ class TeamSuggestionForm extends React.Component {
     switch (filterLabelName) {
       case "Profession":
 
-        axios.get('http://localhost:8080/utilities/professions').then(function (response) {
+        axios.get(UTILITIES.PROFESSIONS).then(function (response) {
           this.setValuesOptionsProfessions(response.data);
         }.bind(this));
 
@@ -174,7 +175,7 @@ class TeamSuggestionForm extends React.Component {
         break;
       case "Nationality":
 
-        axios.get('http://localhost:8080/utilities/nationality/get').then(function (response) {
+        axios.get(UTILITIES.NATIONALITIES).then(function (response) {
           this.setValuesOptionsNationalities(response.data);
         }.bind(this));
 
