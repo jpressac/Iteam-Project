@@ -1,7 +1,7 @@
 export const ROOT = '/application';
-export const ERROR = '/error'
-export const SIGNIN = '/application/member'
-export const SIGNOUT = '/application/nmember'
+export const ERROR = '/error';
+export const SIGNIN = '/application/member';
+export const SIGNOUT = '/application/nmember';
 export const PATHS = {
  ROOT,
  ERROR,
@@ -22,6 +22,7 @@ export const PATHS = {
    MEETING: 'meeting',
    BOARD: 'personalboard',
    MYMEETINGS: 'mymeeting',
+   TEAMLIST: 'myteams',
    REPORTS: 'reports'
  },
  MENUNOTLOGGEDIN: {
@@ -39,6 +40,7 @@ export const PATHS = {
    MEETING : 'application/member/meeting',
    BOARD : 'application/member/personalboard',
    MYMEETINGS: 'application/member/mymeeting',
+   TEAMLIST: 'application/member/myteams',
    REPORTS: 'application/member/reports'
  }
-}
+};
