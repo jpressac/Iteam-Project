@@ -95,7 +95,7 @@ public class MeetingController {
      *            the id of the meeting.
      * @return 204 NO CONTENT
      */
-    @RequestMapping(value = "/meeting/report/bytag", method = RequestMethod.GET)
+    @RequestMapping(value = "/meeting/report/byuser", method = RequestMethod.GET)
     public ResponseEntity<Reports> generateReportByUser(
             @RequestParam(value = "meetingId", required = true) String meetingId) {
         Reports report = meetingServiceImpl.generateReportByUser(meetingId);

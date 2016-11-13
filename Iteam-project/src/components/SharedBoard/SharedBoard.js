@@ -13,6 +13,8 @@ import flow from 'lodash/flow'
 import {connect} from 'react-redux'
 import {push} from 'react-router-redux';
 import {PATHS} from '../../constants/routes';
+import Drawer from 'react-toolbox/lib/drawer';
+import { IconButton } from 'react-toolbox/lib/button';
 
 const NoteTarget = {
   drop(props, monitor, component) {
@@ -39,7 +41,37 @@ const mapDispatchToProps = (dispatch) => ({
 
 class SharedBoard extends Component {
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      notes: {},
+      teamName: '',
+      participants: []
+    }
+  }
 
+  componentDidMount(){
+    //Connect with socket
+    connectAndSubscribe(this.props.meetingId, this.receiveNote.bind(this));
+    //Get team participants for sidebar
+    getTeam(this.props.meetingId);
+  }
+
+  componentWillMount(){
+    //Getting notes already shared in the board before rendering
+    axios.get('http://localhost:8080/meeting/meetinginfo?meetingId=' + this.props.meetingId).then((response) => {
+      if(response.data !== ""){
+        this.setState({notes: response.data});
+      }
+    }).catch((response) => {
+      console.log('error ' + response)
+    })
+  }
+
+  componentWillUnmount() {
+    //End socket connection
+    disconnect()
+  }
   createNotes(noteMap){
     return  Object.keys(noteMap).map((key) => {
         return (
@@ -60,32 +92,8 @@ class SharedBoard extends Component {
       });
   }
 
-
-  render() {
-    return this.props.connectDropTarget(
-      <div className={classes.board}>
-        <BootstrapModal ref="mymodal" message={this.state.message}/>
-        <label className={classes.label1}>SHARED BOARD</label>
-        <div className="col-md-12">
-          <div className="col-md-4">
-            <button type="button" className={" btn btn-success"} onClick={this.saveNotes.bind(this)}>
-              SAVE
-            </button>
-          </div>
-          <div className="col-md-4">
-            <button type="button" className={" btn btn-success"}
-                    onClick={this.props.onClick}> GENERATE REPORT
-            </button>
-          </div>
-        </div>
-        <div className={classes.Notecontainer}>
-          {this.createNotes(this.state.notes)}
-        </div>
-      </div>
-    );
-  }
-
-  nextId() {
+  //Method for generating note unique ID
+ nextId() {
     this.uniqueId = this.uniqueId || 0;
     return this.uniqueId++;
   }
@@ -176,11 +184,25 @@ class SharedBoard extends Component {
     this.setState({note: map})
   }
 
-  constructor(props) {
-    super(props);
-    this.state = {notes: {}}
+  getTeam = (meetingId) => {
+    axios.get('http://localhost:8080/team/users/bymeeting?meetingId' + meetingId
+    ).then(function (response) {
+      console.log('TEAM INFO' + JSON.stringify(response.data));
+      this.setState({teamName: response.data["teamId"]});
+      getTeamParticipants(response.data["teamUsers"]);
+    }.bind(this));
   };
 
+  getTeamParticipants = (teamParticipants) => {
+    consolole.log(teamParticipants);
+    let partincipantInfo = teamParticipants.map(function(index,participant) {
+      return userInfo={
+        username: participant.username,
+        status: false
+      }
+    });
+    this.setState({participants:partincipantInfo})
+  };
   sendUpdate(action, id) {
     let map = this.state.notes;
     //TODO, channel es la meeting id
@@ -195,7 +217,8 @@ class SharedBoard extends Component {
         "comments": map[id].comments,
         "ranking": map[id].ranking,
         "meetingId": 'meeting123',
-        "boardType": "shared"
+        "boardType": "shared",
+        "tag": map[id].tag
       }
       )
     )
@@ -274,23 +297,38 @@ class SharedBoard extends Component {
     }
   }
 
-  componentDidMount() {
-    //Connect with socket
-    connectAndSubscribe(this.props.meetingId, this.receiveNote.bind(this));
-  }
+  handleToggle = () => {
+    this.setState({active: !this.state.active});
+  };
 
-  componentWillMount(){
-    axios.get('http://localhost:8080/meeting/meetinginfo?meetingId=' + this.props.meetingId).then((response) => {
-      if(response.data !== ""){
-        this.setState({notes: response.data});
-      }
-    }).catch((response) => {
-      console.log('error ' + response)
-    })
-  }
-
-  componentWillUnmount() {
-    disconnect()
+  render() {
+    return this.props.connectDropTarget(
+      <div className={classes.board}>
+        <BootstrapModal ref="mymodal" message={this.state.message}/>
+        <label className={classes.label1}>SHARED BOARD</label>
+        <div className="col-md-12">
+          <div className="col-md-4">
+            <button type="button" className={" btn btn-success"} onClick={this.saveNotes.bind(this)}>
+              SAVE
+            </button>
+            <IconButton icon="menu" inverse onClick={this.handleToggle}/>
+          </div>
+          <div className="col-md-4">
+            <button type="button" className={" btn btn-success"}
+                    onClick={this.props.onClick}> GENERATE REPORT
+            </button>
+          </div>
+        </div>
+        <div className={classes.Notecontainer}>
+          {this.createNotes(this.state.notes)}
+        </div>
+        <Drawer active={this.state.active} theme={classes}
+                type="right"
+                onOverlayClick={this.handleToggle}>
+          <Clients clients={this.state.participants} teamName={this.state.teamName}/>
+        </Drawer>
+      </div>
+    );
   }
 }
 
