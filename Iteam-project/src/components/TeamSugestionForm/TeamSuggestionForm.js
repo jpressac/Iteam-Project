@@ -8,6 +8,8 @@ import {Button, IconButton} from 'react-toolbox/lib/button';
 import {push} from 'react-router-redux'
 import {PATHS} from '../../constants/routes'
 import classes from './TeamSuggestionForm.scss'
+import themeLabel from './label.scss'
+import Tooltip from 'react-toolbox/lib/tooltip';
 
 const mapStateToProps = (state) => {
   if (state.loginUser !== null) {
@@ -37,6 +39,8 @@ const filtro = [
   // {value: 5, label: 'Hobbies'}
 
 ];
+
+const TooltipButton = Tooltip(Button);
 
 class TeamSuggestionForm extends React.Component {
   constructor(props) {
@@ -221,15 +225,16 @@ class TeamSuggestionForm extends React.Component {
 
   dropdownObjectForFilter() {
     return (
-      <Dropdown label="Select filter" auto onChange={this.fillFilterValues.bind(this)} source={filtro}
+      <Dropdown label="Select filter"  theme={themeLabel} onChange={this.fillFilterValues.bind(this)} source={filtro}
                 value={this.state.value}/>
     );
   };
 
   dropdownObjectFilteredValues() {
     return (
-      <Dropdown label="Select filter" auto onChange={this.setFilteredValue.bind(this)} source={this.state.values}
-                value={this.state.filteredValue}/>
+      <Dropdown label="Select filter" auto  onChange={this.setFilteredValue.bind(this)} source={this.state.values}
+                flat primary  value={this.state.filteredValue}>
+        </Dropdown>
     );
   };
 
@@ -237,7 +242,7 @@ class TeamSuggestionForm extends React.Component {
   filterLabels() {
     return this.state.filters.map(function (filter, index) {
       return (
-        <span className="tag label label-info" style={{fontSize:14, margin:10, marginTop:50}}>
+        <span className="tag label label-info" style={{fontSize:14, margin:10, marginTop:50, background:'#900C3F', color:'white'}}>
           <span key={index}> {filter.field} : {filter.values}</span>
           <a href='javascript:;' onClick={this.deleteFilter.bind(this, index)}>
             <i className="remove glyphicon glyphicon-remove-sign glyphicon-white"/>
@@ -249,22 +254,23 @@ class TeamSuggestionForm extends React.Component {
 
   render() {
     return (
-      <div className="container" style={{marginTop:80, marginRight:50}}>
+      <div className="container" style={{marginTop:70, width:700}}>
         <div className={classes.label2}>
           <label>CREATE TEAM</label>
         </div>
-        <div className="row">
-          <div className="form-horizontal">
+
+        <div className={classes.form}>
+          <form className="form-horizontal">
             <div className="form-group" >
               <div className="col-md-8">
                 <div className="row">
-                  <Input type='text' label='Name' name='teamName'
+                  <Input type='text' label='Name' name='teamName' theme={themeLabel}
                          value={this.state.teamName} onChange={this.handleChange.bind(this, 'teamName')}
                          maxLength={16}/>
                 </div>
               </div>
             </div>
-          </div>
+
           <div className="form-group">
             <div className="col-md-12">
               <div className="row">
@@ -275,57 +281,64 @@ class TeamSuggestionForm extends React.Component {
                 <div className="col-md-4">
                   {this.dropdownObjectFilteredValues()}
                 </div>
+
+                <div className="col-md-4">
+
+                  <TooltipButton icon='add'  tooltip='Add filter'  style={{background:'#900C3F', color:'white', marginTop:10}}  floating mini
+                                 onClick={this.handleClick.bind(this)} />
+
+              </div>
               </div>
             </div>
+          </div>
+          <div className="form-group">
             <div className="row">
-              <div className="col-md-4">
-                <Button icon='add' label='Add this' raised primary onClick={this.handleClick.bind(this)}/>
+              <div className="col-md-8" style={{marginTop:20}}>
+                {this.filterLabels()}
               </div>
-
-            </div>
-
-          </div>
-          <div className="row">
-            <div className="col-md-8" style={{marginTop:20}}>
-              {this.filterLabels()}
             </div>
           </div>
-        </div>
 
-        <div className="row">
-          <div className="col-md-2">
-            <button type="button" className="btn btn-primary" style={{marginTop:20}}
-                    onClick={this.searchUsers.bind(this)}>
-              <span className="glyphicon glyphicon-search"/> Search
-            </button>
+          <div className="form-group">
+              <div className="row">
+                <div className="col-md-12">
+                  <div className="col-md-2">
+
+                    <TooltipButton icon='search'  tooltip='Search members' style={{background:'#900C3F', color:'white'}}
+                                   floating  onClick={this.searchUsers.bind(this)}/>
+                  </div>
+                    <div className="col-md-8">
+                        <table className="table table-condensed table-striped table-bordered table-hover no-margin"
+                               style={{marginTop:20, background:'white'}} data-height="299" data-click-to-select="true">
+                          <thead>
+                          <tr>
+                            <th style={{"width": "5%"}}>
+                              <input className="no-margin" type="checkbox"/>
+                            </th>
+                            <th style={{"width" : "45%" , "align":"center"}}>Last name</th>
+                            <th style={{"width" : "50%"}}>Name</th>
+                          </tr>
+                          </thead>
+                          <tbody>
+                          {this.state.users}
+                          </tbody>
+                        </table>
+                    </div>
+
+                </div>
+              </div>
           </div>
-        </div>
-        <div className="row">
-          <div className="col-md-8">
-            <table className="table table-condensed table-striped table-bordered table-hover no-margin"
-                   style={{marginTop:20}} data-height="299" data-click-to-select="true">
-              <thead>
-              <tr>
-                <th style={{"width": "5%"}}>
-                  <input className="no-margin" type="checkbox"/>
-                </th>
-                <th style={{"width" : "45%" , "align":"center"}}>Last name</th>
-                <th style={{"width" : "50%"}}>Name</th>
-              </tr>
-              </thead>
-              <tbody>
-              {this.state.users}
-              </tbody>
-            </table>
             <div className="row">
-              <button type="button" className="btn btn-primary" style={{marginTop:20}}
+              <Button  style={{margin:15,color:'#900C3F'}} target='_blank' raised
                       onClick={this.createMeeting.bind(this)}>
                 Create
-              </button>
+              </Button>
             </div>
-          </div>
-        </div>
+
+
         <BootstrapModal ref="mymodal" message={this.state.message}/>
+          </form>
+        </div>
       </div>);
   }
 }

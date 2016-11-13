@@ -1,6 +1,5 @@
 package org.iteam.data.dal.team;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -17,7 +16,6 @@ import org.iteam.data.dal.client.ElasticsearchClientImpl;
 import org.iteam.data.dto.Filter;
 import org.iteam.data.dto.Team;
 import org.iteam.data.dto.UserDTO;
-import org.iteam.data.model.BiFieldModel;
 import org.iteam.data.model.FilterList;
 import org.iteam.data.model.TeamModel;
 import org.iteam.services.utils.JSONUtils;
@@ -26,9 +24,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Repository
 public class TeamRepositoryImpl implements TeamRepository {
@@ -52,7 +47,7 @@ public class TeamRepositoryImpl implements TeamRepository {
         IndexResponse response = elasticsearchClient.insertData(data, StringUtilities.INDEX_TEAM,
                 StringUtilities.INDEX_TYPE_TEAM, UUID.randomUUID().toString());
 
-        if(response.isCreated()) {
+        if (response.isCreated()) {
             LOGGER.info("Team successfully created");
             return true;
         }
@@ -72,12 +67,12 @@ public class TeamRepositoryImpl implements TeamRepository {
 
         DeleteResponse deleteResponse = null;
 
-        if(searchResponse.getHits().getTotalHits() == 1) {
+        if (searchResponse.getHits().getTotalHits() == 1) {
             deleteResponse = elasticsearchClient.delete(StringUtilities.INDEX_TEAM, StringUtilities.INDEX_TYPE_TEAM,
                     searchResponse.getHits().getAt(0).getId());
         }
 
-        if(deleteResponse != null && deleteResponse.isFound()) {
+        if (deleteResponse != null && deleteResponse.isFound()) {
             LOGGER.info("Team was successfully deleted");
             return true;
         }
@@ -93,8 +88,8 @@ public class TeamRepositoryImpl implements TeamRepository {
 
         SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_USER,
                 applyFiltersToQuery(filterList));
-        if(response != null) {
-            for(SearchHit hit : response.getHits()) {
+        if (response != null) {
+            for (SearchHit hit : response.getHits()) {
                 UserDTO user = (UserDTO) JSONUtils.JSONToObject(hit.getSourceAsString(), UserDTO.class);
                 userList.add(user);
             }
@@ -112,8 +107,8 @@ public class TeamRepositoryImpl implements TeamRepository {
 
         List<TeamModel> teamList = new ArrayList<>();
 
-        if(response != null) {
-            for(SearchHit hit : response.getHits()) {
+        if (response != null) {
+            for (SearchHit hit : response.getHits()) {
                 teamList.add(
                         new TeamModel(hit.getId(), (Team) JSONUtils.JSONToObject(hit.getSourceAsString(), Team.class)));
             }
@@ -124,7 +119,7 @@ public class TeamRepositoryImpl implements TeamRepository {
     private QueryBuilder applyFiltersToQuery(FilterList filterList) {
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
 
-        for(Filter filter : filterList.getFilters()) {
+        for (Filter filter : filterList.getFilters()) {
             queryBuilder.should(QueryBuilders.termsQuery(filter.getField(), filter.getValues()));
         }
 
@@ -142,8 +137,8 @@ public class TeamRepositoryImpl implements TeamRepository {
 
         List<String> teamList = new ArrayList<>();
 
-        if(response != null) {
-            for(SearchHit hit : response.getHits()) {
+        if (response != null) {
+            for (SearchHit hit : response.getHits()) {
                 LOGGER.debug("User '{}' teams: '{}'", username, hit.getSourceAsString());
                 teamList.add(hit.getId());
                 LOGGER.debug("teams: " + hit.getId());
