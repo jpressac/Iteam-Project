@@ -6,6 +6,7 @@ import org.iteam.data.dto.Team;
 import org.iteam.data.dto.UserDTO;
 import org.iteam.data.model.FilterList;
 import org.iteam.data.model.TeamModel;
+import org.iteam.data.model.TeamUserModel;
 
 /**
  * Manage all the operations that can be done with a team.
@@ -50,5 +51,14 @@ public interface TeamService {
     public List<TeamModel> getTeams(String ownerName);
 
     public List<String> getTeamByUser(String username);
+
+    /**
+     * Retrieve team and user information given a meetingId.
+     * 
+     * @param meetingId
+     *            the id of the meeting.
+     * @return the team and user information.
+     */
+    public TeamUserModel getTeamUserInformationByMeeting(String meetingId);
 
 }

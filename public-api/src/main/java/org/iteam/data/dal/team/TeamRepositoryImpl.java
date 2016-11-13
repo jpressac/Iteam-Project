@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.elasticsearch.action.delete.DeleteResponse;
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -14,10 +15,12 @@ import org.elasticsearch.search.SearchHit;
 import org.iteam.configuration.StringUtilities;
 import org.iteam.data.dal.client.ElasticsearchClientImpl;
 import org.iteam.data.dto.Filter;
+import org.iteam.data.dto.Meeting;
 import org.iteam.data.dto.Team;
 import org.iteam.data.dto.UserDTO;
 import org.iteam.data.model.FilterList;
 import org.iteam.data.model.TeamModel;
+import org.iteam.data.model.TeamUserModel;
 import org.iteam.services.utils.JSONUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -34,6 +37,7 @@ public class TeamRepositoryImpl implements TeamRepository {
     private static final String LOGICAL_DELETE_FIELD = "logicalDelete";
     private static final String TEAM_NAME_FIELD = "name";
     private static final String TEAM_MEMBERS_FIELD = "members";
+    private static final String USER_USERNAME_FIELD = "username";
 
     private ElasticsearchClientImpl elasticsearchClient;
 
@@ -47,7 +51,7 @@ public class TeamRepositoryImpl implements TeamRepository {
         IndexResponse response = elasticsearchClient.insertData(data, StringUtilities.INDEX_TEAM,
                 StringUtilities.INDEX_TYPE_TEAM, UUID.randomUUID().toString());
 
-        if (response.isCreated()) {
+        if(response.isCreated()) {
             LOGGER.info("Team successfully created");
             return true;
         }
@@ -67,12 +71,12 @@ public class TeamRepositoryImpl implements TeamRepository {
 
         DeleteResponse deleteResponse = null;
 
-        if (searchResponse.getHits().getTotalHits() == 1) {
+        if(searchResponse.getHits().getTotalHits() == 1) {
             deleteResponse = elasticsearchClient.delete(StringUtilities.INDEX_TEAM, StringUtilities.INDEX_TYPE_TEAM,
                     searchResponse.getHits().getAt(0).getId());
         }
 
-        if (deleteResponse != null && deleteResponse.isFound()) {
+        if(deleteResponse != null && deleteResponse.isFound()) {
             LOGGER.info("Team was successfully deleted");
             return true;
         }
@@ -88,8 +92,8 @@ public class TeamRepositoryImpl implements TeamRepository {
 
         SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_USER,
                 applyFiltersToQuery(filterList));
-        if (response != null) {
-            for (SearchHit hit : response.getHits()) {
+        if(response != null) {
+            for(SearchHit hit : response.getHits()) {
                 UserDTO user = (UserDTO) JSONUtils.JSONToObject(hit.getSourceAsString(), UserDTO.class);
                 userList.add(user);
             }
@@ -107,8 +111,8 @@ public class TeamRepositoryImpl implements TeamRepository {
 
         List<TeamModel> teamList = new ArrayList<>();
 
-        if (response != null) {
-            for (SearchHit hit : response.getHits()) {
+        if(response != null) {
+            for(SearchHit hit : response.getHits()) {
                 teamList.add(
                         new TeamModel(hit.getId(), (Team) JSONUtils.JSONToObject(hit.getSourceAsString(), Team.class)));
             }
@@ -119,7 +123,7 @@ public class TeamRepositoryImpl implements TeamRepository {
     private QueryBuilder applyFiltersToQuery(FilterList filterList) {
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
 
-        for (Filter filter : filterList.getFilters()) {
+        for(Filter filter : filterList.getFilters()) {
             queryBuilder.should(QueryBuilders.termsQuery(filter.getField(), filter.getValues()));
         }
 
@@ -137,8 +141,8 @@ public class TeamRepositoryImpl implements TeamRepository {
 
         List<String> teamList = new ArrayList<>();
 
-        if (response != null) {
-            for (SearchHit hit : response.getHits()) {
+        if(response != null) {
+            for(SearchHit hit : response.getHits()) {
                 LOGGER.debug("User '{}' teams: '{}'", username, hit.getSourceAsString());
                 teamList.add(hit.getId());
                 LOGGER.debug("teams: " + hit.getId());
@@ -146,6 +150,59 @@ public class TeamRepositoryImpl implements TeamRepository {
         }
         return teamList;
 
+    }
+
+    @Override
+    public TeamUserModel getTeamUsersByMeeting(String meetingId) {
+        LOGGER.info("Retrieving team id for meeting '{}'", meetingId);
+
+        GetResponse meetingResponse = elasticsearchClient.getDocument(StringUtilities.INDEX_MEETING,
+                StringUtilities.INDEX_TYPE_MEETING, meetingId);
+
+        TeamUserModel teamUserModel = new TeamUserModel();
+
+        if(meetingResponse.isExists()) {
+            Meeting meeting = (Meeting) JSONUtils.JSONToObject(meetingResponse.getSourceAsString(), Meeting.class);
+
+            LOGGER.debug("Meeting retrieved '{}'", meeting.toString());
+
+            GetResponse teamResponse = elasticsearchClient.getDocument(StringUtilities.INDEX_TEAM,
+                    StringUtilities.INDEX_TYPE_TEAM, meeting.getTeamName());
+
+            if(teamResponse.isExists()) {
+
+                teamUserModel.setTeamId(teamResponse.getId());
+
+                LOGGER.debug("Team retrieved '{}'", teamResponse.toString());
+
+                Team team = (Team) JSONUtils.JSONToObject(teamResponse.getSourceAsString(), Team.class);
+
+                BoolQueryBuilder query = QueryBuilders.boolQuery();
+
+                query.should(QueryBuilders.termsQuery(USER_USERNAME_FIELD, team.getMembers()));
+
+                // This could change in the future.
+                query.minimumNumberShouldMatch(1);
+
+                SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_USER, query);
+
+                List<UserDTO> usersList = new ArrayList<>();
+
+                if(response.getHits().getTotalHits() > 0) {
+
+                    for(SearchHit hit : response.getHits()) {
+
+                        UserDTO user = (UserDTO) JSONUtils.JSONToObject(hit.getSourceAsString(), UserDTO.class);
+
+                        usersList.add(user);
+                    }
+                }
+
+                teamUserModel.setTeamUsers(usersList);
+            }
+        }
+
+        return teamUserModel;
     }
 
     @Autowired
