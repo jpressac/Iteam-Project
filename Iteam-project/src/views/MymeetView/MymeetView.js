@@ -6,7 +6,7 @@ class MymeetView extends React.Component {
   render(){
     return(
       <div className={classes.formContainer}>
-        <Mymeeting></Mymeeting>
+        <Mymeeting/>
       </div>
     )
   }

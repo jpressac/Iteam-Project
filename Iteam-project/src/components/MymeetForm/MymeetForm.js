@@ -292,6 +292,7 @@ class MymeetForm extends Component {
                     caption={meetmap[key].topic}
                     legend={renderDateTime}
                     leftIcon='send'
+                    rightIcon='Select Meeting'
                     onClick={this.handleToggleDialog.bind(this, meetmap[key])}/>
                   <ListDivider />
                   <Dialog
