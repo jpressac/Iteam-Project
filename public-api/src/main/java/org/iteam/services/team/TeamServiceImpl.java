@@ -7,6 +7,7 @@ import org.iteam.data.dto.Team;
 import org.iteam.data.dto.UserDTO;
 import org.iteam.data.model.FilterList;
 import org.iteam.data.model.TeamModel;
+import org.iteam.data.model.TeamUserModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,13 +36,18 @@ public class TeamServiceImpl implements TeamService {
         return teamRepository.getTeams(ownerName);
     }
 
-    @Autowired
-    private void setTeamRepository(TeamRepositoryImpl teamRepository) {
-        this.teamRepository = teamRepository;
-    }
-
     @Override
     public List<String> getTeamByUser(String username) {
         return teamRepository.getTeamByUser(username);
+    }
+
+    @Override
+    public TeamUserModel getTeamUserInformationByMeeting(String meetingId) {
+        return teamRepository.getTeamUsersByMeeting(meetingId);
+    }
+
+    @Autowired
+    private void setTeamRepository(TeamRepositoryImpl teamRepository) {
+        this.teamRepository = teamRepository;
     }
 }
