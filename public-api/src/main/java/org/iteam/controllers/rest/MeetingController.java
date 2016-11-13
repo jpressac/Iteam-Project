@@ -6,6 +6,7 @@ import javax.validation.Valid;
 
 import org.iteam.data.dto.Meeting;
 import org.iteam.data.model.IdeasDTO;
+import org.iteam.data.model.Reports;
 import org.iteam.services.meeting.MeetingService;
 import org.iteam.services.meeting.MeetingServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +66,7 @@ public class MeetingController {
     }
 
     private ResponseEntity<Void> checkResult(boolean flag) {
-        if(flag) {
+        if (flag) {
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -80,10 +81,41 @@ public class MeetingController {
      * @return 204 NO CONTENT
      */
     @RequestMapping(value = "/meeting/report", method = RequestMethod.GET)
-    public ResponseEntity<Void> generateReport(@RequestParam(value = "meetingId", required = true) String meetingId) {
-        meetingServiceImpl.generateReport(meetingId);
+    public ResponseEntity<Reports> generateReport(
+            @RequestParam(value = "meetingId", required = true) String meetingId) {
+        Reports report = meetingServiceImpl.generateReport(meetingId);
 
-        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<Reports>(report, HttpStatus.OK);
+    }
+
+    /**
+     * Generate the standard report by the given meeting.
+     * 
+     * @param meetingId
+     *            the id of the meeting.
+     * @return 204 NO CONTENT
+     */
+    @RequestMapping(value = "/meeting/report/bytag", method = RequestMethod.GET)
+    public ResponseEntity<Reports> generateReportByUser(
+            @RequestParam(value = "meetingId", required = true) String meetingId) {
+        Reports report = meetingServiceImpl.generateReport(meetingId);
+
+        return new ResponseEntity<Reports>(report, HttpStatus.OK);
+    }
+
+    /**
+     * Generate the standard report by the given meeting.
+     * 
+     * @param meetingId
+     *            the id of the meeting.
+     * @return 204 NO CONTENT
+     */
+    @RequestMapping(value = "/meeting/report/byuser", method = RequestMethod.GET)
+    public ResponseEntity<Reports> generateReportBy(
+            @RequestParam(value = "meetingId", required = true) String meetingId) {
+        Reports report = meetingServiceImpl.generateReport(meetingId);
+
+        return new ResponseEntity<Reports>(report, HttpStatus.OK);
     }
 
     /**

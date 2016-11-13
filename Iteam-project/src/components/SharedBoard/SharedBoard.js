@@ -9,6 +9,10 @@ import axios from "axios";
 import {ItemTypes} from "../Constants/Constants";
 import {connectAndSubscribe, disconnect, sendNote} from '../../websocket/websocket'
 import BootstrapModal from '../BootstrapModal/BootstrapModal'
+import flow from 'lodash/flow'
+import {connect} from 'react-redux'
+import {push} from 'react-router-redux';
+import {PATHS} from '../../constants/routes';
 
 const NoteTarget = {
   drop(props, monitor, component) {
@@ -20,6 +24,18 @@ const NoteTarget = {
   }
 };
 
+const mapStateToProps = (state) => {
+  if (state.meetingReducer != null) {
+    return {
+      meetingId: state.meetingReducer.meetingId
+    }
+  }
+}
+const mapDispatchToProps = (dispatch) => ({
+
+  onClick: () => dispatch(push('/' + PATHS.MENULOGGEDIN.REPORTS))
+
+});
 
 class SharedBoard extends Component {
 
@@ -58,7 +74,7 @@ class SharedBoard extends Component {
           </div>
           <div className="col-md-4">
             <button type="button" className={" btn btn-success"}
-                    onClick={this.generateReport.bind(this)}> GENERATE REPORT
+                    onClick={this.props.onClick}> GENERATE REPORT
             </button>
           </div>
         </div>
@@ -105,7 +121,7 @@ class SharedBoard extends Component {
   generateReport() {
     axios.get('http://localhost:8080/meeting/report', {
       params: {
-        meetingId: 'meeting123'
+        meetingId: this.props.meetingId
       }
     }).then(
       function (response) {
@@ -143,7 +159,7 @@ class SharedBoard extends Component {
     delete map[id];
     this.setState({notes: map});
     //TODO, channel es la meeting id
-    sendNote(action, '13', JSON.stringify(
+    sendNote(action, this.props.meetingId , JSON.stringify(
       {
         "id": id
       })
@@ -168,7 +184,7 @@ class SharedBoard extends Component {
   sendUpdate(action, id) {
     let map = this.state.notes;
     //TODO, channel es la meeting id
-    sendNote(action, '13', JSON.stringify(
+    sendNote(action, this.props.meetingId , JSON.stringify(
       {
         "id": id,
         "username": map[id].username,
@@ -187,7 +203,7 @@ class SharedBoard extends Component {
   }
 
   sendUpdateCache(action, payload) {
-    sendNote(action, '13', JSON.stringify(payload));
+    sendNote(action, this.props.meetingId, JSON.stringify(payload));
 
   }
 
@@ -214,7 +230,7 @@ class SharedBoard extends Component {
           subtitle: jsonPayloadMessage.subtitle,
           comments: 'add comments',
           ranking: 0,
-          meetingId: 'meeting123',
+          meetingId: this.props.meetingId,
           boardType: "shared"
         };
         this.setState({notes: map});
@@ -234,7 +250,7 @@ class SharedBoard extends Component {
             subtitle: jsonPayloadMessage.subtitle,
             comments: jsonPayloadMessage.comments,
             ranking: jsonPayloadMessage.ranking,
-            meetingId: 'meeting123',
+            meetingId: this.props.meetingId,
             boardType: "shared"
           };
         }
@@ -258,11 +274,11 @@ class SharedBoard extends Component {
 
   componentDidMount() {
     //Connect with socket
-    connectAndSubscribe('13', this.receiveNote.bind(this));
+    connectAndSubscribe(this.props.meetingId, this.receiveNote.bind(this));
   }
 
   componentWillMount(){
-    axios.get('http://localhost:8080/meeting/meetinginfo?meetingId=13').then((response) => {
+    axios.get('http://localhost:8080/meeting/meetinginfo?meetingId=' + this.props.meetingId).then((response) => {
       if(response.data !== ""){
         this.setState({notes: response.data});
       }
@@ -277,12 +293,17 @@ class SharedBoard extends Component {
 }
 
 SharedBoard.propTypes = {
-  connectDropTarget: PropTypes.func.isRequired
+  connectDropTarget: PropTypes.func.isRequired,
+  meetingId: PropTypes.string,
+  onClick : PropTypes.func
 };
 
-export default DropTarget(ItemTypes.NOTE, NoteTarget,
+export default flow(
+  DropTarget(ItemTypes.NOTE, NoteTarget,
   connect =>
     ( {
       connectDropTarget: connect.dropTarget()
     }
-    ))(SharedBoard);
+    )),connect(mapStateToProps,mapDispatchToProps))(SharedBoard);
+
+

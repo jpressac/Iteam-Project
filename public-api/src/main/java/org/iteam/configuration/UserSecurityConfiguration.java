@@ -40,6 +40,7 @@ public class UserSecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers(HttpMethod.POST, "/user").permitAll()
                 .antMatchers(HttpMethod.GET, "/user/authenticated").permitAll()
                 .antMatchers(HttpMethod.GET, "/utilities/nationality/get").permitAll()
+                .antMatchers(HttpMethod.GET, "/utilities/professions").permitAll()
                 .antMatchers(HttpMethod.POST, "/utilities/nationality/insert").permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**/*").permitAll().anyRequest().authenticated().and().formLogin()
                 .loginPage("/application/nmember/login").defaultSuccessUrl("/application/member/home", true).permitAll()

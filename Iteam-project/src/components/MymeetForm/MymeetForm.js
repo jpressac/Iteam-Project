@@ -12,6 +12,9 @@ import Input from 'react-toolbox/lib/input';
 import BootstrapModal from '../../components/BootstrapModal/BootstrapModal';
 import ListItem1 from './ListItem1.scss'
 import ListItem2 from './ListItem2.scss'
+import {updateMeetingId} from '../../redux/reducers/Meeting/MeetingReducer'
+import listItem from './item.scss'
+import list from './list.scss'
 
 var programDate = new Date();
 
@@ -21,11 +24,15 @@ const mapStateToProps = (state) => {
     return {
       user: state.loginUser.user.username
     }
+
   }
+
 };
 
 const mapDispatchToProps = (dispatch) => ({
-  onClick: () => dispatch(push('/' + PATHS.MENULOGGEDIN.BOARD))
+
+  onClick: () => dispatch(push('/' + PATHS.MENULOGGEDIN.BOARD)),
+  updateMyMeetingId: (meetingId) => dispatch(updateMeetingId(meetingId))
 });
 
 
@@ -46,6 +53,16 @@ class MymeetForm extends Component {
       },
       editable: true
     }
+  }
+
+
+  goToReports(){
+    this.props.updateMyMeetingId(this.state.meetEdit.meetingId);
+  }
+
+  startMeeting(){
+    this.props.updateMyMeetingId(this.state.meetEdit.meetingId);
+    this.props.onClick();
   }
 
   handleToggleDialog = (meeting) => {
@@ -126,7 +143,7 @@ class MymeetForm extends Component {
 
   AdminActionsStart = [
     {label: "Cancel", onClick: this.handleToggleDialog},
-    {label: "Start", onClick: this.props.onClick}
+    {label: "Start", onClick: this.startMeeting.bind(this)}
   ];
 
   AdminActionsEdit = [
@@ -138,7 +155,7 @@ class MymeetForm extends Component {
 
   AdminUserActionsFinish = [
     {label: "Cancel", onClick: this.handleToggleDialog},
-    {label: "View Reports", onClick: this.handleToggleDialog}
+    {label: "View Reports", onClick: this.goToReports.bind(this)}
   ];
 
   UserActionsJoin = [
@@ -160,7 +177,6 @@ class MymeetForm extends Component {
   }
 
   componentDidMount() {
-    console.log('User: ' + this.props.user);
     axios.get('http://localhost:8080/meeting/meetingbyuser?username=' + this.props.user
     ).then(function (response) {
       this.fillfields(response.data)
@@ -260,8 +276,9 @@ class MymeetForm extends Component {
 
     return (
       <div className={"container"} style={{marginTop:70}}>
+        <div className={classes.content}>
         <div className={classes.label2}>
-          <label>MY MEETING</label>
+          <label>MY MEETINGS</label>
         </div>
         <List selectable ripple>
           <ListSubHeader />
@@ -306,15 +323,16 @@ class MymeetForm extends Component {
           )}
         </List>
       </div>
+  </div>
     )
   }
-
 }
 
 
 MymeetForm.propTypes = {
   onClick: PropTypes.func,
-  user: PropTypes.any
+  user: PropTypes.any,
+  goToReports: PropTypes.func
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(MymeetForm);
