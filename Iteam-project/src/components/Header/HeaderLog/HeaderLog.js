@@ -19,6 +19,7 @@ const mapDispatchToProps = dispatch => ({
   profile: () => dispatch(push('/' + PATHS.MENULOGGEDIN.PROFILE)),
   myMeeting: ()=> dispatch(push('/' + PATHS.MENULOGGEDIN.MYMEETINGS)),
   meeting: ()=> dispatch(push('/' + PATHS.MENULOGGEDIN.MEETING)),
+  teamList: ()=> dispatch(push('/' + PATHS.MENULOGGEDIN.TEAMLIST)),
   team: ()=> dispatch(push('/' + PATHS.MENULOGGEDIN.NEWTEAM)),
   newMeeting: () => dispatch(fromMeetingOrTeam())
 
@@ -62,17 +63,19 @@ class HeaderLog extends Component {
               <ul className={classes.ul}>
                 <li><Button label='HOME' className={themeButton.button} style={{color:'#900C3F'}}
                             onClick={this.props.home}/></li>
-                <li><Button label='PROFILE' theme={themeButton} style={{color:'#900C3F'}} onClick={this.props.profile}/>
-                </li>
+                <li><Button label='PROFILE' theme={themeButton} style={{color:'#900C3F'}}
+                            onClick={this.props.profile}/></li>
                 <li><Button label='MY MEETINGS' theme={themeButton} style={{color:'#900C3F'}}
                             onClick={this.props.myMeeting}/></li>
                 <li><Button label='NEW MEETING' theme={themeButton} style={{color:'#900C3F'}}
                             onClick={this.goToNewMeeting.bind(this)}/></li>
                 <li><Button label='NEW TEAM' theme={themeButton} style={{color:'#900C3F'}}
                             onClick={this.goToNewTeam.bind(this)}/></li>
+                <li><Button label='MY TEAMS' theme={themeButton} style={{color:'#900C3F'}}
+                            onClick={this.props.teamList}/></li>
                 <li><span className="glyphicon glyphicon-user"
                           className={classes.span}><label> {this.props.user}</label></span ></li>
-                <li><LogoutButton style={{color:'#900C3F',}}></LogoutButton></li>
+                <li><LogoutButton style={{color:'#900C3F'}}></LogoutButton></li>
               </ul>
             </Navigation>
           </div>
@@ -89,7 +92,8 @@ HeaderLog.propTypes = {
   meeting: PropTypes.func,
   user: PropTypes.any,
   team: PropTypes.func,
-  newMeeting: PropTypes.func
+  newMeeting: PropTypes.func,
+  teamList: PropTypes.func
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(HeaderLog)

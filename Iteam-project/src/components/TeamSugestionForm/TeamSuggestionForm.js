@@ -260,7 +260,7 @@ class TeamSuggestionForm extends React.Component {
         </div>
 
         <div className={classes.form}>
-          <form className="form-horizontal">
+          <div className="form-horizontal">
             <div className="form-group" >
               <div className="col-md-8">
                 <div className="row">
@@ -337,7 +337,7 @@ class TeamSuggestionForm extends React.Component {
 
 
         <BootstrapModal ref="mymodal" message={this.state.message}/>
-          </form>
+          </div>
         </div>
       </div>);
   }

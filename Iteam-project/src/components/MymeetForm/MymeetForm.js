@@ -13,8 +13,6 @@ import BootstrapModal from '../../components/BootstrapModal/BootstrapModal';
 import ListItem1 from './ListItem1.scss'
 import ListItem2 from './ListItem2.scss'
 import {updateMeetingId} from '../../redux/reducers/Meeting/MeetingReducer'
-import listItem from './item.scss'
-import list from './list.scss'
 
 var programDate = new Date();
 
@@ -294,6 +292,7 @@ class MymeetForm extends Component {
                     caption={meetmap[key].topic}
                     legend={renderDateTime}
                     leftIcon='send'
+                    rightIcon='Select Meeting'
                     onClick={this.handleToggleDialog.bind(this, meetmap[key])}/>
                   <ListDivider />
                   <Dialog
