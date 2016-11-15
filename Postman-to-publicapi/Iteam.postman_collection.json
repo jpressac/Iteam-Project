@@ -50,26 +50,6 @@
 						"description": ""
 					},
 					"response": []
-				},
-				{
-					"name": "User",
-					"request": {
-						"url": "http://{{_IP_HOST_}}:9200/user",
-						"method": "PUT",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json",
-								"description": ""
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"mappings\": {\r\n    \t\"userdata\": {\r\n\t\t\t\"properties\": {\r\n\t\t\t\t\"profession\": {\r\n\t\t\t\t\t\"type\": \"string\",\r\n\t\t\t\t\t\"index\": \"not_analyzed\"\r\n\t\t\t\t},\r\n\t\t\t\t\"nationality\":{\r\n\t\t\t\t\t\"type\": \"string\",\r\n\t\t\t\t\t\"index\": \"not_analyzed\"\r\n\t\t\t\t}\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n}\r\n"
-						},
-						"description": ""
-					},
-					"response": []
 				}
 			]
 		},
@@ -131,7 +111,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\": \"juan\",\n    \"password\": \"admin\",\n    \"name\": \"Juan Cruz\",\n    \"lastName\": \"Pressacco\",\n    \"gender\": \"male\",\n    \"nationality\": \"Argentinean\",\n    \"bornDate\":641790000000,\n    \"profession\": \"Estudiante\",\n    \"hobbies\": [\"futbol\", \"vela\"],\n    \"mail\":\"pressaccojuan@gmail.com\"\n}"
+							"raw": "{\n    \"username\": \"juan\",\n    \"password\": \"admin\",\n    \"name\": \"Juan Cruz\",\n    \"lastName\": \"Pressacco\",\n    \"gender\": \"male\",\n    \"nationality\": \"Argentina\",\n    \"bornDate\":641790000000,\n    \"profession\": \"Estudiante\",\n    \"hobbies\": [\"futbol\", \"vela\"],\n    \"mail\":\"pressaccojuan@gmail.com\"\n}"
 						},
 						"description": ""
 					},
@@ -151,7 +131,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\": \"vale\",\n    \"password\": \"vale123\",\n    \"name\": \"Valentina\",\n    \"lastName\": \"Randanne\",\n    \"gender\": \"female\",\n    \"nationality\": \"German\",\n    \"bornDate\":671252400000,\n    \"profession\": \"Estudiante\",\n    \"hobbies\": [\"futbol\", \"yoga\"],\n    \"mail\":\"valentina.randanne@gmail.com\"\n}"
+							"raw": "{\n    \"username\": \"vale\",\n    \"password\": \"vale123\",\n    \"name\": \"Valentina\",\n    \"lastName\": \"Randanne\",\n    \"gender\": \"female\",\n    \"nationality\": \"Germany\",\n    \"bornDate\":671252400000,\n    \"profession\": \"Estudiante\",\n    \"hobbies\": [\"futbol\", \"yoga\"],\n    \"mail\":\"valentina.randanne@gmail.com\"\n}"
 						},
 						"description": ""
 					},
@@ -211,7 +191,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\": \"artixo\",\n    \"password\": \"password\",\n    \"name\": \"Jorge\",\n    \"lastName\": \"Lopez\",\n    \"gender\": \"male\",\n    \"nationality\": \"Argentinean\",\n    \"bornDate\":346388400000,\n    \"profession\": \"Electrical Engineer\",\n    \"hobbies\": [\"rugby\"],\n    \"mail\":\"jlopez@yahoo.com.ar\"\n}"
+							"raw": "{\n    \"username\": \"artixo\",\n    \"password\": \"password\",\n    \"name\": \"Jorge\",\n    \"lastName\": \"Lopez\",\n    \"gender\": \"male\",\n    \"nationality\": \"Argentina\",\n    \"bornDate\":346388400000,\n    \"profession\": \"Electrical Engineer\",\n    \"hobbies\": [\"rugby\"],\n    \"mail\":\"jlopez@yahoo.com.ar\"\n}"
 						},
 						"description": ""
 					},
@@ -231,7 +211,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\": \"edgarbauza\",\n    \"password\": \"bauza123\",\n    \"name\": \"Edgar\",\n    \"lastName\": \"Bauza\",\n    \"gender\": \"male\",\n    \"nationality\": \"Argentinean\",\n    \"bornDate\":219121200000,\n    \"profession\": \"Mechanical Engineer\",\n    \"hobbies\": [\"computing\"],\n    \"mail\":\"edgar.bauza@hotmail.com\"\n}"
+							"raw": "{\n    \"username\": \"edgarbauza\",\n    \"password\": \"bauza123\",\n    \"name\": \"Edgar\",\n    \"lastName\": \"Bauza\",\n    \"gender\": \"male\",\n    \"nationality\": \"Argentina\",\n    \"bornDate\":219121200000,\n    \"profession\": \"Mechanical Engineer\",\n    \"hobbies\": [\"computing\"],\n    \"mail\":\"edgar.bauza@hotmail.com\"\n}"
 						},
 						"description": ""
 					},
@@ -251,7 +231,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\": \"vickypet\",\n    \"password\": \"pato123\",\n    \"name\": \"Vicotria\",\n    \"lastName\": \"Petorutti\",\n    \"gender\": \"female\",\n    \"nationality\": \"German\",\n    \"bornDate\":660884400000,\n    \"profession\": \"Enconomist\",\n    \"hobbies\": [\"danza\"],\n    \"mail\":\"vicky_petorutti@gmail.com\"\n}"
+							"raw": "{\n    \"username\": \"vickypet\",\n    \"password\": \"pato123\",\n    \"name\": \"Vicotria\",\n    \"lastName\": \"Petorutti\",\n    \"gender\": \"female\",\n    \"nationality\": \"Germany\",\n    \"bornDate\":660884400000,\n    \"profession\": \"Enconomist\",\n    \"hobbies\": [\"danza\"],\n    \"mail\":\"vicky_petorutti@gmail.com\"\n}"
 						},
 						"description": ""
 					},
@@ -271,13 +251,78 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\": \"redding\",\n    \"password\": \"history123\",\n    \"name\": \"Romina\",\n    \"lastName\": \"Eddingborrows\",\n    \"gender\": \"female\",\n    \"nationality\": \"German\",\n    \"bornDate\":346388400000,\n    \"profession\": \"Medicine\",\n    \"hobbies\": [\"vela\"],\n    \"mail\":\"romnieddingborrows@gmail.com\"\n}"
+							"raw": "{\n    \"username\": \"redding\",\n    \"password\": \"history123\",\n    \"name\": \"Romina\",\n    \"lastName\": \"Eddingborrows\",\n    \"gender\": \"female\",\n    \"nationality\": \"Germany\",\n    \"bornDate\":346388400000,\n    \"profession\": \"Medicine\",\n    \"hobbies\": [\"vela\"],\n    \"mail\":\"romnieddingborrows@gmail.com\"\n}"
 						},
 						"description": ""
 					},
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Team",
+			"request": {
+				"url": "http://{{_IP_HOST_}}:8080//team/create",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"ownerName\": \"belu\",\r\n\t\"creationDate\": 1479241311101,\r\n\t\"name\": \"Proyecto Final Team\",\r\n\t\"members\": [\r\n\t\t\"juan\",\r\n\t\t\"agus\",\r\n\t\t\"artixo\",\r\n\t\t\"edgarbauza\",\r\n\t\t\"vickypet\",\r\n\t\t\"vale\",\r\n\t\t\"belu\"\r\n\t]\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Meeting",
+			"request": {
+				"url": "http://{{_IP_HOST_}}:8080//meeting/create",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"topic\": \"Presentación regularidad\",\r\n\t\"meetingId\": \"38b9ec01-75ce-49c7-948a-e51b120dbe00\",\r\n\t\"creationDate\": 1479241400631,\r\n\t\"programmedDate\": 1479249006563,\r\n\t\"ownerName\": \"belu\",\r\n\t\"teamName\": \"555ba6c3-a842-4bc9-85c4-ef5222072b18\",\r\n\t\"description\": \"Demo regularidad en la cual se mostrará la aplicación \"\r\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Ideas",
+			"request": {
+				"url": "http://{{_IP_HOST_}}:8080//meeting/ideas/save",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					},
+					{
+						"key": "Authorization",
+						"value": "Basic YmVsdTpiZWx1MTIz",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t\"insertionDate\":\"\",\r\n\t\"ideas\":[{\r\n\t\"username\": \"agus\",\r\n\t\"title\": \"Nota 10\",\r\n\t\"comments\": \"Planificar los pasos adecuados\",\r\n\t\"ranking\": 6,\r\n\t\"meetingId\": \"38b9ec01-75ce-49c7-948a-e51b120dbe00\",\r\n\t\"tag\": \"Nota\",\r\n\t\"subtitle\": \"Deberíamos mostrar todo ordenado \"\r\n},\r\n{\r\n\t\"username\": \"agus\",\r\n\t\"title\": \"Elasticsearch\",\r\n\t\"comments\": \"Base de Datos\",\r\n\t\"ranking\": 6,\r\n\t\"meetingId\": \"38b9ec01-75ce-49c7-948a-e51b120dbe00\",\r\n\t\"tag\": \"Demo\",\r\n\t\"subtitle\": \"Deberíamos cardar la base de datos de elastic search con datos útiles para la presentación\"\r\n},\r\n{\r\n\t\"username\": \"vale\",\r\n\t\"title\": \"Reularizar\",\r\n\t\"comments\": \"Se trabajo mucho para cumplir los requisitos de regularidad\",\r\n\t\"ranking\": 0,\r\n\t\"meetingId\": \"38b9ec01-75ce-49c7-948a-e51b120dbe00\",\r\n\t\"tag\": \"Nota\",\r\n\t\"subtitle\": \"Deberiamos tener el 80% \"\r\n},\r\n{\r\n\t\"username\": \"juan\",\r\n\t\"title\": \"Linda\",\r\n\t\"comments\": \"Cómo lo harán?\",\r\n\t\"ranking\": 2,\r\n\t\"meetingId\": \"38b9ec01-75ce-49c7-948a-e51b120dbe00\",\r\n\t\"tag\": \"Demo\",\r\n\t\"subtitle\": \"Mostrar el camino desde crear usuario hasta obtener reportes\"\r\n},\r\n{\r\n\t\"username\": \"belu\",\r\n\t\"title\": \"Presentación Final\",\r\n\t\"comments\": \"Muy buena idea\",\r\n\t\"ranking\": 5,\r\n\t\"meetingId\": \"38b9ec01-75ce-49c7-948a-e51b120dbe00\",\r\n\t\"tag\": \"Final\",\r\n\t\"subtitle\": \"Proyectada para ser en febrero/marzo 2017\"\r\n},\r\n{\r\n\t\"username\": \"juan\",\r\n\t\"title\": \"Fecha Final\",\r\n\t\"comments\": \"Averiguar días disponibles\",\r\n\t\"ranking\": 3,\r\n\t\"meetingId\": \"38b9ec01-75ce-49c7-948a-e51b120dbe00\",\r\n\t\"tag\": \"Final\",\r\n\t\"subtitle\": \"Trabajar mucho los meses que quedan\"\r\n},\r\n{\r\n\t\"username\": \"juan\",\r\n\t\"title\": \"Final\",\r\n\t\"comments\": \"Prometido\",\r\n\t\"ranking\": 5,\r\n\t\"meetingId\": \"38b9ec01-75ce-49c7-948a-e51b120dbe00\",\r\n\t\"tag\": \"Final\",\r\n\t\"subtitle\": \"Si o si presentar en febrero/marzo ya que cada uno tiene proyectos que lo requieren\"\r\n}]}"
+				},
+				"description": ""
+			},
+			"response": []
 		}
 	]
 }
