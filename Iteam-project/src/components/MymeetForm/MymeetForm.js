@@ -266,9 +266,12 @@ class MymeetForm extends Component {
 
   render() {
     let meets = this.state.meetings;
+    console.log('MEETINGS' + JSON.stringify(this.state.meetings));
+    console.log('MEETINGS' + this.state.meetings);
     let meetingTime = new Date;
 
-    var meetmap = [].slice.call(meets).sort(function(a, b){
+    var meetmap = [].slice.call(meets).
+    sort(function(a, b){
       return a.programmedDate-b.programmedDate
     });
 
