@@ -3,10 +3,13 @@ import {DropTarget} from "react-dnd";
 import classes from "./PersonalBoard.scss";
 import Note from "../Note/Note";
 import {ItemTypes} from "../Constants/Constants";
-import {IconButton} from 'react-toolbox/lib/button';
+import Button from 'react-toolbox/lib/button';
+import Tooltip from 'react-toolbox/lib/tooltip';
 import flow from 'lodash/flow'
 import {connect as con,initWebSocket, sendNote, disconnect} from '../../websocket/websocket'
 import {connect} from 'react-redux'
+
+const TooltipButton = Tooltip(Button);
 
 const NoteTarget = {
   drop(props, monitor, component) {
@@ -54,7 +57,9 @@ class PersonalBoard extends Component {
         <div className="col-md-12">
           <div className="row">
             <div className="col-md-4">
-              <IconButton icon="add_box" onClick={this.add.bind(this, "New note")}/>
+              <TooltipButton icon='add'  label='Add Note' tooltip='Add Note'
+                             style={{background:'#900C3F', color:'white', marginTop:10}}  floating mini
+                             onClick={this.add.bind(this, "New note")} />
             </div>
           </div>
         </div>
