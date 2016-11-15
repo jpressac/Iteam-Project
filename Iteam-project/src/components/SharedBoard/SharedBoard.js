@@ -15,6 +15,7 @@ import {push} from 'react-router-redux';
 import {PATHS} from '../../constants/routes';
 import Drawer from 'react-toolbox/lib/drawer';
 import { IconButton } from 'react-toolbox/lib/button';
+import {MEETING} from '../../constants/HostConfiguration'
 
 const NoteTarget = {
   drop(props, monitor, component) {
@@ -114,7 +115,7 @@ class SharedBoard extends Component {
       );
     });
     //no tener hardcodeado la url y sacar el axios de aca
-    axios.post('http://localhost:8080/meeting/ideas/save', {
+    axios.post(MEETING.MEETING_IDEAS_SAVE, {
       ideas
     }).then(function (response) {
       this.setState({message: '¡Your notes were successfully saved!'});
@@ -127,7 +128,7 @@ class SharedBoard extends Component {
   }
 
   generateReport() {
-    axios.get('http://localhost:8080/meeting/report', {
+    axios.get(MEETING.MEETING_REPORT, {
       params: {
         meetingId: this.props.meetingId
       }
@@ -216,9 +217,9 @@ class SharedBoard extends Component {
         "top": map[id].top,
         "comments": map[id].comments,
         "ranking": map[id].ranking,
-        "meetingId": 'meeting123',
+        "meetingId": this.props.meetingId,
         "boardType": "shared",
-        "tag": map[id].tag
+        "tag":map[id].tag
       }
       )
     )
@@ -255,7 +256,7 @@ class SharedBoard extends Component {
           ranking: 0,
           meetingId: this.props.meetingId,
           boardType: "shared",
-          tag: jsonPayloadMessage.tag
+          tag:jsonPayloadMessage.tag
         };
         this.setState({notes: map});
         this.sendUpdateCache('updateCache', this.state.notes);
@@ -276,7 +277,7 @@ class SharedBoard extends Component {
             ranking: jsonPayloadMessage.ranking,
             meetingId: this.props.meetingId,
             boardType: "shared",
-            tag: jsonPayloadMessage.tag
+            tag:jsonPayloadMessage.tag
           };
         }
         this.setState({notes: map});

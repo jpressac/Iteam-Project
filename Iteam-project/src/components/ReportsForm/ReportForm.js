@@ -54,7 +54,7 @@ class ReportForm extends Component {
   };
 
   generateRankingReport = () => {
-    axios.get('http://localhost:8080/meeting/report', {
+    axios.get(MEETING.MEETING_REPORT, {
       params: {
         meetingId: this.props.meetingId
       }

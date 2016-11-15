@@ -10,9 +10,11 @@ import {PATHS} from '../../constants/routes';
 import classes from './MymeetForm.scss';
 import Input from 'react-toolbox/lib/input';
 import BootstrapModal from '../../components/BootstrapModal/BootstrapModal';
+import ListItem1 from './ListItem1.scss'
+import ListItem2 from './ListItem2.scss'
+import listFormat from './List.scss'
 import {updateMeetingId} from '../../redux/reducers/Meeting/MeetingReducer'
-import listItem from './item.scss'
-import list from './list.scss'
+import {MEETING} from '../../constants/HostConfiguration'
 
 var programDate = new Date();
 
@@ -30,7 +32,6 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => ({
 
   onClick: () => dispatch(push('/' + PATHS.MENULOGGEDIN.BOARD)),
-
   updateMyMeetingId: (meetingId) => dispatch(updateMeetingId(meetingId))
 });
 
@@ -74,7 +75,8 @@ class MymeetForm extends Component {
         topic: false,
         description: false,
         programmedDate: false
-      }
+      },
+      editable:true
     });
     var datetime = new Date(meeting.programmedDate);
     programDate.setFullYear(datetime.getFullYear());
@@ -90,50 +92,51 @@ class MymeetForm extends Component {
 
   static validateDate(date) {
     var meetDate = new Date(date);
-    var meetDate_minrange = meetDate.getTime() - 1000000;
-    var meetDate_maxrange = meetDate.getTime() + 1000000;
     var dateNow = new Date();
+    var meetDate_minrange = dateNow.setMinutes(dateNow.getMinutes() - 15);
 
-    if (meetDate_minrange < dateNow.getTime()) {
-      return true;
-    }
-    if (meetDate_maxrange > dateNow.getTime()) {
-      return false;
-    }
-    else
-      return false
+    return meetDate_minrange > meetDate.getTime();
   }
 
   static validateStart(date) {
     var meetDate = new Date(date);
-    var meetDate_minrange = meetDate.getTime() - 1000000;
-    var meetDate_maxrange = meetDate.getTime() + 1000000;
     var dateNow = new Date();
-    return meetDate_minrange < dateNow.getTime() && dateNow.getTime() < meetDate_maxrange;
+
+    var meetDate_minrange = dateNow.setMinutes(dateNow.getMinutes() - 15);
+    var meetDate_maxrange = dateNow.setMinutes(dateNow.getMinutes() + 30);
+
+    return (meetDate_minrange < meetDate.getTime() && meetDate.getTime() < meetDate_maxrange);
   }
 
 
   showActions(meetingOwner, meetingDate) {
     if (this.isAdmin(meetingOwner)) {
+      //fecha ya paso, puede ver reportes
       if (MymeetForm.validateDate(meetingDate)) {
-        return this.AdminActionsStart;
+        return this.AdminUserActionsFinish;
       }
       else {
+        //rango de tiempo aceptable para comenzar reunion
         if (MymeetForm.validateStart(meetingDate)) {
-          return this.AdminUserActionsFinish;
+          return this.AdminActionsStart;
         }
-        return this.AdminUserActionsFinish;
+        //fecha mayor, puede editar
+        return this.AdminActionsEdit;
       }
     }
     else {
+      console.log('is user');
+      //fecha ya paso
       if (MymeetForm.validateDate(meetingDate)) {
-        return this.UserActionsJoin;
+        return this.AdminUserActionsFinish;
       }
       else {
+        //rango de tiempo aceptable para unirse reunion
         if (MymeetForm.validateStart(meetingDate)) {
           return this.UserActionsJoin;
         }
-        return this.UserActionsJoin;
+        // fecha mayor, puede poner ver
+        return this.UserActionsView;
       }
     }
   }
@@ -169,18 +172,12 @@ class MymeetForm extends Component {
     this.setState({meetings: meetings});
   }
 
-  renderDate(meetingTime) {
-    let options = {
-      year: 'numeric', month: 'numeric', day: 'numeric',
-      hour: 'numeric', minute: 'numeric', second: 'numeric',
-      hour12: false
-    };
-    return new Intl.DateTimeFormat("en-US", options).format(new Date(meetingTime))
+  static renderDate(meetingTime) {
+    return new Date(meetingTime).toLocaleDateString([], {hour: '2-digit', minute:'2-digit'});
   }
 
   componentDidMount() {
-    axios.get('http://localhost:8080/meeting/meetingbyuser?username=' + this.props.user
-    ).then(function (response) {
+    axios.get(MEETING.MEETING_BY_USER, {params: {username: this.props.user}}).then(function (response) {
       this.fillfields(response.data)
     }.bind(this));
   }
@@ -188,7 +185,6 @@ class MymeetForm extends Component {
   edit() {
     this.setState({editable: false})
   }
-
 
   save() {
     let editedFields = this.state.editedFields;
@@ -207,19 +203,12 @@ class MymeetForm extends Component {
       saveMeeting['programmedDate'] = programDate.getTime();
     }
 
-    this.edit.bind(this);
-    this.handleToggleDialog.bind(this);
-
-    axios.post('http://localhost:8080/meeting/update', saveMeeting).then(
-      function (response) {
-        this.setState({message: '¡Your meeting was successfully updated!'});
-        this.refs.mymodal.openModal();
-      }
+    axios.post(MEETING.MEETING_UPDATE, saveMeeting).then(
+      function (response) {}
     ).catch(
-      function (response) {
-        this.setState({message: '¡Ups, there was an error!'});
-        this.refs.mymodal.openModal();
-      });
+      function (response) {});
+
+    this.setState({active: !this.state.active});
   }
 
   onChangeTopic = (topic) => {
@@ -243,6 +232,7 @@ class MymeetForm extends Component {
       editedFields: editedState
     });
   };
+
 
   onChangeProgrammedDate = (date) => {
     this.setState({datetime: date});
@@ -277,8 +267,12 @@ class MymeetForm extends Component {
 
 
   render() {
-    let meetmap = this.state.meetings;
+    let meets = this.state.meetings;
     let meetingTime = new Date;
+
+    var meetmap = [].slice.call(meets).sort(function(a, b){
+      return a.programmedDate-b.programmedDate
+    });
 
     return (
       <div className={"container"} style={{marginTop:70}}>
@@ -286,48 +280,53 @@ class MymeetForm extends Component {
         <div className={classes.label2}>
           <label>MY MEETINGS</label>
         </div>
-      <List selectable ripple theme={list} >
-        <ListSubHeader className={classes.listSH}/>
-        {Object.keys(meetmap).map((key) => {
-            meetingTime = meetmap[key].programmedDate;
-            var renderDateTime = this.renderDate(meetingTime);
-            return (
-              <div>
-                <ListItem
-                  caption={meetmap[key].topic}
-                  legend={renderDateTime}
-                  leftIcon='send'
-                  onClick={this.handleToggleDialog.bind(this, meetmap[key])}
-                theme={listItem}/>
-                <ListDivider />
-                <Dialog
-                  actions={this.showActions(this.state.meetEdit.ownerName, this.state.meetEdit.programmedDate)}
-                  active={this.state.active}
-                  onEscKeyDown={this.handleToggleDialog}
-                  onOverlayClick={this.handleToggleDialog}>
-                  <Input type='text' label='Topic' value={this.state.meetEdit.topic} maxLength={30}
-                         onChange={this.onChangeTopic.bind(this)} disabled={this.state.editable}/>
+        <List theme={listFormat} selectable ripple>
+          <ListSubHeader />
+          {Object.keys(meetmap).map((key) => {
+              meetingTime = meetmap[key].programmedDate;
+              var renderDateTime = MymeetForm.renderDate(meetingTime);
+              var future_date = MymeetForm.validateDate(meetingTime);
+              var color = future_date ? ListItem2 : ListItem1;
+              return (
+                <div>
+                  <ListItem
+                    theme={color}
+                    caption={meetmap[key].topic}
+                    legend={renderDateTime}
+                    leftIcon='send'
+                    rightIcon='visibility'
+                    onClick={this.handleToggleDialog.bind(this, meetmap[key])}/>
+                  <ListDivider />
+                  <Dialog
+                    actions={this.showActions(this.state.meetEdit.ownerName, this.state.meetEdit.programmedDate)}
+                    active={this.state.active}
+                    onEscKeyDown={this.handleToggleDialog}
+                    onOverlayClick={this.handleToggleDialog}>
+                    <Input type='text' label='Topic' value={this.state.meetEdit.topic} maxLength={30}
+                           onChange={this.onChangeTopic.bind(this)} disabled={this.state.editable}/>
 
-                  <Input type='text' label='Description' value={this.state.meetEdit.description} maxLength={144}
-                         onChange={this.onChangeDescription.bind(this)} disabled={this.state.editable}/>
+                    <Input type='text' label='Description' value={this.state.meetEdit.description} maxLength={144}
+                           onChange={this.onChangeDescription.bind(this)} disabled={this.state.editable}/>
 
-                  <DatePicker label='Select date' sundayFirstDayOfWeek value={new Date(this.state.datetime)}
-                              readonly={false} onChange={this.onChangeProgrammedDate.bind(this)}/>
+                    <Input type='text' label='Team Name' value={this.state.meetEdit.teamName} disabled/>
 
-                  <TimePicker label='Select time' value={new Date(this.state.time)}
-                              readonly onChange={this.onChangeProgrammedTime.bind(this)}/>
-                </Dialog>
-                <BootstrapModal ref="meetingModal" message={this.state.message}/>
-              </div>
-            );
-          }
-        )}
-      </List>
-          </div>
-        </div>
+                    <DatePicker label='Select date' sundayFirstDayOfWeek value={new Date(this.state.datetime)}
+                                readonly={this.state.editable} onChange={this.onChangeProgrammedDate.bind(this)}
+                                minDate={new Date()}/>
+
+                    <TimePicker label='Select time' value={isNaN(new Date(this.state.time)) ? 0 : new Date(this.state.time)}
+                                readonly={this.state.editable} onChange={this.onChangeProgrammedTime.bind(this)}/>
+                  </Dialog>
+                  <BootstrapModal ref="meetingModal" message={this.state.message}/>
+                </div>
+              );
+            }
+          )}
+        </List>
+      </div>
+  </div>
     )
   }
-
 }
 
 
