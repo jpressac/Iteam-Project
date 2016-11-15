@@ -62,7 +62,7 @@ class TeamSuggestionForm extends React.Component {
   handleClick() {
     if ((this.state.filterName !== '') && (this.state.filteredName !== '')) {
       let valueFields = [];
-      valueFields.push((this.state.filteredName).toLowerCase());
+      valueFields.push((this.state.filteredName));
       this.state.filters.push({field: this.state.filterName.toLowerCase(), values: valueFields});
       this.forceUpdate();
     }
@@ -259,6 +259,7 @@ class TeamSuggestionForm extends React.Component {
         <div className={classes.label2}>
           <label>CREATE TEAM</label>
         </div>
+
 
         <div className={classes.form}>
           <div className="form-horizontal">
