@@ -200,10 +200,6 @@ class SharedBoard extends Component {
     console.log(teamParticipants);
     let participantInfo = teamParticipants.map(function(participant,index) {
       let userInfo = {};
-      console.log(JSON.stringify(index));
-      console.log(JSON.stringify(participant));
-      console.log('USER' + participant["username"]);
-      console.log('USER' + participant.username);
 
       userInfo["username"] = participant["username"];
       userInfo["status"] = 'false';

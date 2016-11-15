@@ -19,8 +19,6 @@ class Clients extends Component {
       <List selectable ripple>
         <ListSubHeader caption={this.props.teamName}/>
         {Object.keys(participants).map((key) => {
-          console.log('key: ' + participants[key].username);
-          console.log('key: ' + participants[key].status);
           return(
               <ListItem
                 avatar={avatar}
