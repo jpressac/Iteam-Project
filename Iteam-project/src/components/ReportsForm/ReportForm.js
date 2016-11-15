@@ -10,6 +10,10 @@ import Button from 'react-toolbox/lib/button';
 import classes from './ReportForm.scss';
 import BootstrapModal from '../BootstrapModal/BootstrapModal'
 import Idea from './idea'
+import buttonBasic from './buttonBasic.scss'
+import buttonTag from './buttonTag.scss'
+import buttonUser from './buttonUser.scss'
+import buttonPdf from './buttonPdf.scss'
 
 const report = new jsPDF()
 
@@ -124,24 +128,32 @@ class ReportForm extends Component {
     return (
       <div style={{marginTop:70}}>
         <BootstrapModal ref="mymodal" message={this.state.message}/>
-        <Button label='Reports bar' raised accent onClick={this.handleToggle}/>
-        <Drawer active={this.state.active} theme={classes}
+        <Button label='Reports bar' theme={buttonBasic}style={{color:'white'}} onClick={this.handleToggle}/>
+        <Drawer active={this.state.active}
                 type="left"
                 onOverlayClick={this.handleToggle}>
-          <h2>Report options</h2>
-          < Button label="Basic report" raised accent onClick={this.generateRankingReport}/>
-          < Button label="Ideas by user" raised accent onClick={this.generateUserReport}/>
-          < Button label="Ideas by tag" raised accent onClick={this.generateTagReport}/>
-          < Button label="Download PDF" raised accent onClick={this.generatePDF}/>
+          <label className={classes.reportTitle}>Report options</label>
+          <div>
+          < Button label="Ideas by ranking"  icon='star' theme={buttonPdf} style={{color:'white'}} onClick={this.generateRankingReport} active/>
+          < Button label="Ideas by user" icon='group' theme={buttonPdf} style={{color:'white'}}  onClick={this.generateUserReport}/>
+          < Button label="Ideas by tag" icon='lightbulb_outline' theme={buttonPdf} style={{color:'white'}} onClick={this.generateTagReport}/>
+          < Button label="Download PDF" icon='get_app' style={{color:'white'}} theme={buttonPdf} onClick={this.generatePDF}/>
+            </div>
         </Drawer>
         <div id="reportHTML" >
-          <h1>MEETING TOPIC: {this.state.meetingTopic}</h1>
-          <h2>DESCRIPTION: {this.state.meetingDescription}</h2>
-          <div> {this.getIdeas()}</div>
+          <div className={classes.container} style={{marginTop:30}}>
+          <div className={classes.topic}>
+          <label> {this.state.meetingTopic}</label>
+            </div>
+          <div className={classes.description}>
+          <label>{this.state.meetingDescription}</label>
+            </div>
+        </div>
+          <div className={classes.content}> {this.getIdeas()}</div>
         </div>
       </div>
     );
-  }
+  };
 }
 
 ReportForm.propTypes = {

@@ -30,35 +30,50 @@ class Idea extends Component {
   renderByTag = () => {
     return(
       <span>
-        <h1 className={classes.h1}>Tag: {this.props.tag}</h1>
-        <h3>Title: {this.props.title}</h3>
-        <h3>Content: {this.props.content}</h3>
-        <h3>Ranking: {this.props.ranking}</h3>
-        <h3>Author: {this.props.author}</h3>
-        <h3>Comments:{this.props.comments}</h3>
+        <div>
+          <div>
+        <label className={classes.title} >Tag: {this.props.tag}</label>
+          </div>
+        <p><label style={{fontSize:25}}>Title: {this.props.title}</label></p>
+        <p><label style={{fontSize:'medium'}}>Content: {this.props.content}</label></p>
+        <p><label style={{fontSize:'medium'}}>Ranking: {this.props.ranking}</label></p>
+        <p><label style={{fontSize:'medium'}}>Author: {this.props.author}</label></p>
+        <p><label style={{fontSize:'medium'}}>Comments:{this.props.comments}</label></p>
         <hr></hr>
+          </div>
       </span> );
   };
   renderByRanking = () => {
     return(<span>
-        <h1 className={classes.h1}>Ranking: {this.props.ranking}</h1>
-        <h3>Title: {this.props.title}</h3>
-        <h3>Tag: {this.props.tag}</h3>
-        <h3>Content: {this.props.content}</h3>
-        <h3>Author: {this.props.author}</h3>
-        <h3>Comments:{this.props.comments}</h3>
+
+      <div>
+          <div>
+        <label className={classes.title} >Ranking: {this.props.ranking}</label>
+          </div>
+        <p><label style={{fontSize:25}}>Title: {this.props.title}</label></p>
+        <p><label style={{fontSize:'medium'}}>Content: {this.props.content}</label></p>
+        <p><label style={{fontSize:'medium'}}>Tag: {this.props.tag}</label></p>
+        <p><label style={{fontSize:'medium'}}>Author: {this.props.author}</label></p>
+        <p><label style={{fontSize:'medium'}}>Comments:{this.props.comments}</label></p>
+        <hr></hr>
+          </div>
         <hr></hr>
       </span> );
   };
 
   renderByUser = () => {
     return(<span>
-        <h1 className={classes.h1}>Author: {this.props.author}</h1>
-        <h3>Title: {this.props.title}</h3>
-        <h3>Content: {this.props.content}</h3>
-        <h3>Tag: {this.props.tag}</h3>
-        <h3>Comments:{this.props.comments}</h3>
-        <h3>Ranking: {this.props.ranking}</h3>
+            <div>
+          <div>
+        <label className={classes.title} >Author: {this.props.author}</label>
+          </div>
+        <p><label style={{fontSize:25}}>Title: {this.props.title}</label></p>
+        <p><label style={{fontSize:'medium'}}>Content: {this.props.content}</label></p>
+        <p><label style={{fontSize:'medium'}}>Tag: {this.props.tag}</label></p>
+        <p><label style={{fontSize:'medium'}}>Ranking: {this.props.ranking}</label></p>
+        <p><label style={{fontSize:'medium'}}>Comments:{this.props.comments}</label></p>
+        <hr></hr>
+          </div>
         <hr></hr>
       </span> );
   };

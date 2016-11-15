@@ -54,7 +54,7 @@ class SharedBoard extends Component {
     //Connect with socket
     connectAndSubscribe(this.props.meetingId, this.receiveNote.bind(this));
     //Get team participants for sidebar
-    getTeam(this.props.meetingId);
+    //getTeam(this.props.meetingId);
   }
 
   componentWillMount(){
@@ -325,7 +325,7 @@ class SharedBoard extends Component {
         <Drawer active={this.state.active} theme={classes}
                 type="right"
                 onOverlayClick={this.handleToggle}>
-          <Clients clients={this.state.participants} teamName={this.state.teamName}/>
+          
         </Drawer>
       </div>
     );
