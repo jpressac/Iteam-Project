@@ -10,6 +10,7 @@ import cardActionsscss from './CardActions.scss'
 import cardTextscss from './CardText.scss'
 import classes from './Note.scss'
 import imputSize from './InputSize.scss'
+import Chipscss from './Chip.scss'
 import Input from 'react-toolbox/lib/input';
 // import createFragment from 'react-addons-create-fragment'
 
@@ -33,11 +34,10 @@ class Note extends Component {
     this.state = {
       view: 'normal',
       board: props.boardType,
-      tag:[],
+      tag:props.tag,
       title:props.title,
       subtitle:props.subtitle,
-      comment:props.comments,
-      noteTags:props.tag
+      comment:props.comments
     }
   }
 
@@ -52,9 +52,12 @@ class Note extends Component {
           return (
             <div className={classes.card} style={{...style, left, top}}>
               <Card theme={CardYellow}>
-                <Input theme={imputSize} type='text' label='Title' value={this.state.title} onChange={this.handleChange.bind(this, 'title')}/>
-                <Input theme={imputSize} type='text' label='Tag'  value={this.state.tag} onChange={this.handleChange.bind(this, 'tag')}/>
-                <Input theme={imputSize} type='text' label='Subtitle' value={this.state.subtitle} onChange={this.handleChange.bind(this, 'subtitle')}/>
+                <Input theme={imputSize} type='text' label='Tag'  value={this.state.tag}
+                       onChange={this.handleChange.bind(this, 'tag')} maxLength={20} multiline={'True'} />
+                <Input theme={imputSize} type='text' label='Title' value={this.state.title}
+                       onChange={this.handleChange.bind(this, 'title')} maxLength={30} multiline={'True'} />
+                <Input theme={imputSize} type='text' label='Subtitle' value={this.state.subtitle}
+                       onChange={this.handleChange.bind(this, 'subtitle')} maxLength={60} multiline={'True'} />
                 <CardActions theme={cardActionsscss}>
                   <IconButton icon="save" onClick={this.save.bind(this)}/>
                   <IconButton icon="clear" onClick={this.cancelComment.bind(this)}/>
@@ -66,11 +69,8 @@ class Note extends Component {
           return connectDragSource(
             <div className={classes.card} style={{...style, left, top}}>
               <Card theme={CardYellow}>
-                <Chip deletable>{this.state.tag}</Chip>
-                <CardTitle
-                  theme={cardTitlescss}
-                  title={this.state.title}
-                />
+                <Chip deletable theme={Chipscss}>{this.state.tag}</Chip>
+                <CardText theme={cardTitlescss}>{this.state.title}</CardText>
                 <CardText theme={cardTextscss}>{this.state.subtitle}</CardText>
                 <CardActions  theme={cardActionsscss}>
                   <IconButton icon="create" onClick={this.edit.bind(this)}/>
@@ -85,10 +85,7 @@ class Note extends Component {
           return (
             <div className={classes.card} style={{...style, left, top}}>
               <Card theme={CardYellow}>
-                <CardTitle
-                  theme={cardTitlescss}
-                  title={this.state.title}
-                />
+                <CardText theme={cardTitlescss}>{this.state.title}</CardText>
                 <CardText theme={cardTextscss}>{this.state.subtitle}</CardText>
                 <CardActions theme={cardActionsscss}>
                   <IconButton icon="save" onClick={this.saveTag.bind(this)}/>
@@ -104,11 +101,8 @@ class Note extends Component {
           return connectDragSource(
             <div className={classes.card} style={{...style, left, top}}>
               <Card theme={CardYellow}>
-                <Chip deletable>{this.state.tag}</Chip>
-                <CardTitle
-                  theme={cardTitlescss}
-                  title={this.state.title}
-                />
+                <Chip deletable theme={Chipscss}>{this.state.tag}</Chip>
+                <CardText theme={cardTitlescss}>{this.state.title}</CardText>
                 <CardText theme={cardTextscss}>{this.state.subtitle}</CardText>
                 <CardText theme={cardTextscss}>{this.state.comments}</CardText>
                 <CardActions theme={cardActionsscss}>
@@ -129,7 +123,8 @@ class Note extends Component {
                   title={this.state.title}
                 />
                 <CardText theme={cardTextscss}>{this.state.subtitle}</CardText>
-                <Input theme={imputSize} type='text' label='Comments' value={this.state.comments} onChange={this.handleChange.bind(this, 'comments')}/>
+                <Input theme={imputSize} type='text' label='Comments' value={this.state.comments}
+                       onChange={this.handleChange.bind(this, 'comments')} maxLength={60} multiline={'True'} />
                 <CardActions theme={cardActionsscss}>
                   <IconButton icon="save" onClick={this.saveComment.bind(this)}/>
                   <IconButton icon="clear" onClick={this.cancelComment.bind(this)}/>
@@ -155,7 +150,7 @@ class Note extends Component {
 
   save() {
     //TODO: remove tag from here
-    this.props.onChange(this.state.title, this.state.subtitle, this.props.id, this.state.noteTags);
+    this.props.onChange(this.state.title, this.state.subtitle, this.props.id, this.state.tag);
     this.setState({view: 'normal'})
   }
 
@@ -189,19 +184,18 @@ class Note extends Component {
     this.setState({view: 'normal'})
   }
 
-  addTag(){
+  //addTag(){
     // this.setState({view: 'tag'});
-  }
+  //}
 
-  saveTag(){
-    let tag = [];
+ /* saveTag(){
     tag.push(
-      <Chip deletable>{this.state.noteTags}</Chip>
+      <Chip deletable>{this.state.tag}</Chip>
     );
     this.setState({tag: tag});
     this.setState({view: 'normal'})
   }
-
+*/
   // renderTag(){
   //   let tagArray = this.state.tag;
   //

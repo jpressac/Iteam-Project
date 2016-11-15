@@ -195,8 +195,9 @@ class SharedBoard extends Component {
         "top": map[id].top,
         "comments": map[id].comments,
         "ranking": map[id].ranking,
-        "meetingId": 'meeting123',
-        "boardType": "shared"
+        "meetingId": this.props.meetingId,
+        "boardType": "shared",
+        "tag":map[id].tag
       }
       )
     )
@@ -232,7 +233,8 @@ class SharedBoard extends Component {
           comments: 'add comments',
           ranking: 0,
           meetingId: this.props.meetingId,
-          boardType: "shared"
+          boardType: "shared",
+          tag:jsonPayloadMessage.tag
         };
         this.setState({notes: map});
         this.sendUpdateCache('updateCache', this.state.notes);
@@ -252,7 +254,8 @@ class SharedBoard extends Component {
             comments: jsonPayloadMessage.comments,
             ranking: jsonPayloadMessage.ranking,
             meetingId: this.props.meetingId,
-            boardType: "shared"
+            boardType: "shared",
+            tag:jsonPayloadMessage.tag
           };
         }
         this.setState({notes: map});

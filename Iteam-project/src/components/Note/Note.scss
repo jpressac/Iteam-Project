@@ -1,17 +1,21 @@
 
 .note {
-  height: 200px;
-  width: 160px;
+  height: 250px;
+  width: 195px;
   position:absolute;
   cursor: move;
   -webkit-box-shadow: 5px 5px 15px 0 rgba(0, 0, 0, .2);
   box-shadow: 5px 5px 15px 0 rgba(0, 0, 0, .2);
   resize:both;
+  font-family: monospace;
+  resize: both;
 }
 .card{
   position:absolute;
   overflow:hidden;
   resize:both;
+  font-family: monospace;
+  resize: both;
 }
 
 .note:active {
@@ -38,11 +42,14 @@ div.note > span {
 
 div.note button {
   align-content: right;
+  resize: both;
 }
 
 div.note > textarea {
   height: 75%;
   background: rgba(255, 255, 255, .5);
+  font-family: monospace;
+  resize: both;
 }
 
 .glyphicon-plus {
