@@ -18,7 +18,7 @@ public class AuthenticationController {
         return "application";
     }
 
-    @RequestMapping("/application/nmember/login")
+    @RequestMapping("/application/nmember/home")
     public String login(Model model) {
         return "application";
     }
@@ -26,7 +26,7 @@ public class AuthenticationController {
     @RequestMapping(value = "/application/member/logout")
     public String logoutPage(HttpServletRequest request, HttpServletResponse response) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if(auth != null) {
+        if (auth != null) {
             new SecurityContextLogoutHandler().logout(request, response, auth);
         }
         return "redirect:/application";
