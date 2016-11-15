@@ -1,10 +1,16 @@
 import React, {Component, PropTypes} from 'react';
-import classes from './Note.scss';
 import {ItemTypes} from '../Constants/Constants';
 import {DragSource} from 'react-dnd';
 import {IconButton} from 'react-toolbox/lib/button';
 import {Card, CardTitle, CardText, CardActions} from 'react-toolbox/lib/card';
 import Chip from 'react-toolbox/lib/chip'
+import CardYellow from './Card.scss'
+import cardTitlescss from'./CardTitle.scss'
+import cardActionsscss from './CardActions.scss'
+import cardTextscss from './CardText.scss'
+import classes from './Note.scss'
+import imputSize from './InputSize.scss'
+import Input from 'react-toolbox/lib/input';
 // import createFragment from 'react-addons-create-fragment'
 
 
@@ -27,7 +33,11 @@ class Note extends Component {
     this.state = {
       view: 'normal',
       board: props.boardType,
-      tag:[]
+      tag:[],
+      title:props.title,
+      subtitle:props.subtitle,
+      comment:props.comments,
+      noteTags:props.tag
     }
   }
 
@@ -40,13 +50,12 @@ class Note extends Component {
       switch (this.state.view) {
         case 'editing':
           return (
-            <div className={classes.card}
-                 style={{...style, left, top}}>
-              <Card style={{resize: 'both', overflow: 'auto'}}>
-                <textarea ref="titleText" defaultValue={this.props.title} className="form-control"/>
-                <textarea ref="tagText" defaultValue={this.props.tag} className="form-control"/>
-                <textarea ref="subtitleText" defaultValue={this.props.subtitle} className="form-control"/>
-                <CardActions>
+            <div className={classes.card} style={{...style, left, top}}>
+              <Card theme={CardYellow}>
+                <Input theme={imputSize} type='text' label='Title' value={this.state.title} onChange={this.handleChange.bind(this, 'title')}/>
+                <Input theme={imputSize} type='text' label='Tag'  value={this.state.tag} onChange={this.handleChange.bind(this, 'tag')}/>
+                <Input theme={imputSize} type='text' label='Subtitle' value={this.state.subtitle} onChange={this.handleChange.bind(this, 'subtitle')}/>
+                <CardActions theme={cardActionsscss}>
                   <IconButton icon="save" onClick={this.save.bind(this)}/>
                   <IconButton icon="clear" onClick={this.cancelComment.bind(this)}/>
                 </CardActions>
@@ -55,15 +64,15 @@ class Note extends Component {
           );
         case 'normal':
           return connectDragSource(
-            <div className={classes.card}
-                 style={{...style, left, top}}>
-              <Card style={{resize: 'both', overflow: 'auto'}}>
-                <Chip deletable>{this.props.tag}</Chip>
+            <div className={classes.card} style={{...style, left, top}}>
+              <Card theme={CardYellow}>
+                <Chip deletable>{this.state.tag}</Chip>
                 <CardTitle
-                  title={this.props.title}
-                  subtitle={this.props.subtitle}
+                  theme={cardTitlescss}
+                  title={this.state.title}
                 />
-                <CardActions>
+                <CardText theme={cardTextscss}>{this.state.subtitle}</CardText>
+                <CardActions  theme={cardActionsscss}>
                   <IconButton icon="create" onClick={this.edit.bind(this)}/>
                   <IconButton icon="delete_sweep" onClick={this.removeFromPersonal.bind(this)}/>
                   <IconButton icon="send" onClick={this.send.bind(this)}/>
@@ -74,37 +83,35 @@ class Note extends Component {
 
         case 'tag':
           return (
-            <div className={classes.card}
-                 style={{...style, left, top}}>
-              <Card style={{resize: 'both', overflow: 'auto'}}>
+            <div className={classes.card} style={{...style, left, top}}>
+              <Card theme={CardYellow}>
                 <CardTitle
-                  title={this.props.title}
-                  subtitle={this.props.subtitle}
+                  theme={cardTitlescss}
+                  title={this.state.title}
                 />
-                <CardActions>
+                <CardText theme={cardTextscss}>{this.state.subtitle}</CardText>
+                <CardActions theme={cardActionsscss}>
                   <IconButton icon="save" onClick={this.saveTag.bind(this)}/>
                   <IconButton icon="clear" onClick={this.cancelComment.bind(this)}/>
                 </CardActions>
               </Card>
             </div>
           );
-
-
       }
     else
       switch (this.state.view) {
         case 'normal':
           return connectDragSource(
-            <div className={classes.card}
-                 style={{...style, left, top}}>
-              <Card style={{resize: 'both', overflow: 'auto'}}>
-                <Chip deletable>{this.props.tag}</Chip>
+            <div className={classes.card} style={{...style, left, top}}>
+              <Card theme={CardYellow}>
+                <Chip deletable>{this.state.tag}</Chip>
                 <CardTitle
-                  title={this.props.title}
-                  subtitle={this.props.subtitle}
+                  theme={cardTitlescss}
+                  title={this.state.title}
                 />
-                <CardText>{this.props.comments}</CardText>
-                <CardActions>
+                <CardText theme={cardTextscss}>{this.state.subtitle}</CardText>
+                <CardText theme={cardTextscss}>{this.state.comments}</CardText>
+                <CardActions theme={cardActionsscss}>
                   <IconButton icon="add" onClick={this.comment.bind(this)}/>
                   <IconButton icon="delete_sweep" onClick={this.removeFromShared.bind(this)}/>
                   <IconButton icon="thumb_up" onClick={this.updateRanking.bind(this, 1)}/>
@@ -115,15 +122,15 @@ class Note extends Component {
           );
         case 'comment':
           return (
-            <div className={classes.card}
-                 style={{...style, left, top}}>
-              <Card style={{resize: 'both', overflow: 'auto'}}>
+            <div className={classes.card} style={{...style, left, top}}>
+              <Card theme={CardYellow}>
                 <CardTitle
-                  title={this.props.title}
-                  subtitle={this.props.subtitle}
+                  theme={cardTitlescss}
+                  title={this.state.title}
                 />
-                <textarea ref="commentText" defaultValue={this.props.comments} className="form-control"/>
-                <CardActions>
+                <CardText theme={cardTextscss}>{this.state.subtitle}</CardText>
+                <Input theme={imputSize} type='text' label='Comments' value={this.state.comments} onChange={this.handleChange.bind(this, 'comments')}/>
+                <CardActions theme={cardActionsscss}>
                   <IconButton icon="save" onClick={this.saveComment.bind(this)}/>
                   <IconButton icon="clear" onClick={this.cancelComment.bind(this)}/>
                 </CardActions>
@@ -132,6 +139,10 @@ class Note extends Component {
           );
       }
   }
+
+  handleChange = (name, value) => {
+    this.setState({...this.state, [name]: value});
+  };
 
   send() {
     this.props.onSend(this.props.id);
@@ -144,12 +155,12 @@ class Note extends Component {
 
   save() {
     //TODO: remove tag from here
-    this.props.onChange(this.refs.titleText.value, this.refs.subtitleText.value, this.props.id, this.refs.tagText.value);
+    this.props.onChange(this.state.title, this.state.subtitle, this.props.id, this.state.noteTags);
     this.setState({view: 'normal'})
   }
 
   saveComment() {
-    this.props.onAddComment(this.refs.commentText.value, this.props.id);
+    this.props.onAddComment(this.state.comment, this.props.id);
     this.setState({
       view: 'normal'
     })
@@ -185,7 +196,7 @@ class Note extends Component {
   saveTag(){
     let tag = [];
     tag.push(
-      <Chip deletable>{this.refs.tagText}</Chip>
+      <Chip deletable>{this.state.noteTags}</Chip>
     );
     this.setState({tag: tag});
     this.setState({view: 'normal'})

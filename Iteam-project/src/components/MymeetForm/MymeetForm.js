@@ -12,6 +12,7 @@ import Input from 'react-toolbox/lib/input';
 import BootstrapModal from '../../components/BootstrapModal/BootstrapModal';
 import ListItem1 from './ListItem1.scss'
 import ListItem2 from './ListItem2.scss'
+import listFormat from './List.scss'
 import {updateMeetingId} from '../../redux/reducers/Meeting/MeetingReducer'
 
 var programDate = new Date();
@@ -232,6 +233,7 @@ class MymeetForm extends Component {
     });
   };
 
+
   onChangeProgrammedDate = (date) => {
     this.setState({datetime: date});
     programDate.setFullYear(date.getFullYear());
@@ -278,7 +280,7 @@ class MymeetForm extends Component {
         <div className={classes.label2}>
           <label>MY MEETINGS</label>
         </div>
-        <List selectable ripple>
+        <List theme={listFormat} selectable ripple>
           <ListSubHeader />
           {Object.keys(meetmap).map((key) => {
               meetingTime = meetmap[key].programmedDate;
