@@ -227,21 +227,19 @@ class MeetingView extends Component {
 
               <div className="row">
                 <div className="col-md-4 ">
-                  <Button style={{marginLeft: 10, marginTop: 20, color: '#900C3F'}} target='_blank' raised
-                          onClick={this.createTeamAction.bind(this)}>
+                  <Button style={{marginLeft: 7, marginTop: 20, color:'white',background:'#900C3F'}}
+                          target='_blank' raised onClick={this.createTeamAction.bind(this)}>
 
                     Create Team
                   </Button>
                 </div>
               </div>
             </div>
-            <div className="col-md-4">
-              <div className="row">
-                <Button style={{margin: 15, color: '#900C3F'}} target='_blank' raised
-                        onClick={this.createMeeting.bind(this, goToNewMeeting)}>
-                  Create meeting
-                </Button>
-              </div>
+            <div className="row">
+              <Button style={{margin:15,color:'white',background:'#900C3F'}} target='_blank' raised
+                      onClick={this.createMeeting.bind(this, goToNewMeeting)}>
+                Create meeting
+              </Button>
             </div>
           </div>
         </div>

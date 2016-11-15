@@ -50,6 +50,26 @@
 						"description": ""
 					},
 					"response": []
+				},
+				{
+					"name": "User",
+					"request": {
+						"url": "http://{{_IP_HOST_}}:9200/user",
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"description": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"mappings\": {\r\n    \t\"userdata\": {\r\n\t\t\t\"properties\": {\r\n\t\t\t\t\"profession\": {\r\n\t\t\t\t\t\"type\": \"string\",\r\n\t\t\t\t\t\"index\": \"not_analyzed\"\r\n\t\t\t\t},\r\n\t\t\t\t\"nationality\":{\r\n\t\t\t\t\t\"type\": \"string\",\r\n\t\t\t\t\t\"index\": \"not_analyzed\"\r\n\t\t\t\t}\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n}\r\n"
+						},
+						"description": ""
+					},
+					"response": []
 				}
 			]
 		},
@@ -111,7 +131,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\": \"juan\",\n    \"password\": \"admin\",\n    \"name\": \"Juan Cruz\",\n    \"lastName\": \"Pressacco\",\n    \"gender\": \"male\",\n    \"nationality\": \"Argentina\",\n    \"bornDate\":641790000000,\n    \"profession\": \"Estudiante\",\n    \"hobbies\": [\"futbol\", \"vela\"],\n    \"mail\":\"pressaccojuan@gmail.com\"\n}"
+							"raw": "{\n    \"username\": \"juan\",\n    \"password\": \"admin\",\n    \"name\": \"Juan Cruz\",\n    \"lastName\": \"Pressacco\",\n    \"gender\": \"male\",\n    \"nationality\": \"Argentinean\",\n    \"bornDate\":641790000000,\n    \"profession\": \"Estudiante\",\n    \"hobbies\": [\"futbol\", \"vela\"],\n    \"mail\":\"pressaccojuan@gmail.com\"\n}"
 						},
 						"description": ""
 					},
@@ -131,7 +151,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\": \"vale\",\n    \"password\": \"vale123\",\n    \"name\": \"Valentina\",\n    \"lastName\": \"Randanne\",\n    \"gender\": \"female\",\n    \"nationality\": \"Germany\",\n    \"bornDate\":671252400000,\n    \"profession\": \"Estudiante\",\n    \"hobbies\": [\"futbol\", \"yoga\"],\n    \"mail\":\"valentina.randanne@gmail.com\"\n}"
+							"raw": "{\n    \"username\": \"vale\",\n    \"password\": \"vale123\",\n    \"name\": \"Valentina\",\n    \"lastName\": \"Randanne\",\n    \"gender\": \"female\",\n    \"nationality\": \"German\",\n    \"bornDate\":671252400000,\n    \"profession\": \"Estudiante\",\n    \"hobbies\": [\"futbol\", \"yoga\"],\n    \"mail\":\"valentina.randanne@gmail.com\"\n}"
 						},
 						"description": ""
 					},
@@ -191,7 +211,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\": \"artixo\",\n    \"password\": \"password\",\n    \"name\": \"Jorge\",\n    \"lastName\": \"Lopez\",\n    \"gender\": \"male\",\n    \"nationality\": \"Argentina\",\n    \"bornDate\":346388400000,\n    \"profession\": \"Electrical Engineer\",\n    \"hobbies\": [\"rugby\"],\n    \"mail\":\"jlopez@yahoo.com.ar\"\n}"
+							"raw": "{\n    \"username\": \"artixo\",\n    \"password\": \"password\",\n    \"name\": \"Jorge\",\n    \"lastName\": \"Lopez\",\n    \"gender\": \"male\",\n    \"nationality\": \"Argentinean\",\n    \"bornDate\":346388400000,\n    \"profession\": \"Electrical Engineer\",\n    \"hobbies\": [\"rugby\"],\n    \"mail\":\"jlopez@yahoo.com.ar\"\n}"
 						},
 						"description": ""
 					},
@@ -211,7 +231,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\": \"edgarbauza\",\n    \"password\": \"bauza123\",\n    \"name\": \"Edgar\",\n    \"lastName\": \"Bauza\",\n    \"gender\": \"male\",\n    \"nationality\": \"Argentina\",\n    \"bornDate\":219121200000,\n    \"profession\": \"Mechanical Engineer\",\n    \"hobbies\": [\"computing\"],\n    \"mail\":\"edgar.bauza@hotmail.com\"\n}"
+							"raw": "{\n    \"username\": \"edgarbauza\",\n    \"password\": \"bauza123\",\n    \"name\": \"Edgar\",\n    \"lastName\": \"Bauza\",\n    \"gender\": \"male\",\n    \"nationality\": \"Argentinean\",\n    \"bornDate\":219121200000,\n    \"profession\": \"Mechanical Engineer\",\n    \"hobbies\": [\"computing\"],\n    \"mail\":\"edgar.bauza@hotmail.com\"\n}"
 						},
 						"description": ""
 					},
@@ -231,7 +251,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\": \"vickypet\",\n    \"password\": \"pato123\",\n    \"name\": \"Vicotria\",\n    \"lastName\": \"Petorutti\",\n    \"gender\": \"female\",\n    \"nationality\": \"Germany\",\n    \"bornDate\":660884400000,\n    \"profession\": \"Enconomist\",\n    \"hobbies\": [\"danza\"],\n    \"mail\":\"vicky_petorutti@gmail.com\"\n}"
+							"raw": "{\n    \"username\": \"vickypet\",\n    \"password\": \"pato123\",\n    \"name\": \"Vicotria\",\n    \"lastName\": \"Petorutti\",\n    \"gender\": \"female\",\n    \"nationality\": \"German\",\n    \"bornDate\":660884400000,\n    \"profession\": \"Enconomist\",\n    \"hobbies\": [\"danza\"],\n    \"mail\":\"vicky_petorutti@gmail.com\"\n}"
 						},
 						"description": ""
 					},
@@ -251,7 +271,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"username\": \"redding\",\n    \"password\": \"history123\",\n    \"name\": \"Romina\",\n    \"lastName\": \"Eddingborrows\",\n    \"gender\": \"female\",\n    \"nationality\": \"Germany\",\n    \"bornDate\":346388400000,\n    \"profession\": \"Medicine\",\n    \"hobbies\": [\"vela\"],\n    \"mail\":\"romnieddingborrows@gmail.com\"\n}"
+							"raw": "{\n    \"username\": \"redding\",\n    \"password\": \"history123\",\n    \"name\": \"Romina\",\n    \"lastName\": \"Eddingborrows\",\n    \"gender\": \"female\",\n    \"nationality\": \"German\",\n    \"bornDate\":346388400000,\n    \"profession\": \"Medicine\",\n    \"hobbies\": [\"vela\"],\n    \"mail\":\"romnieddingborrows@gmail.com\"\n}"
 						},
 						"description": ""
 					},

@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component, PropTypes} from 'react';
 import {submitUser} from '../../redux/RegistrationForm/actions.js'
 import axios from 'axios'
 import user from './user.png'
@@ -11,8 +11,16 @@ import themeLabel from './label.scss'
 import Tooltip from 'react-toolbox/lib/tooltip';
 import {Button, IconButton} from 'react-toolbox/lib/'
 import {UTILITIES} from '../../constants/HostConfiguration';
+import {PATHS} from '../../constants/routes';
+import {connect} from 'react-redux';
+import {push} from 'react-router-redux'
 
 const TooltipInput = Tooltip(Input);
+
+const mapDispatchToProps = (dispatch) => ({
+
+  goToHome: () => dispatch(push('/' + PATHS.MENUNOTLOGGEDIN.HOME))
+});
 
 class RegistrationForm extends Component {
 
@@ -60,6 +68,9 @@ class RegistrationForm extends Component {
 
   saveUser() {
     submitUser(this.state);
+
+    //This should be moved to submit user the sumbit method should perform the dipatch once it was save, otherwise throw error
+    this.props.goToHome()
   }
 
   handleChangeFirstName = (firstName, value) => {
@@ -154,7 +165,7 @@ class RegistrationForm extends Component {
         </div>
 
         <div className={classes.form}>
-          <form className={"form-horizontal"}>
+          <div className={"form-horizontal"}>
             <div className="form-group">
               <div className="col-md-12">
                 <div className="row">
@@ -258,18 +269,23 @@ class RegistrationForm extends Component {
             <div className="form-group">
               <div className="col-md-6">
                 <div className="row">
-                  <Button style={{margin: 15, color: '#900C3F'}} target='_blank' raised
+                  <Button style={{margin: 15, color: 'white', background:'#900C3F'}}  raised
                           onClick={this.saveUser.bind(this)}>
                     Create
                   </Button>
                 </div>
               </div>
             </div>
-          </form>
+          </div>
         </div>
       </div>
     )
       ;
   };
 }
-export default RegistrationForm
+
+RegistrationForm.propTypes = {
+  goToHome: PropTypes.func
+};
+
+export default connect(null, mapDispatchToProps) (RegistrationForm)

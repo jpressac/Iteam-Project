@@ -1,4 +1,5 @@
 export const PORT = '8080';
+//201.220.156.168
 export const HOST = 'localhost';
 export const URL = 'http://' + HOST + ':' + PORT;
 

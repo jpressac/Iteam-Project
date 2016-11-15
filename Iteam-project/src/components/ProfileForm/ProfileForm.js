@@ -1,150 +1,259 @@
-import React, {Component} from 'react'
+import React, {Component, PropTypes} from 'react'
+import {submitUser} from '../../redux/profileForm/actions.js'
 import classes from './ProfileForm.scss'
-import profile from '../Header/image/profile.jpg'
-import {getUserData} from '../../redux/modules/ProfileData'
+import {PATHS} from './../../constants/routes'
 import axios from 'axios'
+import user from './user.png'
+import {connect} from 'react-redux'
+import Dropdown from 'react-toolbox/lib/dropdown';
+import Input from 'react-toolbox/lib/input';
+import themeLabel from './label.scss'
+import {Button, IconButton} from 'react-toolbox/lib/'
+import Tooltip from 'react-toolbox/lib/tooltip';
+import {push} from 'react-router-redux'
+import {UTILITIES} from '../../constants/HostConfiguration'
+
+
+const mapStateToProps = (state) => {
+  if (state.loginUser !== null) {
+    return {
+      user: state.loginUser.user
+    }
+  }
+};
+const mapDispatchToProps = dispatch => ({
+  home: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HOME))
+
+});
+
+const TooltipInput = Tooltip(Input);
 
 class ProfileForm extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props);
-    this.state= {
-      data: []
-      }
+    this.state = {
+      firstName: '',
+      lastName: '',
+      nationality: '',
+      nationalityValue: [],
+      bornDate: new Date(this.props.user.bornDate),
+      mail: '',
+      genderValue: 'male',
+      professionName: '',
+      professionValue: [],
+      hobbies: '',
+      username: '',
+      oldPassword: '',
+      password: '',
+      repeatPassword: ''
     }
+  }
 
-    fillfields() {
-      let data= this.state.data;
-      this.refs.name.value= data.name;
-      this.refs.lastName.value= data.lastName;
-      this.refs.nationality.value= data.nationality;
-      this.refs.birthday.value= data.bornDate;
-      this.refs.profession.value= data.profession;
-      this.refs.hobbie.value= data.hobbies;
-      this.refs.userName.value= data.username;
-      this.refs.mail.value= data.mail;
+//CONTROLAR CAMPOS NULOS!!!
+  saveUser() {
+    // validate change password, and we need to re-render
+    submitUser(this.state);
+  }
 
+  validatePassword() {
+    if (this.state.password === this.state.repeatPassword) {
+      return '';
+    } else {
+      return 'Passwords must match'
     }
-  componentDidMount(){
-    getUserData().then( (response) => {
-             axios.get('http://localhost:8080/user'
-                           ).then(function(response){
-                           this.setState({ data: response.data} );
-                           this.fillfields();
-                     }.bind(this)).catch(function(response){
-                     console.log(response.error);
-                   });
-      })
+  }
 
+  componentDidMount() {
+    axios.get(UTILITIES.PROFESSIONS).then(function (response) {
+      this.setValuesOptionsProfessions(response.data);
+    }.bind(this));
+    this.initialComboProfession();
 
   }
-  render(){
-    return(
 
-      <div className={"container"}style={{marginTop:70}}>
+  initialComboProfession(opt) {
+    let filteredLabelObject = opt.filter(filter => filter["label"] == this.props.user.profession);
+    this.setState({Value: filteredLabelObject[0]["value"], professionName: name})
+  }
 
-                  <div className={classes.label}  >
-                        <label>MY PROFILE</label>
-                        </div>
-                    <div className={"well",classes.well} style={{width:850, height:800}} >
-                        <label> </label>
-
-                      <div className="row" >
-                        <div className="form-horizontal" >
-                            <div className={"form-group"}  >
-
-                              <div className="add-photo settings change avatar-added"   data-hook="upload">
-                               <img src={profile} className={"img-circle special-img", classes.pro} />
-                               <div data-hook="webcam"></div>
-                                   </div>
-
-                                <div >
-                                   <label className={classes.label2}>PERSONAL INFORMATION</label>
-                                  </div>
-                              <div className="col-md-11">
-                                      <div className="row" style={{marginTop:30}}>
-                                        <label for="Name" className={"col-md-2 control-label"} style={{ fontSize: 17}}>First Name</label>
-                                        <div className="col-sm-4">
-                                            <input className="form-control" ref="name" type='textarea'  name='name' style={{marginLeft:10}}></input>
-                                        </div>
-                                          <label for="LastName" className={"col-md-2 control-label"} style={{ fontSize: 17}}>Last Name</label>
-                                          <div className="col-sm-4">
-                                              <input  className="form-control" ref="lastName" type='textarea'  name='lastName' style={{marginLeft:10}}></input>
-                                          </div>
-                                        </div>
-                                </div>
-
-                                <div className="col-md-11">
-                                        <div className="row" style={{marginTop:30}}>
-                                        <label for="Nationality" className={"col-md-2 control-label"} style={{ fontSize: 17}}>Nationality</label>
-                                        <div className="col-sm-4">
-                                            <input  className="form-control" ref="nationality" type='textarea'  name='Nationality' style={{marginLeft:10}}></input>
-                                        </div>
-                                            <label for="Birthday"  className={"col-md-2 control-label"} style={{ fontSize: 17}}>Birthday</label>
-                                            <div className="col-sm-4">
-                                                <input disabled  className="form-control" ref="birthday"  type='date'  name='Birthday' style={{marginLeft:10}}></input>
-                                            </div>
-                                          </div>
-                                  </div>
-                                  <div className="col-md-11">
-                                      <div className="row" style={{marginTop:50}}>
-                                          <label for="Profession" className={"col-md-4 control-label"} style={{ fontSize: 17}}>Profession</label>
-                                          <div className="col-sm-6">
-                                              <input  className="form-control" ref="profession" type='textarea'  name='Profession' style={{marginLeft:10}}></input>
-                                          </div>
-                                        </div>
-                                  </div>
+  comboProfession(value) {
+    let filteredLabelObject = this.state.professionValue.filter(filter => filter["value"] == value);
+    this.setState({Value: value, professionName: filteredLabelObject[0]["label"]})
+  }
 
 
-                                  <div className="col-md-11">
-                                      <div className="row" style={{marginTop:30}}>
-                                          <label for="Hobbie" className={"col-md-4 control-label"} style={{ fontSize: 17}}>Hobbie</label>
-                                          <div className="col-sm-6">
-                                              <input  className="form-control" ref="hobbie" type='textarea'  name='Hobbie' style={{marginLeft:10}}></input>
-                                          </div>
-                                        </div>
-                                  </div>
+  setValuesOptionsProfessions(data) {
+    let opt = data.map(function (option, index) {
+      var rObj = {};
+      rObj["value"] = index;
+      rObj["label"] = option;
+      return rObj;
+    });
 
-                                  <div >
-                                   <label className={classes.label2}>ACCOUNT INFORMATION</label>
-                                    </div>
-                                    <div className="col-md-11">
-                                            <div className="row" style={{marginTop:30}}>
-                                              <label for="UserName" className={"col-md-2 control-label"} style={{ fontSize: 17}}>User Name</label>
-                                              <div className="col-sm-4">
-                                                  <input disabled  className="form-control" ref="userName" type='textarea'  name='UserName' style={{marginLeft:10}}></input>
-                                              </div>
-                                              <label for="Mail" className={"col-md-2 control-label"} style={{ fontSize: 17}}>Mail</label>
-                                              <div className="col-sm-4">
-                                                  <input  disabled  className="form-control" ref="mail" type='textarea'  name='Mail' style={{marginLeft:10}}></input>
-                                              </div>
-                                              </div>
-                                      </div>
-                                        <div className="col-md-12">
-                                          <div className="row" style={{marginTop:30}}>
-                                          <div className="col-sm-6">
-                                          <button type="button" className={"btn btn-primary", classes.btn} style={{marginTop:40}}>
-                                            <span className="glyphicon glyphicon-ok"></span> SAVE CHANGES
-                                          </button>
-                                          </div>
-                                          <div className="col-sm-6">
-                                          <button type="button" className={"btn btn-primary", classes.btn} style={{marginTop:40}}>
-                                            <span className="glyphicon glyphicon-remove"></span> DISCARD
-                                          </button>
-                                          </div>
-                                            </div>
-                                      </div>
+    this.initialComboProfession(opt);
+
+    this.setState({professionValue: opt});
+  }
+
+  handleChangeHobbies = (hobbies, value) => {
+    this.setState({...this.state, [hobbies]: value});
+  };
+
+  handleChangeMail = (mail, value) => {
+    this.setState({...this.state, [mail]: value});
+  };
+
+  handleChangeOldPassword = (oldPassword, value) => {
+    this.setState({...this.state, [OldPassword]: value});
+  };
+
+  handleChangePassword = (password, value) => {
+    this.setState({...this.state, [password]: value});
+  };
+
+  handleChangeRepeatPassword = (repeatPassword, value) => {
+    this.setState({...this.state, [repeatPassword]: value});
+  };
+
+  dropdownProfession() {
+    return (
+      <Dropdown label="Select profession" auto theme={themeLabel} style={{color: '#900C3F'}}
+                onChange={this.comboProfession.bind(this)} required
+                source={this.state.professionValue} value={this.state.Value}/>
+    );
+  };
 
 
+  render() {
+    return (
+      <div className={"container"} style={{marginTop: 80, width: 800}}>
+        <div className={classes.label2}>
+          <label>MY PROFILE</label>
+        </div>
 
+        <div className={classes.form}>
+          <div className={"form-horizontal"}>
+            <div className="form-group">
+              <div className="col-md-12">
+                <div className="row">
+                  <img src={user} style={{width: 100}}/>
+                  <span className={classes.labelInfo}><label>Welcome {this.props.user.username}!</label></span >
+
+                </div>
+              </div>
+            </div>
+            <div className="form-group">
+              <div className="col-md-12">
+                <div className={classes.labelInfo}>
+                  <label style={{margin: 15}}>Personal information</label>
+                </div>
+                <div className="row">
+                  <div className="col-md-6">
+                    <Input type='text' label='First Name' theme={themeLabel} name='firstName'
+                           value={this.props.user.name} disabled/>
+                  </div>
+                  <div className="col-md-6">
+                    <Input type='text' label='Last Name' disabled theme={themeLabel} name='lastName'
+                           value={this.props.user.lastName}/>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="form-group">
+              <div className="col-md-12">
+                <div className="row">
+                  <div className="col-md-6">
+                    <Input type='text' label="Born Date" name='bornDate' disabled value={this.state.bornDate.toLocaleDateString()} theme={themeLabel} />
+                  </div>
+                  <div className="row">
+                    <div className="col-md-6">
+                      <Input type='text' label='Nationality' disabled theme={themeLabel} name='nationality'
+                             value={this.props.user.nationality}/>
                     </div>
-                    </div>
-                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="form-group">
+              <div className="col-md-12">
+                <div className="row">
+                  <div className="col-md-6">
+                    {this.dropdownProfession()}
+                  </div>
+                  <div className="col-md-6 ">
+                    <TooltipInput type='text' label='Hobbies' theme={themeLabel} name='hobbies'
+                                  value={this.props.user.hobbies}
+                                  required onChange={this.handleChangeHobbies.bind(this, 'hobbies')} maxLength={200}
+                                  tooltip='Write hobbies separate by commas'/>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-                  </div></div>
+            <div className="form-group">
+              <div className={classes.labelInfo}>
+                <label>Account information</label>
+              </div>
+              <div className="col-md-8">
+                <div className="row">
+                  <Input type='email' label='Email address' icon='email' theme={themeLabel}
+                         value={this.props.user.mail} disabled/>
+                </div>
+              </div>
+            </div>
+            <div className="form-group">
+              <div className="row">
+                <div className="col-md-6">
+                  <Input type='password' label='Old Password' required theme={themeLabel}
+                         value={this.state.oldPassword}
+                         onChange={this.handleChangeOldPassword.bind(this, 'oldPassword')}/>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-md-6">
+                  <Input type='password' label='New Password' required theme={themeLabel}
+                         value={this.state.password} onChange={this.handleChangePassword.bind(this, 'password')}
+                         error={this.validatePassword()}/>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-md-6">
+                  <Input type='password' label='Repeat Password' required theme={themeLabel}
+                         value={this.state.repeatPassword}
+                         onChange={this.handleChangeRepeatPassword.bind(this, 'repeatPassword')}
+                         error={this.validatePassword()}/>
+                </div>
+              </div>
+            </div>
+            <div className="form-group">
+              <div className="col-md-12">
+                <div className="row">
+                  <div className="col-md-6">
+                    <Button style={{color: 'white', background: '#900C3F'}} raised
+                            onClick={this.saveUser.bind(this)} icon='save'>
+                      SAVE CHANGE
+                    </Button>
+                  </div>
+                  <div className="col-md-6">
+                    <Button style={{color: 'white', background: '#900C3F'}} raised
+                            onClick={this.props.home} icon='backspace'>
+                      BACK
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
 
     );
   };
 }
+ProfileForm.propTypes = {
+  user: PropTypes.any,
+  home: PropTypes.func
+};
 
-export default ProfileForm
+export default connect(mapStateToProps, mapDispatchToProps)(ProfileForm)
