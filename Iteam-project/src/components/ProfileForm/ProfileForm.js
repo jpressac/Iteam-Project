@@ -11,6 +11,7 @@ import themeLabel from './label.scss'
 import {Button, IconButton} from 'react-toolbox/lib/'
 import Tooltip from 'react-toolbox/lib/tooltip';
 import {push} from 'react-router-redux'
+import {UTILITIES} from '../../constants/HostConfiguration'
 
 
 const mapStateToProps = (state) => {
@@ -28,29 +29,32 @@ const mapDispatchToProps = dispatch => ({
 const TooltipInput = Tooltip(Input);
 
 class ProfileForm extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props);
-    this.state= {
+    this.state = {
       firstName: '',
       lastName: '',
       nationality: '',
       nationalityValue: [],
-      dateBorn: new Date(),
+      bornDate: new Date(this.props.user.bornDate),
       mail: '',
       genderValue: 'male',
       professionName: '',
       professionValue: [],
       hobbies: '',
       username: '',
-      oldPassword:'',
+      oldPassword: '',
       password: '',
       repeatPassword: ''
-      }
     }
+  }
+
 //CONTROLAR CAMPOS NULOS!!!
   saveUser() {
+    // validate change password, and we need to re-render
     submitUser(this.state);
   }
+
   validatePassword() {
     if (this.state.password === this.state.repeatPassword) {
       return '';
@@ -59,34 +63,38 @@ class ProfileForm extends React.Component {
     }
   }
 
-  componentDidMount(){
-  axios.get('http://localhost:8080/utilities/professions').then(function (response) {
-    this.setValuesOptionsProfessions(response.data);
-  }.bind(this));
-    this.initialComboProfession(this.props.user.profession);
-    
+  componentDidMount() {
+    axios.get(UTILITIES.PROFESSIONS).then(function (response) {
+      this.setValuesOptionsProfessions(response.data);
+    }.bind(this));
+    this.initialComboProfession();
 
-      }
-  initialComboProfession(name) {
-    let filteredLabelObject = this.state.professionValue.filter(filter => filter["label"] == name);
+  }
+
+  initialComboProfession(opt) {
+    let filteredLabelObject = opt.filter(filter => filter["label"] == this.props.user.profession.toLowerCase());
     this.setState({Value: filteredLabelObject[0]["value"], professionName: name})
   }
 
-comboProfession(value) {
-  let filteredLabelObject = this.state.professionValue.filter(filter => filter["value"] == value);
-  this.setState({Value: value, professionName: filteredLabelObject[0]["label"]})
-}
+  comboProfession(value) {
+    let filteredLabelObject = this.state.professionValue.filter(filter => filter["value"] == value);
+    this.setState({Value: value, professionName: filteredLabelObject[0]["label"]})
+  }
 
 
-setValuesOptionsProfessions(data) {
-  let opt = data.map(function (option, index) {
-    var rObj = {};
-    rObj["value"] = index;
-    rObj["label"] = option;
-    return rObj;
-  });
-  this.setState({professionValue: opt});
-}
+  setValuesOptionsProfessions(data) {
+    let opt = data.map(function (option, index) {
+      var rObj = {};
+      rObj["value"] = index;
+      rObj["label"] = option;
+      return rObj;
+    });
+
+    this.initialComboProfession(opt);
+
+    this.setState({professionValue: opt});
+  }
+
   handleChangeHobbies = (hobbies, value) => {
     this.setState({...this.state, [hobbies]: value});
   };
@@ -107,31 +115,30 @@ setValuesOptionsProfessions(data) {
     this.setState({...this.state, [repeatPassword]: value});
   };
 
-dropdownProfession() {
-  return (
-    <Dropdown label="Select profession" auto theme={themeLabel} style={{color: '#900C3F'}}
-              onChange={this.comboProfession.bind(this)} required
-              source={this.state.professionValue} value={this.state.Value}/>
-  );
-};
+  dropdownProfession() {
+    return (
+      <Dropdown label="Select profession" auto theme={themeLabel} style={{color: '#900C3F'}}
+                onChange={this.comboProfession.bind(this)} required
+                source={this.state.professionValue} value={this.state.Value}/>
+    );
+  };
 
 
-
-  render(){
-    return(
+  render() {
+    return (
       <div className={"container"} style={{marginTop: 80, width: 800}}>
         <div className={classes.label2}>
           <label>MY PROFILE</label>
         </div>
 
         <div className={classes.form}>
-          <form className={"form-horizontal"}>
+          <div className={"form-horizontal"}>
             <div className="form-group">
               <div className="col-md-12">
                 <div className="row">
                   <img src={user} style={{width: 100}}/>
                   <span className="glyphicon glyphicon-user"
-                        className={classes.labelInfo}><label>Welcome  {this.props.user.username}!</label></span >
+                        className={classes.labelInfo}><label>Welcome {this.props.user.username}!</label></span >
 
                 </div>
               </div>
@@ -139,7 +146,7 @@ dropdownProfession() {
             <div className="form-group">
               <div className="col-md-12">
                 <div className={classes.labelInfo}>
-                  <label style={{margin:15}}>Personal information</label>
+                  <label style={{margin: 15}}>Personal information</label>
                 </div>
                 <div className="row">
                   <div className="col-md-6">
@@ -157,11 +164,11 @@ dropdownProfession() {
               <div className="col-md-12">
                 <div className="row">
                   <div className="col-md-6">
-                    <Input label="Born Date" name='bornDate' disabled value={this.state.dateBorn.toLocaleDateString()}/>
+                    <Input label="Born Date" name='bornDate' disabled value={this.state.bornDate.toLocaleDateString()}/>
                   </div>
                   <div className="row">
                     <div className="col-md-6">
-                      <Input type='text' label='Last Name' disabled theme={themeLabel} name='lastName'
+                      <Input type='text' label='Nationality' disabled theme={themeLabel} name='nationality'
                              value={this.props.user.nationality}/>
                     </div>
                   </div>
@@ -200,8 +207,7 @@ dropdownProfession() {
                 <div className="col-md-6">
                   <Input type='password' label='Old Password' required theme={themeLabel}
                          value={this.state.oldPassword}
-                         onChange={this.handleChangeOldPassword.bind(this, 'oldPassword')}
-                         error={this.validatePassword()}/>
+                         onChange={this.handleChangeOldPassword.bind(this, 'oldPassword')}/>
                 </div>
               </div>
               <div className="row">
@@ -224,13 +230,13 @@ dropdownProfession() {
               <div className="col-md-12">
                 <div className="row">
                   <div className="col-md-6">
-                    <Button style={{color: 'white', background:'#900C3F'}}  raised
+                    <Button style={{color: 'white', background: '#900C3F'}} raised
                             onClick={this.saveUser.bind(this)} icon='save'>
                       SAVE CHANGE
                     </Button>
                   </div>
                   <div className="col-md-6">
-                    <Button style={{color: 'white', background:'#900C3F'}}  raised
+                    <Button style={{color: 'white', background: '#900C3F'}} raised
                             onClick={this.props.home} icon='backspace'>
                       BACK
                     </Button>
@@ -238,7 +244,7 @@ dropdownProfession() {
                 </div>
               </div>
             </div>
-          </form>
+          </div>
         </div>
       </div>
 
@@ -246,9 +252,9 @@ dropdownProfession() {
     );
   };
 }
-ProfileForm.propTypes ={
+ProfileForm.propTypes = {
   user: PropTypes.any,
   home: PropTypes.func
 };
 
-export default connect(mapStateToProps, mapDispatchToProps) (ProfileForm)
+export default connect(mapStateToProps, mapDispatchToProps)(ProfileForm)
