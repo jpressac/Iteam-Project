@@ -56,11 +56,11 @@ class MymeetForm extends Component {
   }
 
 
-  goToReports(){
+  goToReports() {
     this.props.updateMyMeetingId(this.state.meetEdit.meetingId);
   }
 
-  startMeeting(){
+  startMeeting() {
     this.props.updateMyMeetingId(this.state.meetEdit.meetingId);
     this.props.onClick();
   }
@@ -76,7 +76,7 @@ class MymeetForm extends Component {
         description: false,
         programmedDate: false
       },
-      editable:true
+      editable: true
     });
     var datetime = new Date(meeting.programmedDate);
     programDate.setFullYear(datetime.getFullYear());
@@ -173,7 +173,7 @@ class MymeetForm extends Component {
   }
 
   static renderDate(meetingTime) {
-    return new Date(meetingTime).toLocaleDateString([], {hour: '2-digit', minute:'2-digit'});
+    return new Date(meetingTime).toLocaleDateString([], {hour: '2-digit', minute: '2-digit'});
   }
 
   componentDidMount() {
@@ -204,9 +204,11 @@ class MymeetForm extends Component {
     }
 
     axios.post(MEETING.MEETING_UPDATE, saveMeeting).then(
-      function (response) {}
+      function (response) {
+      }
     ).catch(
-      function (response) {});
+      function (response) {
+      });
 
     this.setState({active: !this.state.active});
   }
@@ -270,61 +272,62 @@ class MymeetForm extends Component {
     let meets = this.state.meetings;
     let meetingTime = new Date;
 
-    var meetmap = [].slice.call(meets).sort(function(a, b){
-      return a.programmedDate-b.programmedDate
+    var meetmap = [].slice.call(meets).sort(function (a, b) {
+      return a.programmedDate - b.programmedDate
     });
 
     return (
       <div className={"container"} style={{marginTop:70}}>
         <div className={classes.content}>
-        <div className={classes.label2}>
-          <label>MY MEETINGS</label>
+          <div className={classes.label2}>
+            <label>MY MEETINGS</label>
+          </div>
+          <List theme={listFormat} selectable ripple>
+            <ListSubHeader />
+            {Object.keys(meetmap).map((key) => {
+                meetingTime = meetmap[key].programmedDate;
+                var renderDateTime = MymeetForm.renderDate(meetingTime);
+                var future_date = MymeetForm.validateDate(meetingTime);
+                var color = future_date ? ListItem2 : ListItem1;
+                return (
+                  <div>
+                    <ListItem
+                      theme={color}
+                      caption={meetmap[key].topic}
+                      legend={renderDateTime}
+                      leftIcon='send'
+                      rightIcon='visibility'
+                      onClick={this.handleToggleDialog.bind(this, meetmap[key])}/>
+                    <ListDivider />
+                    <Dialog
+                      actions={this.showActions(this.state.meetEdit.ownerName, this.state.meetEdit.programmedDate)}
+                      active={this.state.active}
+                      onEscKeyDown={this.handleToggleDialog}
+                      onOverlayClick={this.handleToggleDialog}>
+                      <Input type='text' label='Topic' value={this.state.meetEdit.topic} maxLength={30}
+                             onChange={this.onChangeTopic.bind(this)} disabled={this.state.editable}/>
+
+                      <Input type='text' label='Description' value={this.state.meetEdit.description} maxLength={144}
+                             onChange={this.onChangeDescription.bind(this)} disabled={this.state.editable}/>
+
+                      <Input type='text' label='Team Name' value={this.state.meetEdit.teamName} disabled/>
+
+                      <DatePicker label='Select date' sundayFirstDayOfWeek value={new Date(this.state.datetime)}
+                                  readonly={this.state.editable} onChange={this.onChangeProgrammedDate.bind(this)}
+                                  minDate={new Date()}/>
+
+                      <TimePicker label='Select time'
+                                  value={isNaN(new Date(this.state.time)) ? 0 : new Date(this.state.time)}
+                                  readonly={this.state.editable} onChange={this.onChangeProgrammedTime.bind(this)}/>
+                    </Dialog>
+                    <BootstrapModal ref="meetingModal" message={this.state.message}/>
+                  </div>
+                );
+              }
+            )}
+          </List>
         </div>
-        <List theme={listFormat} selectable ripple>
-          <ListSubHeader />
-          {Object.keys(meetmap).map((key) => {
-              meetingTime = meetmap[key].programmedDate;
-              var renderDateTime = MymeetForm.renderDate(meetingTime);
-              var future_date = MymeetForm.validateDate(meetingTime);
-              var color = future_date ? ListItem2 : ListItem1;
-              return (
-                <div>
-                  <ListItem
-                    theme={color}
-                    caption={meetmap[key].topic}
-                    legend={renderDateTime}
-                    leftIcon='send'
-                    rightIcon='visibility'
-                    onClick={this.handleToggleDialog.bind(this, meetmap[key])}/>
-                  <ListDivider />
-                  <Dialog
-                    actions={this.showActions(this.state.meetEdit.ownerName, this.state.meetEdit.programmedDate)}
-                    active={this.state.active}
-                    onEscKeyDown={this.handleToggleDialog}
-                    onOverlayClick={this.handleToggleDialog}>
-                    <Input type='text' label='Topic' value={this.state.meetEdit.topic} maxLength={30}
-                           onChange={this.onChangeTopic.bind(this)} disabled={this.state.editable}/>
-
-                    <Input type='text' label='Description' value={this.state.meetEdit.description} maxLength={144}
-                           onChange={this.onChangeDescription.bind(this)} disabled={this.state.editable}/>
-
-                    <Input type='text' label='Team Name' value={this.state.meetEdit.teamName} disabled/>
-
-                    <DatePicker label='Select date' sundayFirstDayOfWeek value={new Date(this.state.datetime)}
-                                readonly={this.state.editable} onChange={this.onChangeProgrammedDate.bind(this)}
-                                minDate={new Date()}/>
-
-                    <TimePicker label='Select time' value={isNaN(new Date(this.state.time)) ? 0 : new Date(this.state.time)}
-                                readonly={this.state.editable} onChange={this.onChangeProgrammedTime.bind(this)}/>
-                  </Dialog>
-                  <BootstrapModal ref="meetingModal" message={this.state.message}/>
-                </div>
-              );
-            }
-          )}
-        </List>
       </div>
-  </div>
     )
   }
 }
