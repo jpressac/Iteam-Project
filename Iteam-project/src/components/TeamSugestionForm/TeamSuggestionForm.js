@@ -260,6 +260,7 @@ class TeamSuggestionForm extends React.Component {
           <label>CREATE TEAM</label>
         </div>
 
+        
         <div className={classes.form}>
           <div className="form-horizontal">
             <div className="form-group" >

@@ -1,3 +1,54 @@
 .drawer{
   margin-top:10%;
 }
+
+
+.h3{
+  font-family: monospace;
+}
+.description{
+  text-indent: 0.2cm;
+  text-align:center;
+  font-size: 150%;
+
+
+}
+.topic{
+  font-size: 300%;
+  color:#900C3F;
+  text-align:center;
+
+}
+.container{
+ text-align: left;
+
+}
+.title{
+  color:#900C3F;
+  text-align: center;
+  background: white;
+  width: 100%;
+}
+.textos{
+text-align: left;
+  font-size:100%;
+
+}
+.content{
+  width: 600px;
+  background: #eee;
+  padding:30px;
+  margin-top: 5px;
+  margin-left: 30%;
+  margin-right: 30%;
+  font-size: x-large;
+  text-align: left;
+  border-color: white;
+}
+.reportTitle{
+
+  background: #eee;
+  padding: 5%;
+  color: darkred;
+  font-size: 150%;
+}
