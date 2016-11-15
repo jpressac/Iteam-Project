@@ -13,7 +13,7 @@ import BootstrapModal from '../../components/BootstrapModal/BootstrapModal';
 import ListItem1 from './ListItem1.scss'
 import ListItem2 from './ListItem2.scss'
 import {updateMeetingId} from '../../redux/reducers/Meeting/MeetingReducer'
-import {MEETING} from '../../constants/HostConfiguration'
+import {TEAM, MEETING} from '../../constants/HostConfiguration'
 
 var programDate = new Date();
 
@@ -159,7 +159,7 @@ class MymeetForm extends Component {
 
   UserActionsJoin = [
     {label: "Cancel", onClick: this.handleToggleDialog},
-    {label: "Join", onClick: this.props.onClick}
+    {label: "Join", onClick: this.startMeeting.bind(this)}
   ];
 
   UserActionsView = [
@@ -174,6 +174,21 @@ class MymeetForm extends Component {
   static renderDate(meetingTime) {
     return new Date(meetingTime).toLocaleDateString([], {hour: '2-digit', minute:'2-digit'});
   }
+
+  getTeamName = (meetingId) => {
+    let teamName = '';
+    axios.get(TEAM.TEAM_USER_BY_MEETING, {
+      params: {
+        meetingId: meetingId
+      }
+    }).then(function (response) {
+        console.log('AXIOS' + response.data["teamId"]);
+      this.setState({teamName: response.data["teamId"]});
+      }.bind(this)
+    );
+
+    return teamName;
+  };
 
   componentDidMount() {
     axios.get(MEETING.MEETING_BY_USER, {params: {username: this.props.user}}).then(function (response) {
@@ -286,6 +301,8 @@ class MymeetForm extends Component {
               var renderDateTime = MymeetForm.renderDate(meetingTime);
               var future_date = MymeetForm.validateDate(meetingTime);
               var color = future_date ? ListItem2 : ListItem1;
+              //let teamName = this.getTeamName(meetmap[key].meetingId);
+              
               return (
                 <div>
                   <ListItem
@@ -307,7 +324,7 @@ class MymeetForm extends Component {
                     <Input type='text' label='Description' value={this.state.meetEdit.description} maxLength={144}
                            onChange={this.onChangeDescription.bind(this)} disabled={this.state.editable}/>
 
-                    <Input type='text' label='Team Name' value={this.state.meetEdit.teamName} disabled/>
+                    <Input type='text' label='Team name' value="Iteam" disabled/>
 
                     <DatePicker label='Select date' sundayFirstDayOfWeek value={new Date(this.state.datetime)}
                                 readonly={this.state.editable} onChange={this.onChangeProgrammedDate.bind(this)}

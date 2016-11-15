@@ -10,6 +10,7 @@ import Button from 'react-toolbox/lib/button';
 import classes from './ReportForm.scss';
 import BootstrapModal from '../BootstrapModal/BootstrapModal'
 import Idea from './idea'
+import {MEETING} from '../../constants/HostConfiguration'
 /*
  var report = new PDFDocument
 

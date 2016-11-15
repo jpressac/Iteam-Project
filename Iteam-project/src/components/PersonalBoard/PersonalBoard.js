@@ -5,7 +5,7 @@ import Note from "../Note/Note";
 import {ItemTypes} from "../Constants/Constants";
 import {IconButton} from 'react-toolbox/lib/button';
 import flow from 'lodash/flow'
-import {connect as con,initWebSocket, sendNote, disconnect} from '../../websocket/websocket'
+import {connect as con, initWebSocket, sendMessage, disconnect} from '../../websocket/websocket'
 import {connect} from 'react-redux'
 
 const NoteTarget = {
@@ -27,7 +27,7 @@ const mapStateToProps = (state) => {
 
 class PersonalBoard extends Component {
 
-  createNotes(noteMap){
+  createNotes(noteMap) {
     return Object.keys(noteMap).map((key) => {
       return (
         <Note key={key}
@@ -39,7 +39,7 @@ class PersonalBoard extends Component {
               top={noteMap[key].top}
               subtitle={noteMap[key].subtitle}
               boardType={noteMap[key].boardType}
-              title= {noteMap[key].title}
+              title={noteMap[key].title}
               tag={noteMap[key].tag}
         />
       );
@@ -124,7 +124,7 @@ class PersonalBoard extends Component {
     // send to shared board
     console.log(note);
     //TODO, channel es la meeting id, iria this.props.meeting
-    sendNote("insert", this.props.meetingId , JSON.stringify(
+    sendMessage("insert", this.props.meetingId, JSON.stringify(
       {
         "username": map[id].username,
         "title": map[id].title,
@@ -135,13 +135,22 @@ class PersonalBoard extends Component {
     this.remove(id)
   }
 
+  updateConnectionStatus(action, status) {
+    sendMessage(action, this.props.meetingId, JSON.stringify({
+      "username": this.props.user,
+      "status": status
+    }));
+  }
+
   componentDidMount() {
     initWebSocket();
     con();
+    setTimeout(this.updateConnectionStatus.bind(this, 'user connected', 'Online'), 2000);
   }
 
-  componentWillUnmount(){
-    disconnect()
+  componentWillUnmount() {
+    this.updateConnectionStatus('user disconnected', 'Offline');
+    disconnect();
   }
 
   constructor(props) {
