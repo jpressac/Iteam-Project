@@ -160,7 +160,7 @@ class MymeetForm extends Component {
 
   UserActionsJoin = [
     {label: "Cancel", onClick: this.handleToggleDialog},
-    {label: "Join", onClick: this.props.onClick}
+    {label: "Join", onClick: this.startMeeting.bind(this)}
   ];
 
   UserActionsView = [

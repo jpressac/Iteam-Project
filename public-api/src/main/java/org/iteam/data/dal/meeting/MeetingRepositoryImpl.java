@@ -9,7 +9,6 @@ import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -85,8 +84,8 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
         String data = JSONUtils.ObjectToJSON(updatedMeeting);
 
-        UpdateResponse response = elasticsearchClientImpl.modifyData(data, StringUtilities.INDEX_MEETING,
-                StringUtilities.INDEX_TYPE_MEETING, updatedMeeting.getMeetingId());
+        elasticsearchClientImpl.modifyData(data, StringUtilities.INDEX_MEETING, StringUtilities.INDEX_TYPE_MEETING,
+                updatedMeeting.getMeetingId());
 
         // LOGGER.error("The meeting couldn't be updated - Meeting: '{}'",
         // updatedMeeting.toString());
@@ -108,9 +107,15 @@ public class MeetingRepositoryImpl implements MeetingRepository {
             dataToInsert.add(JSONUtils.ObjectToJSON(idea));
         });
 
-        // TODO:verify how to check if the document was updated or not. The only
-        // way til now is to execute another query an check the modified fields.
+        // TODO: we need to make it async, so if the ideas cannot be save we
+        // can't delete the index meetingInfo,
+        // could we implement a retry politic.
         elasticsearchClientImpl.insertData(dataToInsert, StringUtilities.INDEX_IDEAS, StringUtilities.INDEX_TYPE_IDEAS);
+
+        // TODO: maybe this is not the best way to get the meeting id, try
+        // meeting id by parameters.
+        elasticsearchClientImpl.delete(StringUtilities.INDEX_MEETING_INFO, StringUtilities.INDEX_TYPE_MEETING_INFO,
+                ideas.getIdeas().get(0).getMeetingId());
 
         return true;
     }
@@ -123,15 +128,16 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
         queryBuilder.must(QueryBuilders.termQuery(IDEA_MEETING_ID_FIELD, meetingId));
 
-        SearchResponse meetingResponse = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING,
-                QueryBuilders.termQuery(IDEA_MEETING_ID_FIELD, meetingId));
+        GetResponse meetingResponse = elasticsearchClientImpl.getDocument(StringUtilities.INDEX_MEETING,
+                StringUtilities.INDEX_TYPE_MEETING, meetingId);
 
         Reports report = null;
         List<Idea> ideasList = new ArrayList<>();
-        if (meetingResponse.getHits().getTotalHits() > 0) {
+
+        if (meetingResponse.isExists()) {
 
             try {
-                JsonNode meetingNode = OBJECT_MAPPER.readTree(meetingResponse.getHits().getAt(0).getSourceAsString());
+                JsonNode meetingNode = OBJECT_MAPPER.readTree(meetingResponse.getSourceAsString());
 
                 SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_IDEAS, queryBuilder,
                         SortBuilders.fieldSort(fieldOrder).order(sortOrder));
@@ -237,6 +243,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
         GetResponse response = elasticsearchClientImpl.getDocument(StringUtilities.INDEX_MEETING_INFO,
                 StringUtilities.INDEX_TYPE_MEETING_INFO, meetingId);
+
         if (response.isExists()) {
             return response.getSourceAsString();
         }
