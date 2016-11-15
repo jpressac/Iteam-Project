@@ -6,6 +6,7 @@ import classes from './MyTeamsForm.scss';
 import avatarPeople from './account-multiple.png'
 import listItemGrey from './ListItemGrey.scss'
 import listFormat from './List.scss'
+import {TEAM} from '../../constants/HostConfiguration'
 
 
 const mapStateToProps = (state) => {
@@ -34,7 +35,7 @@ class MyTeamsForm extends Component {
 
 
   componentDidMount() {
-    axios.get('http://localhost:8080/team/byowner'
+    axios.get(TEAM.TEAM_BY_OWNER
     ).then(function (response) {
       this.fillfields(response.data);
     }.bind(this));

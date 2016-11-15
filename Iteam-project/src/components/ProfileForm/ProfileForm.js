@@ -72,7 +72,7 @@ class ProfileForm extends React.Component {
   }
 
   initialComboProfession(opt) {
-    let filteredLabelObject = opt.filter(filter => filter["label"] == this.props.user.profession.toLowerCase());
+    let filteredLabelObject = opt.filter(filter => filter["label"] == this.props.user.profession);
     this.setState({Value: filteredLabelObject[0]["value"], professionName: name})
   }
 
@@ -137,8 +137,7 @@ class ProfileForm extends React.Component {
               <div className="col-md-12">
                 <div className="row">
                   <img src={user} style={{width: 100}}/>
-                  <span className="glyphicon glyphicon-user"
-                        className={classes.labelInfo}><label>Welcome {this.props.user.username}!</label></span >
+                  <span className={classes.labelInfo}><label>Welcome {this.props.user.username}!</label></span >
 
                 </div>
               </div>
@@ -164,7 +163,7 @@ class ProfileForm extends React.Component {
               <div className="col-md-12">
                 <div className="row">
                   <div className="col-md-6">
-                    <Input label="Born Date" name='bornDate' disabled value={this.state.bornDate.toLocaleDateString()}/>
+                    <Input type='text' label="Born Date" name='bornDate' disabled value={this.state.bornDate.toLocaleDateString()} theme={themeLabel} />
                   </div>
                   <div className="row">
                     <div className="col-md-6">

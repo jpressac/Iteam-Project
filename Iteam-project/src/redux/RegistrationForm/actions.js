@@ -34,7 +34,6 @@ export function submitUser(data){
         bornDate:  data.date.getTime() ,
         mail : data.mail,
         gender:data.genderValue,
-        nationality: data.nationality,
         hobbies: hobbiesList,
         profession: data.professionName,
         name: data.firstName,
