@@ -14,7 +14,7 @@ import buttonBasic from './buttonBasic.scss'
 import buttonTag from './buttonTag.scss'
 import buttonUser from './buttonUser.scss'
 import buttonPdf from './buttonPdf.scss'
-
+import {MEETING} from '../../constants/HostConfiguration'
 const report = new jsPDF()
 
 var specialElementHandlers = {
@@ -68,7 +68,7 @@ class ReportForm extends Component {
   };
 
   generateUserReport = () => {
-    axios.get('http://localhost:8080/meeting/report/byuser', {
+    axios.get(MEETING.MEETING_REPORT_BY_USER, {
       params: {
         meetingId: this.props.meetingId
       }
@@ -82,7 +82,7 @@ class ReportForm extends Component {
     };
 
     generateTagReport = () => {
-      axios.get('http://localhost:8080/meeting/report/bytag', {
+      axios.get(MEETING.MEETING_REPORT_BY_TAG, {
         params: {
           meetingId: this.props.meetingId
         }

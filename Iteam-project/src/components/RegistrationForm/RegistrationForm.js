@@ -19,7 +19,7 @@ const TooltipInput = Tooltip(Input);
 
 const mapDispatchToProps = (dispatch) => ({
 
-  goToLogin: () => dispatch(push('/' + PATHS.MENUNOTLOGGEDIN.LOGIN))
+  goToHome: () => dispatch(push('/' + PATHS.MENUNOTLOGGEDIN.HOME))
 });
 
 class RegistrationForm extends Component {
@@ -70,7 +70,7 @@ class RegistrationForm extends Component {
     submitUser(this.state);
 
     //This should be moved to submit user the sumbit method should perform the dipatch once it was save, otherwise throw error
-    this.props.goToLogin()
+    this.props.goToHome()
   }
 
   handleChangeFirstName = (firstName, value) => {
@@ -269,7 +269,7 @@ class RegistrationForm extends Component {
             <div className="form-group">
               <div className="col-md-6">
                 <div className="row">
-                  <Button style={{margin: 15, color: '#900C3F'}} target='_blank' raised
+                  <Button style={{margin: 15, color: 'white', background:'#900C3F'}}  raised
                           onClick={this.saveUser.bind(this)}>
                     Create
                   </Button>
@@ -285,7 +285,7 @@ class RegistrationForm extends Component {
 }
 
 RegistrationForm.propTypes = {
-  goToLogin: PropTypes.func
+  goToHome: PropTypes.func
 };
 
 export default connect(null, mapDispatchToProps) (RegistrationForm)
