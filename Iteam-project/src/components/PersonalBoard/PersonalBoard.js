@@ -58,8 +58,8 @@ class PersonalBoard extends Component {
           <div className="row">
             <div className="col-md-4">
               <TooltipButton icon='add'  label='Add Note' tooltip='Add Note'
-                             style={{background:'#900C3F', color:'white', marginTop:10}}  floating mini
-                             onClick={this.add.bind(this, "New note")} />
+                             style={{background:'#900C3F', color:'white', marginTop:10}}  raised primary
+                             onClick={this.add.bind(this, "New note")} tooltipDelay={1000}/>
             </div>
           </div>
         </div>
