@@ -13,6 +13,7 @@ import flow from 'lodash/flow'
 import {connect} from 'react-redux'
 import {push} from 'react-router-redux';
 import {PATHS} from '../../constants/routes';
+import {MEETING} from '../../constants/HostConfiguration'
 import Drawer from 'react-toolbox/lib/drawer';
 import { IconButton } from 'react-toolbox/lib/button';
 import Clients from '../BoardSidebar/users'
@@ -115,7 +116,7 @@ class SharedBoard extends Component {
       );
     });
     //no tener hardcodeado la url y sacar el axios de aca
-    axios.post('http://localhost:8080/meeting/ideas/save', {
+    axios.post(MEETING.MEETING_IDEAS_SAVE, {
       ideas
     }).then(function (response) {
       this.setState({message: '¡Your notes were successfully saved!'});
@@ -128,7 +129,7 @@ class SharedBoard extends Component {
   }
 
   generateReport() {
-    axios.get('http://localhost:8080/meeting/report', {
+    axios.get(MEETING.MEETING_REPORT, {
       params: {
         meetingId: this.props.meetingId
       }
