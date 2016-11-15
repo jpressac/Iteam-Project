@@ -14,7 +14,7 @@
 				{
 					"name": "Meeting mapping",
 					"request": {
-						"url": "http://{{_IP_HOST_}}:9200/meeting/_mapping",
+						"url": "http://{{_IP_HOST_}}:9200/meeting",
 						"method": "PUT",
 						"header": [
 							{
@@ -25,7 +25,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"mappings\": {\r\n\t\t\"ideadata\": {\r\n\t\t\t\"properties\": {\r\n\t\t\t\t\"teamName\": {\r\n\t\t\t\t\t\"type\": \"string\",\r\n\t\t\t\t\t\"index\": \"not_analyzed\"\r\n\t\t\t\t}\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n}"
+							"raw": "{\r\n    \"mappings\": {\r\n\t\t\"meetingdata\": {\r\n\t\t\t\"properties\": {\r\n\t\t\t\t\"teamName\": {\r\n\t\t\t\t\t\"type\": \"string\",\r\n\t\t\t\t\t\"index\": \"not_analyzed\"\r\n\t\t\t\t}\r\n\t\t\t}\r\n\t\t}\r\n\t}\r\n}"
 						},
 						"description": ""
 					},
@@ -34,7 +34,7 @@
 				{
 					"name": "Ideas mapping",
 					"request": {
-						"url": "http://{{_IP_HOST_}}:9200/iteamideas/_mapping",
+						"url": "http://{{_IP_HOST_}}:9200/iteamideas",
 						"method": "PUT",
 						"header": [
 							{
