@@ -41,7 +41,7 @@ userExists().then( () => {
       store.dispatch(user(response.data))
     })
 }, () => {
-  store.dispatch(push("/application/nmember/login"))
+  store.dispatch(push("/application/nmember/home"))
 })
 
 // Now that redux and react-router have been configured, we can render the
