@@ -325,7 +325,7 @@ class MymeetForm extends Component {
                       <Input type='text' label='Description' value={this.state.meetEdit.description} maxLength={144}
                              onChange={this.onChangeDescription.bind(this)} disabled={this.state.editable}/>
 
-                    <Input type='text' label='Team Name' value={this.state.meetEdit.teamName} disabled/>
+                    <Input type='text' label='Team Name' value="Iteam" disabled/>
 
                       <DatePicker label='Select date' sundayFirstDayOfWeek value={new Date(this.state.datetime)}
                                   readonly={this.state.editable} onChange={this.onChangeProgrammedDate.bind(this)}
