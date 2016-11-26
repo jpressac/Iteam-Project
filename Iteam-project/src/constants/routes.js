@@ -20,7 +20,8 @@ export const PATHS = {
    NEWTEAM: 'team',
    PROFILE: 'myprofile',
    MEETING: 'meeting',
-   BOARD: 'personalboard',
+   PERSONALBOARD: 'personalboard',
+   SHAREDBOARD: 'sharedboard',
    MYMEETINGS: 'mymeeting',
    TEAMLIST: 'myteams',
    REPORTS: 'reports'
@@ -41,6 +42,8 @@ export const PATHS = {
    BOARD : 'application/member/personalboard',
    MYMEETINGS: 'application/member/mymeeting',
    TEAMLIST: 'application/member/myteams',
-   REPORTS: 'application/member/reports'
+   REPORTS: 'application/member/reports',
+   PERSONALBOARD: 'application/member/personalboard',
+   SHAREDBOARD: 'application/member/sharedboard'
  }
 };

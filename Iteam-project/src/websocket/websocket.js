@@ -32,10 +32,9 @@ export function sendMessage(action, topic, content,users){
   stompClient.send("/channel", {},JSON.stringify(
     {
       "topic": topic,
-      "action": action,
       "message":{
         "payload" : content,
-        "payloadInfo":users
+        "action": action
       }
     })
   );

@@ -141,8 +141,7 @@ class PersonalBoard extends Component {
 
   updateConnectionStatus(action, status) {
     sendMessage(action, this.props.meetingId, JSON.stringify({
-      "username": this.props.user,
-      "status": status
+      "users": [this.props.user]
     }));
   }
 

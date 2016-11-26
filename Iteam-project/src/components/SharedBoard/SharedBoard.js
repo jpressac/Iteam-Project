@@ -81,7 +81,7 @@ class SharedBoard extends Component {
       }
     }).then((response) => {
       if (response.data !== "") {
-        this.setState({usersConnected: response.data});
+        this.setState({usersConnected: response.data["users"]});
       }
     }).catch((response) => {
       console.log('error ' + response)
@@ -328,12 +328,14 @@ class SharedBoard extends Component {
 
     let usersStatus =this.state.participants.map( (participant) =>{
       let obj = {};
+      let load = JSON.stringify(this.state.usersConnected);
+      console.log("Users connected" + load);
       if(this.state.usersConnected.includes(participant["username"])){
-        obj["username"] = jsonPayload.username;
+        obj["username"] = participant["username"];
         obj["status"] = 'Online';
         console.log('TRUE = ' + JSON.stringify(obj));
       } else {
-        obj["username"] = participant.username;
+        obj["username"] = participant["username"];
         obj["status"] = 'Offline';
         console.log('FALSE' + JSON.stringify(obj));
       }
