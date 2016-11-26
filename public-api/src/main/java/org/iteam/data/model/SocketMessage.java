@@ -7,7 +7,6 @@ public class SocketMessage {
 
     private String topic;
     private SocketPayload message;
-    
 
     public SocketPayload getMessage() {
         return message;

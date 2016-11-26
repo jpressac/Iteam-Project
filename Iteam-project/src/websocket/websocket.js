@@ -28,14 +28,14 @@ export function connectAndSubscribe(topic, resolve){
 }
 
 
-export function sendMessage(action, topic, content){
-  //en el 13 va el meeting id y en el channel va tambien el meetingid
+export function sendMessage(action, topic, content,users){
   stompClient.send("/channel", {},JSON.stringify(
     {
       "topic": topic,
+      "action": action,
       "message":{
-        "action": action,
-        "payload" : content
+        "payload" : content,
+        "payloadInfo":users
       }
     })
   );
