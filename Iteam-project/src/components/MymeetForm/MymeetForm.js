@@ -148,7 +148,7 @@ class MymeetForm extends Component {
 
   AdminActionsEdit = [
     {label: "Cancel", onClick: this.handleToggleDialog},
-    {label: "Delete Meeting", onClick: this.handleToggleDialog},
+    {label: "Delete MeetingConfig", onClick: this.handleToggleDialog},
     {label: "Edit", onClick: this.edit.bind(this)},
     {label: "Save", onClick: this.save.bind(this)}
   ];
