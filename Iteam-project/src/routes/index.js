@@ -4,7 +4,6 @@ import {Route, IndexRoute} from 'react-router'
 import NotLoggedIn from '../layouts/NotLoggedIn/'
 import HomeView from '../views/HomeView/'
 import RegistrationView from '../views/RegistrationView/'
-import LoginView from '../views/LoginView/'
 import AboutView from '../views/AboutView'
 import ContactView from '../views/ContactView/'
 import {PATHS} from '../constants/routes'
@@ -12,6 +11,7 @@ import LoggedInLayout from '../layouts/LoggedInLayout'
 import TeamCreationView from '../views/TeamCreationView'
 import MeetingView from '../views/MeetingView'
 import BoardView from '../views/BoardView/BoardView'
+import PersonalBoardView from '../views/PersonalBoardView/PersonalBoardView'
 import ProfileView from '../views/ProfileView/ProfileView'
 import MyTeamView from '../views/MyTeamView/MyTeamView'
 import MymeetView from '../views/MymeetView/MymeetView'
@@ -32,7 +32,7 @@ export const createRoutes = (store) => (
       <Route path={PATHS.LOGGEDIN.NEWTEAM} component={TeamCreationView}/>
       <Route path={PATHS.LOGGEDIN.HOME} component={HomeView}/>
       <Route path={PATHS.LOGGEDIN.MEETING} component={MeetingView}/>
-      <Route path={PATHS.LOGGEDIN.BOARD} component={BoardView}/>
+      <Route path={PATHS.LOGGEDIN.BOARD} component={PersonalBoardView}/>
       <Route path={PATHS.LOGGEDIN.PROFILE} component={ProfileView}/>
       <Route path={PATHS.LOGGEDIN.MYMEETINGS} component={MymeetView}/>
       <Route path={PATHS.LOGGEDIN.REPORTS} component={ReportsView}/>
