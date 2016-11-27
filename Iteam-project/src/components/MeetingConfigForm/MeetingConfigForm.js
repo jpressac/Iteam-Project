@@ -9,7 +9,8 @@ import Tooltip from 'react-toolbox/lib/tooltip';
 import {push} from 'react-router-redux';
 import {PATHS} from '../../constants/routes';
 import {MEETING} from '../../constants/HostConfiguration';
-import axios from 'axios'
+import axios from 'axios';
+import Dropdown from 'react-toolbox/lib/dropdown';
 
 
 const mapDispatchToProps = dispatch => ({
@@ -26,6 +27,7 @@ const mapStateToProps = (state) => {
 };
 
 const TooltipButton = Tooltip(Button);
+const technics = [{value:0, label:'Brainstorming'}, {value:1, label:'SCAMPER'}, {value:2, label:'morphological analysis'}];
 
 class MeetingConfigForm extends Component {
 
@@ -36,7 +38,7 @@ class MeetingConfigForm extends Component {
       tag: '',
       tags: [],
       technic: 'Brainstorming',
-      technicValue: '',
+      technicValue: 0,
       pbtime: 0,
       sbtime: 0,
       template: 'Default',
@@ -45,11 +47,21 @@ class MeetingConfigForm extends Component {
     };
   }
 
-  comboTechnic() {
+  handleChangeCombo = (value) => {
+    let filteredLabelObject = technics.filter(filter => filter["value"] == value);
+    this.setState({technicValue: value, technic: filteredLabelObject[0]["label"]})
+  };
+
+
+  dropdownTechnic() {
+    return (
+      <Dropdown label="Select technic" auto theme={themeLabel} style={{color: '#900C3F'}}
+                onChange={this.handleChangeCombo.bind(this)}
+                source={technics}
+                value={this.state.technicValue}/>
+    );
   }
 
-  comboTemplate() {
-  }
 
   handleChange = (name, value) => {
     this.setState({...this.state, [name]: value});
@@ -93,34 +105,7 @@ class MeetingConfigForm extends Component {
   }
 
 
-  handleAddVotes() {
-    this.setState({votes: this.state.votes + 1})
-  }
-
-  handleSubstractVotes() {
-    this.setState({votes: this.state.votes - 1})
-  }
-
-  handleAddMinPB() {
-    this.setState({pbtime: this.state.pbtime + 1})
-  }
-
-  handleSubstractMinPB() {
-    this.setState({pbtime: this.state.pbtime - 1})
-  }
-
-  handleAddMinSB() {
-    this.setState({sbtime: this.state.sbtime + 1})
-  }
-
-  handleSubstractMinSB() {
-    this.setState({sbtime: this.state.sbtime - 1})
-  }
-
   saveMeeting() {
-    console.log('team id: ' + this.props.meetingInfo.teamId);
-    console.log('description: ' + this.props.meetingInfo.description);
-
     axios.post(MEETING.MEETING_CREATE, {
       topic: this.props.meetingInfo.topic,
       ownerName: this.props.user,
@@ -146,20 +131,6 @@ class MeetingConfigForm extends Component {
   }
 
 
-  /*  comboTeam(value) {
-   let filteredLabelObject = this.state.teamsObj.filter(filter => filter["value"] == value);
-   this.setState({teamValue: value, teamSelectedName: filteredLabelObject[0]["label"]})
-   }
-
-
-   dropdownTeam() {
-   return (
-   <Dropdown label="Select team" auto theme={themeLabel} style={{color: '#900C3F'}}
-   onChange={this.comboTeam.bind(this)}
-   source={this.state.teamsObj} value={this.state.teamValue}/>
-   );
-   };*/
-
   render() {
     return (
       <div className={"container"} style={{marginTop: 70, width: 700}}>
@@ -173,35 +144,28 @@ class MeetingConfigForm extends Component {
               <div className="col-md-8">
                 <div className="row" style={{color: '#900C3F'}}>
                   <Input type="text" theme={themeLabel} label="Select amount of votes" value={this.state.votes}
-                         disabled/>
-                  <Button icon='add' style={{margin:'1%',color:'white',background:'#900C3F'}} target='_blank' raised
-                          onClick={this.handleAddVotes.bind(this)}/>
-                  <Button icon='remove' style={{margin:'1%',color:'white',background:'#900C3F'}} target='_blank' raised
-                          onClick={this.handleSubstractVotes.bind(this)}/>
+                          onChange={this.handleChange.bind(this, 'votes')} type='number'/>
                 </div>
               </div>
               <div className="col-md-8">
                 <div className="row" style={{color: '#900C3F'}}>
                   <Input type="text" theme={themeLabel} label="Select amount minutes in personal board"
-                         value={this.state.pbtime}/>
-                  <Button icon='add' style={{margin:'1%',color:'white',background:'#900C3F'}} target='_blank' raised
-                          onClick={this.handleAddMinPB.bind(this)}/>
-                  <Button icon='remove' style={{margin:'1%',color:'white',background:'#900C3F'}} target='_blank' raised
-                          onClick={this.handleSubstractMinPB.bind(this)}/>
+                         value={this.state.pbtime} onChange={this.handleChange.bind(this, 'pbtime')}
+                         type='number'/>
                   <div className="col-md-8">
                     <div className="row" style={{color: '#900C3F'}}>
                       <Input type="text" theme={themeLabel} label="Select amount minutes in shared board"
-                             value={this.state.sbtime}/>
-                      <Button icon='add' style={{margin:'1%',color:'white',background:'#900C3F'}} target='_blank' raised
-                              onClick={this.handleAddMinSB.bind(this)}/>
-                      <Button icon='remove' style={{margin:'1%',color:'white',background:'#900C3F'}} target='_blank'
-                              raised
-                              onClick={this.handleSubstractMinSB.bind(this)}/>
+                             value={this.state.sbtime} onChange={this.handleChange.bind(this, 'sbtime')}
+                             type='number'/>
                     </div>
                   </div>
                 </div>
               </div>
               <div style={{display: 'inline-block', margin: '2%'}}>
+                <div className="row" style={{color: '#900C3F'}}>
+                    {this.dropdownTechnic()}
+                  </div>
+                </div>
                 <div className="col-md-8">
                   <div className="row" style={{color: '#900C3F'}}>
                     <Input type='text' label='Tag' value={this.state.tag}
@@ -215,9 +179,8 @@ class MeetingConfigForm extends Component {
                                    onClick={this.handleAddTag.bind(this)}/>
                   </div>
                 </div>
-              </div>
               <div className="row">
-                <div className="col-md-12" style={{marginTop:20}}>
+                <div className="row" style={{color: '#900C3F'}}>
                   {this.tagLabels()}
                 </div>
               </div>
@@ -239,7 +202,7 @@ class MeetingConfigForm extends Component {
 MeetingConfigForm.propTypes = {
   user: PropTypes.any,
   meetingInfo: PropTypes.any,
-  goToMyMeetings:PropTypes.any
+  goToMyMeetings: PropTypes.any
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(MeetingConfigForm)
