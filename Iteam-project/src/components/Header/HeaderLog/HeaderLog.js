@@ -21,8 +21,7 @@ const mapDispatchToProps = dispatch => ({
   meeting: ()=> dispatch(push('/' + PATHS.MENULOGGEDIN.MEETING)),
   teamList: ()=> dispatch(push('/' + PATHS.MENULOGGEDIN.TEAMLIST)),
   team: ()=> dispatch(push('/' + PATHS.MENULOGGEDIN.NEWTEAM)),
-  newMeeting: () => dispatch(fromMeetingOrTeam())
-meetingConfig:()=> dispatch(push('/' + PATHS.MENULOGGEDIN.MEETCONFIG))
+  newMeeting: () => dispatch(fromMeetingOrTeam()),
 //TODO: this is just for testing
   personalBoard: () => dispatch(push('/' + PATHS.MENULOGGEDIN.PERSONALBOARD)),
   sharedBoard: () => dispatch(push('/' + PATHS.MENULOGGEDIN.SHAREDBOARD))
@@ -70,8 +69,6 @@ class HeaderLog extends Component {
                             onClick={this.props.profile}/></li>
                 <li><Button label='MY MEETINGS' theme={themeButton} style={{color:'#900C3F'}}
                             onClick={this.props.myMeeting}/></li>
-                <li><Button label='CONFIG MEETING' theme={themeButton} style={{color:'#900C3F'}}
-                            onClick={this.props.meetingConfig}/></li>
                 <li><Button label='NEW MEETING' theme={themeButton} style={{color:'#900C3F'}}
                             onClick={this.goToNewMeeting.bind(this)}/></li>
                 <li><Button label='NEW TEAM' theme={themeButton} style={{color:'#900C3F'}}
@@ -82,7 +79,7 @@ class HeaderLog extends Component {
                             onClick={this.props.personalBoard}/></li>
                 <li><Button label='PERSONAL BOARD' theme={themeButton} style={{color:'#900C3F'}}
                             onClick={this.props.sharedBoard}/></li>
-                <li><span   className={classes.span}><label> {this.props.user}</label></span ></li>
+                <li><span className={classes.span}><label> {this.props.user}</label></span ></li>
                 <li><LogoutButton style={{color:'#900C3F'}}/></li>
               </ul>
             </Navigation>
@@ -102,9 +99,8 @@ HeaderLog.propTypes = {
   team: PropTypes.func,
   newMeeting: PropTypes.func,
   teamList: PropTypes.func,
-personalBoard: PropTypes.func,
-  sharedBoard: PropTypes.func,
-meetingConfig:PropTypes.func
+  personalBoard: PropTypes.func,
+  sharedBoard: PropTypes.func
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(HeaderLog)

@@ -6,12 +6,21 @@ import Input from 'react-toolbox/lib/input';
 import themeLabel from './label.scss'
 import {Button, IconButton} from 'react-toolbox/lib/button';
 import Tooltip from 'react-toolbox/lib/tooltip';
+import {push} from 'react-router-redux';
+import {PATHS} from '../../constants/routes';
+import {MEETING} from '../../constants/HostConfiguration';
+import axios from 'axios'
 
+
+const mapDispatchToProps = dispatch => ({
+  goToMyMeetings: () => dispatch(push('/' + PATHS.MENULOGGEDIN.MYMEETINGS))
+});
 
 const mapStateToProps = (state) => {
   if (state.loginUser !== null) {
     return {
-      user: state.loginUser.user.username
+      user: state.loginUser.user.username,
+      meetingInfo: state.meetingReducer.meeting
     }
   }
 };
@@ -26,11 +35,11 @@ class MeetingConfigForm extends Component {
       votes: 0,
       tag: '',
       tags: [],
-      technic: '',
+      technic: 'Brainstorming',
       technicValue: '',
-      PBtime: 0,
-      SBtime: 0,
-      template: '',
+      pbtime: 0,
+      sbtime: 0,
+      template: 'Default',
       templateValue: '',
       notesFunctions: []
     };
@@ -93,22 +102,47 @@ class MeetingConfigForm extends Component {
   }
 
   handleAddMinPB() {
-    this.setState({PBtime: this.state.PBtime + 1})
+    this.setState({pbtime: this.state.pbtime + 1})
   }
 
   handleSubstractMinPB() {
-    this.setState({PBtime: this.state.PBtime - 1})
+    this.setState({pbtime: this.state.pbtime - 1})
   }
 
   handleAddMinSB() {
-    this.setState({SBtime: this.state.SBtime + 1})
+    this.setState({sbtime: this.state.sbtime + 1})
   }
 
   handleSubstractMinSB() {
-    this.setState({SBtime: this.state.SBtime - 1})
+    this.setState({sbtime: this.state.sbtime - 1})
   }
 
-  saveConfig() {
+  saveMeeting() {
+    console.log('team id: ' + this.props.meetingInfo.teamId);
+    console.log('description: ' + this.props.meetingInfo.description);
+
+    axios.post(MEETING.MEETING_CREATE, {
+      topic: this.props.meetingInfo.topic,
+      ownerName: this.props.user,
+      programmedDate: this.props.meetingInfo.programmedDate,
+      description: this.props.meetingInfo.description,
+      teamName: this.props.meetingInfo.teamId,
+      meetingConfig: {
+        votes: this.state.votes,
+        tags: this.state.tags,
+        pbtime: this.state.pbtime,
+        sbtime: this.state.sbtime,
+        technic: this.state.technic,
+        template: this.state.template
+      }
+    }).then(function (response) {
+      //TODO: use the spinner instead of modal
+      this.setState({message: '¡Your meeting was successfully created!'});
+      this.refs.meetingModal.openModal();
+      this.props.goToMyMeetings()
+    }.bind(this)).catch(function (response) {
+
+    });
   }
 
 
@@ -149,7 +183,7 @@ class MeetingConfigForm extends Component {
               <div className="col-md-8">
                 <div className="row" style={{color: '#900C3F'}}>
                   <Input type="text" theme={themeLabel} label="Select amount minutes in personal board"
-                         value={this.state.PBtime}/>
+                         value={this.state.pbtime}/>
                   <Button icon='add' style={{margin:'1%',color:'white',background:'#900C3F'}} target='_blank' raised
                           onClick={this.handleAddMinPB.bind(this)}/>
                   <Button icon='remove' style={{margin:'1%',color:'white',background:'#900C3F'}} target='_blank' raised
@@ -157,7 +191,7 @@ class MeetingConfigForm extends Component {
                   <div className="col-md-8">
                     <div className="row" style={{color: '#900C3F'}}>
                       <Input type="text" theme={themeLabel} label="Select amount minutes in shared board"
-                             value={this.state.SBtime}/>
+                             value={this.state.sbtime}/>
                       <Button icon='add' style={{margin:'1%',color:'white',background:'#900C3F'}} target='_blank' raised
                               onClick={this.handleAddMinSB.bind(this)}/>
                       <Button icon='remove' style={{margin:'1%',color:'white',background:'#900C3F'}} target='_blank'
@@ -188,8 +222,8 @@ class MeetingConfigForm extends Component {
                 </div>
               </div>
               <div className="row">
-                <Button style={{margin:15,color:'white',background:'#900C3F'}} target='_blank' raised>
-                  Save Configuration
+                <Button style={{margin:15,color:'white',background:'#900C3F'}} target='_blank' raised
+                        onClick={this.saveMeeting.bind(this)}> Save Configuration
                 </Button>
               </div>
             </div>
@@ -203,7 +237,9 @@ class MeetingConfigForm extends Component {
 
 
 MeetingConfigForm.propTypes = {
-  user: PropTypes.any
+  user: PropTypes.any,
+  meetingInfo: PropTypes.any,
+  goToMyMeetings:PropTypes.any
 };
 
-export default connect(mapStateToProps)(MeetingConfigForm)
+export default connect(mapStateToProps, mapDispatchToProps)(MeetingConfigForm)

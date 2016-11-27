@@ -8,7 +8,7 @@ import {connect} from 'react-redux'
 import DatePicker from 'react-toolbox/lib/date_picker';
 import BootstrapModal from '../../components/BootstrapModal/BootstrapModal'
 import Input from 'react-toolbox/lib/input';
-import {saveMeeting} from '../../redux/reducers/Meeting/MeetingReducer'
+import {saveMeeting, meetingToMeetingConfig} from '../../redux/reducers/Meeting/MeetingReducer'
 import {meetingToNewTeam} from '../../redux/reducers/Meeting/MeetingForTeamReducer'
 import Dropdown from 'react-toolbox/lib/dropdown';
 import themeLabel from './label.scss'
@@ -22,12 +22,9 @@ const min_datetime = new Date(new Date(datetime).setDate(datetime.getDate()));
 
 
 const mapDispatchToProps = dispatch => ({
-
   saveMeetingInfo: (meeting) => dispatch(saveMeeting(meeting)),
-
   meetingToCreateNewTeam: () => dispatch(meetingToNewTeam()),
-
-  goToNewMeeting: () => dispatch(push('/' + PATHS.MENULOGGEDIN.MYMEETINGS))
+  goToMeetingConfig: (meeting) => dispatch(meetingToMeetingConfig(meeting))
 });
 
 const mapStateToProps = (state) => {
@@ -105,34 +102,26 @@ class MeetingView extends Component {
   }
 
 
-  createMeeting(goToNewMeeting) {
-
-
+  configureMeeting(goToMeetingConfig) {
     let teamId = '';
     if (this.state.topic === '' || this.state.description === '' || this.state.teamSelectedName === '') {
       this.setState({message: '¡You have to complete the form!'});
       this.refs.meetingModal.openModal();
 
-
     } else {
       teamId = this.searchTeamIdGivenTeamName(this.state.teamSelectedName);
 
-      axios.post(MEETING.MEETING_CREATE, {
+      let meetingInfo = {
         topic: this.state.topic,
+        description: this.state.description,
         ownerName: this.props.user,
         programmedDate: this.state.programmedDate.getTime(),
-        description: this.state.description,
-        teamName: teamId
-      }).then(function (response) {
-        //TODO: use the spinner instead of modal
-        this.setState({message: '¡Your meeting was successfully created!'});
-        this.refs.meetingModal.openModal();
-        goToNewMeeting()
-      }.bind(this)).catch(function (response) {
-
-      });
+        teamId: teamId
+      };
+      this.props.goToMeetingConfig(meetingInfo);
     }
   }
+
 
   handleChangeTopic = (topic, value) => {
     this.setState({...this.state, [topic]: value});
@@ -237,8 +226,8 @@ class MeetingView extends Component {
             </div>
             <div className="row">
               <Button style={{margin:15,color:'white',background:'#900C3F'}} target='_blank' raised
-                      onClick={this.createMeeting.bind(this, goToNewMeeting)}>
-                Create meeting
+                      onClick={this.configureMeeting.bind(this)}>
+                Next
               </Button>
             </div>
           </div>
@@ -250,7 +239,7 @@ class MeetingView extends Component {
 MeetingView.propTypes = {
   meetingToCreateNewTeam: PropTypes.func,
   saveMeetingInfo: PropTypes.func,
-  goToNewMeeting: PropTypes.func,
+  goToMeetingConfig: PropTypes.func,
   user: PropTypes.any,
   meetingInfoSave: PropTypes.any,
   fromMeeting: PropTypes.bool
