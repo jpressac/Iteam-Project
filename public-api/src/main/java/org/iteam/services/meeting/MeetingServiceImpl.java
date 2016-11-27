@@ -59,7 +59,7 @@ public class MeetingServiceImpl implements MeetingService {
     public String getMeetingInfo(String meetingId) {
 
         String result = meetingRepositoryImpl.getMeetingInfo(meetingId);
-        if (result == null) {
+        if(result == null) {
             LOGGER.error("Error when retrieving meeting info of meeting '{}'", meetingId);
             throw new MeetingInfoNotFoundException("Error when retrieving meeting info");
         }
@@ -90,5 +90,16 @@ public class MeetingServiceImpl implements MeetingService {
     @Override
     public Reports generateReportByTag(String meetingId) {
         return meetingRepositoryImpl.generateBasicReportByTag(meetingId);
+    }
+
+    @Override
+    public void saveMeetingInfoPB(String meetingId, String info) {
+        meetingRepositoryImpl.saveMeetingInfoPBByUser(meetingId, info);
+    }
+
+    @Override
+    public String getMeetingInfoByUserPB(String meetingId, String username) {
+        return meetingRepositoryImpl.getMeetingInfoByUserPB(meetingId, username);
+
     }
 }

@@ -106,4 +106,8 @@ public interface MeetingService {
      * @return a list of meetings.
      */
     public List<Meeting> getMeetingByTeamName(String username);
+
+    public void saveMeetingInfoPB(String index, String info);
+
+    public String getMeetingInfoByUserPB(String meetingId, String username);
 }

@@ -66,7 +66,7 @@ public class MeetingController {
     }
 
     private ResponseEntity<Void> checkResult(boolean flag) {
-        if (flag) {
+        if(flag) {
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -135,6 +135,12 @@ public class MeetingController {
     @RequestMapping(value = "/meeting/meetinginfo", method = RequestMethod.GET)
     public String getMeetingInfo(@RequestParam(value = "meetingId", required = true) String meetingId) {
         return meetingServiceImpl.getMeetingInfo(meetingId);
+    }
+
+    @RequestMapping(value = "/meeting/meetinginfo/byuser", method = RequestMethod.GET)
+    public String getMeetingInfoByUsers(@RequestParam(value = "meetingId", required = true) String meetingId,
+            @RequestParam(value = "username", required = true) String username) {
+        return meetingServiceImpl.getMeetingInfoByUserPB(meetingId, username);
     }
 
     @Autowired
