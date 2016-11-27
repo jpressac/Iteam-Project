@@ -264,7 +264,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
             LOGGER.info("Meeting connected users updated - Meeting: '{}'", meetingId);
         } catch (ElasticsearchException e) {
             LOGGER.error("Failed to update meeting connected users - Retry '{}'", count);
-            if (MAX_RETRIES > count) {
+            if(MAX_RETRIES > count) {
                 saveInfoRetry(count += 1, users, meetingId);
             }
         }
@@ -277,13 +277,13 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         GetResponse response = elasticsearchClientImpl.getDocument(StringUtilities.INDEX_MEETING_INFO,
                 StringUtilities.INDEX_TYPE_MEETING_INFO_USERS, meetingId);
 
-        if (response.isExists()) {
+        if(response.isExists()) {
             usersList = (MeetingUsers) JSONUtils.JSONToObject(response.getSourceAsString(), MeetingUsers.class);
         }
         return usersList;
     }
 
- @Override
+    @Override
     public void saveMeetingInfoPBByUser(String meetingId, String info) {
 
         String username = "";

@@ -51,12 +51,12 @@ class PersonalBoard extends Component {
       }
     }).then(function (response) {
 
-      this.setState({notes: response.data});
-
+      if(response.data != ""){
+        this.setState({notes: response.data});
+      }
     }.bind(this)).catch(function(response){
       console.log('error ' + response)
     });
-
   }
 
   componentWillUnmount() {
