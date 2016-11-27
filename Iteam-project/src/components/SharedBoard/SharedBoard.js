@@ -323,6 +323,8 @@ class SharedBoard extends Component {
 
   updateUsersConnected(payload){
     console.log(JSON.stringify(payload));
+    console.log('Entree al update users connected');
+    let load = JSON.stringify(this.state.usersConnected);
     let jsonPayload = JSON.parse(payload);
     let newParticipantsStatus = [];
 
