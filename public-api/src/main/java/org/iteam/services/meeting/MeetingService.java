@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.iteam.data.dto.Meeting;
 import org.iteam.data.model.IdeasDTO;
+import org.iteam.data.model.MeetingUsers;
 import org.iteam.data.model.Reports;
 
 /**
@@ -86,6 +87,8 @@ public interface MeetingService {
      * @param info
      *            the list of ideas in json raw format.
      */
+    public MeetingUsers getMeetingUsers(String meetingId);
+
     public void updateMeetingInfo(String meetingId, String info);
 
     /**
@@ -94,8 +97,11 @@ public interface MeetingService {
      * @param updatedMeeting
      *            meeting information, fields that will not be updated has to be
      *            null.
-     * @return true if it's succes, false otherwise.
+     * @return true if it's success, false otherwise.
      */
+
+    public void updateMeetingUsers(String meetingId, String info);
+
     public boolean updateMeeting(Meeting updatedMeeting);
 
     /**

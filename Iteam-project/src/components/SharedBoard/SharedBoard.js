@@ -49,7 +49,8 @@ class SharedBoard extends Component {
     this.state = {
       notes: {},
       teamName: '',
-      participants: []
+      participants: [],
+      usersConnected: []
     }
   }
 
@@ -72,7 +73,20 @@ class SharedBoard extends Component {
       }
     }).catch((response) => {
       console.log('error ' + response)
+    });
+    //Getting already connected
+    axios.get(MEETING.MEETING_USERS,{
+      params:{
+        meetingId: this.props.meetingId
+      }
+    }).then((response) => {
+      if (response.data !== "") {
+        this.setState({usersConnected: response.data["users"]});
+      }
+    }).catch((response) => {
+      console.log('error ' + response)
     })
+
   }
 
   componentWillUnmount() {
@@ -106,10 +120,6 @@ class SharedBoard extends Component {
     return this.uniqueId++;
   }
 
-  receiveConnectionStatus(){
-
-  }
-
   saveNotes() {
     let notemap = this.state.notes;
     let ideas = Object.values(notemap).map((value) => {
@@ -125,7 +135,6 @@ class SharedBoard extends Component {
       }
       );
     });
-    //no tener hardcodeado la url y sacar el axios de aca
     axios.post(MEETING.MEETING_IDEAS_SAVE, {
       ideas
     }).then(function (response) {
@@ -231,7 +240,6 @@ class SharedBoard extends Component {
 
   sendUpdateCache(action, payload) {
     sendMessage(action, this.props.meetingId, JSON.stringify(payload));
-
   }
 
   receiveMessage(payload) {
@@ -297,10 +305,12 @@ class SharedBoard extends Component {
       case "user connected":
         console.log('user connected' + JSON.stringify(payload));
         this.updateUsersConnected(jsonPayload.payload);
+        this.sendUpdateCache('user connected', this.state.usersConnected);
         break;
       case "user disconnected":
         console.log('user disconnected' + JSON.stringify(payload));
         this.updateUsersConnected(jsonPayload.payload);
+        this.sendUpdateCache('user connected', this.state.usersConnected);
        case "default":
         //ver que hacer aca, si vale la pena ponerlo o no
         break;
@@ -313,18 +323,22 @@ class SharedBoard extends Component {
 
   updateUsersConnected(payload){
     console.log(JSON.stringify(payload));
+    console.log('Entree al update users connected');
+    let load = JSON.stringify(this.state.usersConnected);
     let jsonPayload = JSON.parse(payload);
     let newParticipantsStatus = [];
 
     let usersStatus =this.state.participants.map( (participant) =>{
       let obj = {};
-      if(participant["username"] === jsonPayload.username){
-        obj["username"] = jsonPayload.username;
-        obj["status"] = jsonPayload.status;
+      let load = JSON.stringify(this.state.usersConnected);
+      console.log("Users connected" + load);
+      if(this.state.usersConnected.includes(participant["username"])){
+        obj["username"] = participant["username"];
+        obj["status"] = 'Online';
         console.log('TRUE = ' + JSON.stringify(obj));
       } else {
-        obj["username"] = participant.username;
-        obj["status"] = participant.status;
+        obj["username"] = participant["username"];
+        obj["status"] = 'Offline';
         console.log('FALSE' + JSON.stringify(obj));
       }
       return obj;

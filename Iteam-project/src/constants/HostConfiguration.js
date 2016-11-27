@@ -29,6 +29,7 @@ export const MEETING = {
   MEETING_REPORT_BY_TAG : URL + '/meeting/report/bytag',
   MEETING_BY_USER : URL + '/meeting/meetingbyuser',
   MEETING_INFO : URL + '/meeting/meetinginfo',
+  MEETING_USERS : URL + '/meeting/meetingusers'
 };
 
 export const UTILITIES = {

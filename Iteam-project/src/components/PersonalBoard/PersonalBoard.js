@@ -123,12 +123,11 @@ class PersonalBoard extends Component {
     this.setState({notes: map});
   }
 
+// Method for sending notes to shared board
   send(id) {
     let map = this.state.notes;
     var note = JSON.stringify(map);
-    // send to shared board
     console.log(note);
-    //TODO, channel es la meeting id, iria this.props.meeting
     sendMessage("insert", this.props.meetingId, JSON.stringify(
       {
         "username": map[id].username,
@@ -142,8 +141,7 @@ class PersonalBoard extends Component {
 
   updateConnectionStatus(action, status) {
     sendMessage(action, this.props.meetingId, JSON.stringify({
-      "username": this.props.user,
-      "status": status
+      "users": [this.props.user]
     }));
   }
 
