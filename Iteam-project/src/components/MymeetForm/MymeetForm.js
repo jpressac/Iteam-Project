@@ -15,8 +15,14 @@ import ListItem2 from './ListItem2.scss'
 import listFormat from './List.scss'
 import {updateMeetingId} from '../../redux/reducers/Meeting/MeetingReducer'
 import {TEAM, MEETING} from '../../constants/HostConfiguration'
+import themeLabel from './label.scss'
+import Dropdown from 'react-toolbox/lib/dropdown';
+import Tooltip from 'react-toolbox/lib/tooltip';
+import {Button} from 'react-toolbox/lib/button';
 
 var programDate = new Date();
+const TooltipButton = Tooltip(Button);
+const technics = [{value:0, label:'Brainstorming'}, {value:1, label:'SCAMPER'}, {value:2, label:'morphological analysis'}];
 
 
 const mapStateToProps = (state) => {
@@ -51,7 +57,14 @@ class MymeetForm extends Component {
         description: false,
         programmedDate: false
       },
-      editable: true
+      editable: true,
+      votes: 0,
+      tag: '',
+      tags: [],
+      technic: 'Brainstorming',
+      technicValue: 0,
+      pbtime: 0,
+      sbtime: 0
     }
   }
 
@@ -66,6 +79,7 @@ class MymeetForm extends Component {
   }
 
   handleToggleDialog = (meeting) => {
+    console.log('al handle tambien entra');
     this.setState({
       active: !this.state.active,
       datetime: meeting.programmedDate,
@@ -184,7 +198,7 @@ class MymeetForm extends Component {
       }
     }).then(function (response) {
         console.log('AXIOS' + response.data["teamId"]);
-      this.setState({teamName: response.data["teamId"]});
+        this.setState({teamName: response.data["teamId"]});
       }.bind(this)
     );
 
@@ -282,6 +296,117 @@ class MymeetForm extends Component {
     });
   };
 
+  handleChangeCombo = (value) => {
+    let filteredLabelObject = technics.filter(filter => filter["value"] == value);
+    this.setState({technicValue: value, technic: filteredLabelObject[0]["label"]})
+  };
+
+
+
+  showDialogForUser(){
+    return (
+      <Dialog
+        actions={this.showActions(this.state.meetEdit.ownerName, this.state.meetEdit.programmedDate)}
+        active={this.state.active}
+        onEscKeyDown={this.handleToggleDialog}
+        onOverlayClick={this.handleToggleDialog}>
+        <Input type='text' label='Topic' value={this.state.meetEdit.topic} maxLength={30}
+               onChange={this.onChangeTopic.bind(this)} disabled={this.state.editable}/>
+        <Input type='text' label='Description' value={this.state.meetEdit.description} maxLength={144}
+               onChange={this.onChangeDescription.bind(this)} disabled={this.state.editable}/>
+        <Input type='text' label='Team Name' value="Iteam" disabled/>
+        <DatePicker label='Select date' sundayFirstDayOfWeek value={new Date(this.state.datetime)}
+                    readonly={this.state.editable} onChange={this.onChangeProgrammedDate.bind(this)}
+                    minDate={new Date()}/>
+        <TimePicker label='Select time'
+                    value={isNaN(new Date(this.state.time)) ? 0 : new Date(this.state.time)}
+                    readonly={this.state.editable} onChange={this.onChangeProgrammedTime.bind(this)}/>
+      </Dialog>
+    )
+  }
+
+  handleChange = (name, value) => {
+    this.setState({...this.state, [name]: value});
+  };
+  deletetag(pos) {
+    let newtags = this.state.tags;
+    newtags.map(function (filter, index) {
+      if (pos === index) {
+        newtags.splice(index, 1);
+      }
+    });
+    this.setState({tags: newtags});
+  }
+    handleAddTag() {
+      if (this.state.tag !== '') {
+        console.debug('llega hasta aca');
+        var newtags = this.state.tags;
+        newtags.push((this.state.tag));
+        this.setState({tags: newtags, tag: ''});
+        console.debug('tags: ' + this.state.tags);
+      }
+    }
+
+  tagLabels() {
+    console.debug('tag Labels');
+    return this.state.tags.map(function (tag, index) {
+      return (
+        <div style={{display: 'inline-block', margin: '2%'}}>
+            <span className="tag label label-info"
+                  style={{fontSize:14, margin:10, marginTop:50, background:'#900C3F', color:'white'}}>
+              <span key={index}> {tag}</span>
+              <a href='javascript:;' onClick={this.deletetag.bind(this, index)}>
+                <i className="remove glyphicon glyphicon-remove-sign glyphicon-white"/>
+              </a>
+            </span>
+        </div>
+      );
+    }.bind(this));
+  }
+
+  showDialogForAdmin(){
+    return (
+      <Dialog
+        actions={this.showActions(this.state.meetEdit.ownerName, this.state.meetEdit.programmedDate)}
+        active={this.state.active}
+        onEscKeyDown={this.handleToggleDialog}
+        onOverlayClick={this.handleToggleDialog}>
+        <Input type='text' label='Topic' value={this.state.meetEdit.topic} maxLength={30}
+               onChange={this.onChangeTopic.bind(this)} disabled={this.state.editable}/>
+        <Input type='text' label='Description' value={this.state.meetEdit.description} maxLength={144}
+               onChange={this.onChangeDescription.bind(this)} disabled={this.state.editable}/>
+        <Input type='text' label='Team Name' value="Iteam" disabled/>
+        <DatePicker label='Select date' sundayFirstDayOfWeek value={new Date(this.state.datetime)}
+                    readonly={this.state.editable} onChange={this.onChangeProgrammedDate.bind(this)}
+                    minDate={new Date()}/>
+        <TimePicker label='Select time'
+                    value={isNaN(new Date(this.state.time)) ? 0 : new Date(this.state.time)}
+                    readonly={this.state.editable} onChange={this.onChangeProgrammedTime.bind(this)}/>
+
+
+        <Input type="text" theme={themeLabel} label="Select amount of votes" value={this.state.votes}
+               onChange={this.handleChange.bind(this, 'votes')} type='number'/>
+        <Input type="text" theme={themeLabel} label="Select amount minutes in personal board"
+               value={this.state.pbtime} onChange={this.handleChange.bind(this, 'pbtime')}
+               type='number'/>
+        <Input type="text" theme={themeLabel} label="Select amount minutes in shared board"
+               value={this.state.sbtime} onChange={this.handleChange.bind(this, 'sbtime')}
+               type='number'/>
+        <Dropdown label="Select technic" auto theme={themeLabel} style={{color: '#900C3F'}}
+                  onChange={this.handleChangeCombo.bind(this)}
+                  source={technics}
+                  value={this.state.technicValue}/>
+        <Input type='text' label='Tag' value={this.state.tag}
+               onChange={this.handleChange.bind(this,'tag')} maxLength={30} theme={themeLabel}/>
+        <TooltipButton icon='add' tooltip='Add tag'
+                       style={{background:'#900C3F', color:'white', marginTop:10}} floating mini
+                       onClick={this.handleAddTag.bind(this)}/>
+        {this.tagLabels()}
+      </Dialog>
+    )
+  }
+
+
 
   render() {
     let meets = this.state.meetings;
@@ -312,34 +437,14 @@ class MymeetForm extends Component {
                       legend={renderDateTime}
                       leftIcon='send'
                       rightIcon='visibility'
-                      onClick={this.handleToggleDialog.bind(this, meetmap[key])}/>
+                      onClick={this.handleToggleDialog.bind(this,meetmap[key])}/>
                     <ListDivider />
-                    <Dialog
-                      actions={this.showActions(this.state.meetEdit.ownerName, this.state.meetEdit.programmedDate)}
-                      active={this.state.active}
-                      onEscKeyDown={this.handleToggleDialog}
-                      onOverlayClick={this.handleToggleDialog}>
-                      <Input type='text' label='Topic' value={this.state.meetEdit.topic} maxLength={30}
-                             onChange={this.onChangeTopic.bind(this)} disabled={this.state.editable}/>
-
-                      <Input type='text' label='Description' value={this.state.meetEdit.description} maxLength={144}
-                             onChange={this.onChangeDescription.bind(this)} disabled={this.state.editable}/>
-
-                    <Input type='text' label='Team Name' value="Iteam" disabled/>
-
-                      <DatePicker label='Select date' sundayFirstDayOfWeek value={new Date(this.state.datetime)}
-                                  readonly={this.state.editable} onChange={this.onChangeProgrammedDate.bind(this)}
-                                  minDate={new Date()}/>
-
-                      <TimePicker label='Select time'
-                                  value={isNaN(new Date(this.state.time)) ? 0 : new Date(this.state.time)}
-                                  readonly={this.state.editable} onChange={this.onChangeProgrammedTime.bind(this)}/>
-                    </Dialog>
                     <BootstrapModal ref="meetingModal" message={this.state.message}/>
                   </div>
                 );
               }
             )}
+            {this.showDialogForAdmin()}
           </List>
         </div>
       </div>
