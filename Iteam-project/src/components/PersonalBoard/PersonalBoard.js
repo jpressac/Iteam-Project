@@ -74,7 +74,6 @@ class PersonalBoard extends Component {
               onSend={this.send.bind(this)}
               left={noteMap[key].left}
               top={noteMap[key].top}
-              comments={[noteMap[key].comments]}
               subtitle={noteMap[key].subtitle}
               boardType={noteMap[key].boardType}
               title={noteMap[key].title}
@@ -141,6 +140,7 @@ class PersonalBoard extends Component {
     this.setState({notes: map});
   }
 
+// Method for sending notes to shared board
   send(id) {
     let map = this.state.notes;
     sendMessage("insert", this.props.meetingId, JSON.stringify(
@@ -156,8 +156,7 @@ class PersonalBoard extends Component {
 
   updateConnectionStatus(action, status) {
     sendMessage(action, this.props.meetingId, JSON.stringify({
-      "username": this.props.user,
-      "status": status
+      "users": [this.props.user]
     }));
   }
 

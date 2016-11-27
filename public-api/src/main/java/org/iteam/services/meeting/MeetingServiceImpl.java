@@ -7,6 +7,7 @@ import org.iteam.data.dal.meeting.MeetingRepository;
 import org.iteam.data.dal.meeting.MeetingRepositoryImpl;
 import org.iteam.data.dto.Meeting;
 import org.iteam.data.model.IdeasDTO;
+import org.iteam.data.model.MeetingUsers;
 import org.iteam.data.model.Reports;
 import org.iteam.exceptions.MeetingInfoNotFoundException;
 import org.iteam.services.team.TeamService;
@@ -72,6 +73,11 @@ public class MeetingServiceImpl implements MeetingService {
         meetingRepositoryImpl.saveMeetingInfo(info, meetingId);
     }
 
+    @Override
+    public void updateMeetingUsers(String meetingId, String users) {
+        meetingRepositoryImpl.saveMeetingUsers(users, meetingId);
+    }
+
     @Autowired
     private void setMeetingRepositoryImpl(MeetingRepositoryImpl meetingRepositoryImpl) {
         this.meetingRepositoryImpl = meetingRepositoryImpl;
@@ -101,5 +107,10 @@ public class MeetingServiceImpl implements MeetingService {
     public String getMeetingInfoByUserPB(String meetingId, String username) {
         return meetingRepositoryImpl.getMeetingInfoByUserPB(meetingId, username);
 
+    }
+
+    @Override
+    public MeetingUsers getMeetingUsers(String meetingId) {
+        return meetingRepositoryImpl.getConnectedUsers(meetingId);
     }
 }

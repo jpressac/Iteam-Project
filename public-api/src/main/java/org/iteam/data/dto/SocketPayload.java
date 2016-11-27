@@ -4,28 +4,28 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class SocketPayload {
 
-	private String action;
-	private String payload;
+    private String payload;
+    private String action;
 
-	public String getAction() {
-		return action;
-	}
+    public String getPayload() {
+        return payload;
+    }
 
-	public void setAction(String action) {
-		this.action = action;
-	}
+    public void setPayload(String payload) {
+        this.payload = payload;
+    }
 
-	public String getPayload() {
-		return payload;
-	}
+    @Override
+    public String toString() {
+        return ToStringBuilder.reflectionToString(this);
+    }
 
-	public void setPayload(String payload) {
-		this.payload = payload;
-	}
+    public String getAction() {
+        return action;
+    }
 
-	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this);
-	}
+    public void setAction(String action) {
+        this.action = action;
+    }
 
 }

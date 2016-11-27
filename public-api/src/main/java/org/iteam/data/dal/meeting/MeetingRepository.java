@@ -5,6 +5,7 @@ import java.util.List;
 import org.elasticsearch.search.sort.SortOrder;
 import org.iteam.data.dto.Meeting;
 import org.iteam.data.model.IdeasDTO;
+import org.iteam.data.model.MeetingUsers;
 import org.iteam.data.model.Reports;
 
 /**
@@ -98,7 +99,17 @@ public interface MeetingRepository {
      *            null.
      * @return true if it's succes, false otherwise.
      */
+
     public boolean updateMeeting(Meeting updatedMeeting);
+
+    /**
+     * Save actual users connected
+     * 
+     * @param updatedMeeting
+     * @return
+     */
+
+    public void saveMeetingUsers(String users, String meetingId);
 
     /**
      * Retrieve the meetings given a list of team names.
@@ -109,7 +120,15 @@ public interface MeetingRepository {
      */
     public List<Meeting> getMeetingByTeamName(List<String> teamName);
 
-    public void saveMeetingInfoPBByUser(String meetingId, String info);
+    /**
+     * Returns all the users that are connected to the meeting
+     * 
+     * @param meetingId
+     * @return
+     */
+    public MeetingUsers getConnectedUsers(String meetingId);
+
+public void saveMeetingInfoPBByUser(String meetingId, String info);
 
     public String getMeetingInfoByUserPB(String meetingId, String username);
 }
