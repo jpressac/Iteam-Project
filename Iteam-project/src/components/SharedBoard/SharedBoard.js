@@ -17,6 +17,7 @@ import {TEAM, MEETING} from '../../constants/HostConfiguration'
 import Drawer from 'react-toolbox/lib/drawer';
 import {Button, IconButton} from 'react-toolbox/lib/button';
 import Clients from '../BoardSidebar/users';
+import generateUUID from '../../constants/utils/GetUUID'
 
 
 const NoteTarget = {
@@ -57,36 +58,37 @@ class SharedBoard extends Component {
   componentDidMount() {
     //Connect with socket
     connectAndSubscribe(this.props.meetingId, this.receiveMessage.bind(this));
+    //Get team participants for sidebar
+    this.getTeam(this.props.meetingId);
+  }
+
+  componentWillMount() {
+    //Getting notes already shared in the board before rendering
+    axios.get(MEETING.MEETING_INFO,{
+      params:{
+        meetingId: this.props.meetingId
+      }
+    }).then((response) => {
+
+      this.setState({cacheNotes: response.data});
+
+
+        this.createNotes(response.data);
+    }).catch((response) => {
+      console.log('error ' + response)
+    });
     //Getting already connected
-    axios.get(MEETING.MEETING_USERS, {
-      params: {
+    axios.get(MEETING.MEETING_USERS,{
+      params:{
         meetingId: this.props.meetingId
       }
     }).then((response) => {
       if (response.data !== "") {
         this.setState({usersConnected: response.data["users"]});
-        this.updateUsersConnected(response.data["users"]);
       }
     }).catch((response) => {
       console.log('error ' + response)
     })
-  }
-
-  componentWillMount() {
-    //Get team participants for sidebar
-    this.getTeam(this.props.meetingId);
-    //Getting notes already shared in the board before rendering
-    axios.get(MEETING.MEETING_INFO, {
-      params: {
-        meetingId: this.props.meetingId
-      }
-    }).then((response) => {
-      if (response.data !== "") {
-        this.setState({notes: response.data});
-      }
-    }).catch((response) => {
-      console.log('error ' + response)
-    });
 
   }
 
@@ -95,7 +97,33 @@ class SharedBoard extends Component {
     disconnect()
   }
 
-  createNotes(noteMap) {
+  createNotes(data) {
+    let note = JSON.stringify(data);
+    //FIXME: PLEASE!!!! CHANGE THIS FUCKING CODE.
+    if (note != '{}') {
+      let map = this.state.notes;
+      let id = generateUUID();
+
+      map[id] =
+        {
+          id: id,
+          left: SharedBoard.generateRandomNumber(),
+          top: SharedBoard.generateRandomNumber(),
+          username: data["username"],
+          title: data["title"],
+          subtitle: data["subtitle"],
+          comments: 'add comments',
+          ranking: 0,
+          meetingId: this.props.meetingId,
+          boardType: "shared",
+          tag: data["tag"]
+        };
+      this.setState({notes: map});
+      this.sendUpdateCache('updateCache', this.state.notes);
+    }
+  }
+
+  renderNotes(noteMap) {
     return Object.keys(noteMap).map((key) => {
       return (
         <Note key={key}
@@ -115,25 +143,23 @@ class SharedBoard extends Component {
     });
   }
 
-  //Method for generating note unique ID
-  nextId() {
-    this.uniqueId = this.uniqueId || 0;
-    return this.uniqueId++;
+  receiveConnectionStatus() {
+
   }
 
   saveNotes() {
     let notemap = this.state.notes;
     let ideas = Object.values(notemap).map((value) => {
       return (
-      {
-        username: value.username,
-        title: value.title,
-        subtitle: value.subtitle,
-        comments: value.comments,
-        ranking: value.ranking,
-        meetingId: value.meetingId,
-        tag: value.tag
-      }
+        {
+          username: value.username,
+          title: value.title,
+          subtitle: value.subtitle,
+          comments: value.comments,
+          ranking: value.ranking,
+          meetingId: value.meetingId,
+          tag: value.tag
+        }
       );
     });
     axios.post(MEETING.MEETING_IDEAS_SAVE, {
@@ -168,7 +194,6 @@ class SharedBoard extends Component {
     let map = this.state.notes;
     map[id].left = left;
     map[id].top = top;
-    this.sendUpdate("update", id);
     this.setState({notes: map});
   }
 
@@ -242,12 +267,13 @@ class SharedBoard extends Component {
 
   sendUpdateCache(action, payload) {
     sendMessage(action, this.props.meetingId, JSON.stringify(payload));
+
   }
 
   receiveMessage(payload) {
 
     let map = this.state.notes;
-    let id = this.nextId();
+    let id = generateUUID();
     let jsonPayload = JSON.parse(payload);
     let jsonPayloadMessage;
     if (jsonPayload.action === 'updateCache') {
@@ -269,7 +295,7 @@ class SharedBoard extends Component {
           ranking: 0,
           meetingId: this.props.meetingId,
           boardType: "shared",
-          tag: jsonPayloadMessage.tag
+          tag:jsonPayloadMessage.tag
         };
         this.setState({notes: map});
         this.sendUpdateCache('updateCache', this.state.notes);
@@ -290,7 +316,7 @@ class SharedBoard extends Component {
             ranking: jsonPayloadMessage.ranking,
             meetingId: this.props.meetingId,
             boardType: "shared",
-            tag: jsonPayloadMessage.tag
+            tag:jsonPayloadMessage.tag
           };
         }
         this.setState({notes: map});
@@ -358,10 +384,6 @@ class SharedBoard extends Component {
     console.log(JSON.stringify(usersStatus));
   }
 
-  isUserConnected() {
-
-  }
-
   render() {
     return this.props.connectDropTarget(
       <div className={classes.board}>
@@ -371,7 +393,7 @@ class SharedBoard extends Component {
           <IconButton icon="menu" style={{color: '#900C3F'}} inverse onClick={this.handleToggle}/>
         </div>
         <div className={classes.Notecontainer}>
-          {this.createNotes(this.state.notes)}
+          {this.renderNotes(this.state.notes)}
         </div>
         <Drawer active={this.state.active} theme={classes}
                 type="right"
@@ -399,7 +421,7 @@ export default flow(
   DropTarget(ItemTypes.NOTE, NoteTarget,
     connect =>
       ( {
-        connectDropTarget: connect.dropTarget()
-      }
+          connectDropTarget: connect.dropTarget()
+        }
       )), connect(mapStateToProps, mapDispatchToProps))(SharedBoard);
 

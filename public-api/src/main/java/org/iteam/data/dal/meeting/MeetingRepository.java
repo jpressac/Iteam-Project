@@ -127,4 +127,8 @@ public interface MeetingRepository {
      * @return
      */
     public MeetingUsers getConnectedUsers(String meetingId);
+
+public void saveMeetingInfoPBByUser(String meetingId, String info);
+
+    public String getMeetingInfoByUserPB(String meetingId, String username);
 }

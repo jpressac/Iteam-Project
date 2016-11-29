@@ -104,19 +104,19 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
 
         search.setIndices(index);
 
-        if (!ObjectUtils.isEmpty(queryBuilder)) {
+        if(!ObjectUtils.isEmpty(queryBuilder)) {
             search.setQuery(queryBuilder);
         }
 
-        if (!ObjectUtils.isEmpty(aggregationBuilder)) {
+        if(!ObjectUtils.isEmpty(aggregationBuilder)) {
             search.addAggregation(aggregationBuilder);
         }
 
-        if (!ObjectUtils.isEmpty(size)) {
+        if(!ObjectUtils.isEmpty(size)) {
             search.setSize(size);
         }
 
-        if (!ObjectUtils.isEmpty(sort)) {
+        if(!ObjectUtils.isEmpty(sort)) {
             search.addSort(sort);
         }
 
@@ -155,7 +155,7 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
         IndexRequestBuilder indexRequest = client.prepareIndex();
         indexRequest.setIndex(index).setType(type);
 
-        if (!ObjectUtils.isEmpty(id)) {
+        if(!ObjectUtils.isEmpty(id)) {
             indexRequest.setId(id);
         }
 
