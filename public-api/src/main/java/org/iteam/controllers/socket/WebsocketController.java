@@ -35,6 +35,7 @@ public class WebsocketController {
             meetingService.updateMeetingUsers(message.getTopic(), message.getMessage().getPayload());
         }
         template.convertAndSend("/topic/" + message.getTopic(), message.getMessage());
+        
     }
 
     @Autowired

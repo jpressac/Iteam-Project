@@ -9,6 +9,7 @@ import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.index.IndexNotFoundException;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -259,9 +260,17 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     }
 
     private void saveUsersRetry(int count, String users, String meetingId) {
+        MeetingUsers newUser = (MeetingUsers) JSONUtils.JSONToObject(users, MeetingUsers.class);
+        MeetingUsers connectedUsers = getConnectedUsers(meetingId);
+
+        for (String user : newUser.getUsers()) {
+            if (!connectedUsers.getUsers().contains(user)) {
+                connectedUsers.addUser(user);
+            }
+        }
         try {
-            elasticsearchClientImpl.insertData(users, StringUtilities.INDEX_MEETING_INFO,
-                    StringUtilities.INDEX_TYPE_MEETING_INFO_USERS, meetingId);
+            elasticsearchClientImpl.insertData(JSONUtils.ObjectToJSON(connectedUsers),
+                    StringUtilities.INDEX_MEETING_INFO, StringUtilities.INDEX_TYPE_MEETING_INFO_USERS, meetingId);
             LOGGER.info("Meeting connected users updated - Meeting: '{}'", meetingId);
         } catch (ElasticsearchException e) {
             LOGGER.error("Failed to update meeting connected users - Retry '{}'", count);
@@ -275,11 +284,15 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     public MeetingUsers getConnectedUsers(String meetingId) {
         MeetingUsers usersList = new MeetingUsers();
 
-        GetResponse response = elasticsearchClientImpl.getDocument(StringUtilities.INDEX_MEETING_INFO,
-                StringUtilities.INDEX_TYPE_MEETING_INFO_USERS, meetingId);
+        try {
+            GetResponse response = elasticsearchClientImpl.getDocument(StringUtilities.INDEX_MEETING_INFO,
+                    StringUtilities.INDEX_TYPE_MEETING_INFO_USERS, meetingId);
 
-        if (response.isExists()) {
-            usersList = (MeetingUsers) JSONUtils.JSONToObject(response.getSourceAsString(), MeetingUsers.class);
+            if (response.isExists()) {
+                usersList = (MeetingUsers) JSONUtils.JSONToObject(response.getSourceAsString(), MeetingUsers.class);
+            }
+        } catch (IndexNotFoundException exception) {
+
         }
         return usersList;
     }

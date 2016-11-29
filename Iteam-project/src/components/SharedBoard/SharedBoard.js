@@ -57,14 +57,27 @@ class SharedBoard extends Component {
   componentDidMount() {
     //Connect with socket
     connectAndSubscribe(this.props.meetingId, this.receiveMessage.bind(this));
-    //Get team participants for sidebar
-    this.getTeam(this.props.meetingId);
+    //Getting already connected
+    axios.get(MEETING.MEETING_USERS, {
+      params: {
+        meetingId: this.props.meetingId
+      }
+    }).then((response) => {
+      if (response.data !== "") {
+        this.setState({usersConnected: response.data["users"]});
+        this.updateUsersConnected(response.data["users"]);
+      }
+    }).catch((response) => {
+      console.log('error ' + response)
+    })
   }
 
   componentWillMount() {
+    //Get team participants for sidebar
+    this.getTeam(this.props.meetingId);
     //Getting notes already shared in the board before rendering
-    axios.get(MEETING.MEETING_INFO,{
-      params:{
+    axios.get(MEETING.MEETING_INFO, {
+      params: {
         meetingId: this.props.meetingId
       }
     }).then((response) => {
@@ -74,18 +87,6 @@ class SharedBoard extends Component {
     }).catch((response) => {
       console.log('error ' + response)
     });
-    //Getting already connected
-    axios.get(MEETING.MEETING_USERS,{
-      params:{
-        meetingId: this.props.meetingId
-      }
-    }).then((response) => {
-      if (response.data !== "") {
-        this.setState({usersConnected: response.data["users"]});
-      }
-    }).catch((response) => {
-      console.log('error ' + response)
-    })
 
   }
 
@@ -201,6 +202,7 @@ class SharedBoard extends Component {
     }).then(function (response) {
       this.setState({teamName: response.data["teamId"]});
       this.getTeamParticipants(response.data["teamUsers"]);
+
     }.bind(this));
   };
 
@@ -231,7 +233,7 @@ class SharedBoard extends Component {
         "ranking": map[id].ranking,
         "meetingId": this.props.meetingId,
         "boardType": "shared",
-        "tag":map[id].tag
+        "tag": map[id].tag
       }
       )
     )
@@ -267,7 +269,7 @@ class SharedBoard extends Component {
           ranking: 0,
           meetingId: this.props.meetingId,
           boardType: "shared",
-          tag:jsonPayloadMessage.tag
+          tag: jsonPayloadMessage.tag
         };
         this.setState({notes: map});
         this.sendUpdateCache('updateCache', this.state.notes);
@@ -288,7 +290,7 @@ class SharedBoard extends Component {
             ranking: jsonPayloadMessage.ranking,
             meetingId: this.props.meetingId,
             boardType: "shared",
-            tag:jsonPayloadMessage.tag
+            tag: jsonPayloadMessage.tag
           };
         }
         this.setState({notes: map});
@@ -303,15 +305,24 @@ class SharedBoard extends Component {
         this.sendUpdateCache('updateCache', this.state.notes);
         break;
       case "user connected":
-        console.log('user connected' + JSON.stringify(payload));
-        this.updateUsersConnected(jsonPayload.payload);
-        this.sendUpdateCache('user connected', this.state.usersConnected);
+        console.log('user connected on shared' + JSON.stringify(payload));
+        axios.get(MEETING.MEETING_USERS, {
+        params: {
+          meetingId: this.props.meetingId
+        }
+      }).then((response) => {
+        if (response.data !== "") {
+          this.setState({usersConnected: response.data["users"]});
+          this.updateUsersConnected(response.data["users"]);
+        }
+      }).catch((response) => {
+        console.log('error ' + response)
+      });
         break;
       case "user disconnected":
         console.log('user disconnected' + JSON.stringify(payload));
-        this.updateUsersConnected(jsonPayload.payload);
-        this.sendUpdateCache('user connected', this.state.usersConnected);
-       case "default":
+            
+      case "default":
         //ver que hacer aca, si vale la pena ponerlo o no
         break;
     }
@@ -321,18 +332,18 @@ class SharedBoard extends Component {
     this.setState({active: !this.state.active});
   };
 
-  updateUsersConnected(payload){
-    console.log(JSON.stringify(payload));
+  updateUsersConnected(payload) {
+
     console.log('Entree al update users connected');
+    console.log("Shared users payload" + JSON.stringify(payload));
     let load = JSON.stringify(this.state.usersConnected);
-    let jsonPayload = JSON.parse(payload);
+    console.log("State Users connected " + load);
     let newParticipantsStatus = [];
 
-    let usersStatus =this.state.participants.map( (participant) =>{
+    let usersStatus = this.state.participants.map((participant) => {
       let obj = {};
-      let load = JSON.stringify(this.state.usersConnected);
-      console.log("Users connected" + load);
-      if(this.state.usersConnected.includes(participant["username"])){
+
+      if (this.state.usersConnected.includes(participant["username"])) {
         obj["username"] = participant["username"];
         obj["status"] = 'Online';
         console.log('TRUE = ' + JSON.stringify(obj));
@@ -343,8 +354,12 @@ class SharedBoard extends Component {
       }
       return obj;
     });
-    this.setState({participants:usersStatus});
+    this.setState({participants: usersStatus});
     console.log(JSON.stringify(usersStatus));
+  }
+
+  isUserConnected() {
+
   }
 
   render() {

@@ -152,7 +152,6 @@ class PersonalBoard extends Component {
   }
 
   componentWillUnmount() {
-    this.updateConnectionStatus('user disconnected', 'Offline');
     disconnect();
   }
 
