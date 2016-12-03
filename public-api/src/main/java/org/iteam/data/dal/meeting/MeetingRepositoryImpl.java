@@ -257,10 +257,12 @@ public class MeetingRepositoryImpl implements MeetingRepository {
             GetResponse response = elasticsearchClientImpl.getDocument(StringUtilities.INDEX_MEETING_INFO,
                     StringUtilities.INDEX_TYPE_MEETING_INFO_USERS, meetingId);
 
-        if (response.isExists()) {
-            usersList = (MeetingUsers) JSONUtils.JSONToObject(response.getSourceAsString(), MeetingUsers.class);
+            if(response.isExists()) {
+                usersList = (MeetingUsers) JSONUtils.JSONToObject(response.getSourceAsString(), MeetingUsers.class);
+            }
         } catch (IndexNotFoundException exception) {
-	}
+            // TODO: use own exceptions.
+        }
         return usersList;
     }
 
