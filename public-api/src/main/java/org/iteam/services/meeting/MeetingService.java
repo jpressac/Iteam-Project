@@ -113,7 +113,54 @@ public interface MeetingService {
      */
     public List<Meeting> getMeetingByTeamName(String username);
 
-    public void saveMeetingInfoPB(String index, String info);
+    /**
+     * Save temporally the ideas, by user, in the personal board.
+     * 
+     * @param meetingId
+     *            the id of the meeting.
+     * @param info
+     *            the information, which contains the ideas and the username.
+     */
+    public void saveMeetingInfoPersonalBoard(String meetingId, String info);
 
-    public String getMeetingInfoByUserPB(String meetingId, String username);
+    /**
+     * Retrieve the personal board ideas, by user.
+     * 
+     * @param meetingId
+     *            the id of the meeting.
+     * @param username
+     *            the username.
+     * @return the list of ideas for the given user.
+     */
+    public String getMeetingInfoByUserPersonalBoard(String meetingId, String username);
+
+    /**
+     * Remove from cache the idea for the given user.
+     * 
+     * @param meetingId
+     *            the id of the meeting.
+     * @param info
+     *            information that has the id of the idea and the username.
+     */
+    public void removeIdeasFromCachePersonalBoard(String meetingId, String info);
+
+    /**
+     * Update cache shared board given a meeting id and the information.
+     * 
+     * @param meetingId
+     *            the id of the meeting.
+     * @param info
+     *            the list of notes.
+     */
+    public void updateSharedBoardCache(String meetingId, String info);
+
+    /**
+     * Remove from cache the idea given the meeting id.
+     * 
+     * @param meetingId
+     *            the id of the meeting.
+     * @param info
+     *            the id of the idea to remove.
+     */
+    public void removeIdeasFromCacheSharedBoard(String meetingId, String info);
 }

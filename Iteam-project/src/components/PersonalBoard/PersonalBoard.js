@@ -31,8 +31,12 @@ const mapStateToProps = (state) => {
   }
 };
 
-class PersonalBoard extends Component {
 
+const generateRandomNumber = () => {
+  return Math.floor(Math.random() * 500) + 1;
+};
+
+class PersonalBoard extends Component {
 
   constructor(props) {
     super(props);
@@ -83,18 +87,14 @@ class PersonalBoard extends Component {
     });
   }
 
-  static generateRandomNumber() {
-    return Math.floor(Math.random() * 200) + 1;
-  }
-
   add(text) {
     let map = this.state.notes;
     let id = generateUUID();
     map[id] =
       {
         id: id,
-        left: PersonalBoard.generateRandomNumber(),
-        top: PersonalBoard.generateRandomNumber(),
+        left: generateRandomNumber(),
+        top: generateRandomNumber(),
         username: this.props.user,
         title: text,
         subtitle: "No subtitle",
@@ -126,8 +126,6 @@ class PersonalBoard extends Component {
     map[id].left = left;
     map[id].top = top;
 
-    this.updateNotesCacheByUser(map);
-
     this.setState({notes: map});
   }
 
@@ -142,15 +140,12 @@ class PersonalBoard extends Component {
 
 // Method for sending notes to shared board
   send(id) {
-    let map = this.state.notes;
-    sendMessage("insert", this.props.meetingId, JSON.stringify(
-      {
-        "username": map[id].username,
-        "title": map[id].title,
-        "subtitle": map[id].subtitle,
-        "tag": map[id].tag
-      })
-    );
+    let map = {};
+    map[id] = this.state.notes[id];
+
+    console.log("state notes id " + JSON.stringify(map));
+
+    sendMessage("insertSharedBoard", this.props.meetingId, JSON.stringify(map));
     this.remove(id)
   }
 

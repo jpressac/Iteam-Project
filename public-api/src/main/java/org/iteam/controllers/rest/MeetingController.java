@@ -146,7 +146,7 @@ public class MeetingController {
     @RequestMapping(value = "/meeting/meetinginfo/byuser", method = RequestMethod.GET)
     public String getMeetingInfoByUsers(@RequestParam(value = "meetingId", required = true) String meetingId,
             @RequestParam(value = "username", required = true) String username) {
-        return meetingServiceImpl.getMeetingInfoByUserPB(meetingId, username);
+        return meetingServiceImpl.getMeetingInfoByUserPersonalBoard(meetingId, username);
     }
 
     @Autowired

@@ -37,7 +37,7 @@ class Note extends Component {
       tag:props.tag,
       title:props.title,
       subtitle:props.subtitle,
-      comment:props.comments
+      comments:props.comments
     }
   }
 
@@ -155,7 +155,7 @@ class Note extends Component {
   }
 
   saveComment() {
-    this.props.onAddComment(this.state.comment, this.props.id);
+    this.props.onAddComment(this.state.comments, this.props.id);
     this.setState({
       view: 'normal'
     })
@@ -221,7 +221,7 @@ Note.propTypes = {
   top: PropTypes.any.isRequired,
   username: PropTypes.string,
   boardType: PropTypes.string,
-  comments: PropTypes.array,
+  comments: PropTypes.string,
   subtitle: PropTypes.string,
   title: PropTypes.string,
   tag: PropTypes.string

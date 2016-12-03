@@ -28,7 +28,8 @@ public class WebsocketController {
     @MessageMapping("/channel")
     // TODO:remove channelId
     public void sendMessage(String channelId, SocketMessage message) {
-        if(message.getMessage().getAction().equals("updateCache")) {
+
+        if(message.getMessage().getAction().equals("insertSharedBoard")) {
             meetingService.updateMeetingInfo(message.getTopic(), message.getMessage().getPayload());
         }
 
@@ -37,8 +38,17 @@ public class WebsocketController {
         }
 
         if(message.getMessage().getAction().equals("insertCache")) {
-            meetingService.saveMeetingInfoPB(message.getTopic(), message.getMessage().getPayload());
+            meetingService.saveMeetingInfoPersonalBoard(message.getTopic(), message.getMessage().getPayload());
         }
+
+        if(message.getMessage().getAction().equals("updateSharedBoardCache")) {
+            meetingService.updateSharedBoardCache(message.getTopic(), message.getMessage().getPayload());
+        }
+
+        if(message.getMessage().getAction().equals("updateCacheDelete")) {
+            meetingService.removeIdeasFromCacheSharedBoard(message.getTopic(), message.getMessage().getPayload());
+        }
+
         template.convertAndSend("/topic/" + message.getTopic(), message.getMessage());
     }
 

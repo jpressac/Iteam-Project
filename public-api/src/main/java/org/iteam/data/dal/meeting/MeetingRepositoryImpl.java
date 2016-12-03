@@ -2,7 +2,9 @@ package org.iteam.data.dal.meeting;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.elasticsearch.ElasticsearchException;
@@ -32,7 +34,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ObjectUtils;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -225,19 +230,6 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         saveInfoRetry(count, data, meetingId);
     }
 
-    private void saveInfoRetry(int count, String data, String meetingId) {
-        try {
-            elasticsearchClientImpl.insertData(data, StringUtilities.INDEX_MEETING_INFO,
-                    StringUtilities.INDEX_TYPE_MEETING_INFO, meetingId);
-            LOGGER.info("Meeting info updated - Meeting: '{}'", meetingId);
-        } catch (ElasticsearchException e) {
-            LOGGER.error("Failed to update meeting info - Retry '{}'", count);
-            if(MAX_RETRIES > count) {
-                saveInfoRetry(count += 1, data, meetingId);
-            }
-        }
-    }
-
     @Override
     public String getMeetingInfo(String meetingId) {
 
@@ -257,19 +249,6 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
     }
 
-    private void saveUsersRetry(int count, String users, String meetingId) {
-        try {
-            elasticsearchClientImpl.insertData(users, StringUtilities.INDEX_MEETING_INFO,
-                    StringUtilities.INDEX_TYPE_MEETING_INFO_USERS, meetingId);
-            LOGGER.info("Meeting connected users updated - Meeting: '{}'", meetingId);
-        } catch (ElasticsearchException e) {
-            LOGGER.error("Failed to update meeting connected users - Retry '{}'", count);
-            if(MAX_RETRIES > count) {
-                saveInfoRetry(count += 1, users, meetingId);
-            }
-        }
-    }
-
     @Override
     public MeetingUsers getConnectedUsers(String meetingId) {
         MeetingUsers usersList = new MeetingUsers();
@@ -284,25 +263,25 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     }
 
     @Override
-    public void saveMeetingInfoPBByUser(String meetingId, String info) {
+    public void saveMeetingInfoByUserPersonalBoard(String meetingId, String info) {
 
-        String username = "";
-        String infoToSave = "";
         try {
             JsonNode node = OBJECT_MAPPER.readTree(info);
-            username = node.at("/username").asText();
-            infoToSave = node.at("/info").toString();
+            String username = node.at("/username").asText();
+            String infoToSave = node.at("/info").toString();
+
+            elasticsearchClientImpl.insertData(infoToSave, StringUtilities.INDEX_MEETING_INFO, username, meetingId);
+
+            LOGGER.info("Meeting info updated pseronal board - Meeting: '{}', username: '{}'", meetingId, username);
+
         } catch (IOException e) {
-            LOGGER.error("JSON cannot be parsed, personal board ideas were broken");
+            LOGGER.error("JSON cannot be parsed, personal board ideas were broken - info: '{}'", info);
         }
 
-        elasticsearchClientImpl.insertData(infoToSave, StringUtilities.INDEX_MEETING_INFO, username, meetingId);
-
-        LOGGER.info("Meeting info updated - Meeting: '{}'", String.format("%s_%s", username, meetingId));
     }
 
     @Override
-    public String getMeetingInfoByUserPB(String meetingId, String username) {
+    public String getMeetingInfoByUserPersonalBoard(String meetingId, String username) {
         try {
             GetResponse response = elasticsearchClientImpl.getDocument(StringUtilities.INDEX_MEETING_INFO, username,
                     meetingId);
@@ -314,6 +293,167 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         }
 
         return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void removeIdeaFromCachePersonalBoard(String meetingId, String info) {
+
+        try {
+            JsonNode node = OBJECT_MAPPER.readTree(info);
+            String username = node.at("/username").asText();
+            String id = node.at("/id").asText();
+
+            GetResponse getResponse = elasticsearchClientImpl.getDocument(StringUtilities.INDEX_MEETING_INFO, username,
+                    meetingId);
+
+            Map<String, Object> notesMapCache = new HashMap<>();
+
+            if(getResponse.isExists()) {
+                notesMapCache = (Map<String, Object>) JSONUtils.JSONToObject(getResponse.getSourceAsString(),
+                        HashMap.class);
+
+                notesMapCache.remove(id);
+
+                String dataCache = JSONUtils.ObjectToJSON(notesMapCache);
+
+                elasticsearchClientImpl.insertData(dataCache, StringUtilities.INDEX_MEETING_INFO,
+                        StringUtilities.INDEX_TYPE_MEETING_INFO, meetingId);
+
+                LOGGER.info("Meeting info personal board updated, removed idea - Meeting: '{}', username: '{}'",
+                        meetingId, username);
+            }
+
+        } catch (IOException e) {
+            LOGGER.error("The idea: '{}' for the meeting: '{}', couldn't be deleted", info, meetingId);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void updateSharedBoardCache(String meetingId, String info) {
+
+        TypeReference<List<Idea>> typeRef = new TypeReference<List<Idea>>() {
+        };
+
+        List<Idea> notesList = new ArrayList<>();
+
+        try {
+
+            // TODO: this should be in the JSONUtilites class
+            notesList = OBJECT_MAPPER.readValue(info, typeRef);
+        } catch (JsonParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (JsonMappingException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        GetResponse getResponse = elasticsearchClientImpl.getDocument(StringUtilities.INDEX_MEETING_INFO,
+                StringUtilities.INDEX_TYPE_MEETING_INFO, meetingId);
+
+        if(getResponse.isExists()) {
+            Map<String, Object> notesMapCache = (Map<String, Object>) JSONUtils
+                    .JSONToObject(getResponse.getSourceAsString(), HashMap.class);
+
+            for(Idea idea : notesList) {
+                if(!ObjectUtils.isEmpty(notesMapCache.get(idea.getId()))) {
+                    notesMapCache.put(idea.getId(), idea);
+                }
+            }
+
+            String dataCache = JSONUtils.ObjectToJSON(notesMapCache);
+
+            insertOrUpdateMeetingInfo(meetingId, dataCache);
+        }
+
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void removeIdeasFromCacheSharedBoard(String meetingId, String info) {
+
+        GetResponse getResponse = elasticsearchClientImpl.getDocument(StringUtilities.INDEX_MEETING_INFO,
+                StringUtilities.INDEX_TYPE_MEETING_INFO, meetingId);
+
+        try {
+            JsonNode node = OBJECT_MAPPER.readTree(info);
+
+            String id = node.get("id").asText();
+
+            // TODO: we are repeating code, try to create a private method
+            // instead.
+            if(getResponse.isExists()) {
+                Map<String, Object> notesMapCache = (Map<String, Object>) JSONUtils
+                        .JSONToObject(getResponse.getSourceAsString(), HashMap.class);
+
+                notesMapCache.remove(id);
+
+                String dataCache = JSONUtils.ObjectToJSON(notesMapCache);
+
+                insertOrUpdateMeetingInfo(meetingId, dataCache);
+            }
+
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+
+    private void insertOrUpdateMeetingInfo(String meetingId, String info) {
+
+        elasticsearchClientImpl.insertData(info, StringUtilities.INDEX_MEETING_INFO,
+                StringUtilities.INDEX_TYPE_MEETING_INFO, meetingId);
+
+        LOGGER.info("Meeting info updated - Meeting: '{}'", meetingId);
+    }
+
+    private void saveUsersRetry(int count, String users, String meetingId) {
+        try {
+            elasticsearchClientImpl.insertData(users, StringUtilities.INDEX_MEETING_INFO,
+                    StringUtilities.INDEX_TYPE_MEETING_INFO_USERS, meetingId);
+            LOGGER.info("Meeting connected users updated - Meeting: '{}'", meetingId);
+        } catch (ElasticsearchException e) {
+            LOGGER.error("Failed to update meeting connected users - Retry '{}'", count);
+            if(MAX_RETRIES > count) {
+                saveUsersRetry(count += 1, users, meetingId);
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void saveInfoRetry(int count, String data, String meetingId) {
+
+        HashMap<String, Object> notesMap = (HashMap<String, Object>) JSONUtils.JSONToObject(data, HashMap.class);
+
+        GetResponse getResponse = elasticsearchClientImpl.getDocument(StringUtilities.INDEX_MEETING_INFO,
+                StringUtilities.INDEX_TYPE_MEETING_INFO, meetingId);
+
+        Map<String, Object> notesMapCache = new HashMap<>();
+
+        if(getResponse.isExists()) {
+            notesMapCache = (Map<String, Object>) JSONUtils.JSONToObject(getResponse.getSourceAsString(),
+                    HashMap.class);
+        }
+
+        notesMapCache.putAll(notesMap);
+
+        String dataCache = JSONUtils.ObjectToJSON(notesMapCache);
+
+        try {
+            insertOrUpdateMeetingInfo(meetingId, dataCache);
+            LOGGER.info("Meeting info updated - Meeting: '{}'", meetingId);
+        } catch (ElasticsearchException e) {
+            LOGGER.error("Failed to update meeting info - Retry '{}'", count);
+            if(MAX_RETRIES > count) {
+                saveInfoRetry(count += 1, data, meetingId);
+            }
+        }
     }
 
     @Autowired

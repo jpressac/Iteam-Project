@@ -17,7 +17,6 @@ import {TEAM, MEETING} from '../../constants/HostConfiguration'
 import Drawer from 'react-toolbox/lib/drawer';
 import {Button, IconButton} from 'react-toolbox/lib/button';
 import Clients from '../BoardSidebar/users';
-import generateUUID from '../../constants/utils/GetUUID'
 
 
 const NoteTarget = {
@@ -55,13 +54,6 @@ class SharedBoard extends Component {
   }
 
   componentDidMount() {
-    //Connect with socket
-    connectAndSubscribe(this.props.meetingId, this.receiveMessage.bind(this));
-    //Get team participants for sidebar
-    this.getTeam(this.props.meetingId);
-  }
-
-  componentWillMount() {
     //Getting notes already shared in the board before rendering
     axios.get(MEETING.MEETING_INFO, {
       params: {
@@ -69,13 +61,21 @@ class SharedBoard extends Component {
       }
     }).then((response) => {
 
+      console.log("notesCache " + JSON.stringify(response.data));
+
       this.setState({cacheNotes: response.data});
 
-
-        this.createNotes(response.data);
+      this.createNotes(response.data);
     }).catch((response) => {
       console.log('error ' + response)
     });
+  }
+
+  componentWillMount() {
+    //Connect with socket
+    connectAndSubscribe(this.props.meetingId, this.receiveMessage.bind(this));
+    //Get team participants for sidebar
+    this.getTeam(this.props.meetingId);
   }
 
   componentWillUnmount() {
@@ -84,29 +84,23 @@ class SharedBoard extends Component {
   }
 
   createNotes(data) {
-    let note = JSON.stringify(data);
-    //FIXME: PLEASE!!!! CHANGE THIS FUCKING CODE.
-    if (note != '{}') {
-      let map = this.state.notes;
-      let id = generateUUID();
+    let map = Object.keys(data).map((key) => {
+      return ({
+        id: key,
+        left: SharedBoard.generateRandomNumber(),
+        top: SharedBoard.generateRandomNumber(),
+        username: data[key].username,
+        title: data[key].title,
+        subtitle: data[key].subtitle,
+        comments: data[key].comments,
+        ranking: 0,
+        meetingId: this.props.meetingId,
+        boardType: "shared",
+        tag: data[key].tag
+      })
 
-      map[id] =
-        {
-          id: id,
-          left: SharedBoard.generateRandomNumber(),
-          top: SharedBoard.generateRandomNumber(),
-          username: data["username"],
-          title: data["title"],
-          subtitle: data["subtitle"],
-          comments: 'add comments',
-          ranking: 0,
-          meetingId: this.props.meetingId,
-          boardType: "shared",
-          tag: data["tag"]
-        };
-      this.setState({notes: map});
-      this.sendUpdateCache('updateCache', this.state.notes);
-    }
+    });
+    this.setState({notes: map});
   }
 
   renderNotes(noteMap) {
@@ -148,7 +142,7 @@ class SharedBoard extends Component {
         }
       );
     });
-    //no tener hardcodeado la url y sacar el axios de aca
+    //TODO: remove axios from here
     axios.post(MEETING.MEETING_IDEAS_SAVE, {
       ideas
     }).then(function (response) {
@@ -167,14 +161,15 @@ class SharedBoard extends Component {
   }
 
   static generateRandomNumber() {
-    return Math.floor(Math.random() * 200) + 1;
+    return Math.floor(Math.random() * 500) + 1;
   }
 
   onChangeComment(commentText, id) {
     let map = this.state.notes;
     map[id].comments = commentText;
-    this.sendUpdate("update", id);
+
     this.setState({notes: map});
+    this.sendUpdate("update", id);
   }
 
   onUpdatePosition(id, left, top) {
@@ -186,12 +181,15 @@ class SharedBoard extends Component {
 
   remove(action, id) {
     let map = this.state.notes;
+    let noteId = map[id].id;
+
     delete map[id];
     this.setState({notes: map});
-    //TODO, channel es la meeting id
+
+    //TODO: change this method should delete the id, send the id and spring should do the work.
     sendMessage(action, this.props.meetingId, JSON.stringify(
       {
-        "id": id
+        id: noteId
       })
     );
   }
@@ -234,20 +232,18 @@ class SharedBoard extends Component {
 
     sendMessage(action, this.props.meetingId, JSON.stringify(
       {
-        "id": id,
-        "username": map[id].username,
-        "title": map[id].title,
-        "subtitle": map[id].subtitle,
-        "left": map[id].left,
-        "top": map[id].top,
-        "comments": map[id].comments,
-        "ranking": map[id].ranking,
-        "meetingId": this.props.meetingId,
-        "boardType": "shared",
-        "tag": map[id].tag
-      }
-      )
-    )
+        id: id,
+        username: map[id].username,
+        title: map[id].title,
+        subtitle: map[id].subtitle,
+        left: map[id].left,
+        top: map[id].top,
+        comments: map[id].comments,
+        ranking: map[id].ranking,
+        meetingId: this.props.meetingId,
+        boardType: "shared",
+        tag: map[id].tag
+      }));
 
   }
 
@@ -259,18 +255,35 @@ class SharedBoard extends Component {
   receiveMessage(payload) {
 
     let map = this.state.notes;
-    let id = generateUUID();
+
+    //TODO:check why here parse works.
     let jsonPayload = JSON.parse(payload);
+
     let jsonPayloadMessage;
-    if (jsonPayload.action === 'updateCache') {
+
+    //TODO: check the reason of this if.
+    if (payload["action"] === 'insertSharedBoard') {
+
       console.log(jsonPayload.payload);
+
     } else {
+      console.log("update shared board");
+
       jsonPayloadMessage = JSON.parse(jsonPayload.payload);
+
+      console.log("json payload message " + JSON.stringify(jsonPayloadMessage));
+
     }
+
     switch (jsonPayload.action) {
+
+      //FIXME: we need another case that was removed 'insert'
+
       case "update":
-        if (map[jsonPayloadMessage.id].comments != jsonPayloadMessage.comments || (map[jsonPayloadMessage.id].left !== jsonPayloadMessage.left && map[jsonPayloadMessage.id].top !== jsonPayloadMessage.top)
-          || map[jsonPayloadMessage.id].ranking !== jsonPayloadMessage.ranking) {
+
+        //TODO: reduce this complexity!!!. Try to separate the if's or just update all.
+        if (map[jsonPayloadMessage.id].comments != jsonPayloadMessage.comments || map[jsonPayloadMessage.id].ranking !== jsonPayloadMessage.ranking) {
+          console.log("i'm here bitch");
           map[jsonPayloadMessage.id] =
             {
               id: jsonPayloadMessage.id,
@@ -286,24 +299,35 @@ class SharedBoard extends Component {
               tag: jsonPayloadMessage.tag
             };
         }
+
+        console.log("botes before send " + JSON.stringify(map[jsonPayloadMessage.id]));
+
+        this.sendUpdateCache('updateSharedBoardCache', map);
         this.setState({notes: map});
-        this.sendUpdateCache('updateCache', this.state.notes);
         break;
 
       case "delete":
         if (map[jsonPayloadMessage.id] !== null) {
           delete map[jsonPayloadMessage.id];
         }
+
+        this.sendUpdateCache('updateCacheDelete', {
+          id: jsonPayloadMessage.id
+        });
+
         this.setState({notes: map});
-        this.sendUpdateCache('updateCache', this.state.notes);
         break;
+
       case "user connected":
         console.log('user connected' + JSON.stringify(payload));
         this.updateUsersConnected(jsonPayload.payload);
         break;
+
       case "user disconnected":
         console.log('user disconnected' + JSON.stringify(payload));
         this.updateUsersConnected(jsonPayload.payload);
+        break;
+
       case "default":
         //ver que hacer aca, si vale la pena ponerlo o no
         break;
