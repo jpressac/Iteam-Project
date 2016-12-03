@@ -49,19 +49,25 @@ class SharedBoard extends Component {
     this.state = {
       notes: {},
       teamName: '',
-      participants: []
+      participants: [],
+      usersConnected: []
     }
   }
 
   componentDidMount() {
+    //Connect with socket
+    connectAndSubscribe(this.props.meetingId, this.receiveMessage.bind(this));
+    //Get team participants for sidebar
+    this.getTeam(this.props.meetingId);
+  }
+
+  componentWillMount() {
     //Getting notes already shared in the board before rendering
-    axios.get(MEETING.MEETING_INFO, {
-      params: {
+    axios.get(MEETING.MEETING_INFO,{
+      params:{
         meetingId: this.props.meetingId
       }
     }).then((response) => {
-
-      console.log("notesCache " + JSON.stringify(response.data));
 
       this.setState({cacheNotes: response.data});
 
@@ -69,13 +75,19 @@ class SharedBoard extends Component {
     }).catch((response) => {
       console.log('error ' + response)
     });
-  }
+    //Getting already connected
+    axios.get(MEETING.MEETING_USERS,{
+      params:{
+        meetingId: this.props.meetingId
+      }
+    }).then((response) => {
+      if (response.data !== "") {
+        this.setState({usersConnected: response.data["users"]});
+      }
+    }).catch((response) => {
+      console.log('error ' + response)
+    })
 
-  componentWillMount() {
-    //Connect with socket
-    connectAndSubscribe(this.props.meetingId, this.receiveMessage.bind(this));
-    //Get team participants for sidebar
-    this.getTeam(this.props.meetingId);
   }
 
   componentWillUnmount() {
@@ -212,6 +224,7 @@ class SharedBoard extends Component {
     }).then(function (response) {
       this.setState({teamName: response.data["teamId"]});
       this.getTeamParticipants(response.data["teamUsers"]);
+
     }.bind(this));
   };
 
@@ -274,10 +287,25 @@ class SharedBoard extends Component {
       console.log("json payload message " + JSON.stringify(jsonPayloadMessage));
 
     }
-
     switch (jsonPayload.action) {
-
-      //FIXME: we need another case that was removed 'insert'
+      case "insert":
+        map[id] =
+        {
+          id: id,
+          left: SharedBoard.generateRandomNumber(),
+          top: SharedBoard.generateRandomNumber(),
+          username: jsonPayloadMessage.username,
+          title: jsonPayloadMessage.title,
+          subtitle: jsonPayloadMessage.subtitle,
+          comments: 'add comments',
+          ranking: 0,
+          meetingId: this.props.meetingId,
+          boardType: "shared",
+          tag:jsonPayloadMessage.tag
+        };
+        this.setState({notes: map});
+        this.sendUpdateCache('updateCache', this.state.notes);
+        break;
 
       case "update":
 
@@ -285,19 +313,19 @@ class SharedBoard extends Component {
         if (map[jsonPayloadMessage.id].comments != jsonPayloadMessage.comments || map[jsonPayloadMessage.id].ranking !== jsonPayloadMessage.ranking) {
           console.log("i'm here bitch");
           map[jsonPayloadMessage.id] =
-            {
-              id: jsonPayloadMessage.id,
-              left: jsonPayloadMessage.left,
-              top: jsonPayloadMessage.top,
-              username: jsonPayloadMessage.username,
-              title: jsonPayloadMessage.title,
-              subtitle: jsonPayloadMessage.subtitle,
-              comments: jsonPayloadMessage.comments,
-              ranking: jsonPayloadMessage.ranking,
-              meetingId: this.props.meetingId,
-              boardType: "shared",
-              tag: jsonPayloadMessage.tag
-            };
+          {
+            id: jsonPayloadMessage.id,
+            left: jsonPayloadMessage.left,
+            top: jsonPayloadMessage.top,
+            username: jsonPayloadMessage.username,
+            title: jsonPayloadMessage.title,
+            subtitle: jsonPayloadMessage.subtitle,
+            comments: jsonPayloadMessage.comments,
+            ranking: jsonPayloadMessage.ranking,
+            meetingId: this.props.meetingId,
+            boardType: "shared",
+            tag:jsonPayloadMessage.tag
+          };
         }
 
         console.log("botes before send " + JSON.stringify(map[jsonPayloadMessage.id]));
@@ -319,8 +347,19 @@ class SharedBoard extends Component {
         break;
 
       case "user connected":
-        console.log('user connected' + JSON.stringify(payload));
-        this.updateUsersConnected(jsonPayload.payload);
+        console.log('user connected on shared' + JSON.stringify(payload));
+        axios.get(MEETING.MEETING_USERS, {
+        params: {
+          meetingId: this.props.meetingId
+        }
+      }).then((response) => {
+        if (response.data !== "") {
+          this.setState({usersConnected: response.data["users"]});
+          this.updateUsersConnected(response.data["users"]);
+        }
+      }).catch((response) => {
+        console.log('error ' + response)
+      });
         break;
 
       case "user disconnected":
@@ -339,19 +378,23 @@ class SharedBoard extends Component {
   };
 
   updateUsersConnected(payload) {
-    console.log(JSON.stringify(payload));
-    let jsonPayload = JSON.parse(payload);
+
+    console.log('Entree al update users connected');
+    console.log("Shared users payload" + JSON.stringify(payload));
+    let load = JSON.stringify(this.state.usersConnected);
+    console.log("State Users connected " + load);
     let newParticipantsStatus = [];
 
     let usersStatus = this.state.participants.map((participant) => {
       let obj = {};
-      if (participant["username"] === jsonPayload.username) {
-        obj["username"] = jsonPayload.username;
-        obj["status"] = jsonPayload.status;
+
+      if (this.state.usersConnected.includes(participant["username"])) {
+        obj["username"] = participant["username"];
+        obj["status"] = 'Online';
         console.log('TRUE = ' + JSON.stringify(obj));
       } else {
-        obj["username"] = participant.username;
-        obj["status"] = participant.status;
+        obj["username"] = participant["username"];
+        obj["status"] = 'Offline';
         console.log('FALSE' + JSON.stringify(obj));
       }
       return obj;

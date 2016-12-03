@@ -50,6 +50,7 @@ public class WebsocketController {
         }
 
         template.convertAndSend("/topic/" + message.getTopic(), message.getMessage());
+        
     }
 
     @Autowired
