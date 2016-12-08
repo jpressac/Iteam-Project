@@ -83,6 +83,7 @@ class SharedBoard extends Component {
     }).then((response) => {
       if (response.data !== "") {
         this.setState({usersConnected: response.data["users"]});
+        this.updateUsersConnected(response.data["users"]);
       }
     }).catch((response) => {
       console.log('error ' + response)
@@ -172,6 +173,9 @@ class SharedBoard extends Component {
     this.props.onClick();
   }
 
+  handleLeaveMeeting() {
+    //TODO axios sending offline user
+  }
   static generateRandomNumber() {
     return Math.floor(Math.random() * 500) + 1;
   }
@@ -422,6 +426,10 @@ class SharedBoard extends Component {
             <Button style={{margin: 15, color: '#900C3F'}} target='_blank' raised
                     onClick={this.handleEndMeeting.bind(this)}>
               End meeting
+            </Button>
+            <Button style={{margin: 15, color: '#900C3F'}} target='_blank' raised
+                    onClick={this.handleLeaveMeeting.bind(this)}>
+              Leave meeting
             </Button>
           </div>
         </Drawer>
