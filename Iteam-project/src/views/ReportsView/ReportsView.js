@@ -5,7 +5,7 @@ import React from 'react'
 import ReportsForm from '../../components/ReportsForm/ReportForm'
 import classes from './ReportsView.scss'
 
-export class RegistrationView extends React.Component {
+export class ReportsView extends React.Component {
   render() {
     return (
       <div className={classes.form}>
@@ -15,4 +15,4 @@ export class RegistrationView extends React.Component {
   }
 }
 
-export default RegistrationView
+export default ReportsView

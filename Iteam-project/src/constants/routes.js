@@ -23,7 +23,8 @@ export const PATHS = {
    BOARD: 'personalboard',
    MYMEETINGS: 'mymeeting',
    TEAMLIST: 'myteams',
-   REPORTS: 'reports'
+   REPORTS: 'reports',
+   REPORTSTEST: 'reportstest'
  },
  MENUNOTLOGGEDIN: {
    HOME : 'application/nmember/home',
@@ -41,6 +42,7 @@ export const PATHS = {
    BOARD : 'application/member/personalboard',
    MYMEETINGS: 'application/member/mymeeting',
    TEAMLIST: 'application/member/myteams',
-   REPORTS: 'application/member/reports'
+   REPORTS: 'application/member/reports',
+   REPORTSTEST: 'application/member/reportstest'
  }
 };
