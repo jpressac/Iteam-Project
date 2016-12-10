@@ -17,7 +17,7 @@ import {TEAM, MEETING} from '../../constants/HostConfiguration'
 import Drawer from 'react-toolbox/lib/drawer';
 import {Button, IconButton} from 'react-toolbox/lib/button';
 import Clients from '../BoardSidebar/users';
-
+import {userConnection} from '../../redux/reducers/Meeting/MeetingUserConnected'
 
 const NoteTarget = {
   drop(props, monitor, component) {
@@ -32,15 +32,21 @@ const NoteTarget = {
 const mapStateToProps = (state) => {
   if (state.meetingReducer != null) {
     return {
-      meetingId: state.meetingReducer.meetingId
+      meetingId: state.meetingReducer.meetingId,
+      connected: state.meetingUser.connected
     }
   }
-}
+};
+
 const mapDispatchToProps = (dispatch) => ({
 
-  onClick: () => dispatch(push('/' + PATHS.MENULOGGEDIN.REPORTS))
+  onClick: () => dispatch(push('/' + PATHS.MENULOGGEDIN.REPORTS)),
+
+  isUserConnected: (connected) => dispatch(userConnection(connected))
 
 });
+
+
 
 class SharedBoard extends Component {
 
@@ -57,8 +63,9 @@ class SharedBoard extends Component {
   componentDidMount() {
     //Connect with socket
     connectAndSubscribe(this.props.meetingId, this.receiveMessage.bind(this));
-    //Get team participants for sidebar
-    this.getTeam(this.props.meetingId);
+    //Getting already connected
+    this.getConnectedUsers(this.props.meetingId);
+    this.receiveConnectionStatus();
   }
 
   componentWillMount() {
@@ -75,19 +82,8 @@ class SharedBoard extends Component {
     }).catch((response) => {
       console.log('error ' + response)
     });
-    //Getting already connected
-    axios.get(MEETING.MEETING_USERS,{
-      params:{
-        meetingId: this.props.meetingId
-      }
-    }).then((response) => {
-      if (response.data !== "") {
-        this.setState({usersConnected: response.data["users"]});
-        this.updateUsersConnected(response.data["users"]);
-      }
-    }).catch((response) => {
-      console.log('error ' + response)
-    })
+    //Get team participants for sidebar
+    this.getTeam(this.props.meetingId);
 
   }
 
@@ -137,8 +133,46 @@ class SharedBoard extends Component {
   }
 
   receiveConnectionStatus() {
-
+    setInterval(this.getConnectedUsers(this.props.meetingId), 12000);
   }
+
+  getConnectedUsers =(meetingId) => {
+    axios.get(MEETING.MEETING_USERS, {
+      params: {
+        meetingId: meetingId
+      }
+    }).then(function(response) {
+      if (response.data !== "") {
+        this.setState({usersConnected: response.data["users"]});
+        this.updateUsersConnected(response.data["users"]);
+        console.log('update users called');
+      }
+    }.bind(this));
+  };
+
+  getTeam = (meetingId) => {
+    axios.get(TEAM.TEAM_USER_BY_MEETING, {
+      params: {
+        meetingId: meetingId
+      }
+    }).then(function (response) {
+      this.setState({teamName: response.data["teamId"]});
+      this.getTeamParticipants(response.data["teamUsers"]);
+
+    }.bind(this));
+  };
+
+  getTeamParticipants = (teamParticipants) => {
+
+    let participantInfo = teamParticipants.map(function (participant, index) {
+      let userInfo = {};
+
+      userInfo["username"] = participant["username"];
+      userInfo["status"] = 'Offline';
+      return userInfo;
+    });
+    this.setState({participants: participantInfo});
+  };
 
   saveNotes() {
     let notemap = this.state.notes;
@@ -171,11 +205,24 @@ class SharedBoard extends Component {
   handleEndMeeting() {
     this.saveNotes();
     this.props.onClick();
+    this.props.isUserConnected(false);
   }
 
   handleLeaveMeeting() {
-    //TODO axios sending offline user
+    if(this.props.connected) {
+      this.props.isUserConnected(false);
+      //Request for deleting user from connected users
+      axios.head(MEETING.MEETING_USER_CONNECTION, {
+        headers: {
+          username: this.props.user,
+          meetingId: this.props.meetingId
+        }
+      }).then(function (reponse) {
+
+      });
+    }
   }
+
   static generateRandomNumber() {
     return Math.floor(Math.random() * 500) + 1;
   }
@@ -219,30 +266,6 @@ class SharedBoard extends Component {
     }
     this.setState({note: map})
   }
-
-  getTeam = (meetingId) => {
-    axios.get(TEAM.TEAM_USER_BY_MEETING, {
-      params: {
-        meetingId: meetingId
-      }
-    }).then(function (response) {
-      this.setState({teamName: response.data["teamId"]});
-      this.getTeamParticipants(response.data["teamUsers"]);
-
-    }.bind(this));
-  };
-
-  getTeamParticipants = (teamParticipants) => {
-
-    let participantInfo = teamParticipants.map(function (participant, index) {
-      let userInfo = {};
-
-      userInfo["username"] = participant["username"];
-      userInfo["status"] = 'Offline';
-      return userInfo;
-    });
-    this.setState({participants: participantInfo});
-  };
 
   sendUpdate(action, id) {
     let map = this.state.notes;
@@ -352,19 +375,7 @@ class SharedBoard extends Component {
 
       case "user connected":
         console.log('user connected on shared' + JSON.stringify(payload));
-        axios.get(MEETING.MEETING_USERS, {
-        params: {
-          meetingId: this.props.meetingId
-        }
-      }).then((response) => {
-        if (response.data !== "") {
-          this.setState({usersConnected: response.data["users"]});
-          this.updateUsersConnected(response.data["users"]);
-        }
-      }).catch((response) => {
-        console.log('error ' + response)
-      });
-        break;
+
 
       case "user disconnected":
         console.log('user disconnected' + JSON.stringify(payload));
@@ -379,6 +390,7 @@ class SharedBoard extends Component {
 
   handleToggle = () => {
     this.setState({active: !this.state.active});
+    this.getConnectedUsers(this.props.meetingId);
   };
 
   updateUsersConnected(payload) {
@@ -441,7 +453,9 @@ class SharedBoard extends Component {
 SharedBoard.propTypes = {
   connectDropTarget: PropTypes.func.isRequired,
   meetingId: PropTypes.string,
-  onClick: PropTypes.func
+  onClick: PropTypes.func,
+  connect: PropTypes.bool,
+  isUserConnected: PropTypes.func
 };
 
 export default flow(

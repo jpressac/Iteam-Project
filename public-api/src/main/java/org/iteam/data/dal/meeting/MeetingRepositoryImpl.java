@@ -254,6 +254,8 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
         if (!connectedUsers.getUsers().contains(user)) {
             connectedUsers.addUser(user);
+        } else {
+            connectedUsers.getUsers().remove(user);
         }
         try {
             elasticsearchClientImpl.insertData(JSONUtils.ObjectToJSON(connectedUsers),

@@ -11,6 +11,7 @@ import {connect} from 'react-redux'
 import axios from 'axios'
 import {MEETING} from '../../constants/HostConfiguration'
 import generateUUID from '../../constants/utils/GetUUID'
+import {userConnection} from '../../redux/reducers/Meeting/MeetingUserConnected'
 
 const TooltipButton = Tooltip(Button);
 
@@ -24,10 +25,17 @@ const NoteTarget = {
   }
 };
 
+const mapDispatchToProps = (dispatch) => ({
+
+  isUserConnected: (connected) => dispatch(userConnection(connected))
+
+});
+
 const mapStateToProps = (state) => {
   return {
     user: state.loginUser.user.username,
-    meetingId: state.meetingReducer.meetingId
+    meetingId: state.meetingReducer.meetingId,
+    connected: state.meetingUser.connected
   }
 };
 
@@ -46,15 +54,17 @@ class PersonalBoard extends Component {
   componentDidMount() {
     initWebSocket();
     con();
-    //setTimeout(this.updateConnectionStatus.bind(this, 'user connected', 'Online'), 2000);
-    axios.head(MEETING.MEETING_USER_CONNECTION, {
-      headers: {
-        username : this.props.user,
-        meetingId: this.props.meetingId
-      }
-    }).then(function(reponse) {
-      console.log('Adding user connected ' + response.status);
-    });
+    if(this.props.connected == null || !this.props.connected) {
+      this.props.isUserConnected(true);
+      axios.head(MEETING.MEETING_USER_CONNECTION, {
+        headers: {
+          username: this.props.user,
+          meetingId: this.props.meetingId
+        }
+      }).then(function (reponse) {
+
+      });
+    }
     axios.get(MEETING.MEETING_INFO_PERSONAL_BOARD, {
       params: {
         meetingId: this.props.meetingId,
@@ -195,8 +205,10 @@ class PersonalBoard extends Component {
 
 PersonalBoard.propTypes = {
   connectDropTarget: PropTypes.func.isRequired,
+  isUserConnected: PropTypes.func,
   user: PropTypes.any,
-  meetingId: PropTypes.string
+  meetingId: PropTypes.string,
+  connected: PropTypes.bool
 };
 
 export default flow(
@@ -205,4 +217,4 @@ export default flow(
       ( {
         connectDropTarget: connection.dropTarget()
       }
-      )), connect(mapStateToProps))(PersonalBoard);
+      )), connect(mapStateToProps, mapDispatchToProps))(PersonalBoard);
