@@ -25,8 +25,6 @@ export function submit() {
 export function submitUser(data){
 
   let hobbiesList = data.hobbies.split(',');
-
-
   axios.post(USER.GET_USER, {
         username: data.username,
         password: data.password,
