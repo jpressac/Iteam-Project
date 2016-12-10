@@ -12,6 +12,13 @@ export const updateMeetingId = (meetingId) => {
   }
 };
 
+export const meetingToMeetingConfig = (meeting) => {
+  return function (dispatch) {
+    dispatch(saveMeetingInfo(meeting));
+    dispatch(push('/' + PATHS.MENULOGGEDIN.MEETCONFIG));
+  }
+};
+
 export function saveMeeting (meeting){
   return function (dispatch) {
     dispatch(saveMeetingInfo(meeting));

@@ -21,6 +21,7 @@ import org.iteam.data.dal.client.ElasticsearchClientImpl;
 import org.iteam.data.dto.Idea;
 import org.iteam.data.dto.Meeting;
 import org.iteam.data.model.IdeasDTO;
+import org.iteam.data.model.MeetingUsers;
 import org.iteam.data.model.Reports;
 import org.iteam.services.utils.JSONUtils;
 import org.joda.time.DateTime;
@@ -250,6 +251,39 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         return null;
     }
 
+    @Override
+    public void saveMeetingUsers(String users, String meetingId) {
+        int count = 0;
+        saveUsersRetry(count, users, meetingId);
+
+    }
+
+    private void saveUsersRetry(int count, String users, String meetingId) {
+        try {
+            elasticsearchClientImpl.insertData(users, StringUtilities.INDEX_MEETING_INFO,
+                    StringUtilities.INDEX_TYPE_MEETING_INFO_USERS, meetingId);
+            LOGGER.info("Meeting connected users updated - Meeting: '{}'", meetingId);
+        } catch (ElasticsearchException e) {
+            LOGGER.error("Failed to update meeting connected users - Retry '{}'", count);
+            if (MAX_RETRIES > count) {
+                saveInfoRetry(count += 1, users, meetingId);
+            }
+        }
+    }
+
+    @Override
+    public MeetingUsers getConnectedUsers(String meetingId) {
+        MeetingUsers usersList = new MeetingUsers();
+
+        GetResponse response = elasticsearchClientImpl.getDocument(StringUtilities.INDEX_MEETING_INFO,
+                StringUtilities.INDEX_TYPE_MEETING_INFO_USERS, meetingId);
+
+        if (response.isExists()) {
+            usersList = (MeetingUsers) JSONUtils.JSONToObject(response.getSourceAsString(), MeetingUsers.class);
+        }
+        return usersList;
+    }
+
     @Autowired
     private void setElasticsearchClientImpl(ElasticsearchClientImpl elasticsearchClientImpl) {
         this.elasticsearchClientImpl = elasticsearchClientImpl;
@@ -259,4 +293,5 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     private void setConfiguration(ExternalConfigurationProperties configuration) {
         this.configuration = configuration;
     }
+
 }

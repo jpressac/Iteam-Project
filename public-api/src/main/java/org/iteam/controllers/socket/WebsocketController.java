@@ -28,8 +28,11 @@ public class WebsocketController {
     @MessageMapping("/channel")
     // TODO:remove channelId
     public void sendMessage(String channelId, SocketMessage message) {
-        if(message.getMessage().getAction().equals("updateCache")) {
+        if (message.getMessage().getAction().equals("updateCache")) {
             meetingService.updateMeetingInfo(message.getTopic(), message.getMessage().getPayload());
+        }
+        if (message.getMessage().getAction().equals("user connected")) {
+            meetingService.updateMeetingUsers(message.getTopic(), message.getMessage().getPayload());
         }
         template.convertAndSend("/topic/" + message.getTopic(), message.getMessage());
     }

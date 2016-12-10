@@ -6,6 +6,7 @@ import javax.validation.Valid;
 
 import org.iteam.data.dto.Meeting;
 import org.iteam.data.model.IdeasDTO;
+import org.iteam.data.model.MeetingUsers;
 import org.iteam.data.model.Reports;
 import org.iteam.services.meeting.MeetingService;
 import org.iteam.services.meeting.MeetingServiceImpl;
@@ -130,6 +131,11 @@ public class MeetingController {
     @RequestMapping(value = "/meeting/meetingbyuser")
     public List<Meeting> getUserMeetings(@RequestParam(value = "username", required = true) String username) {
         return meetingServiceImpl.getMeetingByTeamName(username);
+    }
+
+    @RequestMapping(value = "/meeting/meetingusers", method = RequestMethod.GET)
+    public MeetingUsers getMeetingUsers(@RequestParam(value = "meetingId", required = true) String meetingId) {
+        return meetingServiceImpl.getMeetingUsers(meetingId);
     }
 
     @RequestMapping(value = "/meeting/meetinginfo", method = RequestMethod.GET)
