@@ -16,6 +16,7 @@ import ProfileView from '../views/ProfileView/ProfileView'
 import SharedBoardView from '../views/SharedBoardView/SharedBoardView'
 import MyTeamView from '../views/MyTeamView/MyTeamView'
 import MymeetView from '../views/MymeetView/MymeetView'
+import MeetingConfigView from '../views/MeetingConfigView'
 import ReportsView from '../views/ReportsView/ReportsView'
 
 export const createRoutes = (store) => (
@@ -37,6 +38,7 @@ export const createRoutes = (store) => (
       <Route path={PATHS.LOGGEDIN.SHAREDBOARD} component={SharedBoardView}/>
       <Route path={PATHS.LOGGEDIN.PROFILE} component={ProfileView}/>
       <Route path={PATHS.LOGGEDIN.MYMEETINGS} component={MymeetView}/>
+      <Route path={PATHS.LOGGEDIN.MEETCONFIG} component={MeetingConfigView}/>
       <Route path={PATHS.LOGGEDIN.REPORTS} component={ReportsView}/>
       <Route path={PATHS.LOGGEDIN.TEAMLIST} component={MyTeamView}/>
     </Route>
