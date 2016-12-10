@@ -5,9 +5,15 @@ import java.util.List;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(Include.NON_NULL)
 public class Idea {
 
+    private String id;
     private String username;
     private String title;
     private String comments;
@@ -15,6 +21,8 @@ public class Idea {
     private String meetingId;
     private String tag;
     private String subtitle;
+    private Long left;
+    private Long top;
 
     // TODO: check what is better, where do we store the images, in the database
     // or file-system.
@@ -83,6 +91,30 @@ public class Idea {
 
     public void setSubtitle(String subtitle) {
         this.subtitle = subtitle;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Long getLeft() {
+        return left;
+    }
+
+    public void setLeft(Long left) {
+        this.left = left;
+    }
+
+    public Long getTop() {
+        return top;
+    }
+
+    public void setTop(Long top) {
+        this.top = top;
     }
 
     @Override

@@ -25,7 +25,6 @@ export function saveMeeting (meeting){
   }
 }
 
-
 export default function meetingReducer(state = null, action) {
   switch (action.type) {
     case SAVE_MEETING:
@@ -39,3 +38,4 @@ export default function meetingReducer(state = null, action) {
 
 export const saveMeetingInfo = createAction('SAVE_MEETING', (meeting) => ({meeting}));
 export const updateMeeting = createAction('UPDATE_MEETING_ID', (meetingId) => ({meetingId}));
+

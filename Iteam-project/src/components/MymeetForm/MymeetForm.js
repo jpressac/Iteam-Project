@@ -108,8 +108,8 @@ class MymeetForm extends Component {
     var meetDate = new Date(date);
     var dateNow = new Date();
 
-    var meetDate_minrange = dateNow.setMinutes(dateNow.getMinutes() - 15);
-    var meetDate_maxrange = dateNow.setMinutes(dateNow.getMinutes() + 30);
+    var meetDate_minrange = dateNow.setMinutes(dateNow.getMinutes() - 150);
+    var meetDate_maxrange = dateNow.setMinutes(dateNow.getMinutes() + 300);
 
     return (meetDate_minrange < meetDate.getTime() && meetDate.getTime() < meetDate_maxrange);
   }

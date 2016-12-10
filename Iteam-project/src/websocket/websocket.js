@@ -18,6 +18,7 @@ export function connectAndSubscribe(topic, resolve){
 
   var socket = SockJs('/channel');
   stompClient = Stomp.over(socket);
+  
 
   //TODO: sacar el console.log
   stompClient.connect({}, function (frame) {
