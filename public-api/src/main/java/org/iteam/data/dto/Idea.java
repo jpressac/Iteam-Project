@@ -21,6 +21,8 @@ public class Idea {
     private String meetingId;
     private String tag;
     private String subtitle;
+    private Long left;
+    private Long top;
 
     // TODO: check what is better, where do we store the images, in the database
     // or file-system.
@@ -97,6 +99,22 @@ public class Idea {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public Long getLeft() {
+        return left;
+    }
+
+    public void setLeft(Long left) {
+        this.left = left;
+    }
+
+    public Long getTop() {
+        return top;
+    }
+
+    public void setTop(Long top) {
+        this.top = top;
     }
 
     @Override

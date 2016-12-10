@@ -36,7 +36,6 @@ import org.springframework.util.ObjectUtils;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -68,7 +67,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         IndexResponse response = elasticsearchClientImpl.insertData(data, StringUtilities.INDEX_MEETING,
                 StringUtilities.INDEX_TYPE_MEETING, meeting.getMeetingId());
 
-        if (!response.isCreated()) {
+        if(!response.isCreated()) {
             LOGGER.error("The meeting couldn't be created - Meeting: '{}'", meeting.toString());
             return false;
         }
@@ -82,7 +81,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         LOGGER.info("Updating meeting");
         LOGGER.debug("Meeting: '{}'", updatedMeeting.toString());
 
-        if (!ObjectUtils.isEmpty(updatedMeeting.getProgrammedDate())) {
+        if(!ObjectUtils.isEmpty(updatedMeeting.getProgrammedDate())) {
             DateTime date = new DateTime(updatedMeeting.getProgrammedDate());
             updatedMeeting.setProgrammedDate(date.withZone(DateTimeZone.UTC).getMillis());
         }
@@ -139,7 +138,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         Reports report = null;
         List<Idea> ideasList = new ArrayList<>();
 
-        if (meetingResponse.isExists()) {
+        if(meetingResponse.isExists()) {
 
             try {
                 JsonNode meetingNode = OBJECT_MAPPER.readTree(meetingResponse.getSourceAsString());
@@ -147,8 +146,8 @@ public class MeetingRepositoryImpl implements MeetingRepository {
                 SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_IDEAS, queryBuilder,
                         SortBuilders.fieldSort(fieldOrder).order(sortOrder));
 
-                if (response.getHits().getTotalHits() > 0) {
-                    for (SearchHit hit : response.getHits()) {
+                if(response.getHits().getTotalHits() > 0) {
+                    for(SearchHit hit : response.getHits()) {
                         ideasList.add((Idea) JSONUtils.JSONToObject(hit.getSourceAsString(), Idea.class));
                     }
                 }
@@ -190,7 +189,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
         LOGGER.debug("meetings retrieved: ", response.getHits().getTotalHits());
 
-        for (SearchHit hit : response.getHits()) {
+        for(SearchHit hit : response.getHits()) {
 
             LOGGER.debug("User '{}' meeting: '{}'", username, hit.getSourceAsString());
 
@@ -211,7 +210,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
                 QueryBuilders.termsQuery(MEETING_TEAM_NAME_FIELD, teamName),
                 SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD).order(SortOrder.ASC));
 
-        for (SearchHit hit : response.getHits()) {
+        for(SearchHit hit : response.getHits()) {
 
             Meeting meeting = (Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class);
             meetingList.add(meeting);
@@ -236,7 +235,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         GetResponse response = elasticsearchClientImpl.getDocument(StringUtilities.INDEX_MEETING_INFO,
                 StringUtilities.INDEX_TYPE_MEETING_INFO, meetingId);
 
-        if (response.isExists()) {
+        if(response.isExists()) {
             return response.getSourceAsString();
         }
         return null;
@@ -252,7 +251,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     private void saveUsersRetry(int count, String user, String meetingId) {
         MeetingUsers connectedUsers = getConnectedUsers(meetingId);
 
-        if (!connectedUsers.getUsers().contains(user)) {
+        if(!connectedUsers.getUsers().contains(user)) {
             connectedUsers.addUser(user);
         }
         try {
@@ -261,7 +260,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
             LOGGER.info("Meeting connected users updated - Meeting: '{}'", meetingId);
         } catch (ElasticsearchException e) {
             LOGGER.error("Failed to update meeting connected users - Retry '{}'", count);
-            if (MAX_RETRIES > count) {
+            if(MAX_RETRIES > count) {
                 saveUsersRetry(count += 1, user, meetingId);
             }
         }
@@ -275,7 +274,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
             GetResponse response = elasticsearchClientImpl.getDocument(StringUtilities.INDEX_MEETING_INFO,
                     StringUtilities.INDEX_TYPE_MEETING_INFO_USERS, meetingId);
 
-            if (response.isExists()) {
+            if(response.isExists()) {
                 usersList = (MeetingUsers) JSONUtils.JSONToObject(response.getSourceAsString(), MeetingUsers.class);
             }
         } catch (IndexNotFoundException exception) {
@@ -331,7 +330,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
             Map<String, Object> notesMapCache = new HashMap<>();
 
-            if (getResponse.isExists()) {
+            if(getResponse.isExists()) {
                 notesMapCache = (Map<String, Object>) JSONUtils.JSONToObject(getResponse.getSourceAsString(),
                         HashMap.class);
 
@@ -355,15 +354,18 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     @Override
     public void updateSharedBoardCache(String meetingId, String info) {
 
-        TypeReference<List<Idea>> typeRef = new TypeReference<List<Idea>>() {
-        };
+        // TypeReference<List<Idea>> typeRef = new TypeReference<List<Idea>>() {
+        // };
+        //
+        // List<Idea> notesList = new ArrayList<>();
 
-        List<Idea> notesList = new ArrayList<>();
+        Idea idea = new Idea();
 
         try {
 
             // TODO: this should be in the JSONUtilites class
-            notesList = OBJECT_MAPPER.readValue(info, typeRef);
+            // notesList = OBJECT_MAPPER.readValue(info, typeRef);
+            idea = OBJECT_MAPPER.readValue(info, Idea.class);
         } catch (JsonParseException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -378,14 +380,12 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         GetResponse getResponse = elasticsearchClientImpl.getDocument(StringUtilities.INDEX_MEETING_INFO,
                 StringUtilities.INDEX_TYPE_MEETING_INFO, meetingId);
 
-        if (getResponse.isExists()) {
+        if(getResponse.isExists()) {
             Map<String, Object> notesMapCache = (Map<String, Object>) JSONUtils
                     .JSONToObject(getResponse.getSourceAsString(), HashMap.class);
 
-            for (Idea idea : notesList) {
-                if (!ObjectUtils.isEmpty(notesMapCache.get(idea.getId()))) {
-                    notesMapCache.put(idea.getId(), idea);
-                }
+            if(!ObjectUtils.isEmpty(notesMapCache.get(idea.getId()))) {
+                notesMapCache.put(idea.getId(), idea);
             }
 
             String dataCache = JSONUtils.ObjectToJSON(notesMapCache);
@@ -409,7 +409,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
             // TODO: we are repeating code, try to create a private method
             // instead.
-            if (getResponse.isExists()) {
+            if(getResponse.isExists()) {
                 Map<String, Object> notesMapCache = (Map<String, Object>) JSONUtils
                         .JSONToObject(getResponse.getSourceAsString(), HashMap.class);
 
@@ -445,7 +445,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
         Map<String, Object> notesMapCache = new HashMap<>();
 
-        if (getResponse.isExists()) {
+        if(getResponse.isExists()) {
             notesMapCache = (Map<String, Object>) JSONUtils.JSONToObject(getResponse.getSourceAsString(),
                     HashMap.class);
         }
@@ -459,7 +459,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
             LOGGER.info("Meeting info updated - Meeting: '{}'", meetingId);
         } catch (ElasticsearchException e) {
             LOGGER.error("Failed to update meeting info - Retry '{}'", count);
-            if (MAX_RETRIES > count) {
+            if(MAX_RETRIES > count) {
                 saveInfoRetry(count += 1, data, meetingId);
             }
         }

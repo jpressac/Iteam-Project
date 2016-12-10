@@ -34,10 +34,10 @@ class Note extends Component {
     this.state = {
       view: 'normal',
       board: props.boardType,
-      tag:props.tag,
-      title:props.title,
-      subtitle:props.subtitle,
-      comments:props.comments
+      tag: "Not tag",
+      title: "No title",
+      subtitle:"No subtitle",
+      comments: "No comments",
     }
   }
 
@@ -69,9 +69,9 @@ class Note extends Component {
           return connectDragSource(
             <div className={classes.card} style={{...style, left, top}}>
               <Card theme={CardYellow}>
-                <Chip deletable theme={Chipscss}>{this.state.tag}</Chip>
-                <CardText theme={cardTitlescss}>{this.state.title}</CardText>
-                <CardText theme={cardTextscss}>{this.state.subtitle}</CardText>
+                <Chip deletable theme={Chipscss}>{this.props.tag}</Chip>
+                <CardText theme={cardTitlescss}>{this.props.title}</CardText>
+                <CardText theme={cardTextscss}>{this.props.subtitle}</CardText>
                 <CardActions  theme={cardActionsscss}>
                   <IconButton icon="create" onClick={this.edit.bind(this)}/>
                   <IconButton icon="delete_sweep" onClick={this.removeFromPersonal.bind(this)}/>
@@ -85,8 +85,8 @@ class Note extends Component {
           return (
             <div className={classes.card} style={{...style, left, top}}>
               <Card theme={CardYellow}>
-                <CardText theme={cardTitlescss}>{this.state.title}</CardText>
-                <CardText theme={cardTextscss}>{this.state.subtitle}</CardText>
+                <CardText theme={cardTitlescss}>{this.props.title}</CardText>
+                <CardText theme={cardTextscss}>{this.props.subtitle}</CardText>
                 <CardActions theme={cardActionsscss}>
                   <IconButton icon="save" onClick={this.saveTag.bind(this)}/>
                   <IconButton icon="clear" onClick={this.cancelComment.bind(this)}/>
@@ -101,10 +101,10 @@ class Note extends Component {
           return connectDragSource(
             <div className={classes.card} style={{...style, left, top}}>
               <Card theme={CardYellow}>
-                <Chip deletable theme={Chipscss}>{this.state.tag}</Chip>
-                <CardText theme={cardTitlescss}>{this.state.title}</CardText>
-                <CardText theme={cardTextscss}>{this.state.subtitle}</CardText>
-                <CardText theme={cardTextscss}>{this.state.comments}</CardText>
+                <Chip deletable theme={Chipscss}>{this.props.tag}</Chip>
+                <CardText theme={cardTitlescss}>{this.props.title}</CardText>
+                <CardText theme={cardTextscss}>{this.props.subtitle}</CardText>
+                <CardText theme={cardTextscss}>{this.props.comments}</CardText>
                 <CardActions theme={cardActionsscss}>
                   <IconButton icon="add" onClick={this.comment.bind(this)}/>
                   <IconButton icon="delete_sweep" onClick={this.removeFromShared.bind(this)}/>
@@ -166,7 +166,7 @@ class Note extends Component {
   }
 
   removeFromShared() {
-    this.props.onRemove("delete", this.props.id);
+    this.props.onRemove("updateCacheDelete", this.props.id);
     this.setState({view: 'normal'})
   }
 

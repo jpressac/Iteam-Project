@@ -46,15 +46,17 @@ class PersonalBoard extends Component {
   componentDidMount() {
     initWebSocket();
     con();
+
     //setTimeout(this.updateConnectionStatus.bind(this, 'user connected', 'Online'), 2000);
     axios.head(MEETING.MEETING_USER_CONNECTION, {
       headers: {
         username : this.props.user,
         meetingId: this.props.meetingId
       }
-    }).then(function(reponse) {
+    }).then(function(response) {
       console.log('Adding user connected ' + response.status);
     });
+
     axios.get(MEETING.MEETING_INFO_PERSONAL_BOARD, {
       params: {
         meetingId: this.props.meetingId,

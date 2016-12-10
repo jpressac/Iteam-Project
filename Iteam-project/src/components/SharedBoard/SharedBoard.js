@@ -35,7 +35,8 @@ const mapStateToProps = (state) => {
       meetingId: state.meetingReducer.meetingId
     }
   }
-}
+};
+
 const mapDispatchToProps = (dispatch) => ({
 
   onClick: () => dispatch(push('/' + PATHS.MENULOGGEDIN.REPORTS))
@@ -63,21 +64,21 @@ class SharedBoard extends Component {
 
   componentWillMount() {
     //Getting notes already shared in the board before rendering
-    axios.get(MEETING.MEETING_INFO,{
-      params:{
+    axios.get(MEETING.MEETING_INFO, {
+      params: {
         meetingId: this.props.meetingId
       }
     }).then((response) => {
 
-      this.setState({cacheNotes: response.data});
+      this.setState({notes: response.data});
 
-      this.createNotes(response.data);
+      //this.createNotes(response.data);
     }).catch((response) => {
       console.log('error ' + response)
     });
     //Getting already connected
-    axios.get(MEETING.MEETING_USERS,{
-      params:{
+    axios.get(MEETING.MEETING_USERS, {
+      params: {
         meetingId: this.props.meetingId
       }
     }).then((response) => {
@@ -96,28 +97,15 @@ class SharedBoard extends Component {
     disconnect()
   }
 
-  createNotes(data) {
-    let map = Object.keys(data).map((key) => {
-      return ({
-        id: key,
-        left: SharedBoard.generateRandomNumber(),
-        top: SharedBoard.generateRandomNumber(),
-        username: data[key].username,
-        title: data[key].title,
-        subtitle: data[key].subtitle,
-        comments: data[key].comments,
-        ranking: 0,
-        meetingId: this.props.meetingId,
-        boardType: "shared",
-        tag: data[key].tag
-      })
-
-    });
-    this.setState({notes: map});
-  }
-
   renderNotes(noteMap) {
     return Object.keys(noteMap).map((key) => {
+      console.log("keys render " + key);
+      console.log("left for key " + noteMap[key].left);
+      console.log("top for key " + noteMap[key].top);
+      console.log("comments " + noteMap[key].comments);
+
+      let comment = noteMap[key].comments;
+
       return (
         <Note key={key}
               id={key}
@@ -127,7 +115,7 @@ class SharedBoard extends Component {
               left={noteMap[key].left}
               top={noteMap[key].top}
               boardType="shared"
-              comments={noteMap[key].comments}
+              comments={comment}
               title={noteMap[key].title}
               subtitle={noteMap[key].subtitle}
               tag={noteMap[key].tag}
@@ -176,6 +164,7 @@ class SharedBoard extends Component {
   handleLeaveMeeting() {
     //TODO axios sending offline user
   }
+
   static generateRandomNumber() {
     return Math.floor(Math.random() * 500) + 1;
   }
@@ -185,7 +174,7 @@ class SharedBoard extends Component {
     map[id].comments = commentText;
 
     this.setState({notes: map});
-    this.sendUpdate("update", id);
+    this.sendUpdate("updateSharedBoardCache", id);
   }
 
   onUpdatePosition(id, left, top) {
@@ -215,7 +204,7 @@ class SharedBoard extends Component {
     let note = map[id];
     if (note.ranking + vote >= 0) {
       note.ranking += vote;
-      this.sendUpdate("update", id)
+      this.sendUpdate("updateSharedBoardCache", id)
     }
     this.setState({note: map})
   }
@@ -247,9 +236,13 @@ class SharedBoard extends Component {
   sendUpdate(action, id) {
     let map = this.state.notes;
 
+    console.log("before send update left " + map[id].left);
+    console.log("before send update top " + map[id].top);
+    console.log("comments " + map[id].comments);
+
     sendMessage(action, this.props.meetingId, JSON.stringify(
       {
-        id: id,
+        id: map[id].id,
         username: map[id].username,
         title: map[id].title,
         subtitle: map[id].subtitle,
@@ -261,7 +254,6 @@ class SharedBoard extends Component {
         boardType: "shared",
         tag: map[id].tag
       }));
-
   }
 
   sendUpdateCache(action, payload) {
@@ -279,73 +271,75 @@ class SharedBoard extends Component {
     let jsonPayloadMessage;
 
     //TODO: check the reason of this if.
-    if (payload["action"] === 'insertSharedBoard') {
+    // if (payload["action"] === 'insertSharedBoard') {
+    //
+    //   console.log(jsonPayload.payload);
+    //
+    // } else {
+    //   console.log("update shared board");
+    //
+    //   jsonPayloadMessage = JSON.parse(jsonPayload.payload);
+    //
+    //   console.log("json payload message " + JSON.stringify(jsonPayloadMessage));
+    //
+    // }
 
-      console.log(jsonPayload.payload);
+    jsonPayloadMessage = JSON.parse(jsonPayload.payload);
 
-    } else {
-      console.log("update shared board");
-
-      jsonPayloadMessage = JSON.parse(jsonPayload.payload);
-
-      console.log("json payload message " + JSON.stringify(jsonPayloadMessage));
-
-    }
     switch (jsonPayload.action) {
-      case "insert":
-        map[id] =
-        {
-          id: id,
-          left: SharedBoard.generateRandomNumber(),
-          top: SharedBoard.generateRandomNumber(),
-          username: jsonPayloadMessage.username,
-          title: jsonPayloadMessage.title,
-          subtitle: jsonPayloadMessage.subtitle,
-          comments: 'add comments',
-          ranking: 0,
-          meetingId: this.props.meetingId,
-          boardType: "shared",
-          tag:jsonPayloadMessage.tag
-        };
+
+      case "insertSharedBoard":
+
+        //TODO:same as update.
+        Object.keys(jsonPayloadMessage).map((key) => {
+          console.log("object keys " + JSON.stringify(jsonPayloadMessage));
+          console.log("key of above object " + key);
+          console.log("username of the above object " + jsonPayloadMessage[key].username);
+          map[key] =
+            {
+              id: key,
+              left: SharedBoard.generateRandomNumber(),
+              top: SharedBoard.generateRandomNumber(),
+              username: jsonPayloadMessage[key].username,
+              title: jsonPayloadMessage[key].title,
+              subtitle: jsonPayloadMessage[key].subtitle,
+              comments: 'No comments',
+              ranking: 0,
+              meetingId: this.props.meetingId,
+              boardType: "shared",
+              tag: jsonPayloadMessage[key].tag
+            }
+        });
+
         this.setState({notes: map});
-        this.sendUpdateCache('updateCache', this.state.notes);
         break;
 
-      case "update":
+      case "updateSharedBoardCache":
 
-        //TODO: reduce this complexity!!!. Try to separate the if's or just update all.
-        if (map[jsonPayloadMessage.id].comments != jsonPayloadMessage.comments || map[jsonPayloadMessage.id].ranking !== jsonPayloadMessage.ranking) {
-          console.log("i'm here bitch");
+        if (map[jsonPayloadMessage.id].comments != jsonPayloadMessage.comments || map[jsonPayloadMessage.id].ranking != jsonPayloadMessage.ranking) {
           map[jsonPayloadMessage.id] =
-          {
-            id: jsonPayloadMessage.id,
-            left: jsonPayloadMessage.left,
-            top: jsonPayloadMessage.top,
-            username: jsonPayloadMessage.username,
-            title: jsonPayloadMessage.title,
-            subtitle: jsonPayloadMessage.subtitle,
-            comments: jsonPayloadMessage.comments,
-            ranking: jsonPayloadMessage.ranking,
-            meetingId: this.props.meetingId,
-            boardType: "shared",
-            tag:jsonPayloadMessage.tag
-          };
+            {
+              id: jsonPayloadMessage.id,
+              username: jsonPayloadMessage.username,
+              left: jsonPayloadMessage.left,
+              top: jsonPayloadMessage.top,
+              title: jsonPayloadMessage.title,
+              subtitle: jsonPayloadMessage.subtitle,
+              comments: jsonPayloadMessage.comments,
+              ranking: jsonPayloadMessage.ranking,
+              meetingId: this.props.meetingId,
+              boardType: "shared",
+              tag: jsonPayloadMessage.tag
+            };
+          console.log("updated comment " + map[jsonPayloadMessage.id].comments)
         }
-
-        console.log("botes before send " + JSON.stringify(map[jsonPayloadMessage.id]));
-
-        this.sendUpdateCache('updateSharedBoardCache', map);
         this.setState({notes: map});
         break;
 
-      case "delete":
+      case "updateCacheDelete":
         if (map[jsonPayloadMessage.id] !== null) {
           delete map[jsonPayloadMessage.id];
         }
-
-        this.sendUpdateCache('updateCacheDelete', {
-          id: jsonPayloadMessage.id
-        });
 
         this.setState({notes: map});
         break;
@@ -353,17 +347,17 @@ class SharedBoard extends Component {
       case "user connected":
         console.log('user connected on shared' + JSON.stringify(payload));
         axios.get(MEETING.MEETING_USERS, {
-        params: {
-          meetingId: this.props.meetingId
-        }
-      }).then((response) => {
-        if (response.data !== "") {
-          this.setState({usersConnected: response.data["users"]});
-          this.updateUsersConnected(response.data["users"]);
-        }
-      }).catch((response) => {
-        console.log('error ' + response)
-      });
+          params: {
+            meetingId: this.props.meetingId
+          }
+        }).then((response) => {
+          if (response.data !== "") {
+            this.setState({usersConnected: response.data["users"]});
+            this.updateUsersConnected(response.data["users"]);
+          }
+        }).catch((response) => {
+          console.log('error ' + response)
+        });
         break;
 
       case "user disconnected":
