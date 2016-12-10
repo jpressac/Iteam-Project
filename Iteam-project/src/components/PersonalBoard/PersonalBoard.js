@@ -27,7 +27,7 @@ const NoteTarget = {
 
 const mapDispatchToProps = (dispatch) => ({
 
-  isUserConnected: (connected) => dispatch(userConnection(connected))
+  userConnected: () => dispatch(userConnection())
 
 });
 
@@ -35,7 +35,7 @@ const mapStateToProps = (state) => {
   return {
     user: state.loginUser.user.username,
     meetingId: state.meetingReducer.meetingId,
-    connected: state.meetingUser.connected
+    connected: state.meetingUser
   }
 };
 
@@ -55,7 +55,7 @@ class PersonalBoard extends Component {
     initWebSocket();
     con();
     if(this.props.connected == null || !this.props.connected) {
-      this.props.isUserConnected(true);
+      this.props.userConnected();
       axios.head(MEETING.MEETING_USER_CONNECTION, {
         headers: {
           username: this.props.user,
@@ -205,7 +205,7 @@ class PersonalBoard extends Component {
 
 PersonalBoard.propTypes = {
   connectDropTarget: PropTypes.func.isRequired,
-  isUserConnected: PropTypes.func,
+  userConnected: PropTypes.func,
   user: PropTypes.any,
   meetingId: PropTypes.string,
   connected: PropTypes.bool

@@ -17,7 +17,7 @@ import {TEAM, MEETING} from '../../constants/HostConfiguration'
 import Drawer from 'react-toolbox/lib/drawer';
 import {Button, IconButton} from 'react-toolbox/lib/button';
 import Clients from '../BoardSidebar/users';
-import {userConnection} from '../../redux/reducers/Meeting/MeetingUserConnected'
+import {userDisconnection} from '../../redux/reducers/Meeting/MeetingUserConnected'
 
 const NoteTarget = {
   drop(props, monitor, component) {
@@ -33,7 +33,8 @@ const mapStateToProps = (state) => {
   if (state.meetingReducer != null) {
     return {
       meetingId: state.meetingReducer.meetingId,
-      connected: state.meetingUser.connected
+      connected: state.meetingUser,
+      user: state.loginUser.user.username
     }
   }
 };
@@ -42,7 +43,7 @@ const mapDispatchToProps = (dispatch) => ({
 
   onClick: () => dispatch(push('/' + PATHS.MENULOGGEDIN.REPORTS)),
 
-  isUserConnected: (connected) => dispatch(userConnection(connected))
+  userDisconnected: () => dispatch(userDisconnection())
 
 });
 
@@ -205,12 +206,12 @@ class SharedBoard extends Component {
   handleEndMeeting() {
     this.saveNotes();
     this.props.onClick();
-    this.props.isUserConnected(false);
+    this.props.userDisconnected();
   }
 
   handleLeaveMeeting() {
-    if(this.props.connected) {
-      this.props.isUserConnected(false);
+    console.log('Connected ' + this.props.connected);
+    if (this.props.connected) {
       //Request for deleting user from connected users
       axios.head(MEETING.MEETING_USER_CONNECTION, {
         headers: {
@@ -218,10 +219,12 @@ class SharedBoard extends Component {
           meetingId: this.props.meetingId
         }
       }).then(function (reponse) {
-
-      });
+        console.log('Disconnecting user ....' + this.props.user)
+      }.bind(this));
     }
+    this.props.userDisconnected();
   }
+
 
   static generateRandomNumber() {
     return Math.floor(Math.random() * 500) + 1;
@@ -455,7 +458,8 @@ SharedBoard.propTypes = {
   meetingId: PropTypes.string,
   onClick: PropTypes.func,
   connect: PropTypes.bool,
-  isUserConnected: PropTypes.func
+  user: PropTypes.string,
+  userDisconnected: PropTypes.func
 };
 
 export default flow(

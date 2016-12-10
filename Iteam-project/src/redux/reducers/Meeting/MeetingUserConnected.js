@@ -2,23 +2,36 @@
  * Created by Randanne on 08/12/2016.
  */
 import {createAction} from 'redux-actions';
+import {PATHS} from "../../../constants/routes";
+import {push} from 'react-router-redux';
 
-export const IS_USER_CONNECTED = 'IS_USER_CONNECTED';
+export const CONNECT_USER = 'CONNECT_USER';
+export const DISCONNECT_USER = 'DISCONNECT_USER';
 
 
-export function userConnection (connected) {
+export function userConnection () {
   return function (dispatch) {
-    dispatch(isUserConnected(connected));
+    dispatch(userConnected());
+  }
+}
+
+export function userDisconnection (){
+  return function (dispatch) {
+    dispatch(disconnectUser());
+    dispatch(push('/' + PATHS.MENULOGGEDIN.HOME));
   }
 }
 
 export default function meetingUser(state = false, action) {
   switch (action.type) {
-    case IS_USER_CONNECTED:
-      return action.payload;
+    case CONNECT_USER:
+      return true;
+    case DISCONNECT_USER:
+          return false;
     default:
-      return false;
+      return state;
   }
 }
 
-export const isUserConnected = createAction('IS_USER_CONNECTED', (connected) => ({connected}));
+export const userConnected = createAction('CONNECT_USER');
+export const disconnectUser = createAction('DISCONNECT_USER');
