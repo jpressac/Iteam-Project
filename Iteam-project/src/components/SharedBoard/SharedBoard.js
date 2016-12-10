@@ -17,7 +17,7 @@ import {TEAM, MEETING} from '../../constants/HostConfiguration'
 import Drawer from 'react-toolbox/lib/drawer';
 import {Button, IconButton} from 'react-toolbox/lib/button';
 import Clients from '../BoardSidebar/users';
-
+import {userDisconnection} from '../../redux/reducers/Meeting/MeetingUserConnected'
 
 const NoteTarget = {
   drop(props, monitor, component) {
@@ -32,16 +32,22 @@ const NoteTarget = {
 const mapStateToProps = (state) => {
   if (state.meetingReducer != null) {
     return {
-      meetingId: state.meetingReducer.meetingId
+      meetingId: state.meetingReducer.meetingId,
+      connected: state.meetingUser,
+      user: state.loginUser.user.username
     }
   }
 };
 
 const mapDispatchToProps = (dispatch) => ({
 
-  onClick: () => dispatch(push('/' + PATHS.MENULOGGEDIN.REPORTS))
+  onClick: () => dispatch(push('/' + PATHS.MENULOGGEDIN.REPORTS)),
+
+  userDisconnected: () => dispatch(userDisconnection())
 
 });
+
+
 
 class SharedBoard extends Component {
 
@@ -58,8 +64,9 @@ class SharedBoard extends Component {
   componentDidMount() {
     //Connect with socket
     connectAndSubscribe(this.props.meetingId, this.receiveMessage.bind(this));
-    //Get team participants for sidebar
-    this.getTeam(this.props.meetingId);
+    //Getting already connected
+    this.getConnectedUsers(this.props.meetingId);
+    this.receiveConnectionStatus();
   }
 
   componentWillMount() {
@@ -76,19 +83,8 @@ class SharedBoard extends Component {
     }).catch((response) => {
       console.log('error ' + response)
     });
-    //Getting already connected
-    axios.get(MEETING.MEETING_USERS, {
-      params: {
-        meetingId: this.props.meetingId
-      }
-    }).then((response) => {
-      if (response.data !== "") {
-        this.setState({usersConnected: response.data["users"]});
-        this.updateUsersConnected(response.data["users"]);
-      }
-    }).catch((response) => {
-      console.log('error ' + response)
-    })
+    //Get team participants for sidebar
+    this.getTeam(this.props.meetingId);
 
   }
 
@@ -99,13 +95,6 @@ class SharedBoard extends Component {
 
   renderNotes(noteMap) {
     return Object.keys(noteMap).map((key) => {
-      console.log("keys render " + key);
-      console.log("left for key " + noteMap[key].left);
-      console.log("top for key " + noteMap[key].top);
-      console.log("comments " + noteMap[key].comments);
-
-      let comment = noteMap[key].comments;
-
       return (
         <Note key={key}
               id={key}
@@ -115,7 +104,7 @@ class SharedBoard extends Component {
               left={noteMap[key].left}
               top={noteMap[key].top}
               boardType="shared"
-              comments={comment}
+              comments={noteMap[key].comments}
               title={noteMap[key].title}
               subtitle={noteMap[key].subtitle}
               tag={noteMap[key].tag}
@@ -125,8 +114,45 @@ class SharedBoard extends Component {
   }
 
   receiveConnectionStatus() {
-
+    setInterval(this.getConnectedUsers(this.props.meetingId), 12000);
   }
+
+  getConnectedUsers =(meetingId) => {
+    axios.get(MEETING.MEETING_USERS, {
+      params: {
+        meetingId: meetingId
+      }
+    }).then(function(response) {
+      if (response.data !== "") {
+        this.setState({usersConnected: response.data["users"]});
+        this.updateUsersConnected(response.data["users"]);
+      }
+    }.bind(this));
+  };
+
+  getTeam = (meetingId) => {
+    axios.get(TEAM.TEAM_USER_BY_MEETING, {
+      params: {
+        meetingId: meetingId
+      }
+    }).then(function (response) {
+      this.setState({teamName: response.data["teamId"]});
+      this.getTeamParticipants(response.data["teamUsers"]);
+
+    }.bind(this));
+  };
+
+  getTeamParticipants = (teamParticipants) => {
+
+    let participantInfo = teamParticipants.map(function (participant, index) {
+      let userInfo = {};
+
+      userInfo["username"] = participant["username"];
+      userInfo["status"] = 'Offline';
+      return userInfo;
+    });
+    this.setState({participants: participantInfo});
+  };
 
   saveNotes() {
     let notemap = this.state.notes;
@@ -143,27 +169,38 @@ class SharedBoard extends Component {
         }
       );
     });
+    
     //TODO: remove axios from here
     axios.post(MEETING.MEETING_IDEAS_SAVE, {
       ideas
     }).then(function (response) {
-      this.setState({message: '¡Your notes were successfully saved!'});
-      this.refs.mymodal.openModal();
-      this.setState({notes: {}})
+
     }.bind(this)).catch(function (response) {
-      this.setState({message: '¡Your notes were not saved!'});
-      this.refs.mymodal.openModal();
+
     });
   }
 
   handleEndMeeting() {
     this.saveNotes();
     this.props.onClick();
+    this.props.userDisconnected();
   }
 
   handleLeaveMeeting() {
-    //TODO axios sending offline user
+    if (this.props.connected) {
+      //Request for deleting user from connected users
+      axios.head(MEETING.MEETING_USER_CONNECTION, {
+        headers: {
+          username: this.props.user,
+          meetingId: this.props.meetingId
+        }
+      }).then(function (reponse) {
+        //TODO: see what we do here
+      }.bind(this));
+    }
+    this.props.userDisconnected();
   }
+
 
   static generateRandomNumber() {
     return Math.floor(Math.random() * 500) + 1;
@@ -209,37 +246,8 @@ class SharedBoard extends Component {
     this.setState({note: map})
   }
 
-  getTeam = (meetingId) => {
-    axios.get(TEAM.TEAM_USER_BY_MEETING, {
-      params: {
-        meetingId: meetingId
-      }
-    }).then(function (response) {
-      this.setState({teamName: response.data["teamId"]});
-      this.getTeamParticipants(response.data["teamUsers"]);
-
-    }.bind(this));
-  };
-
-  getTeamParticipants = (teamParticipants) => {
-
-    let participantInfo = teamParticipants.map(function (participant, index) {
-      let userInfo = {};
-
-      userInfo["username"] = participant["username"];
-      userInfo["status"] = 'Offline';
-      return userInfo;
-    });
-    this.setState({participants: participantInfo});
-  };
-
   sendUpdate(action, id) {
     let map = this.state.notes;
-
-    console.log("before send update left " + map[id].left);
-    console.log("before send update top " + map[id].top);
-    console.log("comments " + map[id].comments);
-
     sendMessage(action, this.props.meetingId, JSON.stringify(
       {
         id: map[id].id,
@@ -265,26 +273,9 @@ class SharedBoard extends Component {
 
     let map = this.state.notes;
 
-    //TODO:check why here parse works.
     let jsonPayload = JSON.parse(payload);
 
-    let jsonPayloadMessage;
-
-    //TODO: check the reason of this if.
-    // if (payload["action"] === 'insertSharedBoard') {
-    //
-    //   console.log(jsonPayload.payload);
-    //
-    // } else {
-    //   console.log("update shared board");
-    //
-    //   jsonPayloadMessage = JSON.parse(jsonPayload.payload);
-    //
-    //   console.log("json payload message " + JSON.stringify(jsonPayloadMessage));
-    //
-    // }
-
-    jsonPayloadMessage = JSON.parse(jsonPayload.payload);
+    let jsonPayloadMessage = JSON.parse(jsonPayload.payload)
 
     switch (jsonPayload.action) {
 
@@ -292,9 +283,6 @@ class SharedBoard extends Component {
 
         //TODO:same as update.
         Object.keys(jsonPayloadMessage).map((key) => {
-          console.log("object keys " + JSON.stringify(jsonPayloadMessage));
-          console.log("key of above object " + key);
-          console.log("username of the above object " + jsonPayloadMessage[key].username);
           map[key] =
             {
               id: key,
@@ -331,7 +319,6 @@ class SharedBoard extends Component {
               boardType: "shared",
               tag: jsonPayloadMessage.tag
             };
-          console.log("updated comment " + map[jsonPayloadMessage.id].comments)
         }
         this.setState({notes: map});
         break;
@@ -344,24 +331,7 @@ class SharedBoard extends Component {
         this.setState({notes: map});
         break;
 
-      case "user connected":
-        console.log('user connected on shared' + JSON.stringify(payload));
-        axios.get(MEETING.MEETING_USERS, {
-          params: {
-            meetingId: this.props.meetingId
-          }
-        }).then((response) => {
-          if (response.data !== "") {
-            this.setState({usersConnected: response.data["users"]});
-            this.updateUsersConnected(response.data["users"]);
-          }
-        }).catch((response) => {
-          console.log('error ' + response)
-        });
-        break;
-
       case "user disconnected":
-        console.log('user disconnected' + JSON.stringify(payload));
         this.updateUsersConnected(jsonPayload.payload);
         break;
 
@@ -373,15 +343,10 @@ class SharedBoard extends Component {
 
   handleToggle = () => {
     this.setState({active: !this.state.active});
+    this.getConnectedUsers(this.props.meetingId);
   };
 
   updateUsersConnected(payload) {
-
-    console.log('Entree al update users connected');
-    console.log("Shared users payload" + JSON.stringify(payload));
-    let load = JSON.stringify(this.state.usersConnected);
-    console.log("State Users connected " + load);
-    let newParticipantsStatus = [];
 
     let usersStatus = this.state.participants.map((participant) => {
       let obj = {};
@@ -389,16 +354,13 @@ class SharedBoard extends Component {
       if (this.state.usersConnected.includes(participant["username"])) {
         obj["username"] = participant["username"];
         obj["status"] = 'Online';
-        console.log('TRUE = ' + JSON.stringify(obj));
       } else {
         obj["username"] = participant["username"];
         obj["status"] = 'Offline';
-        console.log('FALSE' + JSON.stringify(obj));
       }
       return obj;
     });
     this.setState({participants: usersStatus});
-    console.log(JSON.stringify(usersStatus));
   }
 
   render() {
@@ -435,7 +397,10 @@ class SharedBoard extends Component {
 SharedBoard.propTypes = {
   connectDropTarget: PropTypes.func.isRequired,
   meetingId: PropTypes.string,
-  onClick: PropTypes.func
+  onClick: PropTypes.func,
+  connect: PropTypes.bool,
+  user: PropTypes.string,
+  userDisconnected: PropTypes.func
 };
 
 export default flow(

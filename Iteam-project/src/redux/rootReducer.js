@@ -3,10 +3,12 @@ import { routerReducer as router } from 'react-router-redux'
 import loginUser from './reducers/Login/LoginUser';
 import meetingReducer from './reducers/Meeting/MeetingReducer'
 import meetingForTeamReducer from './reducers/Meeting/MeetingForTeamReducer'
+import meetingUser from './reducers/Meeting/MeetingUserConnected'
 
 export default combineReducers({
   router,
   loginUser,
   meetingReducer,
-  meetingForTeamReducer
+  meetingForTeamReducer,
+  meetingUser
 })

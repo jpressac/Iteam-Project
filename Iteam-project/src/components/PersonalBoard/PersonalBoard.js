@@ -6,11 +6,12 @@ import {ItemTypes} from "../Constants/Constants";
 import Button from 'react-toolbox/lib/button';
 import Tooltip from 'react-toolbox/lib/tooltip';
 import flow from 'lodash/flow'
-import {connect as con, initWebSocket, sendMessage, disconnect} from '../../websocket/websocket'
+import {connect as con, initWebSocket, sendMessage} from '../../websocket/websocket'
 import {connect} from 'react-redux'
 import axios from 'axios'
 import {MEETING} from '../../constants/HostConfiguration'
 import generateUUID from '../../constants/utils/GetUUID'
+import {userConnection} from '../../redux/reducers/Meeting/MeetingUserConnected'
 
 const TooltipButton = Tooltip(Button);
 
@@ -24,10 +25,17 @@ const NoteTarget = {
   }
 };
 
+const mapDispatchToProps = (dispatch) => ({
+
+  userConnected: () => dispatch(userConnection())
+
+});
+
 const mapStateToProps = (state) => {
   return {
     user: state.loginUser.user.username,
-    meetingId: state.meetingReducer.meetingId
+    meetingId: state.meetingReducer.meetingId,
+    connected: state.meetingUser
   }
 };
 
@@ -46,17 +54,17 @@ class PersonalBoard extends Component {
   componentDidMount() {
     initWebSocket();
     con();
+    if(this.props.connected == null || !this.props.connected) {
+      this.props.userConnected();
+      axios.head(MEETING.MEETING_USER_CONNECTION, {
+        headers: {
+          username: this.props.user,
+          meetingId: this.props.meetingId
+        }
+      }).then(function (response) {
 
-    //setTimeout(this.updateConnectionStatus.bind(this, 'user connected', 'Online'), 2000);
-    axios.head(MEETING.MEETING_USER_CONNECTION, {
-      headers: {
-        username : this.props.user,
-        meetingId: this.props.meetingId
-      }
-    }).then(function(response) {
-      console.log('Adding user connected ' + response.status);
-    });
-
+      });
+    }
     axios.get(MEETING.MEETING_INFO_PERSONAL_BOARD, {
       params: {
         meetingId: this.props.meetingId,
@@ -151,17 +159,8 @@ class PersonalBoard extends Component {
   send(id) {
     let map = {};
     map[id] = this.state.notes[id];
-
-    console.log("state notes id " + JSON.stringify(map));
-
     sendMessage("insertSharedBoard", this.props.meetingId, JSON.stringify(map));
     this.remove(id)
-  }
-
-  updateConnectionStatus(action, status) {
-    sendMessage(action, this.props.meetingId, JSON.stringify({
-      "users": [this.props.user]
-    }));
   }
 
   updateNotesCacheByUser(map){
@@ -197,8 +196,10 @@ class PersonalBoard extends Component {
 
 PersonalBoard.propTypes = {
   connectDropTarget: PropTypes.func.isRequired,
+  userConnected: PropTypes.func,
   user: PropTypes.any,
-  meetingId: PropTypes.string
+  meetingId: PropTypes.string,
+  connected: PropTypes.bool
 };
 
 export default flow(
@@ -207,4 +208,4 @@ export default flow(
       ( {
         connectDropTarget: connection.dropTarget()
       }
-      )), connect(mapStateToProps))(PersonalBoard);
+      )), connect(mapStateToProps, mapDispatchToProps))(PersonalBoard);

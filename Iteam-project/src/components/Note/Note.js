@@ -12,7 +12,6 @@ import classes from './Note.scss'
 import imputSize from './InputSize.scss'
 import Chipscss from './Chip.scss'
 import Input from 'react-toolbox/lib/input';
-// import createFragment from 'react-addons-create-fragment'
 
 
 const NoteSource = {
