@@ -4,6 +4,7 @@ import {connect} from 'react-redux'
 import BootstrapModal from '../../components/BootstrapModal/BootstrapModal'
 import Input from 'react-toolbox/lib/input';
 import themeLabel from './label.scss'
+import chipTheme from './chips.scss'
 import {Button, IconButton} from 'react-toolbox/lib/button';
 import Tooltip from 'react-toolbox/lib/tooltip';
 import {push} from 'react-router-redux';
@@ -11,7 +12,7 @@ import {PATHS} from '../../constants/routes';
 import {MEETING} from '../../constants/HostConfiguration';
 import axios from 'axios';
 import Dropdown from 'react-toolbox/lib/dropdown';
-
+import Chip from 'react-toolbox/lib/chip';
 
 const mapDispatchToProps = dispatch => ({
   goToMyMeetings: () => dispatch(push('/' + PATHS.MENULOGGEDIN.MYMEETINGS))
@@ -41,8 +42,8 @@ class MeetingConfigForm extends Component {
       technicValue: 0,
       pbtime: 0,
       sbtime: 0,
-      template: 'Default',
-      templateValue: '',
+      template: 0,
+      templateValue: 0,
       notesFunctions: []
     };
   }
@@ -91,15 +92,9 @@ class MeetingConfigForm extends Component {
     console.debug('tag Labels');
     return this.state.tags.map(function (tag, index) {
       return (
-        <div style={{display: 'inline-block', margin: '2%'}}>
-            <span className="tag label label-info"
-                  style={{fontSize:14, margin:10, marginTop:50, background:'#900C3F', color:'white'}}>
-              <span key={index}> {tag}</span>
-              <a href='javascript:;' onClick={this.deletetag.bind(this, index)}>
-                <i className="remove glyphicon glyphicon-remove-sign glyphicon-white"/>
-              </a>
-            </span>
-        </div>
+        <Chip deletable onDeleteClick={this.deletetag.bind(this, index)} theme={chipTheme}>
+          {tag}
+        </Chip>
       );
     }.bind(this));
   }
@@ -117,7 +112,7 @@ class MeetingConfigForm extends Component {
         tags: this.state.tags,
         pbtime: this.state.pbtime,
         sbtime: this.state.sbtime,
-        technic: this.state.technic,
+        technic: this.state.technicValue,
         template: this.state.template
       }
     }).then(function (response) {

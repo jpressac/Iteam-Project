@@ -9,8 +9,12 @@ import {push} from 'react-router-redux'
 import {PATHS} from '../../constants/routes'
 import classes from './TeamSuggestionForm.scss'
 import themeLabel from './label.scss'
+import chipTheme from './chips.scss'
 import Tooltip from 'react-toolbox/lib/tooltip';
 import {TEAM, UTILITIES} from '../../constants/HostConfiguration'
+import Chip from 'react-toolbox/lib/chip';
+
+
 
 const mapStateToProps = (state) => {
   if (state.loginUser !== null) {
@@ -243,15 +247,9 @@ class TeamSuggestionForm extends React.Component {
   filterLabels() {
     return this.state.filters.map(function (filter, index) {
       return (
-        <div style={{display: 'inline-block', margin: '2%'}}>
-          <span className="tag label label-info"
-                style={{fontSize:14, margin:10, marginTop:50, background:'#900C3F', color:'white'}}>
-            <span key={index}> {filter.field} : {filter.values}</span>
-              <a href='javascript:;' onClick={this.deleteFilter.bind(this, index)}>
-                <i className="remove glyphicon glyphicon-remove-sign glyphicon-white"/>
-              </a>
-          </span>
-        </div>
+      <Chip deletable onDeleteClick={this.deleteFilter.bind(this, index)} theme={chipTheme}>
+        {filter.values}
+      </Chip>
       );
     }.bind(this));
   }

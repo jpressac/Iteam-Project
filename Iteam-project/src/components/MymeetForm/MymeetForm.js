@@ -13,16 +13,21 @@ import BootstrapModal from '../../components/BootstrapModal/BootstrapModal';
 import ListItem1 from './ListItem1.scss'
 import ListItem2 from './ListItem2.scss'
 import listFormat from './List.scss'
+import chipTheme from './chips.scss'
 import {updateMeetingId} from '../../redux/reducers/Meeting/MeetingReducer'
 import {TEAM, MEETING} from '../../constants/HostConfiguration'
 import themeLabel from './label.scss'
 import Dropdown from 'react-toolbox/lib/dropdown';
 import Tooltip from 'react-toolbox/lib/tooltip';
 import {Button} from 'react-toolbox/lib/button';
+import Chip from 'react-toolbox/lib/chip';
 
 var programDate = new Date();
 const TooltipButton = Tooltip(Button);
-const technics = [{value:0, label:'Brainstorming'}, {value:1, label:'SCAMPER'}, {value:2, label:'morphological analysis'}];
+const technics = [{value: 0, label: 'Brainstorming'}, {value: 1, label: 'SCAMPER'}, {
+  value: 2,
+  label: 'morphological analysis'
+}];
 
 
 const mapStateToProps = (state) => {
@@ -51,20 +56,12 @@ class MymeetForm extends Component {
       meetings: {},
       date: new Date(),
       active: false,
+      config: {},
       meetEdit: {},
-      editedFields: {
-        topic: false,
-        description: false,
-        programmedDate: false
-      },
       editable: true,
-      votes: 0,
-      tag: '',
-      tags: [],
-      technic: 'Brainstorming',
-      technicValue: 0,
-      pbtime: 0,
-      sbtime: 0
+      technicValue: '',
+      teamName:{},
+      tag: ''
     }
   }
 
@@ -79,17 +76,12 @@ class MymeetForm extends Component {
   }
 
   handleToggleDialog = (meeting) => {
-    console.log('al handle tambien entra');
     this.setState({
       active: !this.state.active,
       datetime: meeting.programmedDate,
       time: meeting.programmedDate,
+      config: meeting.meetingConfig,
       meetEdit: meeting,
-      editedFields: {
-        topic: false,
-        description: false,
-        programmedDate: false
-      },
       editable: true
     });
     var datetime = new Date(meeting.programmedDate);
@@ -166,7 +158,6 @@ class MymeetForm extends Component {
     {label: "Edit", onClick: this.edit.bind(this)},
     {label: "Save", onClick: this.save.bind(this)}
   ];
-
   AdminUserActionsFinish = [
     {label: "Cancel", onClick: this.handleToggleDialog},
     {label: "View Reports", onClick: this.goToReports.bind(this)}
@@ -181,29 +172,13 @@ class MymeetForm extends Component {
     {label: "OK", onClick: this.handleToggleDialog}
   ];
 
-
-  fillfields(meetings) {
-    this.setState({meetings: meetings});
-  }
-
   static renderDate(meetingTime) {
     return new Date(meetingTime).toLocaleDateString([], {hour: '2-digit', minute: '2-digit'});
   }
 
-  getTeamName = (meetingId) => {
-    let teamName = '';
-    axios.get(TEAM.TEAM_USER_BY_MEETING, {
-      params: {
-        meetingId: meetingId
-      }
-    }).then(function (response) {
-        console.log('AXIOS' + response.data["teamId"]);
-        this.setState({teamName: response.data["teamId"]});
-      }.bind(this)
-    );
-
-    return teamName;
-  };
+  fillfields(meetings) {
+    this.setState({meetings: meetings});
+  }
 
   componentDidMount() {
     axios.get(MEETING.MEETING_BY_USER, {params: {username: this.props.user}}).then(function (response) {
@@ -216,23 +191,13 @@ class MymeetForm extends Component {
   }
 
   save() {
-    let editedFields = this.state.editedFields;
     let editedMeeting = this.state.meetEdit;
-    let saveMeeting = {};
 
-    saveMeeting['meetingId'] = this.state.meetEdit.meetingId;
+    editedMeeting.meetingId = this.state.meetEdit.meetingId;
+    editedMeeting.meetingConfig = this.state.config;
+    console.debug('Save meeting object: ' + JSON.stringify(editedMeeting));
 
-    if (editedFields.topic === true) {
-      saveMeeting['topic'] = editedMeeting.topic;
-    }
-    if (editedFields.description === true) {
-      saveMeeting['description'] = editedMeeting.description;
-    }
-    if (editedFields.programmedDate === true) {
-      saveMeeting['programmedDate'] = programDate.getTime();
-    }
-
-    axios.post(MEETING.MEETING_UPDATE, saveMeeting).then(
+    axios.post(MEETING.MEETING_UPDATE, editedMeeting).then(
       function (response) {
       }
     ).catch(
@@ -245,22 +210,40 @@ class MymeetForm extends Component {
   onChangeTopic = (topic) => {
     var newMeeting = this.state.meetEdit;
     newMeeting.topic = topic;
-    var editedState = this.state.editedFields;
-    editedState.topic = true;
     this.setState({
-      meetEdit: newMeeting,
-      editedFields: editedState
+      meetEdit: newMeeting
+    });
+  };
+
+  onChangeVotes = (votes) => {
+    var newMeeting = this.state.meetEdit;
+    newMeeting.meetingConfig.votes = votes;
+    this.setState({
+      meetEdit: newMeeting
+    });
+  };
+
+  onChangeSbtime = (sbtime) => {
+    var newMeeting = this.state.meetEdit;
+    newMeeting.meetingConfig.sbtime = sbtime;
+    this.setState({
+      meetEdit: newMeeting
+    });
+  };
+
+  onChangePbtime = (pbtime) => {
+    var newMeeting = this.state.meetEdit;
+    newMeeting.meetingConfig.pbtime = pbtime;
+    this.setState({
+      meetEdit: newMeeting
     });
   };
 
   onChangeDescription = (description) => {
     var newMeeting = this.state.meetEdit;
     newMeeting.description = description;
-    var editedState = this.state.editedFields;
-    editedState.description = true;
     this.setState({
-      meetEdit: newMeeting,
-      editedFields: editedState
+      meetEdit: newMeeting
     });
   };
 
@@ -273,11 +256,8 @@ class MymeetForm extends Component {
 
     var newMeeting = this.state.meetEdit;
     newMeeting.programmedDate = programDate;
-    var editedState = this.state.editedFields;
-    editedState.programmedDate = true;
     this.setState({
-      meetEdit: newMeeting,
-      editedFields: editedState
+      meetEdit: newMeeting
     });
   };
 
@@ -288,83 +268,70 @@ class MymeetForm extends Component {
 
     var newMeeting = this.state.meetEdit;
     newMeeting.programmedDate = programDate;
-    var editedState = this.state.editedFields;
-    editedState.programmedDate = true;
     this.setState({
-      meetEdit: newMeeting,
-      editedFields: editedState
+      meetEdit: newMeeting
     });
   };
 
   handleChangeCombo = (value) => {
     let filteredLabelObject = technics.filter(filter => filter["value"] == value);
-    this.setState({technicValue: value, technic: filteredLabelObject[0]["label"]})
+    var newconfig = this.state.config;
+    newconfig.technic = value;
+    this.setState({config: newconfig, technicValue: filteredLabelObject[0]["label"]})
   };
 
-
-
-  showDialogForUser(){
-    return (
-      <Dialog
-        actions={this.showActions(this.state.meetEdit.ownerName, this.state.meetEdit.programmedDate)}
-        active={this.state.active}
-        onEscKeyDown={this.handleToggleDialog}
-        onOverlayClick={this.handleToggleDialog}>
-        <Input type='text' label='Topic' value={this.state.meetEdit.topic} maxLength={30}
-               onChange={this.onChangeTopic.bind(this)} disabled={this.state.editable}/>
-        <Input type='text' label='Description' value={this.state.meetEdit.description} maxLength={144}
-               onChange={this.onChangeDescription.bind(this)} disabled={this.state.editable}/>
-        <Input type='text' label='Team Name' value="Iteam" disabled/>
-        <DatePicker label='Select date' sundayFirstDayOfWeek value={new Date(this.state.datetime)}
-                    readonly={this.state.editable} onChange={this.onChangeProgrammedDate.bind(this)}
-                    minDate={new Date()}/>
-        <TimePicker label='Select time'
-                    value={isNaN(new Date(this.state.time)) ? 0 : new Date(this.state.time)}
-                    readonly={this.state.editable} onChange={this.onChangeProgrammedTime.bind(this)}/>
-      </Dialog>
-    )
-  }
 
   handleChange = (name, value) => {
     this.setState({...this.state, [name]: value});
   };
+
   deletetag(pos) {
-    let newtags = this.state.tags;
+    let newtags = this.state.config.tags;
     newtags.map(function (filter, index) {
       if (pos === index) {
         newtags.splice(index, 1);
       }
     });
-    this.setState({tags: newtags});
+    var newconfig = this.state.config;
+    newconfig.tags = newtags;
+    this.setState({config: newconfig, tag: ''});
   }
-    handleAddTag() {
-      if (this.state.tag !== '') {
-        console.debug('llega hasta aca');
-        var newtags = this.state.tags;
-        newtags.push((this.state.tag));
-        this.setState({tags: newtags, tag: ''});
-        console.debug('tags: ' + this.state.tags);
+
+  handleAddTag() {
+    if (this.state.tag !== '') {
+      var newtags = this.state.config.tags;
+      newtags.push((this.state.tag));
+      var newconfig = this.state.config;
+      newconfig.tags = newtags;
+      this.setState({config: newconfig, tag: ''});
+      console.debug('tags: ' + this.state.tags);
+    }
+  }
+
+  tagLabels() {
+    if (typeof this.state.config.tags !== "undefined") {
+      return this.state.config.tags.map(function (tag, index) {
+        return (
+            <Chip deletable={!this.state.editable} onDeleteClick={this.deletetag.bind(this, index)} theme={chipTheme}>
+              {tag}
+            </Chip>
+        );
+      }.bind(this));
+    }
+  }
+
+  showDialog() {
+      if (this.isAdmin(this.state.meetEdit.ownerName)) {
+        this.getTeamName();
+        return this.showDialogForAdmin();
+      }
+      else {
+        return this.showDialogForUser()
+          ;
       }
     }
 
-  tagLabels() {
-    console.debug('tag Labels');
-    return this.state.tags.map(function (tag, index) {
-      return (
-        <div style={{display: 'inline-block', margin: '2%'}}>
-            <span className="tag label label-info"
-                  style={{fontSize:14, margin:10, marginTop:50, background:'#900C3F', color:'white'}}>
-              <span key={index}> {tag}</span>
-              <a href='javascript:;' onClick={this.deletetag.bind(this, index)}>
-                <i className="remove glyphicon glyphicon-remove-sign glyphicon-white"/>
-              </a>
-            </span>
-        </div>
-      );
-    }.bind(this));
-  }
-
-  showDialogForAdmin(){
+  showDialogForUser() {
     return (
       <Dialog
         actions={this.showActions(this.state.meetEdit.ownerName, this.state.meetEdit.programmedDate)}
@@ -372,40 +339,67 @@ class MymeetForm extends Component {
         onEscKeyDown={this.handleToggleDialog}
         onOverlayClick={this.handleToggleDialog}>
         <Input type='text' label='Topic' value={this.state.meetEdit.topic} maxLength={30}
-               onChange={this.onChangeTopic.bind(this)} disabled={this.state.editable}/>
+               onChange={this.onChangeTopic.bind(this)} disabled={this.state.editable}
+               theme={themeLabel}/>
         <Input type='text' label='Description' value={this.state.meetEdit.description} maxLength={144}
-               onChange={this.onChangeDescription.bind(this)} disabled={this.state.editable}/>
-        <Input type='text' label='Team Name' value="Iteam" disabled/>
+               onChange={this.onChangeDescription.bind(this)} disabled={this.state.editable}
+               theme={themeLabel}/>
+        <Input type='text' label='Team Name' value="Iteam" disabled theme={themeLabel}/>
         <DatePicker label='Select date' sundayFirstDayOfWeek value={new Date(this.state.datetime)}
                     readonly={this.state.editable} onChange={this.onChangeProgrammedDate.bind(this)}
                     minDate={new Date()}/>
         <TimePicker label='Select time'
                     value={isNaN(new Date(this.state.time)) ? 0 : new Date(this.state.time)}
                     readonly={this.state.editable} onChange={this.onChangeProgrammedTime.bind(this)}/>
-
-
-        <Input type="text" theme={themeLabel} label="Select amount of votes" value={this.state.votes}
-               onChange={this.handleChange.bind(this, 'votes')} type='number'/>
-        <Input type="text" theme={themeLabel} label="Select amount minutes in personal board"
-               value={this.state.pbtime} onChange={this.handleChange.bind(this, 'pbtime')}
-               type='number'/>
-        <Input type="text" theme={themeLabel} label="Select amount minutes in shared board"
-               value={this.state.sbtime} onChange={this.handleChange.bind(this, 'sbtime')}
-               type='number'/>
-        <Dropdown label="Select technic" auto theme={themeLabel} style={{color: '#900C3F'}}
-                  onChange={this.handleChangeCombo.bind(this)}
-                  source={technics}
-                  value={this.state.technicValue}/>
-        <Input type='text' label='Tag' value={this.state.tag}
-               onChange={this.handleChange.bind(this,'tag')} maxLength={30} theme={themeLabel}/>
-        <TooltipButton icon='add' tooltip='Add tag'
-                       style={{background:'#900C3F', color:'white', marginTop:10}} floating mini
-                       onClick={this.handleAddTag.bind(this)}/>
-        {this.tagLabels()}
       </Dialog>
     )
   }
 
+  showDialogForAdmin() {
+    return (
+      <Dialog
+        actions={this.showActions(this.state.meetEdit.ownerName, this.state.meetEdit.programmedDate)}
+        active={this.state.active}
+        onEscKeyDown={this.handleToggleDialog}
+        onOverlayClick={this.handleToggleDialog}>
+        <Input type='text' label='Topic' value={this.state.meetEdit.topic} maxLength={30}
+               onChange={this.onChangeTopic.bind(this)} disabled={this.state.editable}
+               theme={themeLabel}/>
+        <Input type='text' label='Description' value={this.state.meetEdit.description} maxLength={144}
+               onChange={this.onChangeDescription.bind(this)} disabled={this.state.editable}
+               theme={themeLabel}/>
+        <DatePicker label='Select date' sundayFirstDayOfWeek value={new Date(this.state.datetime)}
+                    readonly={this.state.editable} onChange={this.onChangeProgrammedDate.bind(this)}
+                    minDate={new Date()}
+                    theme={themeLabel}/>
+        <TimePicker label='Select time'
+                    value={isNaN(new Date(this.state.time)) ? 0 : new Date(this.state.time)}
+                    readonly={this.state.editable} onChange={this.onChangeProgrammedTime.bind(this)}
+                    theme={themeLabel}/>
+        <Input type="text" label="Select amount of votes" value={this.state.config.votes}
+               onChange={this.onChangeVotes.bind(this)} disabled={this.state.editable} type='number'
+               theme={themeLabel}/>
+        <Input type="text" label="Select amount minutes in personal board"
+               value={this.state.config.pbtime} onChange={this.onChangePbtime.bind(this)}
+               disabled={this.state.editable} type='number'
+               theme={themeLabel}/>
+        <Input type="text" label="Select amount minutes in shared board"
+               value={this.state.config.sbtime} onChange={this.onChangeSbtime.bind(this)}
+               disabled={this.state.editable} type='number'
+               theme={themeLabel}/>
+        <Dropdown label="Select technic" auto onChange={this.handleChangeCombo.bind(this)} style={{color: '#900C3F'}}
+                  source={technics} disabled={this.state.editable} value={this.state.config.technic}
+                  theme={themeLabel}/>
+        <Input type='text' label='Tag' value={this.state.tag} disabled={this.state.editable}
+               onChange={this.handleChange.bind(this,'tag')} maxLength={30}
+               theme={themeLabel}/>
+        <TooltipButton icon='add' tooltip='Add tag' floating mini
+                       style={{background:'#900C3F', color:'white', marginTop:10}}
+                       disabled={this.state.editable} onClick={this.handleAddTag.bind(this)}/>
+        {this.tagLabels()}
+      </Dialog>
+    )
+  }
 
 
   render() {
@@ -444,7 +438,7 @@ class MymeetForm extends Component {
                 );
               }
             )}
-            {this.showDialogForAdmin()}
+            {this.showDialog()}
           </List>
         </div>
       </div>

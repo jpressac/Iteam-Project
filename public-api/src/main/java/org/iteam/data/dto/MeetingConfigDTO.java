@@ -16,8 +16,8 @@ public class MeetingConfigDTO {
     private List<String> tags;
     private int PBtime;
     private int SBtime;
-    private String template;
-    private String technic;
+    private int template;
+    private int technic;
 
     /**
      * @return the votes
@@ -82,7 +82,7 @@ public class MeetingConfigDTO {
     /**
      * @return the template
      */
-    public String getTemplate() {
+    public int getTemplate() {
         return template;
     }
 
@@ -90,14 +90,14 @@ public class MeetingConfigDTO {
      * @param template
      *            the template to set
      */
-    public void setTemplate(String template) {
+    public void setTemplate(int template) {
         this.template = template;
     }
 
     /**
      * @return the technic
      */
-    public String getTechnic() {
+    public int getTechnic() {
         return technic;
     }
 
@@ -105,7 +105,7 @@ public class MeetingConfigDTO {
      * @param technic
      *            the technic to set
      */
-    public void setTechnic(String technic) {
+    public void setTechnic(int technic) {
         this.technic = technic;
     }
 
