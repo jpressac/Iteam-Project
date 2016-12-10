@@ -322,7 +322,6 @@ class MymeetForm extends Component {
 
   showDialog() {
       if (this.isAdmin(this.state.meetEdit.ownerName)) {
-        this.getTeamName();
         return this.showDialogForAdmin();
       }
       else {
