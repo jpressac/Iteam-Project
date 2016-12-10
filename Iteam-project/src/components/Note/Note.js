@@ -14,6 +14,7 @@ import Chipscss from './Chip.scss'
 import Input from 'react-toolbox/lib/input';
 
 
+
 const NoteSource = {
   beginDrag(props) {
     const {id, left, top} = props;

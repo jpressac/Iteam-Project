@@ -57,7 +57,8 @@ class SharedBoard extends Component {
       notes: {},
       teamName: '',
       participants: [],
-      usersConnected: []
+      usersConnected: [],
+      filterTag: "all"
     }
   }
 
@@ -93,23 +94,43 @@ class SharedBoard extends Component {
     disconnect()
   }
 
-  renderNotes(noteMap) {
+  renderNotes(noteMap, valueForFilter) {
     return Object.keys(noteMap).map((key) => {
-      return (
-        <Note key={key}
-              id={key}
-              onRemove={this.remove.bind(this)}
-              onAddComment={this.onChangeComment.bind(this)}
-              onVote={this.onUpdateRanking.bind(this)}
-              left={noteMap[key].left}
-              top={noteMap[key].top}
-              boardType="shared"
-              comments={noteMap[key].comments}
-              title={noteMap[key].title}
-              subtitle={noteMap[key].subtitle}
-              tag={noteMap[key].tag}
-        />
-      );
+      if(valueForFilter === "all"){
+        return (
+          <Note key={key}
+                id={key}
+                onRemove={this.remove.bind(this)}
+                onAddComment={this.onChangeComment.bind(this)}
+                onVote={this.onUpdateRanking.bind(this)}
+                left={noteMap[key].left}
+                top={noteMap[key].top}
+                boardType="shared"
+                comments={noteMap[key].comments}
+                title={noteMap[key].title}
+                subtitle={noteMap[key].subtitle}
+                tag={noteMap[key].tag}
+          />
+        );
+      }else {
+        if (noteMap[key].tag === valueForFilter) {
+            return (
+              <Note key={key}
+                    id={key}
+                    onRemove={this.remove.bind(this)}
+                    onAddComment={this.onChangeComment.bind(this)}
+                    onVote={this.onUpdateRanking.bind(this)}
+                    left={noteMap[key].left}
+                    top={noteMap[key].top}
+                    boardType="shared"
+                    comments={noteMap[key].comments}
+                    title={noteMap[key].title}
+                    subtitle={noteMap[key].subtitle}
+                    tag={noteMap[key].tag}
+              />
+            );
+        }
+      }
     });
   }
 
@@ -169,7 +190,7 @@ class SharedBoard extends Component {
         }
       );
     });
-    
+
     //TODO: remove axios from here
     axios.post(MEETING.MEETING_IDEAS_SAVE, {
       ideas
@@ -346,6 +367,12 @@ class SharedBoard extends Component {
     this.getConnectedUsers(this.props.meetingId);
   };
 
+  handleFilterTags = () => {
+    this.setState({filterTag : "juan"});
+  };
+
+
+
   updateUsersConnected(payload) {
 
     let usersStatus = this.state.participants.map((participant) => {
@@ -370,9 +397,10 @@ class SharedBoard extends Component {
           <BootstrapModal ref="mymodal" message={this.state.message}/>
           <label className={classes.label1}>SHARED BOARD</label>
           <IconButton icon="menu" style={{color: '#900C3F'}} inverse onClick={this.handleToggle}/>
+          <IconButton icon="check_circle" style={{color: '#900C3F'}} inverse onClick={this.handleFilterTags}/>
         </div>
         <div className={classes.Notecontainer}>
-          {this.renderNotes(this.state.notes)}
+          {this.renderNotes(this.state.notes, this.state.filterTag)}
         </div>
         <Drawer active={this.state.active} theme={classes}
                 type="right"

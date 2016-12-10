@@ -375,14 +375,14 @@ class MymeetForm extends Component {
                     value={isNaN(new Date(this.state.time)) ? 0 : new Date(this.state.time)}
                     readonly={this.state.editable} onChange={this.onChangeProgrammedTime.bind(this)}
                     theme={themeLabel}/>
-        <Input type="text" label="Select amount of votes" value={this.state.config.votes}
+        <Input label="Select amount of votes" value={this.state.config.votes}
                onChange={this.onChangeVotes.bind(this)} disabled={this.state.editable} type='number'
                theme={themeLabel}/>
-        <Input type="text" label="Select amount minutes in personal board"
+        <Input label="Select amount minutes in personal board"
                value={this.state.config.pbtime} onChange={this.onChangePbtime.bind(this)}
                disabled={this.state.editable} type='number'
                theme={themeLabel}/>
-        <Input type="text" label="Select amount minutes in shared board"
+        <Input label="Select amount minutes in shared board"
                value={this.state.config.sbtime} onChange={this.onChangeSbtime.bind(this)}
                disabled={this.state.editable} type='number'
                theme={themeLabel}/>
