@@ -3,6 +3,7 @@ package org.iteam.services.meeting;
 import java.util.List;
 
 import org.iteam.data.dto.Meeting;
+import org.iteam.data.model.D3CollapseTreeModel;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
 import org.iteam.data.model.Reports;
@@ -45,18 +46,22 @@ public interface MeetingService {
      * 
      * @param meetingId
      *            the meeting id.
+     * @param tags
+     *            tags to create the report.
      * @return
      */
-    public Reports generateReportByUser(String meetingId);
+    public D3CollapseTreeModel generateReportByUser(String meetingId, List<String> tags);
 
     /**
      * Generate report for the given meeting.
      * 
      * @param meetingId
      *            the meeting id.
+     * @param tags
+     *            tags to create the report.
      * @return
      */
-    public Reports generateReportByTag(String meetingId);
+    public D3CollapseTreeModel generateReportByTag(String meetingId, List<String> tags);
 
     /**
      *

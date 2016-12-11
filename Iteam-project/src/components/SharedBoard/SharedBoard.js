@@ -94,41 +94,31 @@ class SharedBoard extends Component {
     disconnect()
   }
 
+  notes(noteMap, key){
+    return(
+      <Note key={key}
+            id={key}
+            onRemove={this.remove.bind(this)}
+            onAddComment={this.onChangeComment.bind(this)}
+            onVote={this.onUpdateRanking.bind(this)}
+            left={noteMap[key].left}
+            top={noteMap[key].top}
+            boardType="shared"
+            comments={noteMap[key].comments}
+            title={noteMap[key].title}
+            subtitle={noteMap[key].subtitle}
+            tag={noteMap[key].tag}
+      />
+    )
+  }
+
   renderNotes(noteMap, valueForFilter) {
     return Object.keys(noteMap).map((key) => {
       if(valueForFilter === "all"){
-        return (
-          <Note key={key}
-                id={key}
-                onRemove={this.remove.bind(this)}
-                onAddComment={this.onChangeComment.bind(this)}
-                onVote={this.onUpdateRanking.bind(this)}
-                left={noteMap[key].left}
-                top={noteMap[key].top}
-                boardType="shared"
-                comments={noteMap[key].comments}
-                title={noteMap[key].title}
-                subtitle={noteMap[key].subtitle}
-                tag={noteMap[key].tag}
-          />
-        );
+        return this.notes(noteMap, key);
       }else {
         if (noteMap[key].tag === valueForFilter) {
-            return (
-              <Note key={key}
-                    id={key}
-                    onRemove={this.remove.bind(this)}
-                    onAddComment={this.onChangeComment.bind(this)}
-                    onVote={this.onUpdateRanking.bind(this)}
-                    left={noteMap[key].left}
-                    top={noteMap[key].top}
-                    boardType="shared"
-                    comments={noteMap[key].comments}
-                    title={noteMap[key].title}
-                    subtitle={noteMap[key].subtitle}
-                    tag={noteMap[key].tag}
-              />
-            );
+           return this.notes(noteMap, key);
         }
       }
     });
@@ -249,7 +239,6 @@ class SharedBoard extends Component {
     delete map[id];
     this.setState({notes: map});
 
-    //TODO: change this method should delete the id, send the id and spring should do the work.
     sendMessage(action, this.props.meetingId, JSON.stringify(
       {
         id: noteId
@@ -283,11 +272,6 @@ class SharedBoard extends Component {
         boardType: "shared",
         tag: map[id].tag
       }));
-  }
-
-  sendUpdateCache(action, payload) {
-    sendMessage(action, this.props.meetingId, JSON.stringify(payload));
-
   }
 
   receiveMessage(payload) {
@@ -371,6 +355,10 @@ class SharedBoard extends Component {
     this.setState({filterTag : "juan"});
   };
 
+  handleFilterTagsAll = () => {
+    this.setState({filterTag : "all"});
+  };
+
 
 
   updateUsersConnected(payload) {
@@ -398,6 +386,7 @@ class SharedBoard extends Component {
           <label className={classes.label1}>SHARED BOARD</label>
           <IconButton icon="menu" style={{color: '#900C3F'}} inverse onClick={this.handleToggle}/>
           <IconButton icon="check_circle" style={{color: '#900C3F'}} inverse onClick={this.handleFilterTags}/>
+          <IconButton icon="check_circle" style={{color: '#3111d6'}} inverse onClick={this.handleFilterTagsAll}/>
         </div>
         <div className={classes.Notecontainer}>
           {this.renderNotes(this.state.notes, this.state.filterTag)}
