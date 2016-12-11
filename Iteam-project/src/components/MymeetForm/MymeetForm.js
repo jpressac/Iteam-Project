@@ -360,11 +360,10 @@ class MymeetForm extends Component {
         <Input type='text' label='Description' value={this.state.meetEdit.description} maxLength={144}
                onChange={this.onChangeDescription.bind(this)} disabled={this.state.editable}
                theme={themeLabel}/>
-        <Input type='text' label='Team Name' value="Iteam" disabled theme={themeLabel}/>
-        <DatePicker label='Select date' sundayFirstDayOfWeek value={new Date(this.state.datetime)}
+        <DatePicker label='Date' sundayFirstDayOfWeek value={new Date(this.state.datetime)}
                     readonly={this.state.editable} onChange={this.onChangeProgrammedDate.bind(this)}
                     minDate={new Date()}/>
-        <TimePicker label='Select time'
+        <TimePicker label='Time'
                     value={isNaN(new Date(this.state.time)) ? 0 : new Date(this.state.time)}
                     readonly={this.state.editable} onChange={this.onChangeProgrammedTime.bind(this)}/>
       </Dialog>
@@ -384,26 +383,26 @@ class MymeetForm extends Component {
         <Input type='text' label='Description' value={this.state.meetEdit.description} maxLength={144}
                onChange={this.onChangeDescription.bind(this)} disabled={this.state.editable}
                theme={themeLabel}/>
-        <DatePicker label='Select date' sundayFirstDayOfWeek value={new Date(this.state.datetime)}
+        <DatePicker label='Date' sundayFirstDayOfWeek value={new Date(this.state.datetime)}
                     readonly={this.state.editable} onChange={this.onChangeProgrammedDate.bind(this)}
                     minDate={new Date()}
                     theme={themeLabel}/>
-        <TimePicker label='Select time'
+        <TimePicker label='Time'
                     value={isNaN(new Date(this.state.time)) ? 0 : new Date(this.state.time)}
                     readonly={this.state.editable} onChange={this.onChangeProgrammedTime.bind(this)}
                     theme={themeLabel}/>
-        <Input type="text" label="Select amount of votes" value={this.state.config.votes}
+        <Input type="text" label="Votes" value={this.state.config.votes}
                onChange={this.onChangeVotes.bind(this)} disabled={this.state.editable} type='number'
-               theme={themeLabel}/>
-        <Input type="text" label="Select amount minutes in personal board"
+               theme={themeLabel} min="0"/>
+        <Input type="text" label="Minutes in personal board"
                value={this.state.config.pbtime} onChange={this.onChangePbtime.bind(this)}
                disabled={this.state.editable} type='number'
-               theme={themeLabel}/>
-        <Input type="text" label="Select amount minutes in shared board"
+               theme={themeLabel} min="0"/>
+        <Input type="text" label="Minutes in shared board"
                value={this.state.config.sbtime} onChange={this.onChangeSbtime.bind(this)}
                disabled={this.state.editable} type='number'
-               theme={themeLabel}/>
-        <Dropdown label="Select technic" auto onChange={this.handleChangeCombo.bind(this)} style={{color: '#900C3F'}}
+               theme={themeLabel} min="0"/>
+        <Dropdown label="Technic" auto onChange={this.handleChangeCombo.bind(this)} style={{color: '#900C3F'}}
                   source={technics} disabled={this.state.editable} value={this.state.config.technic}
                   theme={themeLabel}/>
         <Input type='text' label='Tag' value={this.state.tag} disabled={this.state.editable}

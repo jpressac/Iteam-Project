@@ -106,7 +106,6 @@ class SharedBoard extends Component {
               boardType="shared"
               comments={noteMap[key].comments}
               title={noteMap[key].title}
-              subtitle={noteMap[key].subtitle}
               tag={noteMap[key].tag}
         />
       );
@@ -161,7 +160,6 @@ class SharedBoard extends Component {
         {
           username: value.username,
           title: value.title,
-          subtitle: value.subtitle,
           comments: value.comments,
           ranking: value.ranking,
           meetingId: value.meetingId,
@@ -169,7 +167,7 @@ class SharedBoard extends Component {
         }
       );
     });
-    
+
     //TODO: remove axios from here
     axios.post(MEETING.MEETING_IDEAS_SAVE, {
       ideas
@@ -253,7 +251,6 @@ class SharedBoard extends Component {
         id: map[id].id,
         username: map[id].username,
         title: map[id].title,
-        subtitle: map[id].subtitle,
         left: map[id].left,
         top: map[id].top,
         comments: map[id].comments,
@@ -290,7 +287,6 @@ class SharedBoard extends Component {
               top: SharedBoard.generateRandomNumber(),
               username: jsonPayloadMessage[key].username,
               title: jsonPayloadMessage[key].title,
-              subtitle: jsonPayloadMessage[key].subtitle,
               comments: 'No comments',
               ranking: 0,
               meetingId: this.props.meetingId,
@@ -312,7 +308,6 @@ class SharedBoard extends Component {
               left: jsonPayloadMessage.left,
               top: jsonPayloadMessage.top,
               title: jsonPayloadMessage.title,
-              subtitle: jsonPayloadMessage.subtitle,
               comments: jsonPayloadMessage.comments,
               ranking: jsonPayloadMessage.ranking,
               meetingId: this.props.meetingId,

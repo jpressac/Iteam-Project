@@ -35,7 +35,8 @@ const mapStateToProps = (state) => {
   return {
     user: state.loginUser.user.username,
     meetingId: state.meetingReducer.meetingId,
-    connected: state.meetingUser
+    connected: state.meetingUser,
+    meetingConfiguration: state.meetingConfigurationReducer.meeting.config
   }
 };
 
@@ -95,10 +96,10 @@ class PersonalBoard extends Component {
               onSend={this.send.bind(this)}
               left={noteMap[key].left}
               top={noteMap[key].top}
-              subtitle={noteMap[key].subtitle}
               boardType={noteMap[key].boardType}
               title={noteMap[key].title}
               tag={noteMap[key].tag}
+              tagMap={this.props.meetingConfiguration.tags}
         />
       );
     });
@@ -114,9 +115,8 @@ class PersonalBoard extends Component {
         top: generateRandomNumber(),
         username: this.props.user,
         title: text,
-        subtitle: "No subtitle",
         comments: "No comments",
-        tag: "No tag",
+        tag: '',
         ranking: 0,
         meetingId: this.props.meetingId,
         boardType: "personal"
@@ -126,11 +126,10 @@ class PersonalBoard extends Component {
     this.setState({notes: map});
   }
 
-  update(titleText, subtitleText, id, tag) {
+  update(titleText, id, tag) {
     let map = this.state.notes;
     let note = map[id];
     note.title = titleText;
-    note.subtitle = subtitleText;
     note.tag = tag;
 
     this.updateNotesCacheByUser(map);
@@ -199,7 +198,8 @@ PersonalBoard.propTypes = {
   userConnected: PropTypes.func,
   user: PropTypes.any,
   meetingId: PropTypes.string,
-  connected: PropTypes.bool
+  connected: PropTypes.bool,
+  meetingConfiguration: PropTypes.any
 };
 
 export default flow(

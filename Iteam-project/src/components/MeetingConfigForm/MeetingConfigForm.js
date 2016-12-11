@@ -141,19 +141,19 @@ class MeetingConfigForm extends Component {
                 <div className="col-md-8">
                   <div className="row" style={{color: '#900C3F'}}>
                     <Input type="text" theme={themeLabel} label="Select amount of votes" value={this.state.votes}
-                           onChange={this.handleChange.bind(this, 'votes')} type='number'/>
+                           onChange={this.handleChange.bind(this, 'votes')} type='number' min="0"/>
                   </div>
                 </div>
                 <div className="col-md-8">
                   <div className="row" style={{color: '#900C3F'}}>
                     <Input type="text" theme={themeLabel} label="Select amount minutes in personal board"
                            value={this.state.pbtime} onChange={this.handleChange.bind(this, 'pbtime')}
-                           type='number'/>
+                           type='number' min="0"/>
                     <div className="col-md-8">
                       <div className="row" style={{color: '#900C3F'}}>
                         <Input type="text" theme={themeLabel} label="Select amount minutes in shared board"
                                value={this.state.sbtime} onChange={this.handleChange.bind(this, 'sbtime')}
-                               type='number'/>
+                               type='number' min="0"/>
                       </div>
                     </div>
                   </div>
