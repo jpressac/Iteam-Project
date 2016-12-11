@@ -3,7 +3,6 @@ import classes from './HomeForm.scss'
 import {PATHS} from '../../constants/routes'
 import {connect} from 'react-redux'
 import {push} from 'react-router-redux'
-import img1 from '../LoginForm/image/table.png'
 import button from './button.scss';
 import buttonNv from './buttonNoVisible.scss';
 import buttonv from './buttonVisible.scss'

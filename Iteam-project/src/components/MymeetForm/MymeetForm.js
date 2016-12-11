@@ -15,12 +15,13 @@ import ListItem2 from './ListItem2.scss'
 import listFormat from './List.scss'
 import chipTheme from './chips.scss'
 import {updateMeetingId} from '../../redux/reducers/Meeting/MeetingReducer'
-import {TEAM, MEETING} from '../../constants/HostConfiguration'
+import {MEETING} from '../../constants/HostConfiguration'
 import themeLabel from './label.scss'
 import Dropdown from 'react-toolbox/lib/dropdown';
 import Tooltip from 'react-toolbox/lib/tooltip';
 import {Button} from 'react-toolbox/lib/button';
 import Chip from 'react-toolbox/lib/chip';
+import {saveConfig} from '../../redux/reducers/Meeting/MeetingConfigReducer'
 
 var programDate = new Date();
 const TooltipButton = Tooltip(Button);
@@ -42,8 +43,9 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => ({
 
-  onClick: () => dispatch(push('/' + PATHS.MENULOGGEDIN.BOARD)),
-  updateMyMeetingId: (meetingId) => dispatch(updateMeetingId(meetingId))
+  onClick: () => dispatch(push('/' + PATHS.MENULOGGEDIN.PERSONALBOARD)),
+  updateMyMeetingId: (meetingId) => dispatch(updateMeetingId(meetingId)),
+  saveMeetingConfig: (meeting) => dispatch(saveConfig(meeting))
 });
 
 
@@ -71,7 +73,19 @@ class MymeetForm extends Component {
   }
 
   startMeeting() {
+    console.log('Meeting configuration' + this.state.config);
+    console.log('Meeting topic' + this.state.meetEdit.topic);
+
+    //Object that contains meeting info for reducer for Toolbar
+    let meetingInfo = {};
+    meetingInfo.topic = this.state.meetEdit.topic;
+    meetingInfo.config = this.state.config;
+    console.log(JSON.stringify(meetingInfo));
+    //Reducer containing toolbar info
+    this.props.saveMeetingConfig(meetingInfo);
+    //Reducer for meeting ID
     this.props.updateMyMeetingId(this.state.meetEdit.meetingId);
+    //Dispatch to personal board
     this.props.onClick();
   }
 
@@ -90,6 +104,9 @@ class MymeetForm extends Component {
     programDate.setDate(datetime.getDate());
     programDate.setHours(datetime.getHours());
     programDate.setMinutes(datetime.getMinutes());
+
+    //Save configuration to reducer
+
   };
 
   isAdmin(owner) {
@@ -108,8 +125,8 @@ class MymeetForm extends Component {
     var meetDate = new Date(date);
     var dateNow = new Date();
 
-    var meetDate_minrange = dateNow.setMinutes(dateNow.getMinutes() - 15);
-    var meetDate_maxrange = dateNow.setMinutes(dateNow.getMinutes() + 30);
+    var meetDate_minrange = dateNow.setMinutes(dateNow.getMinutes() - 150);
+    var meetDate_maxrange = dateNow.setMinutes(dateNow.getMinutes() + 300);
 
     return (meetDate_minrange < meetDate.getTime() && meetDate.getTime() < meetDate_maxrange);
   }
@@ -449,7 +466,8 @@ class MymeetForm extends Component {
 MymeetForm.propTypes = {
   onClick: PropTypes.func,
   user: PropTypes.any,
-  goToReports: PropTypes.func
+  goToReports: PropTypes.func,
+  saveMeetingConfig: PropTypes.func
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(MymeetForm);

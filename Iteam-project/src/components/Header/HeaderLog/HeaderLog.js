@@ -1,5 +1,4 @@
 import React, {Component, PropTypes} from 'react';
-import {Link} from 'react-router'
 import logo from '../image/iteamLogo.jpg'
 import {PATHS} from '../../../constants/routes'
 import AppBar from 'react-toolbox/lib/app_bar'
@@ -34,7 +33,6 @@ const mapStateToProps = (state)=> {
   }
 };
 
-
 class HeaderLog extends Component {
 
   constructor(props) {
@@ -59,7 +57,7 @@ class HeaderLog extends Component {
         <AppBar fixed flat theme={themeAppBar}>
           <div >
 
-            <img src={logo} style={{height:50,width:100,marginRight:300}}></img>
+            <img src={logo} style={{height:50,width:100,marginRight:300}} />
 
             <Navigation type="horizontal" theme={themeNav}>
               <ul className={classes.ul}>

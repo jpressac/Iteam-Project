@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -141,6 +142,18 @@ public class MeetingController {
     @RequestMapping(value = "/meeting/meetinginfo", method = RequestMethod.GET)
     public String getMeetingInfo(@RequestParam(value = "meetingId", required = true) String meetingId) {
         return meetingServiceImpl.getMeetingInfo(meetingId);
+    }
+
+    @RequestMapping(value = "/meeting/meetinginfo/byuser", method = RequestMethod.GET)
+    public String getMeetingInfoByUsers(@RequestParam(value = "meetingId", required = true) String meetingId,
+            @RequestParam(value = "username", required = true) String username) {
+        return meetingServiceImpl.getMeetingInfoByUserPersonalBoard(meetingId, username);
+    }
+
+    @RequestMapping(value = "meeting/usersconnection", method = RequestMethod.HEAD)
+    public void setUserState(@RequestHeader(value = "username", required = true) String username,
+            @RequestHeader(value = "meetingId", required = true) String meetingId) {
+        meetingServiceImpl.updateMeetingUsers(meetingId, username);
     }
 
     @Autowired
