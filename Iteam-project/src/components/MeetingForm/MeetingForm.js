@@ -19,7 +19,7 @@ import {TEAM, MEETING} from '../../constants/HostConfiguration'
 
 var datetime = new Date();
 const min_datetime = new Date(new Date(datetime).setDate(datetime.getDate()));
-
+const end_min_datetime = new Date(new Date(datetime).setDate(datetime.getDate()));
 
 const mapDispatchToProps = dispatch => ({
   saveMeetingInfo: (meeting) => dispatch(saveMeeting(meeting)),
@@ -45,17 +45,26 @@ class MeetingView extends Component {
       topic: '',
       description: '',
       programmedDate: new Date(),
+      endDate: new Date(),
       time: new Date(),
+      endtime: new Date(),
       teamName: '',
       teamsObj: [],
       teamSelectedName: ''
     }
   };
 
-  handleChange = (time) => {
-    this.setState({time: time});
+  handleChangeStart = (time) => {
+    this.setState({time: time, endtime:time});
     this.state.programmedDate.setHours(time.getHours());
     this.state.programmedDate.setMinutes(time.getMinutes());
+  };
+
+  handleChangeEnd = (time) => {
+    var beforeEndDate = this.state.programmedDate;
+    this.setState({endtime: time});
+    this.state.endDate.setHours(beforeEndDate + time.getHours());
+    this.state.endDate.setMinutes(beforeEndDate + time.getMinutes());
   };
 
   dateChange = (datetime) => {
@@ -116,6 +125,7 @@ class MeetingView extends Component {
         description: this.state.description,
         ownerName: this.props.user,
         programmedDate: this.state.programmedDate.getTime(),
+        endDate: this.state.endDate.getTime,
         teamId: teamId
       };
       this.props.goToMeetingConfig(meetingInfo);
@@ -194,16 +204,22 @@ class MeetingView extends Component {
             </div>
             <div className="form-group">
               <div className="col-md-4">
-                <div className="row" style={{color: '#900C3F'}}>
-                  <TimePicker label='Select time' onChange={this.handleChange}
-                              theme={themeLabel} value={this.state.time}/>
-                </div>
-              </div>
-              <div className="col-md-4">
                 <div className="row">
                   <DatePicker label='Select date' sundayFirstDayOfWeek style={{marginLeft: 20}}
-                              onChange={this.dateChange} minDate={min_datetime} theme={themeLabel}
+                              onChange={this.dateChange} minDate={new Date()} theme={themeLabel}
                               value={this.state.programmedDate}/>
+                </div>
+                <div className="col-md-4">
+                  <div className="row" style={{color: '#900C3F'}}>
+                    <TimePicker label='Start time' onChange={this.handleChangeStart.bind(this)}
+                                theme={themeLabel} value={this.state.time}/>
+                  </div>
+                </div>
+                <div className="col-md-4">
+                  <div className="row" style={{color: '#900C3F'}}>
+                    <TimePicker label='End time' onChange={this.handleChangeEnd.bind(this)}
+                                theme={themeLabel} value={this.state.endtime}/>
+                  </div>
                 </div>
               </div>
             </div>

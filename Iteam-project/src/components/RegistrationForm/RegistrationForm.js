@@ -70,9 +70,12 @@ class RegistrationForm extends Component {
 
   saveUser() {
     this.setState({showSpinner: true});
-    submitUser(this.state);
-    //This should be moved to submit user the sumbit method should perform the dipatch once it was save, otherwise throw error
-    this.props.goToHome()
+    submitUser(this.state).then(()=> {
+      //This should be moved to submit user the sumbit method should perform the dipatch once it was save, otherwise throw error
+      this.props.goToHome()
+    }).catch(() =>{}
+    );
+
   }
 
   handleChangeFirstName = (firstName, value) => {

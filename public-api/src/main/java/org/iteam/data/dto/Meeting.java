@@ -14,6 +14,7 @@ public class Meeting {
     private String meetingId;
     private Long creationDate;
     private Long programmedDate;
+    private Long endDate;
     private String ownerName;
     private String teamName;
     private String description;
@@ -83,8 +84,17 @@ public class Meeting {
         this.meetingConfig = meetingConfig;
     }
 
+    public Long getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Long endDate) {
+        this.endDate = endDate;
+    }
+
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
     }
+
 }
