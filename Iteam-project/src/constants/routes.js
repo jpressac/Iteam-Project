@@ -22,9 +22,9 @@ export const PATHS = {
    MEETING: 'meeting',
    BOARD: 'personalboard',
    MYMEETINGS: 'mymeeting',
+   MEETCONFIG: 'meetingconfig',
    TEAMLIST: 'myteams',
-   REPORTS: 'reports',
-   REPORTSTEST: 'reportstest'
+   REPORTS: 'reports'
  },
  MENUNOTLOGGEDIN: {
    HOME : 'application/nmember/home',
@@ -41,8 +41,8 @@ export const PATHS = {
    MEETING : 'application/member/meeting',
    BOARD : 'application/member/personalboard',
    MYMEETINGS: 'application/member/mymeeting',
+   MEETCONFIG: 'application/member/meetingconfig',
    TEAMLIST: 'application/member/myteams',
-   REPORTS: 'application/member/reports',
-   REPORTSTEST: 'application/member/reportstest'
+   REPORTS: 'application/member/reports'
  }
 };

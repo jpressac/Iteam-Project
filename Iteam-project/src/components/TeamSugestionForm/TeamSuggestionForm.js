@@ -9,8 +9,12 @@ import {push} from 'react-router-redux'
 import {PATHS} from '../../constants/routes'
 import classes from './TeamSuggestionForm.scss'
 import themeLabel from './label.scss'
+import chipTheme from './chips.scss'
 import Tooltip from 'react-toolbox/lib/tooltip';
 import {TEAM, UTILITIES} from '../../constants/HostConfiguration'
+import Chip from 'react-toolbox/lib/chip';
+
+
 
 const mapStateToProps = (state) => {
   if (state.loginUser !== null) {
@@ -243,13 +247,9 @@ class TeamSuggestionForm extends React.Component {
   filterLabels() {
     return this.state.filters.map(function (filter, index) {
       return (
-        <span className="tag label label-info"
-              style={{fontSize:14, margin:10, marginTop:50, background:'#900C3F', color:'white'}}>
-          <span key={index}> {filter.field} : {filter.values}</span>
-          <a href='javascript:;' onClick={this.deleteFilter.bind(this, index)}>
-            <i className="remove glyphicon glyphicon-remove-sign glyphicon-white"/>
-          </a>
-        </span>
+      <Chip deletable onDeleteClick={this.deleteFilter.bind(this, index)} theme={chipTheme}>
+        {filter.values}
+      </Chip>
       );
     }.bind(this));
   }
@@ -260,8 +260,6 @@ class TeamSuggestionForm extends React.Component {
         <div className={classes.label2}>
           <label>CREATE TEAM</label>
         </div>
-
-
         <div className={classes.form}>
           <div className="form-horizontal">
             <div className="form-group">
@@ -273,24 +271,19 @@ class TeamSuggestionForm extends React.Component {
                 </div>
               </div>
             </div>
-
             <div className="form-group">
               <div className="col-md-12">
                 <div className="row">
                   <div className="col-md-4">
                     {this.dropdownObjectForFilter()}
                   </div>
-
                   <div className="col-md-4">
                     {this.dropdownObjectFilteredValues()}
                   </div>
-
                   <div className="col-md-4">
-
                     <TooltipButton icon='add' tooltip='Add filter'
                                    style={{background:'#900C3F', color:'white', marginTop:10}} floating mini
                                    onClick={this.handleClick.bind(this)}/>
-
                   </div>
                 </div>
               </div>
@@ -302,12 +295,10 @@ class TeamSuggestionForm extends React.Component {
                 </div>
               </div>
             </div>
-
             <div className="form-group">
               <div className="row">
                 <div className="col-md-12">
                   <div className="col-md-2">
-
                     <TooltipButton icon='search' tooltip='Search members' style={{background:'#900C3F', color:'white'}}
                                    floating onClick={this.searchUsers.bind(this)}/>
                   </div>
@@ -328,7 +319,6 @@ class TeamSuggestionForm extends React.Component {
                       </tbody>
                     </table>
                   </div>
-
                 </div>
               </div>
               <div className="row">

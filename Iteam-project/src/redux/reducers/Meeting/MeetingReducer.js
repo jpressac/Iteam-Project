@@ -12,12 +12,18 @@ export const updateMeetingId = (meetingId) => {
   }
 };
 
+export const meetingToMeetingConfig = (meeting) => {
+  return function (dispatch) {
+    dispatch(saveMeetingInfo(meeting));
+    dispatch(push('/' + PATHS.MENULOGGEDIN.MEETCONFIG));
+  }
+};
+
 export function saveMeeting (meeting){
   return function (dispatch) {
     dispatch(saveMeetingInfo(meeting));
   }
 }
-
 
 export default function meetingReducer(state = null, action) {
   switch (action.type) {
@@ -32,3 +38,4 @@ export default function meetingReducer(state = null, action) {
 
 export const saveMeetingInfo = createAction('SAVE_MEETING', (meeting) => ({meeting}));
 export const updateMeeting = createAction('UPDATE_MEETING_ID', (meetingId) => ({meetingId}));
+
