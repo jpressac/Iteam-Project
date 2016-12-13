@@ -112,6 +112,7 @@ class MeetingConfigForm extends Component {
       topic: this.props.meetingInfo.topic,
       ownerName: this.props.user,
       programmedDate: this.props.meetingInfo.programmedDate,
+      endDate:this.props.meetingInfo.endDate,
       description: this.props.meetingInfo.description,
       teamName: this.props.meetingInfo.teamId,
       meetingConfig: {

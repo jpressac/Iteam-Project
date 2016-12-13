@@ -70,10 +70,12 @@ class RegistrationForm extends Component {
 
   saveUser() {
     this.setState({showSpinner: true});
+    this.forceUpdate();
     submitUser(this.state).then(()=> {
       //This should be moved to submit user the sumbit method should perform the dipatch once it was save, otherwise throw error
       this.props.goToHome()
-    }).catch(() =>{}
+    }).catch(() => {
+      }
     );
 
   }
@@ -292,7 +294,9 @@ class RegistrationForm extends Component {
     }
     else {
       return (
-        <Spinner/>
+        <div className={classes.form}>
+          <Spinner/>
+        </div>
       )
     }
   }

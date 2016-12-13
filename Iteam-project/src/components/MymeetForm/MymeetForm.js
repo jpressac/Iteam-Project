@@ -24,6 +24,7 @@ import Chip from 'react-toolbox/lib/chip';
 import {saveConfig} from '../../redux/reducers/Meeting/MeetingConfigReducer'
 
 var programDate = new Date();
+var endDate = new Date();
 const TooltipButton = Tooltip(Button);
 const technics = [{value: 0, label: 'Brainstorming'}, {value: 1, label: 'SCAMPER'}, {
   value: 2,
@@ -55,6 +56,7 @@ class MymeetForm extends Component {
     super(props);
     this.state = {
       time: new Date(),
+      endtime:new Date(),
       meetings: {},
       date: new Date(),
       active: false,
@@ -94,6 +96,7 @@ class MymeetForm extends Component {
       active: !this.state.active,
       datetime: meeting.programmedDate,
       time: meeting.programmedDate,
+      endtime:meeting.endDate,
       config: meeting.meetingConfig,
       meetEdit: meeting,
       editable: true
@@ -104,6 +107,13 @@ class MymeetForm extends Component {
     programDate.setDate(datetime.getDate());
     programDate.setHours(datetime.getHours());
     programDate.setMinutes(datetime.getMinutes());
+
+    var enddatetime = new Date(meeting.endDate);
+    endDate.setFullYear(enddatetime.getFullYear());
+    endDate.setMonth(enddatetime.getMonth());
+    endDate.setDate(enddatetime.getDate());
+    endDate.setHours(enddatetime.getHours());
+    endDate.setMinutes(enddatetime.getMinutes());
 
     //Save configuration to reducer
 
@@ -266,29 +276,66 @@ class MymeetForm extends Component {
 
 
   onChangeProgrammedDate = (date) => {
-    this.setState({datetime: date});
+    var newDate = new Date(MymeetForm.changeEndDate(programDate,endDate));
+
     programDate.setFullYear(date.getFullYear());
     programDate.setMonth(date.getMonth());
     programDate.setDate(date.getDate());
 
+    endDate.setFullYear(newDate.getFullYear());
+    endDate.setMonth(newDate.getMonth());
+    endDate.setDate(newDate.getDate());
+
     var newMeeting = this.state.meetEdit;
-    newMeeting.programmedDate = programDate;
+    newMeeting.programmedDate = programDate.getTime();
+    newMeeting.endDate=endDate.getTime();
     this.setState({
-      meetEdit: newMeeting
+      meetEdit: newMeeting,
+      datetime: date
     });
   };
 
+  static changeEndDate(startDate, enddate) {
+    if (startDate.getDate() <= enddate.getDate()) {
+      return enddate;
+    }
+    return new Date(MymeetForm.checkDate(programDate.getHours(),time.getHours(), programDate))
+}
+
   onChangeProgrammedTime = (time) => {
-    this.setState({time: time});
     programDate.setHours(time.getHours());
     programDate.setMinutes(time.getMinutes());
 
     var newMeeting = this.state.meetEdit;
-    newMeeting.programmedDate = programDate;
+    newMeeting.programmedDate = programDate.getTime();
     this.setState({
-      meetEdit: newMeeting
+      meetEdit: newMeeting,
+      time: time
     });
   };
+
+  onChangeEndTime = (time) => {
+    endDate = new Date(MymeetForm.checkDate(programDate.getHours(),time.getHours(), programDate));
+    console.debug('end Date: ' + endDate);
+    endDate.setHours(time.getHours());
+    endDate.setMinutes(time.getMinutes());
+
+    var newMeeting = this.state.meetEdit;
+    newMeeting.endDate = endDate.getTime();
+    this.setState({
+      meetEdit: newMeeting,
+      endtime: time
+    });
+  };
+
+  static checkDate(startHour, endHour, date) {
+    if ((endHour - startHour) < 0 && (programDate.getDate() === endDate.getDate())) {
+      var newDay = new Date(date);
+      newDay.setDate(date.getDate() + 1);
+      return newDay;
+    }
+    return endDate;
+  }
 
   handleChangeCombo = (value) => {
     let filteredLabelObject = technics.filter(filter => filter["value"] == value);
@@ -366,6 +413,10 @@ class MymeetForm extends Component {
         <TimePicker label='Time'
                     value={isNaN(new Date(this.state.time)) ? 0 : new Date(this.state.time)}
                     readonly={this.state.editable} onChange={this.onChangeProgrammedTime.bind(this)}/>
+        <TimePicker label='End Time'
+                    value={isNaN(new Date(this.state.endtime)) ? 0 : new Date(this.state.endtime)}
+                    readonly={this.state.editable} onChange={this.onChangeEndTime.bind(this)}
+                    theme={themeLabel}/>
       </Dialog>
     )
   }
@@ -387,9 +438,13 @@ class MymeetForm extends Component {
                     readonly={this.state.editable} onChange={this.onChangeProgrammedDate.bind(this)}
                     minDate={new Date()}
                     theme={themeLabel}/>
-        <TimePicker label='Time'
+        <TimePicker label='Start Time'
                     value={isNaN(new Date(this.state.time)) ? 0 : new Date(this.state.time)}
                     readonly={this.state.editable} onChange={this.onChangeProgrammedTime.bind(this)}
+                    theme={themeLabel}/>
+        <TimePicker label='End Time'
+                    value={isNaN(new Date(this.state.endtime)) ? 0 : new Date(this.state.endtime)}
+                    readonly={this.state.editable} onChange={this.onChangeEndTime.bind(this)}
                     theme={themeLabel}/>
         <Input type="text" label="Votes" value={this.state.config.votes}
                onChange={this.onChangeVotes.bind(this)} disabled={this.state.editable} type='number'

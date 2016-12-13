@@ -55,17 +55,28 @@ class MeetingView extends Component {
   };
 
   handleChangeStart = (time) => {
-    this.setState({time: time, endtime:time});
+    this.setState({time: time, endtime: time});
     this.state.programmedDate.setHours(time.getHours());
     this.state.programmedDate.setMinutes(time.getMinutes());
   };
 
   handleChangeEnd = (time) => {
     var beforeEndDate = this.state.programmedDate;
-    this.setState({endtime: time});
-    this.state.endDate.setHours(beforeEndDate + time.getHours());
-    this.state.endDate.setMinutes(beforeEndDate + time.getMinutes());
+    var newDate = new Date(MeetingView.checkDate(this.state.time.getHours(),time.getHours(), beforeEndDate));
+    console.debug('date: ' + newDate);
+    newDate.setHours(time.getHours());
+    newDate.setMinutes(time.getMinutes());
+    this.setState({endtime: time, endDate:newDate});
   };
+
+  static checkDate(startHour, endHour, date) {
+    if ((endHour - startHour) < 0) {
+      var newDay = new Date(date);
+      newDay.setDate(date.getDate() + 1);
+      return newDay;
+    }
+    return date;
+  }
 
   dateChange = (datetime) => {
     this.state.programmedDate.setFullYear(datetime.getFullYear());
@@ -125,7 +136,7 @@ class MeetingView extends Component {
         description: this.state.description,
         ownerName: this.props.user,
         programmedDate: this.state.programmedDate.getTime(),
-        endDate: this.state.endDate.getTime,
+        endDate: this.state.endDate.getTime(),
         teamId: teamId
       };
       this.props.goToMeetingConfig(meetingInfo);
