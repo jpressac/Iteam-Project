@@ -59,6 +59,7 @@ class SharedBoard extends Component {
     super(props);
     this.state = {
       notes: {},
+      active: false,
       teamName: '',
       participants: [],
       usersConnected: [],
@@ -387,6 +388,7 @@ class SharedBoard extends Component {
             <label className={classes.label1}>SHARED BOARD</label>
             <Button icon='person' theme={themeButton} style={{color:'#900C3F'}}
                     onClick={this.props.personalBoard}/>
+            <Button icon='user' theme={themeButton} style={{color:'#900C3F'}} onClick={this.handleToggle}/>
           </NavDrawer>
           <Panel>
             <div name="Notes container" className={classes.notes}>
