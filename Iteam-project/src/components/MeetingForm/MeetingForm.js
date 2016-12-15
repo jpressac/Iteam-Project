@@ -55,9 +55,15 @@ class MeetingView extends Component {
   };
 
   handleChangeStart = (time) => {
-    this.setState({time: time, endtime: time});
-    this.state.programmedDate.setHours(time.getHours());
-    this.state.programmedDate.setMinutes(time.getMinutes());
+    if(MeetingView.validateHour(time)){
+      this.setState({time: time, endtime: time});
+      this.state.programmedDate.setHours(time.getHours());
+      this.state.programmedDate.setMinutes(time.getMinutes());
+    }
+    else{
+      this.setState({message: '¡You have to complete with valid time!'});
+      this.refs.meetingModal.openModal();
+    }
   };
 
   handleChangeEnd = (time) => {
@@ -76,6 +82,10 @@ class MeetingView extends Component {
       return newDay;
     }
     return date;
+  }
+
+  static validateHour(newHour) {
+    return Date.now() < newHour;
   }
 
   dateChange = (datetime) => {

@@ -56,7 +56,7 @@ class MymeetForm extends Component {
     super(props);
     this.state = {
       time: new Date(),
-      endtime:new Date(),
+      endtime: new Date(),
       meetings: {},
       date: new Date(),
       active: false,
@@ -64,7 +64,7 @@ class MymeetForm extends Component {
       meetEdit: {},
       editable: true,
       technicValue: '',
-      teamName:{},
+      teamName: {},
       tag: ''
     }
   }
@@ -96,7 +96,7 @@ class MymeetForm extends Component {
       active: !this.state.active,
       datetime: meeting.programmedDate,
       time: meeting.programmedDate,
-      endtime:meeting.endDate,
+      endtime: meeting.endDate,
       config: meeting.meetingConfig,
       meetEdit: meeting,
       editable: true
@@ -276,7 +276,8 @@ class MymeetForm extends Component {
 
 
   onChangeProgrammedDate = (date) => {
-    var newDate = new Date(MymeetForm.changeEndDate(programDate,endDate));
+    var newDate = new Date(MymeetForm.changeEndDate(programDate, endDate, date));
+    console.debug('new date: ' + newDate);
 
     programDate.setFullYear(date.getFullYear());
     programDate.setMonth(date.getMonth());
@@ -288,34 +289,45 @@ class MymeetForm extends Component {
 
     var newMeeting = this.state.meetEdit;
     newMeeting.programmedDate = programDate.getTime();
-    newMeeting.endDate=endDate.getTime();
+    newMeeting.endDate = endDate.getTime();
     this.setState({
       meetEdit: newMeeting,
       datetime: date
     });
   };
 
-  static changeEndDate(startDate, enddate) {
-    if (startDate.getDate() <= enddate.getDate()) {
-      return enddate;
+  static changeEndDate(startDate, enddate, newdate) {
+    if (startDate.getDate() === enddate.getDate()) {
+      return newdate;
     }
-    return new Date(MymeetForm.checkDate(programDate.getHours(),time.getHours(), programDate))
-}
+    var nextday = new Date(newdate);
+    return nextday.setDate(newdate.getDate() + 1)
+  }
+
+  static validateHour(newHour) {
+    return Date.now() < newHour;
+  }
 
   onChangeProgrammedTime = (time) => {
-    programDate.setHours(time.getHours());
-    programDate.setMinutes(time.getMinutes());
+    if (MymeetForm.validateHour(time)) {
+      programDate.setHours(time.getHours());
+      programDate.setMinutes(time.getMinutes());
 
-    var newMeeting = this.state.meetEdit;
-    newMeeting.programmedDate = programDate.getTime();
-    this.setState({
-      meetEdit: newMeeting,
-      time: time
-    });
+      var newMeeting = this.state.meetEdit;
+      newMeeting.programmedDate = programDate.getTime();
+      this.setState({
+        meetEdit: newMeeting,
+        time: time
+      });
+    }
+    else{
+        this.setState({message: '¡You have to complete with valid time!'});
+        this.refs.mymeetingModal.openModal();
+      }
   };
 
   onChangeEndTime = (time) => {
-    endDate = new Date(MymeetForm.checkDate(programDate.getHours(),time.getHours(), programDate));
+    endDate = new Date(MymeetForm.checkDate(programDate.getHours(), time.getHours(), programDate));
     console.debug('end Date: ' + endDate);
     endDate.setHours(time.getHours());
     endDate.setMinutes(time.getMinutes());
@@ -376,23 +388,23 @@ class MymeetForm extends Component {
     if (typeof this.state.config.tags !== "undefined") {
       return this.state.config.tags.map(function (tag, index) {
         return (
-            <Chip deletable={!this.state.editable} onDeleteClick={this.deletetag.bind(this, index)} theme={chipTheme}>
-              {tag}
-            </Chip>
+          <Chip deletable={!this.state.editable} onDeleteClick={this.deletetag.bind(this, index)} theme={chipTheme}>
+            {tag}
+          </Chip>
         );
       }.bind(this));
     }
   }
 
   showDialog() {
-      if (this.isAdmin(this.state.meetEdit.ownerName)) {
-        return this.showDialogForAdmin();
-      }
-      else {
-        return this.showDialogForUser()
-          ;
-      }
+    if (this.isAdmin(this.state.meetEdit.ownerName)) {
+      return this.showDialogForAdmin();
     }
+    else {
+      return this.showDialogForUser()
+        ;
+    }
+  }
 
   showDialogForUser() {
     return (
@@ -486,6 +498,7 @@ class MymeetForm extends Component {
           <div className={classes.label2}>
             <label>MY MEETINGS</label>
           </div>
+          <BootstrapModal ref="mymeetingModal" message={this.state.message}/>
           <List theme={listFormat} selectable ripple>
             <ListSubHeader />
             {Object.keys(meetmap).map((key) => {

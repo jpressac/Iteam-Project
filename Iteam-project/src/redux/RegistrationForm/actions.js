@@ -23,10 +23,8 @@ export function submit() {
 }
 
 export function submitUser(data) {
-
   let hobbiesList = data.hobbies.split(',');
-  return new Promise((resolve, reject) => {
-    axios.post(USER.GET_USER, {
+  return axios.post(USER.GET_USER, {
       username: data.username,
       password: data.password,
       nationality: data.nationality,
@@ -37,13 +35,13 @@ export function submitUser(data) {
       profession: data.professionName,
       name: data.firstName,
       lastName: data.lastName
-    }).then(() => {
-      resolve()
-    }).catch(()=> {
-      reject()
-    })
+    }).then(function (response) {
+    return response;
+  }).catch(function (response) {
+    return response.status;
   })
 }
+
 export function getNationalities() {
   axios.get(UTILITIES.NATIONALITIES).then(function (response) {
     console.log(response.status);
