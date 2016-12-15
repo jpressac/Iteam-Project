@@ -46,8 +46,8 @@ const mapStateToProps = (state) => {
     meetingId: state.meetingReducer.meetingId,
     connected: state.meetingUser,
     tagMap: state.meetingConfigurationReducer.meeting.config.tags,
-    availableVotes:state.meetingConfigurationReducer.meeting.config.votes,
-    time:state.meetingConfigurationReducer.meeting.pbtime
+    availableVotes: state.meetingConfigurationReducer.meeting.config.votes,
+    time: state.meetingConfigurationReducer.meeting.pbtime
 
   }
 };
@@ -64,19 +64,22 @@ class PersonalBoard extends Component {
     this.state = {
       notes: {},
       mapTag: [
-      {value: 0, label: 'All'}],
+        {value: 0, label: 'All'}],
       tagValue: '',
       tagName: ''
     }
 
   };
 
+  componentWillMount() {
+    console.debug('puto entre: ' + this.props.tagMap);
+    this.setValuesOptionsTags(this.props.tagMap);
+  }
+
   componentDidMount() {
     initWebSocket();
     con();
-    console.debug('entro al componentDidMount: ' + this.props.tagMap);
-    this.setValuesOptionsTags(this.props.tagMap);
-    console.debug('component did mount ' + JSON.stringify(this.state.mapTag));
+
     if (this.props.connected == null || !this.props.connected) {
       this.props.userConnected();
       axios.head(MEETING.MEETING_USER_CONNECTION, {
@@ -107,6 +110,7 @@ class PersonalBoard extends Component {
     //this.updateConnectionStatus('user disconnected', 'Offline');
     //disconnect();
   }
+
   comboTags(value) {
     let filteredLabelObject = this.state.mapTag.filter(filter => filter["value"] == value);
     this.setState({tagValue: value, tagName: filteredLabelObject[0]["label"]})
@@ -116,12 +120,15 @@ class PersonalBoard extends Component {
   setValuesOptionsTags(data) {
     let opt = data.map(function (option, index) {
       var rObj = {};
-      rObj["value"] = index;
+      rObj["value"] = index + 1;
       rObj["label"] = option;
       return rObj;
     });
+    opt.push(this.state.mapTag[0]);
+
+    console.log("options " + JSON.stringify(opt));
+
     this.setState({mapTag: opt});
-    console.log(JSON.stringify(this.state.mapTag));
   }
 
   createNotes(noteMap) {
@@ -217,14 +224,14 @@ class PersonalBoard extends Component {
         <Layout>
           <NavDrawer active={true}
                      pinned={true} permanentAt='sm' theme={navTheme}>
-            <img src={logo} style={{height:50,width:100,marginRight:300}} onClick={this.props.home}/>
+            <img src={logo} style={{height: 50, width: 100, marginRight: 300}} onClick={this.props.home}/>
             <label className={classes.label1}>PERSONAL BOARD</label>
-            <Button icon='people' theme={themeButton} style={{color:'#900C3F'}}
+            <Button icon='people' theme={themeButton} style={{color: '#900C3F'}}
                     onClick={this.props.sharedBoard}/>
             <TooltipButton icon='note add' tooltip='Add Note'
-                           style={{background:'#900C3F', color:'white', marginTop:10}} raised primary
+                           style={{background: '#900C3F', color: 'white', marginTop: 10}} raised primary
                            onClick={this.add.bind(this, "New note")} tooltipDelay={1000}/>
-            <Dropdown label="Tag filter" auto  style={{color: '#900C3F'}}
+            <Dropdown label="Tag filter" auto style={{color: '#900C3F'}}
                       onChange={this.comboTags.bind(this)} required
                       source={this.state.mapTag} value={this.state.tagValue}/>
             <label>Available votes: {this.props.availableVotes}</label>
