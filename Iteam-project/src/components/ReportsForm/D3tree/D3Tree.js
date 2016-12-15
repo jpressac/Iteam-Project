@@ -19,7 +19,7 @@ class D3Tree extends React.Component {
   componentWillReceiveProps(nextProps) {
 
     if(nextProps.treeData != this.props.treeData){
-      this.renderTree(nextProps.treeData);
+      this.renderTree(nextProps.treeData, ReactDom.findDOMNode(this));
     }
   };
 
@@ -30,10 +30,10 @@ class D3Tree extends React.Component {
     );
   };
 
-  renderTree(treeData) {
+  renderTree(treeData, svgNode) {
     let margin = {top: 20, right: 90, bottom: 30, left: 90},
-      width = 1000 - margin.left - margin.right,
-      height = 500 - margin.top - margin.bottom;
+      width = 1280 - margin.left - margin.right, //TODO: this is hardcoded so it antoher screen it will not work
+      height = 800 - margin.top - margin.bottom;
 
     i = 0;
     duration = 750;
@@ -42,10 +42,16 @@ class D3Tree extends React.Component {
     treemap = d3.tree()
       .size([height, width]);
 
+  // remove the last SVG Node, just to create a new one
+    d3.select(svgNode)
+      .selectAll("*")
+      .remove();
+
 // append the svg object to the body of the page
 // appends a 'group' element to 'svg'
 // moves the 'group' element to the top left margin
-    svg = d3.select("body").append("svg")
+
+    svg = d3.select(svgNode)
       .attr("width", width + margin.right + margin.left)
       .attr("height", height + margin.top + margin.bottom)
       .append("g")
@@ -98,7 +104,7 @@ class D3Tree extends React.Component {
       // Enter any new modes at the parent's previous position.
       let nodeEnter = node.enter().append('g')
         .classed(classes.node, true)
-        .attr("transform", function (d) {
+        .attr("transform", function () {
           return "translate(" + source.y0 + "," + source.x0 + ")";
         })
         .on('click', click);
