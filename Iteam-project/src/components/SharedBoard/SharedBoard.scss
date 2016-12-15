@@ -1,11 +1,10 @@
 .board {
   width: 100%;
-  height: 500px;
+  height: 100%;
   position: absolute;
-  margin-top: 10%;
 }
 
-.Notecontainer{
+.notes{
   width: 100%;
   height: 500px;
   overflow: hidden;
@@ -31,7 +30,7 @@
   //  #900C3F
   color:#900C3F;
   margin-left: 0px;
-  font-size: 25px;
+  font-size: 20px;
   margin-top: 5px;
   width: 100%
 }

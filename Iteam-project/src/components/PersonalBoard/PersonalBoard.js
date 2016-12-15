@@ -12,6 +12,13 @@ import axios from 'axios'
 import {MEETING} from '../../constants/HostConfiguration'
 import generateUUID from '../../constants/utils/GetUUID'
 import {userConnection} from '../../redux/reducers/Meeting/MeetingUserConnected'
+import {Layout, NavDrawer, Panel, Sidebar} from 'react-toolbox';
+import logo from '../Header/image/iteamLogo.jpg';
+import themeButton from './button.scss';
+import {PATHS} from '../../constants/routes';
+import {push} from 'react-router-redux'
+import navTheme from './NavDrawer.scss'
+import Dropdown from 'react-toolbox/lib/dropdown';
 
 const TooltipButton = Tooltip(Button);
 
@@ -27,7 +34,9 @@ const NoteTarget = {
 
 const mapDispatchToProps = (dispatch) => ({
 
-  userConnected: () => dispatch(userConnection())
+  home: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HOME)),
+  userConnected: () => dispatch(userConnection()),
+  sharedBoard: () => dispatch(push('/' + PATHS.MENULOGGEDIN.SHAREDBOARD))
 
 });
 
@@ -36,7 +45,11 @@ const mapStateToProps = (state) => {
     user: state.loginUser.user.username,
     meetingId: state.meetingReducer.meetingId,
     connected: state.meetingUser,
-    meetingConfiguration: state.meetingConfigurationReducer.meeting.config
+    meetingConfiguration: state.meetingConfigurationReducer.meeting.config,
+    tagMap: state.meetingConfigurationReducer.meeting.config.tags,
+    availableVotes: state.meetingConfigurationReducer.meeting.config.votes,
+    time: state.meetingConfigurationReducer.meeting.pbtime
+
   }
 };
 
@@ -49,13 +62,26 @@ class PersonalBoard extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {notes: {}}
+    this.state = {
+      notes: {},
+      mapTag: [
+        {value: 0, label: 'All'}],
+      tagValue: '',
+      tagName: ''
+    }
+
+  };
+
+  componentWillMount() {
+    console.debug('puto entre: ' + this.props.tagMap);
+    this.setValuesOptionsTags(this.props.tagMap);
   }
 
   componentDidMount() {
     initWebSocket();
     con();
-    if(this.props.connected == null || !this.props.connected) {
+
+    if (this.props.connected == null || !this.props.connected) {
       this.props.userConnected();
       axios.head(MEETING.MEETING_USER_CONNECTION, {
         headers: {
@@ -73,17 +99,37 @@ class PersonalBoard extends Component {
       }
     }).then(function (response) {
 
-      if(response.data != ""){
+      if (response.data != "") {
         this.setState({notes: response.data});
       }
-    }.bind(this)).catch(function(response){
+    }.bind(this)).catch(function (response) {
       console.log('error ' + response)
     });
   }
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     //this.updateConnectionStatus('user disconnected', 'Offline');
     //disconnect();
+  }
+
+  comboTags(value) {
+    let filteredLabelObject = this.state.mapTag.filter(filter => filter["value"] == value);
+    this.setState({tagValue: value, tagName: filteredLabelObject[0]["label"]})
+  }
+
+
+  setValuesOptionsTags(data) {
+    let opt = data.map(function (option, index) {
+      var rObj = {};
+      rObj["value"] = index + 1;
+      rObj["label"] = option;
+      return rObj;
+    });
+    opt.push(this.state.mapTag[0]);
+
+    console.log("options " + JSON.stringify(opt));
+
+    this.setState({mapTag: opt});
   }
 
   createNotes(noteMap) {
@@ -162,7 +208,7 @@ class PersonalBoard extends Component {
     this.remove(id)
   }
 
-  updateNotesCacheByUser(map){
+  updateNotesCacheByUser(map) {
     //Here we need to send the message to the backend through the web-socket
     sendMessage("insertCache", this.props.meetingId, JSON.stringify(
       {
@@ -173,20 +219,29 @@ class PersonalBoard extends Component {
 
   render() {
     return this.props.connectDropTarget(
-      <div className={classes.board}>
-        <label className={classes.label1}>PERSONAL BOARD</label>
-        <div className="col-md-12">
-          <div className="row">
-            <div className="col-md-4">
-              <TooltipButton icon='add'  label='Add Note' tooltip='Add Note'
-                             style={{background:'#900C3F', color:'white', marginTop:10}}  raised primary
-                             onClick={this.add.bind(this, "New note")} tooltipDelay={1000}/>
+      <div name="Personal Board Component" className={classes.board}>
+        <Layout>
+          <NavDrawer active={true}
+                     pinned={true} permanentAt='sm' theme={navTheme}>
+            <img src={logo} style={{height: 50, width: 100, marginRight: 300}} onClick={this.props.home}/>
+            <label className={classes.label1}>PERSONAL BOARD</label>
+            <Button icon='people' theme={themeButton} style={{color: '#900C3F'}}
+                    onClick={this.props.sharedBoard}/>
+            <TooltipButton icon='note add' tooltip='Add Note'
+                           style={{background: '#900C3F', color: 'white', marginTop: 10}} raised primary
+                           onClick={this.add.bind(this, "New note")} tooltipDelay={1000}/>
+            <Dropdown label="Tag filter" auto style={{color: '#900C3F'}}
+                      onChange={this.comboTags.bind(this)} required
+                      source={this.state.mapTag} value={this.state.tagValue}/>
+            <label>Available votes: {this.props.availableVotes}</label>
+            <label>Time: {this.props.time}</label>
+          </NavDrawer>
+          <Panel>
+            <div name="Notes container" className={classes.noteContainer}>
+              {this.createNotes(this.state.notes)}
             </div>
-          </div>
-        </div>
-        <div className={classes.Notecontainer}>
-          {this.createNotes(this.state.notes)}
-        </div>
+          </Panel>
+        </Layout>
       </div>
     );
   }
@@ -196,9 +251,14 @@ class PersonalBoard extends Component {
 PersonalBoard.propTypes = {
   connectDropTarget: PropTypes.func.isRequired,
   userConnected: PropTypes.func,
+  home: PropTypes.func,
+  sharedBoard: PropTypes.func,
   user: PropTypes.any,
   meetingId: PropTypes.string,
   connected: PropTypes.bool,
+  tagMap: PropTypes.any,
+  availableVotes: PropTypes.number,
+  time: PropTypes.any,
   meetingConfiguration: PropTypes.any
 };
 

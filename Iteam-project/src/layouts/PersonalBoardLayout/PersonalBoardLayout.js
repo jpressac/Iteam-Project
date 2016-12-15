@@ -3,20 +3,18 @@
  */
 import React from 'react'
 import HeaderPersonal from '../../components/Header/HeaderBoards/HeaderPersonal'
+import classes from './board.scss'
 
-export const PersonalBoard = ({ children }) => (
+export const PersonalBoard = ({children}) => (
 
-  <div className="text-center">
-    <HeaderPersonal />
-    <div>
-      {children}
-    </div>
+  <div name="Personal Board Layout" className={classes.board}>
+    {children}
   </div>
 
-)
+);
 
 PersonalBoard.propTypes = {
   children: React.PropTypes.element.isRequired
-}
+};
 
 export default PersonalBoard
