@@ -367,8 +367,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
             List<Idea> ideasByUser = ideasList.stream().filter(u -> user.equals(u.getUsername()))
                     .collect(Collectors.toList());
 
-            treeModel.add(new D3CollapseTreeModel(user,
-                    Lists.newArrayList(createTagTree(tags, ideasByUser, new D3CollapseTreeModel()))));
+            treeModel.add(createTagTree(tags, ideasByUser, new D3CollapseTreeModel(user)));
         }
 
         return treeModel;

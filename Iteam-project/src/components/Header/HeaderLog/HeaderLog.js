@@ -21,10 +21,8 @@ const mapDispatchToProps = dispatch => ({
   meeting: ()=> dispatch(push('/' + PATHS.MENULOGGEDIN.MEETING)),
   teamList: ()=> dispatch(push('/' + PATHS.MENULOGGEDIN.TEAMLIST)),
   team: ()=> dispatch(push('/' + PATHS.MENULOGGEDIN.NEWTEAM)),
-  newMeeting: () => dispatch(fromMeetingOrTeam()),
-//TODO: this is just for testing
-  personalBoard: () => dispatch(push('/' + PATHS.MENULOGGEDIN.PERSONALBOARD)),
-  sharedBoard: () => dispatch(push('/' + PATHS.MENULOGGEDIN.SHAREDBOARD))
+  newMeeting: () => dispatch(fromMeetingOrTeam())
+
 });
 const mapStateToProps = (state)=> {
   if (state.loginUser !== null) {
@@ -75,12 +73,9 @@ class HeaderLog extends Component {
                             onClick={this.goToNewTeam.bind(this)}/></li>
                 <li><Button label='MY TEAMS' theme={themeButton} style={{color:'#900C3F'}}
                             onClick={this.props.teamList}/></li>
-                <li><Button label='SHARED BOARD' theme={themeButton} style={{color:'#900C3F'}}
-                            onClick={this.props.personalBoard}/></li>
-                <li><Button label='PERSONAL BOARD' theme={themeButton} style={{color:'#900C3F'}}
-                            onClick={this.props.sharedBoard}/></li>
-                <li><span className={classes.span}><label> {this.props.user}</label></span ></li>
-                <li><LogoutButton style={{color:'#900C3F'}}/></li>
+                <li><span className="glyphicon glyphicon-user"
+                          className={classes.span}><label> {this.props.user}</label></span ></li>
+                <li><LogoutButton style={{color:'#900C3F'}}/>></li>
               </ul>
             </Navigation>
           </div>
@@ -98,9 +93,7 @@ HeaderLog.propTypes = {
   user: PropTypes.any,
   team: PropTypes.func,
   newMeeting: PropTypes.func,
-  teamList: PropTypes.func,
-  personalBoard: PropTypes.func,
-  sharedBoard: PropTypes.func
+  teamList: PropTypes.func
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(HeaderLog)
