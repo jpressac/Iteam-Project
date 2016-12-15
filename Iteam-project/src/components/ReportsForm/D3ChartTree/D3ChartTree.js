@@ -4,16 +4,11 @@ import ReactDom from 'react-dom'
 
 import classes from './D3ChartTree.scss'
 
-
-
-
 class D3ChartTree extends React.Component {
 
   componentDidMount() {
-    var mountNode = ReactDom.findDOMNode(this);
-
     // Render the tree usng d3 after first component mount
-    this.renderTree(this.props.treeData, mountNode);
+    this.renderTree(this.props.treeData, ReactDom.findDOMNode(this));
   };
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -28,37 +23,45 @@ class D3ChartTree extends React.Component {
 
     // Render a blank svg node
     return (
-      <svg style={{marginTop:100, width:960, height:1100}}></svg>
+      <svg style={{marginTop:100, width:1500, height:1100}}/>
     );
   } ;
 
 
   renderTree(treeData, svgDomNode) {
 
-    var svg = d3.select("svg"),
-      width = +svg.attr("width"),
-      height = +svg.attr("height"),
-      g = svg.append("g").attr("transform", "translate(20,0)");       // move right 20px.
+    let margin = {top: 20, right: 90, bottom: 30, left: 90},
+      width = 1280 - margin.left - margin.right, //TODO: this is hardcoded so it antoher screen it will not work
+      height = 800 - margin.top - margin.bottom;
+
+
+    //Remove all elements before render
+    d3.select(svgDomNode).selectAll("*").remove();
+
+    //Make the new SVG
+    let svg = d3.select(svgDomNode)
+      .attr("width", width + margin.right + margin.left)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     // x-scale and x-axis
-    var experienceName = ["", "Basic 1.0", "Alright 2.0", "Handy 3.0", "Expert 4.0", "Guru 5.0"];
-    var formatSkillPoints = function (d) {
+    let experienceName = ["", "Basic 1.0", "Alright 2.0", "Handy 3.0", "Expert 4.0", "Guru 5.0"];
+    let formatSkillPoints = function (d) {
       return experienceName[d % 6];
     };
-    var xScale = d3.scaleLinear()
-      .domain([0, 5])
-      .range([0, 400]);
 
-    var xAxis = d3.axisTop()
+    let xScale = d3.scaleLinear()
+      .domain([0, 5]) //This depends on the max ranking number
+      .range([0, 600]);
+
+    let xAxis = d3.axisTop()
       .scale(xScale)
       .ticks(5)
       .tickFormat(formatSkillPoints);
 
-
-
-
 // declares a tree layout and assigns the size
-    var tree = d3.cluster()                 // This D3 API method setup the Dendrogram datum position.
+    let tree = d3.cluster()                 // This D3 API method setup the Dendrogram datum position.
       .size([height, width - 460])    // Total width - bar chart width = Dendrogram chart width
       .separation(function separate(a, b) {
         return a.parent == b.parent            // 2 levels tree grouping for category
@@ -66,15 +69,16 @@ class D3ChartTree extends React.Component {
         || a.parent == b.parent.parent ? 0.4 : 0.8;
       });
 
-    var root = d3.hierarchy(treeData, function (d) { console.log(d);
+    let root = d3.hierarchy(treeData, function (d) { console.log(d);
       return d.children;
     });
+
     tree(root);
 
-    var link = g.selectAll("." + classes.link)
+    let link = svg.selectAll("." + classes.link)
       .data(root.descendants().slice(1))
       .enter().append("path")
-      .attr("class", classes.link)
+      .classed(classes.link, true)
       .attr("d", function (d) { console.log(d);
         return "M" + d.y + "," + d.x
           + "C" + (d.parent.y + 100) + "," + d.x
@@ -83,11 +87,11 @@ class D3ChartTree extends React.Component {
       });
 
     // Setup position for every datum; Applying different css classes to parents and leafs.
-    var node = g.selectAll("." + classes.node)
+    let node = svg.selectAll("." + classes.node)
       .data(root.descendants())
       .enter().append("g")
       .attr("class", function (d) { console.log(d);
-        return classes.node + (d.children ? " "+ classes.a : " " + classes.j);
+        return classes.node + (d.children ? " " + classes.a : " " + classes.j);
       })
       .attr("transform", function (d) {
         return "translate(" + d.y + "," + d.x + ")";
@@ -95,13 +99,13 @@ class D3ChartTree extends React.Component {
 
     // Draw every datum a small circle.
     node.append("circle")
-      .attr("r", 20);
+      .attr("r", 5);
 
     // Setup G for every leaf datum.
-    var leafNodeG = g.selectAll("." + classes.j)
+    let leafNodeG = svg.selectAll("." + classes.j)
       .append("g")
-      .attr("class", classes.j + "-g")
-      .attr("transform", "translate(" + 8 + "," + -13 + ")");
+      .attr("class", classes.j)
+      .attr("transform", "translate(8,-13)");
 
     leafNodeG.append("rect")
       .attr("class", classes.shadow)
@@ -127,7 +131,7 @@ class D3ChartTree extends React.Component {
       });
 
     // Write down text for every parent datum
-    var internalNode = g.selectAll("." + classes.a);
+    let internalNode = svg.selectAll("." + classes.a);
     internalNode.append("text")
       .attr("y", -10)
       .style("text-anchor", "middle")
@@ -136,10 +140,10 @@ class D3ChartTree extends React.Component {
       });
 
     // Attach axis on top of the first leaf datum.
-    var firstEndNode = g.select("." + classes.j);
+    let firstEndNode = svg.select("." + classes.j);
     firstEndNode.insert("g")
       .attr("class",classes.b)
-      .attr("transform", "translate(" + 7 + "," + -14 + ")")
+      .attr("transform", "translate(7,14)")
       .call(xAxis);
 
     // tick mark for x-axis
@@ -159,32 +163,34 @@ class D3ChartTree extends React.Component {
       .style("stroke", "black");
 
     // The moving ball
-    var ballG = svg.insert("g")
+    let ballG = svg.insert("g")
       .attr("transform", "translate(" + 1100 + "," + height / 2 + ")")
-      .style("fill", "black");
+      .attr("class", classes.ballG);
+
     ballG.insert("circle")
       .attr("class", classes.shadow)
-      .style("fill", "steelblue")
-      .attr("r", 5);
+      .attr("class", classes.ballG)
+      .attr("r", 20);
+
     ballG.insert("text")
       .style("text-anchor", "middle")
       .attr("dy", 5)
       .text("0.0");
 
     // Animation functions for mouse on and off events.
-    d3.selectAll("." + classes.j + "-g")
+    d3.selectAll("." + classes.j)
       .on("mouseover", handleMouseOver)
       .on("mouseout", handleMouseOut);
 
     function handleMouseOver(d) {
-      var leafG = d3.select(this);
+      let leafG = d3.select(this);
 
       leafG.select("rect")
         .attr("stroke", "#4D4D4D")
         .attr("stroke-width", "2");
 
 
-      var ballGMovement = ballG.transition()
+      let ballGMovement = ballG.transition()
         .duration(400)
         .attr("transform", "translate(" + (d.y
           + xScale(d.data.value) + 90) + ","
@@ -200,19 +206,13 @@ class D3ChartTree extends React.Component {
     }
 
     function handleMouseOut() {
-      var leafG = d3.select(this);
+      let leafG = d3.select(this);
 
       leafG.select("rect")
         .attr("stroke-width", "0");
     }
-
-
-
-
-
   };
-
-};
+}
 
 D3ChartTree.propTypes = {
   treeData: PropTypes.any

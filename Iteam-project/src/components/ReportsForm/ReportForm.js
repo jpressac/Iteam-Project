@@ -9,18 +9,47 @@ import Drawer from 'react-toolbox/lib/drawer';
 import Button from 'react-toolbox/lib/button';
 import classes from './ReportForm.scss';
 import BootstrapModal from '../BootstrapModal/BootstrapModal'
-import Idea from './idea'
 import buttonBasic from './buttonBasic.scss'
-import buttonTag from './buttonTag.scss'
-import buttonUser from './buttonUser.scss'
 import buttonPdf from './buttonPdf.scss'
 import {MEETING} from '../../constants/HostConfiguration'
 import D3Tree from './D3tree/D3Tree'
+import D3ChartTree from './D3ChartTree/D3ChartTree'
 
 const report = new jsPDF()
 
-var treeData = {};
 
+var tree =
+  {
+
+    "name": "First Meeting",
+    "children": [{
+      "name": "Rock",
+      "children": [{
+        "name": "Jesus Of Suburbia", "value": 5, "color": "#D6BA33"
+      }, {
+        "name": "American Idiot", "value": 3, "color": "#D6BA33"
+      }, {
+        "name": "Boulevard Of Broken Dreams", "value": 4, "color": "#D6BA33"
+      }]
+    }, {
+      "name": "Pop",
+      "children": [{
+        "name": "Clocks", "value": 3.5, "color": "#D6BA33"
+      }, {
+        "name": "The Scientist", "value": 4, "color": "#D6BA33"
+      }, {
+        "name": "Vive la vida", "value": 2, "color": "#D6BA33"
+      }, {
+        "name": "I'm blue", "value": 4.5, "color": "#D6BA33"
+      }, {
+        "name": "The afternoon", "value": 2.5, "color": "#D6BA33"
+      }, {
+        "name": "Baby now", "value": 5, "color": "#D6BA33"
+      }]
+    }]
+
+
+  };
 
 var specialElementHandlers = {
   '#editor': function (element, renderer) {
@@ -45,7 +74,8 @@ class ReportForm extends Component {
       meetingDescription: '',
       meetingIdeas: [],
       selectedReport: '',
-      treeData: {}
+      treeData: {},
+      ranking: false
     }
   }
 
@@ -54,17 +84,22 @@ class ReportForm extends Component {
   };
 
   generateRankingReport = () => {
-    axios.get(MEETING.MEETING_REPORT, {
-      params: {
-        meetingId: this.props.meetingId
-      }
-    }).then(function (response) {
-      this.setState({selectedReport: '3'});
-      this.generateHTML(response.data);
-    }.bind(this)).catch(function (response) {
-      this.setState({message: '¡Your report could not be generated!'});
-      this.refs.mymodal.openModal();
-    }.bind(this))
+    this.setState({ranking:true});
+
+
+    //this.setState({treeData: response.data, ranking:false});
+
+    // axios.get(MEETING.MEETING_REPORT, {
+    //   params: {
+    //     meetingId: this.props.meetingId
+    //   }
+    // }).then(function (response) {
+    //   this.setState({selectedReport: '3'});
+    //   this.generateHTML(response.data);
+    // }.bind(this)).catch(function (response) {
+    //   this.setState({message: '¡Your report could not be generated!'});
+    //   this.refs.mymodal.openModal();
+    // }.bind(this))
   };
 
   generateUserReport = () => {
@@ -74,11 +109,7 @@ class ReportForm extends Component {
         tags: "Color, Type, Size"
       }
     }).then(function (response) {
-
-      console.log("json report " + JSON.stringify(response.data));
-      console.log(response.data);
-
-      this.setState({treeData: response.data});
+      this.setState({treeData: response.data, ranking:false});
 
       treeData = response.data
     }.bind(this)).catch(function (response) {
@@ -93,37 +124,11 @@ class ReportForm extends Component {
         tags: "Color, Type, Size"
       }
     }).then(function (response) {
-
-      console.log("json report " + JSON.stringify(response.data));
-      console.log("object report " + response.data);
-
-      this.setState({treeData: response.data});
+      this.setState({treeData: response.data, ranking:false});
     }.bind(this)).catch(function (response) {
       //TODO: what we do here????
     })
   };
-
-  generateHTML(data) {
-    let topic = data["topic"];
-    let description = data["description"];
-    let ideas = data["ideas"];
-
-    this.setState({meetingTopic: topic, meetingDescription: description, meetingIdeas: ideas});
-  }
-
-  getIdeas() {
-    let json = JSON.stringify(this.state.meetingIdeas);
-    console.log('ideas ' + json);
-    console.log('selected report' + this.state.selectedReport);
-
-    return this.state.meetingIdeas.map(function (idea, index) {
-      return (
-        <Idea postion={index} reportType={this.state.selectedReport} title={idea["title"]} content={idea["subtitle"]}
-              ranking={idea["ranking"]} author={idea["username"]} comments={idea["comments"]} tag={idea["tag"]}>
-        </Idea>
-      );
-    }.bind(this));
-  }
 
   generatePDF = () => {
     report.fromHTML(document.getElementById('reportHTML').innerHTML, 15, 15, {
@@ -133,12 +138,18 @@ class ReportForm extends Component {
     report.save('report.pdf');
   };
 
-  renderTree(){
-    let tree = this.state.treeData;
-    console.log(tree);
-    return (
-      <D3Tree treeData={tree}/>
-    )
+  renderTrees() {
+
+    if (this.state.ranking) {
+      return (
+        <D3ChartTree treeData={tree}/>
+      )
+    } else {
+      return (
+        <D3Tree treeData={this.state.treeData}/>
+      )
+    }
+
   }
 
   render() {
@@ -162,7 +173,7 @@ class ReportForm extends Component {
           </div>
         </Drawer>
         <div id="reportHTML">
-          {this.renderTree()}
+          {this.renderTrees()}
         </div>
       </div>
     );
