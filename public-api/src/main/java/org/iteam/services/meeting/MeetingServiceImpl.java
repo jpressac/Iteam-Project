@@ -1,11 +1,13 @@
 package org.iteam.services.meeting;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.elasticsearch.search.sort.SortOrder;
 import org.iteam.data.dal.meeting.MeetingRepository;
 import org.iteam.data.dal.meeting.MeetingRepositoryImpl;
 import org.iteam.data.dto.Meeting;
+import org.iteam.data.dto.UserDTO;
+import org.iteam.data.model.D3CollapseTreeModel;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
 import org.iteam.data.model.Reports;
@@ -42,7 +44,9 @@ public class MeetingServiceImpl implements MeetingService {
 
     @Override
     public Reports generateReport(String meetingId) {
-        return meetingRepositoryImpl.generateBasicReport(meetingId, RANKING_ID_FIELD, SortOrder.ASC);
+        return null;
+        // return meetingRepositoryImpl.generateBasicReport(meetingId,
+        // RANKING_ID_FIELD, SortOrder.ASC);
     }
 
     @Override
@@ -79,13 +83,18 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public Reports generateReportByUser(String meetingId) {
-        return meetingRepositoryImpl.generateBasicReportByUser(meetingId);
+    public D3CollapseTreeModel generateReportByUser(String meetingId, List<String> tags) {
+
+        List<String> users = teamServiceImpl.getTeamUserInformationByMeeting(meetingId).getTeamUsers().stream()
+                .map(UserDTO::getUsername).collect(Collectors.toList());
+
+        return meetingRepositoryImpl.generateBasicReportByUser(meetingId, users, tags);
     }
 
+    // TODO: wrap the method into one generic
     @Override
-    public Reports generateReportByTag(String meetingId) {
-        return meetingRepositoryImpl.generateBasicReportByTag(meetingId);
+    public D3CollapseTreeModel generateReportByTag(String meetingId, List<String> tags) {
+        return meetingRepositoryImpl.generateBasicReportByTag(meetingId, tags);
     }
 
     @Override

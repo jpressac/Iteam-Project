@@ -17,6 +17,7 @@ import themeLabel from './label.scss'
 import themedrop from './dropdown.scss'
 
 
+
 const NoteSource = {
   beginDrag(props) {
     const {id, left, top} = props;

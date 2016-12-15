@@ -61,7 +61,8 @@ class SharedBoard extends Component {
       notes: {},
       teamName: '',
       participants: [],
-      usersConnected: []
+      usersConnected: [],
+      filterTag: "all"
     }
   }
 
@@ -97,22 +98,32 @@ class SharedBoard extends Component {
     disconnect()
   }
 
-  renderNotes(noteMap) {
+  notes(noteMap, key){
+    return(
+      <Note key={key}
+            id={key}
+            onRemove={this.remove.bind(this)}
+            onAddComment={this.onChangeComment.bind(this)}
+            onVote={this.onUpdateRanking.bind(this)}
+            left={noteMap[key].left}
+            top={noteMap[key].top}
+            boardType="shared"
+            comments={noteMap[key].comments}
+            title={noteMap[key].title}
+            tag={noteMap[key].tag}
+      />
+    )
+  }
+
+  renderNotes(noteMap, valueForFilter) {
     return Object.keys(noteMap).map((key) => {
-      return (
-        <Note key={key}
-              id={key}
-              onRemove={this.remove.bind(this)}
-              onAddComment={this.onChangeComment.bind(this)}
-              onVote={this.onUpdateRanking.bind(this)}
-              left={noteMap[key].left}
-              top={noteMap[key].top}
-              boardType="shared"
-              comments={noteMap[key].comments}
-              title={noteMap[key].title}
-              tag={noteMap[key].tag}
-        />
-      );
+      if(valueForFilter === "all"){
+        return this.notes(noteMap, key);
+      }else {
+        if (noteMap[key].tag === valueForFilter) {
+           return this.notes(noteMap, key);
+        }
+      }
     });
   }
 
@@ -230,7 +241,6 @@ class SharedBoard extends Component {
     delete map[id];
     this.setState({notes: map});
 
-    //TODO: change this method should delete the id, send the id and spring should do the work.
     sendMessage(action, this.props.meetingId, JSON.stringify(
       {
         id: noteId
@@ -339,6 +349,16 @@ class SharedBoard extends Component {
     this.setState({active: !this.state.active});
     this.getConnectedUsers(this.props.meetingId);
   };
+
+  handleFilterTags = () => {
+    this.setState({filterTag : "juan"});
+  };
+
+  handleFilterTagsAll = () => {
+    this.setState({filterTag : "all"});
+  };
+
+
 
   updateUsersConnected(payload) {
 

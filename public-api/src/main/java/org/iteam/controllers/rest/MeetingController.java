@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.iteam.data.dto.Meeting;
+import org.iteam.data.model.D3CollapseTreeModel;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
 import org.iteam.data.model.Reports;
@@ -68,7 +69,7 @@ public class MeetingController {
     }
 
     private ResponseEntity<Void> checkResult(boolean flag) {
-        if (flag) {
+        if(flag) {
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -98,11 +99,12 @@ public class MeetingController {
      * @return 204 NO CONTENT
      */
     @RequestMapping(value = "/meeting/report/byuser", method = RequestMethod.GET)
-    public ResponseEntity<Reports> generateReportByUser(
-            @RequestParam(value = "meetingId", required = true) String meetingId) {
-        Reports report = meetingServiceImpl.generateReportByUser(meetingId);
+    public ResponseEntity<D3CollapseTreeModel> generateReportByUser(
+            @RequestParam(value = "meetingId", required = true) String meetingId,
+            @RequestParam(value = "tags", required = true) List<String> tags) {
+        D3CollapseTreeModel report = meetingServiceImpl.generateReportByUser(meetingId, tags);
 
-        return new ResponseEntity<Reports>(report, HttpStatus.OK);
+        return new ResponseEntity<D3CollapseTreeModel>(report, HttpStatus.OK);
     }
 
     /**
@@ -113,11 +115,12 @@ public class MeetingController {
      * @return 204 NO CONTENT
      */
     @RequestMapping(value = "/meeting/report/bytag", method = RequestMethod.GET)
-    public ResponseEntity<Reports> generateReportByTag(
-            @RequestParam(value = "meetingId", required = true) String meetingId) {
-        Reports report = meetingServiceImpl.generateReportByTag(meetingId);
+    public ResponseEntity<D3CollapseTreeModel> generateReportByTag(
+            @RequestParam(value = "meetingId", required = true) String meetingId,
+            @RequestParam(value = "tags", required = true) List<String> tags) {
+        D3CollapseTreeModel report = meetingServiceImpl.generateReportByTag(meetingId, tags);
 
-        return new ResponseEntity<Reports>(report, HttpStatus.OK);
+        return new ResponseEntity<D3CollapseTreeModel>(report, HttpStatus.OK);
     }
 
     /**
