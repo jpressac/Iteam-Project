@@ -23,7 +23,7 @@ class D3ChartTree extends React.Component {
 
     // Render a blank svg node
     return (
-      <svg style={{marginTop:100, width:1500, height:1100}}/>
+      <svg/>
     );
   } ;
 
