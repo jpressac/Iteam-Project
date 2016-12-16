@@ -71,6 +71,14 @@ class MymeetForm extends Component {
 
 
   goToReports() {
+
+    let meetingInfo = {};
+    meetingInfo.topic = this.state.meetEdit.topic;
+    meetingInfo.config = this.state.config;
+
+    //Reducer containing toolbar info
+    this.props.saveMeetingConfig(meetingInfo);
+
     this.props.updateMyMeetingId(this.state.meetEdit.meetingId);
   }
 
@@ -83,10 +91,13 @@ class MymeetForm extends Component {
     meetingInfo.topic = this.state.meetEdit.topic;
     meetingInfo.config = this.state.config;
     console.log(JSON.stringify(meetingInfo));
+
     //Reducer containing toolbar info
     this.props.saveMeetingConfig(meetingInfo);
+
     //Reducer for meeting ID
     this.props.updateMyMeetingId(this.state.meetEdit.meetingId);
+
     //Dispatch to personal board
     this.props.onClick();
   }

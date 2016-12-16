@@ -39,18 +39,25 @@ class Note extends Component {
       board: props.boardType,
       title: "No title",
       comments: "No comments",
-      mapTag: {},
+      mapTag: [],
       tagValue: '',
-      tagName: this.props.tag
+      tagName: ''
     }
   }
+
+  componentWillMount() {
+    if(this.props.boardType === 'personal'){
+      this.setValuesOptionsTags(this.props.tagMap);
+    }
+  }
+
 
   render() {
     const {connectDragSource, isDragging, left, top} = this.props;
     if (isDragging) {
       return null;
     }
-    if (this.state.board === 'personal')
+    if (this.props.boardType === 'personal')
       switch (this.state.view) {
         case 'editing':
           return (
@@ -72,7 +79,7 @@ class Note extends Component {
           return connectDragSource(
             <div className={classes.card} style={{...style, left, top}}>
               <Card theme={CardYellow}>
-                <Chip deletable theme={Chipscss}>{this.state.tagName}</Chip>
+                <Chip deletable theme={Chipscss}>{this.props.tag}</Chip>
                 <CardText theme={cardTitlescss}>{this.props.title}</CardText>
                 <CardActions theme={cardActionsscss}>
                   <IconButton icon="create" onClick={this.edit.bind(this)}/>
@@ -102,7 +109,7 @@ class Note extends Component {
           return connectDragSource(
             <div className={classes.card} style={{...style, left, top}}>
               <Card theme={CardYellow}>
-                <Chip deletable theme={Chipscss}>{this.state.tagName}</Chip>
+                <Chip deletable theme={Chipscss}>{this.props.tag}</Chip>
                 <CardText theme={cardTitlescss}>{this.props.title}</CardText>
                 <CardText theme={cardTextscss}>{this.props.comments}</CardText>
                 <CardActions theme={cardActionsscss}>
@@ -139,20 +146,15 @@ class Note extends Component {
     this.setState({tagValue: value, tagName: filteredLabelObject[0]["label"]})
   }
 
-
   setValuesOptionsTags(data) {
     let opt = data.map(function (option, index) {
-      var rObj = {};
+      let rObj = {};
       rObj["value"] = index;
       rObj["label"] = option;
       return rObj;
     });
-    this.setState({mapTag: opt});
-  }
 
-  componentDidMount() {
-    this.setValuesOptionsTags(this.props.tagMap);
-    console.debug('component did mount ' + this.state.mapTag);
+    this.setState({mapTag: opt});
   }
 
 

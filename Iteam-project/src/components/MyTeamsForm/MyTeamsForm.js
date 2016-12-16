@@ -43,8 +43,8 @@ class MyTeamsForm extends Component {
 
 
   render() {
-    var teammap = this.state.teams;
-    var members;
+    let teammap = this.state.teams;
+    let members;
 
     return (
       <div className={"container"} style={{marginTop:70}}>

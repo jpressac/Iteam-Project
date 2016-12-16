@@ -6,7 +6,7 @@ import {ItemTypes} from "../Constants/Constants";
 import Button from 'react-toolbox/lib/button';
 import Tooltip from 'react-toolbox/lib/tooltip';
 import flow from 'lodash/flow'
-import {connect as con, initWebSocket, sendMessage} from '../../websocket/websocket'
+import {connect as con, initWebSocket, sendMessage, disconnect} from '../../websocket/websocket'
 import {connect} from 'react-redux'
 import axios from 'axios'
 import {MEETING} from '../../constants/HostConfiguration'
@@ -45,11 +45,7 @@ const mapStateToProps = (state) => {
     user: state.loginUser.user.username,
     meetingId: state.meetingReducer.meetingId,
     connected: state.meetingUser,
-    meetingConfiguration: state.meetingConfigurationReducer.meeting.config,
-    tagMap: state.meetingConfigurationReducer.meeting.config.tags,
-    availableVotes: state.meetingConfigurationReducer.meeting.config.votes,
-    time: state.meetingConfigurationReducer.meeting.pbtime
-
+    meetingConfiguration: state.meetingConfigurationReducer.meeting.config
   }
 };
 
@@ -73,8 +69,8 @@ class PersonalBoard extends Component {
   };
 
   componentWillMount() {
-    console.debug('puto entre: ' + this.props.tagMap);
-    this.setValuesOptionsTags(this.props.tagMap);
+    console.debug('puto entre: ' + this.props.meetingConfiguration.tags);
+    this.setValuesOptionsTags(this.props.meetingConfiguration.tags);
   }
 
   componentDidMount() {
@@ -108,8 +104,7 @@ class PersonalBoard extends Component {
   }
 
   componentWillUnmount() {
-    //this.updateConnectionStatus('user disconnected', 'Offline');
-    //disconnect();
+    disconnect();
   }
 
   comboTags(value) {
@@ -233,8 +228,8 @@ class PersonalBoard extends Component {
             <Dropdown label="Tag filter" auto style={{color: '#900C3F'}}
                       onChange={this.comboTags.bind(this)} required
                       source={this.state.mapTag} value={this.state.tagValue}/>
-            <label>Available votes: {this.props.availableVotes}</label>
-            <label>Time: {this.props.time}</label>
+            <label>Available votes: {this.props.meetingConfiguration.votes}</label>
+            <label>Time: {this.props.meetingConfiguration.pbtime}</label>
           </NavDrawer>
           <Panel>
             <div name="Notes container" className={classes.noteContainer}>
@@ -256,9 +251,6 @@ PersonalBoard.propTypes = {
   user: PropTypes.any,
   meetingId: PropTypes.string,
   connected: PropTypes.bool,
-  tagMap: PropTypes.any,
-  availableVotes: PropTypes.number,
-  time: PropTypes.any,
   meetingConfiguration: PropTypes.any
 };
 

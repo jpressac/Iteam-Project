@@ -21,6 +21,7 @@ import {userDisconnection} from '../../redux/reducers/Meeting/MeetingUserConnect
 import logo from '../Header/image/iteamLogo.jpg';
 import themeButton from './button.scss';
 import navTheme from './NavDrawer.scss';
+import Dropdown from 'react-toolbox/lib/dropdown';
 
 
 const NoteTarget = {
@@ -38,7 +39,8 @@ const mapStateToProps = (state) => {
     return {
       meetingId: state.meetingReducer.meetingId,
       connected: state.meetingUser,
-      user: state.loginUser.user.username
+      user: state.loginUser.user.username,
+      meetingConfiguration: state.meetingConfigurationReducer.meeting.config
     }
   }
 };
@@ -63,7 +65,9 @@ class SharedBoard extends Component {
       teamName: '',
       participants: [],
       usersConnected: [],
-      filterTag: "all"
+      mapTag: [{value: 0, label: 'all'}],
+      tagValue: '',
+      tagName: 'all'
     }
   }
 
@@ -76,6 +80,9 @@ class SharedBoard extends Component {
   }
 
   componentWillMount() {
+
+    this.setValuesOptionsTags(this.props.meetingConfiguration.tags);
+
     //Getting notes already shared in the board before rendering
     axios.get(MEETING.MEETING_INFO, {
       params: {
@@ -84,11 +91,10 @@ class SharedBoard extends Component {
     }).then((response) => {
 
       this.setState({notes: response.data});
-
-      //this.createNotes(response.data);
     }).catch((response) => {
       console.log('error ' + response)
     });
+
     //Get team participants for sidebar
     this.getTeam(this.props.meetingId);
 
@@ -351,13 +357,24 @@ class SharedBoard extends Component {
     this.getConnectedUsers(this.props.meetingId);
   };
 
-  handleFilterTags = () => {
-    this.setState({filterTag : "juan"});
-  };
+  filterTags(value) {
+    let filteredLabelObject = this.state.mapTag.filter(filter => filter["value"] == value);
+    this.setState({tagValue: value, tagName: filteredLabelObject[0]["label"]})
+  }
 
-  handleFilterTagsAll = () => {
-    this.setState({filterTag : "all"});
-  };
+  setValuesOptionsTags(data) {
+    let opt = data.map(function (option, index) {
+      var rObj = {};
+      rObj["value"] = index + 1;
+      rObj["label"] = option;
+      return rObj;
+    });
+    opt.push(this.state.mapTag[0]);
+
+    console.log("options " + JSON.stringify(opt));
+
+    this.setState({mapTag: opt});
+  }
 
 
 
@@ -378,6 +395,8 @@ class SharedBoard extends Component {
     this.setState({participants: usersStatus});
   }
 
+
+
   render() {
     return this.props.connectDropTarget(
       <div className={classes.board} name="Shared Board Component">
@@ -388,11 +407,14 @@ class SharedBoard extends Component {
             <label className={classes.label1}>SHARED BOARD</label>
             <Button icon='person' theme={themeButton} style={{color:'#900C3F'}}
                     onClick={this.props.personalBoard}/>
+            <Dropdown label="Tag filter" auto style={{color: '#900C3F'}}
+                      onChange={this.filterTags.bind(this)} required
+                      source={this.state.mapTag} value={this.state.tagValue}/>
             <Button icon='user' theme={themeButton} style={{color:'#900C3F'}} onClick={this.handleToggle}/>
           </NavDrawer>
           <Panel>
             <div name="Notes container" className={classes.notes}>
-              {this.renderNotes(this.state.notes)}
+              {this.renderNotes(this.state.notes, this.state.tagName)}
             </div>
           </Panel>
           <Drawer active={this.state.active} theme={classes}
@@ -424,7 +446,8 @@ SharedBoard.propTypes = {
   onClick: PropTypes.func,
   connect: PropTypes.bool,
   user: PropTypes.string,
-  userDisconnected: PropTypes.func
+  userDisconnected: PropTypes.func,
+  meetingConfiguration: PropTypes.any
 };
 
 export default flow(
