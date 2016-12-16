@@ -1,7 +1,6 @@
 export const ROOT = '/application';
 export const ERROR = '/error';
-export const SIGNIN = '/application/member';
-export const SIGNOUT = '/application/nmember';
+
 export const PATHS = {
  ROOT,
  ERROR,
@@ -20,12 +19,19 @@ export const PATHS = {
    NEWTEAM: 'team',
    PROFILE: 'myprofile',
    MEETING: 'meeting',
-   BOARD: 'personalboard',
    MYMEETINGS: 'mymeeting',
    MEETCONFIG: 'meetingconfig',
    TEAMLIST: 'myteams',
    REPORTS: 'reports'
  },
+  PERSONALBOARD:{
+    ROOT:'member/pboard',
+    PERSONAL: 'personal'
+  },
+  SHAREDBOARD:{
+    ROOT:'member/sboard',
+    SHARED:'shared'
+  },
  MENUNOTLOGGEDIN: {
    HOME : 'application/nmember/home',
    LOGIN : 'application/nmember/login',
@@ -43,6 +49,8 @@ export const PATHS = {
    MYMEETINGS: 'application/member/mymeeting',
    MEETCONFIG: 'application/member/meetingconfig',
    TEAMLIST: 'application/member/myteams',
-   REPORTS: 'application/member/reports'
+   REPORTS: 'application/member/reports',
+   PERSONALBOARD: 'application/member/pboard/personal',
+   SHAREDBOARD: 'application/member/sboard/shared'
  }
 };

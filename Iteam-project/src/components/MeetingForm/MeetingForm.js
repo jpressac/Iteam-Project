@@ -19,7 +19,7 @@ import {TEAM, MEETING} from '../../constants/HostConfiguration'
 
 var datetime = new Date();
 const min_datetime = new Date(new Date(datetime).setDate(datetime.getDate()));
-
+const end_min_datetime = new Date(new Date(datetime).setDate(datetime.getDate()));
 
 const mapDispatchToProps = dispatch => ({
   saveMeetingInfo: (meeting) => dispatch(saveMeeting(meeting)),
@@ -45,18 +45,48 @@ class MeetingView extends Component {
       topic: '',
       description: '',
       programmedDate: new Date(),
+      endDate: new Date(),
       time: new Date(),
+      endtime: new Date(),
       teamName: '',
       teamsObj: [],
       teamSelectedName: ''
     }
   };
 
-  handleChange = (time) => {
-    this.setState({time: time});
-    this.state.programmedDate.setHours(time.getHours());
-    this.state.programmedDate.setMinutes(time.getMinutes());
+  handleChangeStart = (time) => {
+    if(MeetingView.validateHour(time)){
+      this.setState({time: time, endtime: time});
+      this.state.programmedDate.setHours(time.getHours());
+      this.state.programmedDate.setMinutes(time.getMinutes());
+    }
+    else{
+      this.setState({message: '¡You have to complete with valid time!'});
+      this.refs.meetingModal.openModal();
+    }
   };
+
+  handleChangeEnd = (time) => {
+    var beforeEndDate = this.state.programmedDate;
+    var newDate = new Date(MeetingView.checkDate(this.state.time.getHours(),time.getHours(), beforeEndDate));
+    console.debug('date: ' + newDate);
+    newDate.setHours(time.getHours());
+    newDate.setMinutes(time.getMinutes());
+    this.setState({endtime: time, endDate:newDate});
+  };
+
+  static checkDate(startHour, endHour, date) {
+    if ((endHour - startHour) < 0) {
+      var newDay = new Date(date);
+      newDay.setDate(date.getDate() + 1);
+      return newDay;
+    }
+    return date;
+  }
+
+  static validateHour(newHour) {
+    return Date.now() < newHour;
+  }
 
   dateChange = (datetime) => {
     this.state.programmedDate.setFullYear(datetime.getFullYear());
@@ -116,6 +146,7 @@ class MeetingView extends Component {
         description: this.state.description,
         ownerName: this.props.user,
         programmedDate: this.state.programmedDate.getTime(),
+        endDate: this.state.endDate.getTime(),
         teamId: teamId
       };
       this.props.goToMeetingConfig(meetingInfo);
@@ -194,16 +225,22 @@ class MeetingView extends Component {
             </div>
             <div className="form-group">
               <div className="col-md-4">
-                <div className="row" style={{color: '#900C3F'}}>
-                  <TimePicker label='Select time' onChange={this.handleChange}
-                              theme={themeLabel} value={this.state.time}/>
-                </div>
-              </div>
-              <div className="col-md-4">
                 <div className="row">
                   <DatePicker label='Select date' sundayFirstDayOfWeek style={{marginLeft: 20}}
-                              onChange={this.dateChange} minDate={min_datetime} theme={themeLabel}
+                              onChange={this.dateChange} minDate={new Date()} theme={themeLabel}
                               value={this.state.programmedDate}/>
+                </div>
+                <div className="col-md-4">
+                  <div className="row" style={{color: '#900C3F'}}>
+                    <TimePicker label='Start time' onChange={this.handleChangeStart.bind(this)}
+                                theme={themeLabel} value={this.state.time}/>
+                  </div>
+                </div>
+                <div className="col-md-4">
+                  <div className="row" style={{color: '#900C3F'}}>
+                    <TimePicker label='End time' onChange={this.handleChangeEnd.bind(this)}
+                                theme={themeLabel} value={this.state.endtime}/>
+                  </div>
                 </div>
               </div>
             </div>

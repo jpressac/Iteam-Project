@@ -8,6 +8,8 @@ import AboutView from '../views/AboutView'
 import ContactView from '../views/ContactView/'
 import {PATHS} from '../constants/routes'
 import LoggedInLayout from '../layouts/LoggedInLayout'
+import PersonalBoardLayout from '../layouts/PersonalBoardLayout/PersonalBoardLayout'
+import SharedBoardLayout from '../layouts/SharedBoardLayout/SharedBoardLayout'
 import TeamCreationView from '../views/TeamCreationView'
 import MeetingView from '../views/MeetingView'
 import BoardView from '../views/BoardView/BoardView'
@@ -18,6 +20,7 @@ import MyTeamView from '../views/MyTeamView/MyTeamView'
 import MymeetView from '../views/MymeetView/MymeetView'
 import MeetingConfigView from '../views/MeetingConfigView'
 import ReportsView from '../views/ReportsView/ReportsView'
+
 
 export const createRoutes = (store) => (
 
@@ -41,6 +44,12 @@ export const createRoutes = (store) => (
       <Route path={PATHS.LOGGEDIN.MEETCONFIG} component={MeetingConfigView}/>
       <Route path={PATHS.LOGGEDIN.REPORTS} component={ReportsView}/>
       <Route path={PATHS.LOGGEDIN.TEAMLIST} component={MyTeamView}/>
+    </Route>
+    <Route path={PATHS.PERSONALBOARD.ROOT} component={PersonalBoardLayout}>
+      <Route path={PATHS.PERSONALBOARD.PERSONAL} component={PersonalBoardView}/>
+    </Route>
+    <Route path={PATHS.SHAREDBOARD.ROOT} component={SharedBoardLayout}>
+      <Route path={PATHS.SHAREDBOARD.SHARED} component={SharedBoardView}/>
     </Route>
   </Route>
 );

@@ -8,10 +8,7 @@ class PersonalBoardView extends React.Component {
 
   render() {
     return (
-
-      <div className="container-fluid">
         <SharedBoard/>
-      </div>
     );
   }
 }

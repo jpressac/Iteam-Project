@@ -13,6 +13,7 @@ import {MEETING} from '../../constants/HostConfiguration';
 import axios from 'axios';
 import Dropdown from 'react-toolbox/lib/dropdown';
 import Chip from 'react-toolbox/lib/chip';
+import Spinner from '../Spinner/Spinner';
 
 const mapDispatchToProps = dispatch => ({
   goToMyMeetings: () => dispatch(push('/' + PATHS.MENULOGGEDIN.MYMEETINGS))
@@ -28,7 +29,10 @@ const mapStateToProps = (state) => {
 };
 
 const TooltipButton = Tooltip(Button);
-const technics = [{value:0, label:'Brainstorming'}, {value:1, label:'SCAMPER'}, {value:2, label:'morphological analysis'}];
+const technics = [{value: 0, label: 'Brainstorming'}, {value: 1, label: 'SCAMPER'}, {
+  value: 2,
+  label: 'morphological analysis'
+}];
 
 class MeetingConfigForm extends Component {
 
@@ -44,7 +48,8 @@ class MeetingConfigForm extends Component {
       sbtime: 0,
       template: 0,
       templateValue: 0,
-      notesFunctions: []
+      notesFunctions: [],
+      showSpinner: false
     };
   }
 
@@ -101,10 +106,13 @@ class MeetingConfigForm extends Component {
 
 
   saveMeeting() {
+    this.setState({showSpinner: true});
+    console.debug('Show spinner: ' + this.state.showSpinner);
     axios.post(MEETING.MEETING_CREATE, {
       topic: this.props.meetingInfo.topic,
       ownerName: this.props.user,
       programmedDate: this.props.meetingInfo.programmedDate,
+      endDate:this.props.meetingInfo.endDate,
       description: this.props.meetingInfo.description,
       teamName: this.props.meetingInfo.teamId,
       meetingConfig: {
@@ -116,48 +124,43 @@ class MeetingConfigForm extends Component {
         template: this.state.template
       }
     }).then(function (response) {
-      //TODO: use the spinner instead of modal
-      this.setState({message: '¡Your meeting was successfully created!'});
-      this.refs.meetingModal.openModal();
       this.props.goToMyMeetings()
     }.bind(this)).catch(function (response) {
-
     });
   }
 
-
   render() {
-    return (
-      <div className={"container"} style={{marginTop: 70, width: 700}}>
-        <div className={classes.label2}>
-          <label>CONFIGURE MEETING</label>
-        </div>
-        <BootstrapModal ref="meetingModal" message={this.state.message}/>
-        <div className={classes.form}>
-          <div className={"form-horizontal"}>
-            <div className="form-group">
-              <div className="col-md-8">
-                <div className="row" style={{color: '#900C3F'}}>
-                  <Input type="text" theme={themeLabel} label="Select amount of votes" value={this.state.votes}
-                          onChange={this.handleChange.bind(this, 'votes')} type='number'/>
+    if (!this.state.showSpinner) {
+      return (
+        <div className={"container"} style={{marginTop: 70, width: 700}}>
+          <div className={classes.label2}>
+            <label>CONFIGURE MEETING</label>
+          </div>
+          <div className={classes.form}>
+            <div className={"form-horizontal"}>
+              <div className="form-group">
+                <div className="col-md-8">
+                  <div className="row" style={{color: '#900C3F'}}>
+                    <Input type="text" theme={themeLabel} label="Select amount of votes" value={this.state.votes}
+                           onChange={this.handleChange.bind(this, 'votes')} type='number' min="0"/>
+                  </div>
                 </div>
-              </div>
-              <div className="col-md-8">
-                <div className="row" style={{color: '#900C3F'}}>
-                  <Input type="text" theme={themeLabel} label="Select amount minutes in personal board"
-                         value={this.state.pbtime} onChange={this.handleChange.bind(this, 'pbtime')}
-                         type='number'/>
-                  <div className="col-md-8">
-                    <div className="row" style={{color: '#900C3F'}}>
-                      <Input type="text" theme={themeLabel} label="Select amount minutes in shared board"
-                             value={this.state.sbtime} onChange={this.handleChange.bind(this, 'sbtime')}
-                             type='number'/>
+                <div className="col-md-8">
+                  <div className="row" style={{color: '#900C3F'}}>
+                    <Input type="text" theme={themeLabel} label="Select amount minutes in personal board"
+                           value={this.state.pbtime} onChange={this.handleChange.bind(this, 'pbtime')}
+                           type='number' min="0"/>
+                    <div className="col-md-8">
+                      <div className="row" style={{color: '#900C3F'}}>
+                        <Input type="text" theme={themeLabel} label="Select amount minutes in shared board"
+                               value={this.state.sbtime} onChange={this.handleChange.bind(this, 'sbtime')}
+                               type='number' min="0"/>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <div style={{display: 'inline-block', margin: '2%'}}>
-                <div className="row" style={{color: '#900C3F'}}>
+                <div style={{display: 'inline-block', margin: '2%'}}>
+                  <div className="row" style={{color: '#900C3F'}}>
                     {this.dropdownTechnic()}
                   </div>
                 </div>
@@ -174,23 +177,29 @@ class MeetingConfigForm extends Component {
                                    onClick={this.handleAddTag.bind(this)}/>
                   </div>
                 </div>
-              <div className="row">
-                <div className="row" style={{color: '#900C3F'}}>
-                  {this.tagLabels()}
+                <div className="row">
+                  <div className="row" style={{color: '#900C3F'}}>
+                    {this.tagLabels()}
+                  </div>
                 </div>
-              </div>
-              <div className="row">
-                <Button style={{margin:15,color:'white',background:'#900C3F'}} target='_blank' raised
-                        onClick={this.saveMeeting.bind(this)}> Save Configuration
-                </Button>
+                <div className="row">
+                  <Button style={{margin:15,color:'white',background:'#900C3F'}} target='_blank' raised
+                          onClick={this.saveMeeting.bind(this)}> Create Meeting
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    );
-  };
+      );
+    }
+    else {
+      return (
+          <Spinner/>
+      )
 
+    }
+  }
 }
 
 

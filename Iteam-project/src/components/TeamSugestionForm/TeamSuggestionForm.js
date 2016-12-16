@@ -13,7 +13,7 @@ import chipTheme from './chips.scss'
 import Tooltip from 'react-toolbox/lib/tooltip';
 import {TEAM, UTILITIES} from '../../constants/HostConfiguration'
 import Chip from 'react-toolbox/lib/chip';
-
+import Spinner from '../Spinner/Spinner';
 
 
 const mapStateToProps = (state) => {
@@ -59,7 +59,8 @@ class TeamSuggestionForm extends React.Component {
       values: [],
       message: '',
       filterName: '',
-      filteredName: ''
+      filteredName: '',
+      showSpinner: false
     }
   }
 
@@ -94,6 +95,7 @@ class TeamSuggestionForm extends React.Component {
   }
 
   createMeeting() {
+    this.setState({showSpinner: true});
     let usersMap = this.state.usernames;
     let selected = [];
     for (let user in usersMap) {
@@ -247,100 +249,118 @@ class TeamSuggestionForm extends React.Component {
   filterLabels() {
     return this.state.filters.map(function (filter, index) {
       return (
-      <Chip deletable onDeleteClick={this.deleteFilter.bind(this, index)} theme={chipTheme}>
-        {filter.values}
-      </Chip>
+        <Chip deletable onDeleteClick={this.deleteFilter.bind(this, index)} theme={chipTheme}>
+          {filter.values}
+        </Chip>
       );
     }.bind(this));
   }
 
   render() {
-    return (
-      <div className="container" style={{marginTop:70, width:700}}>
-        <div className={classes.label2}>
-          <label>CREATE TEAM</label>
-        </div>
-        <div className={classes.form}>
-          <div className="form-horizontal">
-            <div className="form-group">
-              <div className="col-md-8">
-                <div className="row">
-                  <Input type='text' label='Name' name='teamName' theme={themeLabel}
-                         value={this.state.teamName} onChange={this.handleChange.bind(this, 'teamName')}
-                         maxLength={16}/>
-                </div>
-              </div>
-            </div>
-            <div className="form-group">
-              <div className="col-md-12">
-                <div className="row">
-                  <div className="col-md-4">
-                    {this.dropdownObjectForFilter()}
-                  </div>
-                  <div className="col-md-4">
-                    {this.dropdownObjectFilteredValues()}
-                  </div>
-                  <div className="col-md-4">
-                    <TooltipButton icon='add' tooltip='Add filter'
-                                   style={{background:'#900C3F', color:'white', marginTop:10}} floating mini
-                                   onClick={this.handleClick.bind(this)}/>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="form-group">
-              <div className="row">
-                <div className="col-md-8" style={{marginTop:20}}>
-                  {this.filterLabels()}
-                </div>
-              </div>
-            </div>
-            <div className="form-group">
-              <div className="row">
-                <div className="col-md-12">
-                  <div className="col-md-2">
-                    <TooltipButton icon='search' tooltip='Search members' style={{background:'#900C3F', color:'white'}}
-                                   floating onClick={this.searchUsers.bind(this)}/>
-                  </div>
-                  <div className="col-md-8">
-                    <table className="table table-condensed table-striped table-bordered table-hover no-margin"
-                           style={{marginTop:20, background:'white'}} data-height="299" data-click-to-select="true">
-                      <thead>
-                      <tr>
-                        <th style={{"width": "5%"}}>
-                          <input className="no-margin" type="checkbox"/>
-                        </th>
-                        <th style={{"width" : "45%" , "align":"center"}}>Last name</th>
-                        <th style={{"width" : "50%"}}>Name</th>
-                      </tr>
-                      </thead>
-                      <tbody>
-                      {this.state.users}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-              <div className="row">
-                <Button style={{margin:15,color:'white',background:'#900C3F'}} target='_blank' raised
-                        onClick={this.createMeeting.bind(this)}>
-                  Create
-                </Button>
-              </div>
-            </div>
-            <BootstrapModal ref="mymodal" message={this.state.message}/>
+    if (!this.state.showSpinner) {
+      return (
+        <div className="container" style={{marginTop:70, width:700}}>
+          <div className={classes.label2}>
+            <label>CREATE TEAM</label>
           </div>
-        </div>
-      </div>);
+          <div className={classes.form}>
+            <div className="form-horizontal">
+              <div className="form-group">
+                <div className="col-md-8">
+                  <div className="row">
+                    <Input type='text' label='Name' name='teamName' theme={themeLabel}
+                           value={this.state.teamName} onChange={this.handleChange.bind(this, 'teamName')}
+                           maxLength={16}/>
+                  </div>
+                </div>
+              </div>
+              <div className="form-group">
+                <div className="col-md-12">
+                  <div className="row">
+                    <div className="col-md-4">
+                      {this.dropdownObjectForFilter()}
+                    </div>
+                    <div className="col-md-4">
+                      {this.dropdownObjectFilteredValues()}
+                    </div>
+                    <div className="col-md-4">
+                      <TooltipButton icon='add' tooltip='Add filter'
+                                     style={{background:'#900C3F', color:'white', marginTop:10}} floating mini
+                                     onClick={this.handleClick.bind(this)}/>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="form-group">
+                <div className="row">
+                  <div className="col-md-8" style={{marginTop:20}}>
+                    {this.filterLabels()}
+                  </div>
+                </div>
+              </div>
+              <div className="form-group">
+                <div className="row">
+                  <div className="col-md-12">
+                    <div className="col-md-2">
+                      <TooltipButton icon='search' tooltip='Search members'
+                                     style={{background:'#900C3F', color:'white'}}
+                                     floating onClick={this.searchUsers.bind(this)}/>
+                    </div>
+                    <div className="col-md-8">
+                      <table className="table table-condensed table-striped table-bordered table-hover no-margin"
+                             style={{marginTop:20, background:'white'}} data-height="299" data-click-to-select="true">
+                        <thead>
+                        <tr>
+                          <th style={{"width": "5%"}}>
+                            <input className="no-margin" type="checkbox"/>
+                          </th>
+                          <th style={{"width" : "45%" , "align":"center"}}>Last name</th>
+                          <th style={{"width" : "50%"}}>Name</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {this.state.users}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+                <div className="row">
+                  <Button style={{margin:15,color:'white',background:'#900C3F'}} target='_blank' raised
+                          onClick={this.createMeeting.bind(this)}>
+                    Create
+                  </Button>
+                </div>
+              </div>
+              <BootstrapModal ref="mymodal" message={this.state.message}/>
+            </div>
+          </div>
+        </div>);
+    }
+    else {
+      return (
+        <Spinner/>
+      )
+    }
   }
 }
 
-TeamSuggestionForm.propTypes = {
-  user: PropTypes.any,
-  fromMeeting: PropTypes.bool,
-  meeting: PropTypes.func,
-  normal: PropTypes.func
-};
+  TeamSuggestionForm
+.
+  propTypes = {
+    user: PropTypes.any,
+    fromMeeting: PropTypes.bool,
+    meeting: PropTypes.func,
+    normal: PropTypes.func
+  };
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(TeamSuggestionForm);
+  export
+  default
+
+  connect(mapStateToProps, mapDispatchToProps)
+
+(
+  TeamSuggestionForm
+)
+  ;

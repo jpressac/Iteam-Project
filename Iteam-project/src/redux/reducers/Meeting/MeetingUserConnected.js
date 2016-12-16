@@ -18,7 +18,7 @@ export function userConnection () {
 export function userDisconnection (){
   return function (dispatch) {
     dispatch(disconnectUser());
-    dispatch(push('/' + PATHS.MENULOGGEDIN.HOME));
+   // dispatch(push('/' + PATHS.MENULOGGEDIN.HOME));
   }
 }
 

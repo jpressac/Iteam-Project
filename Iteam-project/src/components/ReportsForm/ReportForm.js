@@ -60,7 +60,8 @@ var specialElementHandlers = {
 const mapStateToProps = (state) => {
   if (state.meetingReducer != null) {
     return {
-      meetingId: state.meetingReducer.meetingId
+      meetingId: state.meetingReducer.meetingId,
+      meetingConfiguration: state.meetingConfigurationReducer.meeting.config
     }
   }
 };
@@ -106,12 +107,12 @@ class ReportForm extends Component {
     axios.get(MEETING.MEETING_REPORT_BY_USER, {
       params: {
         meetingId: this.props.meetingId,
-        tags: "Color, Type, Size"
+        tags:this.props.meetingConfiguration.tags.toString()
       }
     }).then(function (response) {
       this.setState({treeData: response.data, ranking:false});
 
-      treeData = response.data
+
     }.bind(this)).catch(function (response) {
       //TODO: what we do here????
     });
@@ -121,7 +122,7 @@ class ReportForm extends Component {
     axios.get(MEETING.MEETING_REPORT_BY_TAG, {
       params: {
         meetingId: this.props.meetingId,
-        tags: "Color, Type, Size"
+        tags: this.props.meetingConfiguration.tags.toString()
       }
     }).then(function (response) {
       this.setState({treeData: response.data, ranking:false});
@@ -181,7 +182,8 @@ class ReportForm extends Component {
 }
 
 ReportForm.propTypes = {
-  meetingId: PropTypes.string
+  meetingId: PropTypes.string,
+  meetingConfiguration: PropTypes.any
 };
 
 export default connect(mapStateToProps)(ReportForm);
