@@ -56,6 +56,17 @@ public interface MeetingRepository {
     public D3CollapseTreeModel generateBasicReportByTag(String meetingId, List<String> tags);
 
     /**
+     * Generate the report aggregated by tag including the ranking of each idea.
+     * 
+     * @param meetingId
+     *            the id of the meeting.
+     * @param tags
+     *            the list of tag to create the report.
+     * @return the report information.
+     */
+    public D3CollapseTreeModel generateBasicReportByRanking(String meetingId, List<String> tags);
+
+    /**
      * Retrieve the all the meetings in which a user is part of.
      * 
      * @param username
