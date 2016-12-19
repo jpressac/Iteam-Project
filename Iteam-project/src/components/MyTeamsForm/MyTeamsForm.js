@@ -29,7 +29,7 @@ class MyTeamsForm extends Component {
   }
 
 
-  fillfields(teams) {
+  fillFields(teams) {
     this.setState({teams: teams});
   }
 
@@ -37,13 +37,13 @@ class MyTeamsForm extends Component {
   componentDidMount() {
     axios.get(TEAM.TEAM_BY_OWNER
     ).then(function (response) {
-      this.fillfields(response.data);
+      this.fillFields(response.data);
     }.bind(this));
   }
 
 
   render() {
-    let teammap = this.state.teams;
+    let teamMap = this.state.teams;
     let members;
 
     return (
@@ -54,15 +54,15 @@ class MyTeamsForm extends Component {
           </div>
           <List theme={listFormat} ripple>
             <ListSubHeader />
-            {Object.keys(teammap).map((key) => {
-              members= teammap[key].team.members;
-              console.log('key: ' + teammap[key].team.members);
+            {Object.keys(teamMap).map((key) => {
+              members= teamMap[key].team.members;
+              console.log('key: ' + teamMap[key].team.members);
               return (
-                <div>
+                <div key={key}>
                   <ListItem
                     theme={listItemGrey}
                     avatar={avatarPeople}
-                    caption={teammap[key].team.name}
+                    caption={teamMap[key].team.name}
                     legend={members.join(", ")}>
                   </ListItem>
                   <ListDivider />

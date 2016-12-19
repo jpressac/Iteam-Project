@@ -55,7 +55,7 @@ class ReportForm extends Component {
     axios.get(MEETING.MEETING_REPORT, {
       params: {
         meetingId: this.props.meetingId,
-        tags:this.props.meetingConfiguration.tags.toString()
+        tags:this.props.meetingConfiguration.tags.toString().toLowerCase()
       }
     }).then(function (response) {
 
@@ -70,7 +70,7 @@ class ReportForm extends Component {
     axios.get(MEETING.MEETING_REPORT_BY_USER, {
       params: {
         meetingId: this.props.meetingId,
-        tags:this.props.meetingConfiguration.tags.toString()
+        tags:this.props.meetingConfiguration.tags.toString().toLowerCase()
       }
     }).then(function (response) {
       this.setState({treeData: response.data, ranking:false});
@@ -85,7 +85,7 @@ class ReportForm extends Component {
     axios.get(MEETING.MEETING_REPORT_BY_TAG, {
       params: {
         meetingId: this.props.meetingId,
-        tags: this.props.meetingConfiguration.tags.toString()
+        tags: this.props.meetingConfiguration.tags.toString().toLowerCase()
       }
     }).then(function (response) {
       this.setState({treeData: response.data, ranking:false});

@@ -41,7 +41,7 @@ class Note extends Component {
       comments: "No comments",
       mapTag: [],
       tagValue: '',
-      tagName: ''
+      tagName: 'Miscellaneous'
     }
   }
 
@@ -79,7 +79,7 @@ class Note extends Component {
           return connectDragSource(
             <div className={classes.card} style={{...style, left, top}}>
               <Card theme={CardYellow}>
-                <Chip deletable theme={Chipscss}>{this.props.tag}</Chip>
+                <Chip theme={Chipscss}>{this.props.tag}</Chip>
                 <CardText theme={cardTitlescss}>{this.props.title}</CardText>
                 <CardActions theme={cardActionsscss}>
                   <IconButton icon="create" onClick={this.edit.bind(this)}/>
@@ -154,7 +154,7 @@ class Note extends Component {
       return rObj;
     });
 
-    this.setState({mapTag: opt});
+    this.setState({mapTag: opt, tagValue: opt[0].value});
   }
 
 

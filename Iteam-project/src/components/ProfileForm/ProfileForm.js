@@ -48,8 +48,7 @@ class ProfileForm extends React.Component {
       repeatPassword: ''
     }
   }
-
-//CONTROLAR CAMPOS NULOS!!!
+  
   saveUser() {
     // validate change password, and we need to re-render
     submitUser(this.state);
@@ -67,13 +66,11 @@ class ProfileForm extends React.Component {
     axios.get(UTILITIES.PROFESSIONS).then(function (response) {
       this.setValuesOptionsProfessions(response.data);
     }.bind(this));
-    this.initialComboProfession();
-
   }
 
   initialComboProfession(opt) {
     let filteredLabelObject = opt.filter(filter => filter["label"] == this.props.user.profession);
-    this.setState({Value: filteredLabelObject[0]["value"], professionName: name})
+    this.setState({Value: filteredLabelObject[0]["value"], professionName: filteredLabelObject[0]["label"]})
   }
 
   comboProfession(value) {
@@ -84,7 +81,7 @@ class ProfileForm extends React.Component {
 
   setValuesOptionsProfessions(data) {
     let opt = data.map(function (option, index) {
-      var rObj = {};
+      let rObj = {};
       rObj["value"] = index;
       rObj["label"] = option;
       return rObj;
@@ -97,10 +94,6 @@ class ProfileForm extends React.Component {
 
   handleChangeHobbies = (hobbies, value) => {
     this.setState({...this.state, [hobbies]: value});
-  };
-
-  handleChangeMail = (mail, value) => {
-    this.setState({...this.state, [mail]: value});
   };
 
   handleChangeOldPassword = (oldPassword, value) => {
