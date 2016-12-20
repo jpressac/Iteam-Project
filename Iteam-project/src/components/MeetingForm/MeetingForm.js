@@ -12,7 +12,8 @@ import {saveMeeting, meetingToMeetingConfig} from '../../redux/reducers/Meeting/
 import {meetingToNewTeam} from '../../redux/reducers/Meeting/MeetingForTeamReducer'
 import Dropdown from 'react-toolbox/lib/dropdown';
 import themeLabel from './label.scss'
-import themeClock from './face.scss'
+import themeDropdown from './dropdown.scss'
+import Avatar from 'react-toolbox/lib/avatar';
 import {Button, IconButton} from 'react-toolbox/lib/button';
 import {TEAM, MEETING} from '../../constants/HostConfiguration'
 
@@ -24,7 +25,8 @@ const end_min_datetime = new Date(new Date(datetime).setDate(datetime.getDate())
 const mapDispatchToProps = dispatch => ({
   saveMeetingInfo: (meeting) => dispatch(saveMeeting(meeting)),
   meetingToCreateNewTeam: () => dispatch(meetingToNewTeam()),
-  goToMeetingConfig: (meeting) => dispatch(meetingToMeetingConfig(meeting))
+  goToMeetingConfig: (meeting) => dispatch(meetingToMeetingConfig(meeting)),
+  home: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HOME))
 });
 
 const mapStateToProps = (state) => {
@@ -189,7 +191,7 @@ class MeetingView extends Component {
 
   dropdownTeam() {
     return (
-      <Dropdown label="Select team" auto theme={themeLabel} style={{color: '#900C3F'}}
+      <Dropdown label="Select team" auto theme={themeDropdown} style={{color: '#900C3F'}}
                 onChange={this.comboTeam.bind(this)}
                 source={this.state.teamsObj} value={this.state.teamValue}/>
     );
@@ -199,9 +201,10 @@ class MeetingView extends Component {
     const {goToNewMeeting} = this.props;
     return (
 
-      <div className={"container"} style={{marginTop: 70, width: 700}}>
+      <div className={"container"} style={{marginTop: '7%', width:'50%'}}>
         <div className={classes.label2}>
-          <label>CREATE MEETING</label>
+          <label style={{ padding:'3%'}}>CREATE MEETING</label>
+          <Avatar style={{backgroundColor: '#900C3F'}} icon="supervisor_account" />
         </div>
         <BootstrapModal ref="meetingModal" message={this.state.message}/>
         <div className={classes.form}>
@@ -224,26 +227,23 @@ class MeetingView extends Component {
               </div>
             </div>
             <div className="form-group">
+              <div className="row">
               <div className="col-md-4">
-                <div className="row">
-                  <DatePicker label='Select date' sundayFirstDayOfWeek style={{marginLeft: 20}}
+                  <DatePicker label='Select date' sundayFirstDayOfWeek
                               onChange={this.dateChange} minDate={new Date()} theme={themeLabel}
                               value={this.state.programmedDate}/>
                 </div>
-                <div className="col-md-4">
-                  <div className="row" style={{color: '#900C3F'}}>
+                <div className="col-md-3">
                     <TimePicker label='Start time' onChange={this.handleChangeStart.bind(this)}
                                 theme={themeLabel} value={this.state.time}/>
                   </div>
-                </div>
-                <div className="col-md-4">
-                  <div className="row" style={{color: '#900C3F'}}>
+                <div className="col-md-3">
                     <TimePicker label='End time' onChange={this.handleChangeEnd.bind(this)}
                                 theme={themeLabel} value={this.state.endtime}/>
                   </div>
                 </div>
               </div>
-            </div>
+
             <div className="form-group">
               <div className="col-md-4">
                 <div className="row">
@@ -261,11 +261,21 @@ class MeetingView extends Component {
                 </div>
               </div>
             </div>
-            <div className="row">
-              <Button style={{margin:15,color:'white',background:'#900C3F'}} target='_blank' raised
-                      onClick={this.configureMeeting.bind(this)}>
-                Next
-              </Button>
+            <div className="form-group">
+               <div className="row">
+                 <div className="col-md-6">
+                   <Button style={{margin:5,color:'#900C3F'}} secondary flat
+                           onClick={this.props.home} icon='navigate_before'>
+                     Cancel
+                   </Button>
+                </div>
+              <div className="col-md-6">
+                <Button style={{margin:5,color:'#900C3F'}}  secondary flat
+                        onClick={this.configureMeeting.bind(this)} icon='navigate_next'>
+                  Meeting Settings
+                </Button>
+              </div>
+            </div>
             </div>
           </div>
         </div>
@@ -279,7 +289,8 @@ MeetingView.propTypes = {
   goToMeetingConfig: PropTypes.func,
   user: PropTypes.any,
   meetingInfoSave: PropTypes.any,
-  fromMeeting: PropTypes.bool
+  fromMeeting: PropTypes.bool,
+  home: PropTypes.func
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(MeetingView)

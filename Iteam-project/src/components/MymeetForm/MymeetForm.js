@@ -457,38 +457,70 @@ class MymeetForm extends Component {
         <Input type='text' label='Description' value={this.state.meetEdit.description} maxLength={144}
                onChange={this.onChangeDescription.bind(this)} disabled={this.state.editable}
                theme={themeLabel}/>
+        <div className="form-group">
+          <div className="row" style={{color: '#900C3F'}}>
+            <div className="col-md-4">
         <DatePicker label='Date' sundayFirstDayOfWeek value={new Date(this.state.datetime)}
                     readonly={this.state.editable} onChange={this.onChangeProgrammedDate.bind(this)}
                     minDate={new Date()}
                     theme={themeLabel}/>
+              </div>
+            <div className="col-md-3">
         <TimePicker label='Start Time'
                     value={isNaN(new Date(this.state.time)) ? 0 : new Date(this.state.time)}
                     readonly={this.state.editable} onChange={this.onChangeProgrammedTime.bind(this)}
                     theme={themeLabel}/>
+              </div>
+              <div className="col-md-3">
         <TimePicker label='End Time'
                     value={isNaN(new Date(this.state.endtime)) ? 0 : new Date(this.state.endtime)}
                     readonly={this.state.editable} onChange={this.onChangeEndTime.bind(this)}
                     theme={themeLabel}/>
+                </div>
+            </div>
+          </div>
+        <div className="form-group">
+          <div className="row" style={{color: '#900C3F'}}>
+            <div className="col-md-3">
         <Input label="Votes" value={this.state.config.votes}
                onChange={this.onChangeVotes.bind(this)} disabled={this.state.editable} type='number'
                theme={themeLabel} min="0"/>
+              </div>
+            <div className="col-md-4">
         <Input label="Minutes in personal board"
                value={this.state.config.pbtime} onChange={this.onChangePbtime.bind(this)}
                disabled={this.state.editable} type='number'
                theme={themeLabel} min="0"/>
+              </div>
+            <div className="col-md-4">
         <Input label="Minutes in shared board"
                value={this.state.config.sbtime} onChange={this.onChangeSbtime.bind(this)}
                disabled={this.state.editable} type='number'
                theme={themeLabel} min="0"/>
+              </div>
+            </div>
+          </div>
+        <div className="row" style={{color: '#900C3F'}}>
+        <div className="col-md-5">
         <Dropdown label="Technic" auto onChange={this.handleChangeCombo.bind(this)} style={{color: '#900C3F'}}
                   source={technics} disabled={this.state.editable} value={this.state.config.technic}
                   theme={themeLabel}/>
+          </div>
+          </div>
+        <div className="form-group">
+          <div className="row" style={{color: '#900C3F'}}>
+        <div className="col-md-4">
         <Input type='text' label='Tag' value={this.state.tag} disabled={this.state.editable}
                onChange={this.handleChange.bind(this,'tag')} maxLength={30}
                theme={themeLabel}/>
+          </div>
+            <div className="col-md-4">
         <TooltipButton icon='add' tooltip='Add tag' floating mini
                        style={{background:'#900C3F', color:'white', marginTop:10}}
                        disabled={this.state.editable} onClick={this.handleAddTag.bind(this)}/>
+            </div>
+            </div>
+          </div>
         {this.tagLabels()}
       </Dialog>
     )
