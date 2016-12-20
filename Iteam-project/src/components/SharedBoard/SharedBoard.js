@@ -22,6 +22,7 @@ import logo from '../Header/image/iteamLogo.jpg';
 import themeButton from './button.scss';
 import navTheme from './NavDrawer.scss';
 import Dropdown from 'react-toolbox/lib/dropdown';
+import {IconMenu, MenuItem, MenuDivider } from 'react-toolbox/lib/menu';
 
 
 const NoteTarget = {
@@ -403,10 +404,12 @@ class SharedBoard extends Component {
         <Layout>
           <NavDrawer active={true}
                      pinned={true} permanentAt='sm' theme={navTheme}>
-            <img src={logo} style={{height:50,width:100,marginRight:300}} onClick={this.props.home}/>
+            <div style={{ background:'white', width:'100%'}}> <img src={logo} style={{height: '10%', width: '50%', marginLeft: '20%'}}
+                                                                   onClick={this.props.home}/></div>
             <label className={classes.label1}>SHARED BOARD</label>
-            <Button icon='person' theme={themeButton} style={{color:'#900C3F'}}
-                    onClick={this.props.personalBoard}/>
+            <MenuItem value='personalBoard' icon='people' style={{color: '#900C3F'}}
+                      caption='Personal Board' onClick ={this.props.personalBoard} ></MenuItem>
+            <MenuDivider/>
             <Dropdown label="Tag filter" auto style={{color: '#900C3F'}}
                       onChange={this.filterTags.bind(this)} required
                       source={this.state.mapTag} value={this.state.tagValue}/>
