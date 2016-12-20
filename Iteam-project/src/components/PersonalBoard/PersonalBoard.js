@@ -60,8 +60,7 @@ class PersonalBoard extends Component {
     super(props);
     this.state = {
       notes: {},
-      mapTag: [
-        {value: 0, label: 'All'}],
+      mapTag: [],
       tagValue: '',
       tagName: ''
     }
@@ -108,21 +107,20 @@ class PersonalBoard extends Component {
   }
 
   comboTags(value) {
-    let filteredLabelObject = this.state.mapTag.filter(filter => filter["value"] == value);
+    let filteredLabelObject = this.state.mapTag
+      .filter(filter => filter["value"] == value);
+
     this.setState({tagValue: value, tagName: filteredLabelObject[0]["label"]})
   }
 
 
   setValuesOptionsTags(data) {
     let opt = data.map(function (option, index) {
-      var rObj = {};
-      rObj["value"] = index + 1;
+      let rObj = {};
+      rObj["value"] = index;
       rObj["label"] = option;
       return rObj;
     });
-    opt.push(this.state.mapTag[0]);
-
-    console.log("options " + JSON.stringify(opt));
 
     this.setState({mapTag: opt});
   }
@@ -157,7 +155,7 @@ class PersonalBoard extends Component {
         username: this.props.user,
         title: text,
         comments: "No comments",
-        tag: '',
+        tag: this.state.mapTag[0].label,
         ranking: 0,
         meetingId: this.props.meetingId,
         boardType: "personal"
@@ -258,6 +256,6 @@ export default flow(
   DropTarget(ItemTypes.NOTE, NoteTarget,
     connection =>
       ( {
-        connectDropTarget: connection.dropTarget()
-      }
+          connectDropTarget: connection.dropTarget()
+        }
       )), connect(mapStateToProps, mapDispatchToProps))(PersonalBoard);

@@ -75,29 +75,30 @@ class MeetingConfigForm extends Component {
 
   handleAddTag() {
     if (this.state.tag !== '') {
-      console.debug('llega hasta aca');
-      var newtags = this.state.tags;
-      newtags.push((this.state.tag));
-      this.setState({tags: newtags, tag: ''});
-      console.debug('tags: ' + this.state.tags);
+
+      let newTags = this.state.tags;
+      newTags.push((this.state.tag));
+
+      this.setState({tags: newTags, tag: ''});
     }
   }
 
-  deletetag(pos) {
-    let newtags = this.state.tags;
-    newtags.map(function (filter, index) {
+  deleteTag(pos) {
+    let newTags = this.state.tags;
+
+    newTags.map(function (filter, index) {
       if (pos === index) {
-        newtags.splice(index, 1);
+        newTags.splice(index, 1);
       }
     });
-    this.setState({tags: newtags});
+
+    this.setState({tags: newTags});
   }
 
   tagLabels() {
-    console.debug('tag Labels');
     return this.state.tags.map(function (tag, index) {
       return (
-        <Chip deletable onDeleteClick={this.deletetag.bind(this, index)} theme={chipTheme}>
+        <Chip key={index} deletable onDeleteClick={this.deleteTag.bind(this, index)} theme={chipTheme}>
           {tag}
         </Chip>
       );
@@ -107,7 +108,11 @@ class MeetingConfigForm extends Component {
 
   saveMeeting() {
     this.setState({showSpinner: true});
-    console.debug('Show spinner: ' + this.state.showSpinner);
+
+    let tags = this.state.tags;
+    tags.push("Miscellaneous");
+    tags.reverse();
+
     axios.post(MEETING.MEETING_CREATE, {
       topic: this.props.meetingInfo.topic,
       ownerName: this.props.user,
@@ -117,14 +122,16 @@ class MeetingConfigForm extends Component {
       teamName: this.props.meetingInfo.teamId,
       meetingConfig: {
         votes: this.state.votes,
-        tags: this.state.tags,
+        tags: tags,
         pbtime: this.state.pbtime,
         sbtime: this.state.sbtime,
         technic: this.state.technicValue,
         template: this.state.template
       }
-    }).then(function (response) {
+    }).then(function () {
+
       this.props.goToMyMeetings()
+
     }.bind(this)).catch(function (response) {
     });
   }
@@ -141,18 +148,18 @@ class MeetingConfigForm extends Component {
               <div className="form-group">
                 <div className="col-md-8">
                   <div className="row" style={{color: '#900C3F'}}>
-                    <Input type="text" theme={themeLabel} label="Select amount of votes" value={this.state.votes}
+                    <Input theme={themeLabel} label="Select amount of votes" value={this.state.votes}
                            onChange={this.handleChange.bind(this, 'votes')} type='number' min="0"/>
                   </div>
                 </div>
                 <div className="col-md-8">
                   <div className="row" style={{color: '#900C3F'}}>
-                    <Input type="text" theme={themeLabel} label="Select amount minutes in personal board"
+                    <Input theme={themeLabel} label="Select amount minutes in personal board"
                            value={this.state.pbtime} onChange={this.handleChange.bind(this, 'pbtime')}
                            type='number' min="0"/>
                     <div className="col-md-8">
                       <div className="row" style={{color: '#900C3F'}}>
-                        <Input type="text" theme={themeLabel} label="Select amount minutes in shared board"
+                        <Input theme={themeLabel} label="Select amount minutes in shared board"
                                value={this.state.sbtime} onChange={this.handleChange.bind(this, 'sbtime')}
                                type='number' min="0"/>
                       </div>
@@ -197,7 +204,6 @@ class MeetingConfigForm extends Component {
       return (
           <Spinner/>
       )
-
     }
   }
 }

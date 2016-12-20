@@ -6,7 +6,7 @@ class HomeView extends React.Component {
   render(){
     return(
       <div className={classes.formContainer}>
-        <HomeForm></HomeForm>
+        <HomeForm/>
       </div>
     )
   }

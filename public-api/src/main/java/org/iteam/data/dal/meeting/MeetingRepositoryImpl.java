@@ -124,9 +124,21 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     }
 
     @Override
+    public D3CollapseTreeModel generateBasicReportByRanking(String meetingId, List<String> tags) {
+        LOGGER.debug("Generating report by tag and ranking for meeting: '{}'", meetingId);
+
+        String topic = getMeetingTopic(meetingId);
+
+        if(!ObjectUtils.isEmpty(topic)) {
+            return createRankingTree(tags, getIdeasGivenMeetingId(meetingId), new D3CollapseTreeModel(topic));
+        }
+        return null;
+    }
+
+    @Override
     public D3CollapseTreeModel generateBasicReportByTag(String meetingId, List<String> tags) {
 
-        LOGGER.debug("Generating report for meeting: '{}'", meetingId);
+        LOGGER.debug("Generating report by tag for meeting: '{}'", meetingId);
 
         String topic = getMeetingTopic(meetingId);
 
@@ -139,7 +151,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     @Override
     public D3CollapseTreeModel generateBasicReportByUser(String meetingId, List<String> users, List<String> tags) {
 
-        LOGGER.debug("Generating report for meeting: '{}'", meetingId);
+        LOGGER.debug("Generating report by user for meeting: '{}'", meetingId);
 
         String topic = getMeetingTopic(meetingId);
 
@@ -384,6 +396,26 @@ public class MeetingRepositoryImpl implements MeetingRepository {
                 if(tag.equals(idea.getTag())) {
                     treeModelTag.add(new D3CollapseTreeModel(idea.getTitle(),
                             Lists.newArrayList(new D3CollapseTreeModel(idea.getComments()))));
+                }
+            }
+
+            treeModel.add(new D3CollapseTreeModel(tag, treeModelTag));
+        }
+
+        return treeModel;
+    }
+
+    private D3CollapseTreeModel createRankingTree(List<String> tags, List<Idea> ideasList,
+            D3CollapseTreeModel treeModel) {
+
+        for(String tag : tags) {
+
+            List<D3CollapseTreeModel> treeModelTag = new ArrayList<>();
+
+            for(Idea idea : ideasList) {
+
+                if(tag.equals(idea.getTag())) {
+                    treeModelTag.add(new D3CollapseTreeModel(idea.getTitle(), idea.getRanking(), "#D6BA33"));
                 }
             }
 

@@ -65,9 +65,9 @@ class SharedBoard extends Component {
       teamName: '',
       participants: [],
       usersConnected: [],
-      mapTag: [{value: 0, label: 'all'}],
+      mapTag: [],
       tagValue: '',
-      tagName: 'all'
+      tagName: 'Miscellaneous'
     }
   }
 
@@ -124,7 +124,7 @@ class SharedBoard extends Component {
 
   renderNotes(noteMap, valueForFilter) {
     return Object.keys(noteMap).map((key) => {
-      if(valueForFilter === "all"){
+      if(valueForFilter === this.state.mapTag[0].label){
         return this.notes(noteMap, key);
       }else {
         if (noteMap[key].tag === valueForFilter) {
@@ -146,7 +146,7 @@ class SharedBoard extends Component {
     }).then(function (response) {
       if (response.data !== "") {
         this.setState({usersConnected: response.data["users"]});
-        this.updateUsersConnected(response.data["users"]);
+        this.updateUsersConnected();
       }
     }.bind(this));
   };
@@ -176,8 +176,7 @@ class SharedBoard extends Component {
   };
 
   saveNotes() {
-    let notemap = this.state.notes;
-    let ideas = Object.values(notemap).map((value) => {
+    let ideas = Object.values(this.state.notes).map((value) => {
       return (
         {
           username: value.username,
@@ -185,7 +184,7 @@ class SharedBoard extends Component {
           comments: value.comments,
           ranking: value.ranking,
           meetingId: value.meetingId,
-          tag: value.tag
+          tag: value.tag.toLowerCase()
         }
       );
     });
@@ -288,7 +287,7 @@ class SharedBoard extends Component {
 
     let jsonPayload = JSON.parse(payload);
 
-    let jsonPayloadMessage = JSON.parse(jsonPayload.payload)
+    let jsonPayloadMessage = JSON.parse(jsonPayload.payload);
 
     switch (jsonPayload.action) {
 
@@ -343,7 +342,7 @@ class SharedBoard extends Component {
         break;
 
       case "user disconnected":
-        this.updateUsersConnected(jsonPayload.payload);
+        this.updateUsersConnected();
         break;
 
       case "default":
@@ -364,21 +363,16 @@ class SharedBoard extends Component {
 
   setValuesOptionsTags(data) {
     let opt = data.map(function (option, index) {
-      var rObj = {};
-      rObj["value"] = index + 1;
+      let rObj = {};
+      rObj["value"] = index;
       rObj["label"] = option;
       return rObj;
     });
-    opt.push(this.state.mapTag[0]);
-
-    console.log("options " + JSON.stringify(opt));
 
     this.setState({mapTag: opt});
   }
 
-
-
-  updateUsersConnected(payload) {
+  updateUsersConnected() {
 
     let usersStatus = this.state.participants.map((participant) => {
       let obj = {};

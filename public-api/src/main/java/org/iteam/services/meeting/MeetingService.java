@@ -6,7 +6,6 @@ import org.iteam.data.dto.Meeting;
 import org.iteam.data.model.D3CollapseTreeModel;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
-import org.iteam.data.model.Reports;
 
 /**
  * Handles all the request for the meeting.
@@ -33,13 +32,15 @@ public interface MeetingService {
     public boolean savedIdeas(IdeasDTO ideas);
 
     /**
-     * Generate report for the given meeting.
+     * Generate report by tag and ranking for the given meeting.
      * 
      * @param meetingId
      *            the meeting id.
-     * @return
+     * @param tags
+     *            tags to create the report
+     * @return the an structure to generate a report tree
      */
-    public Reports generateReport(String meetingId);
+    public D3CollapseTreeModel generateReportByRanking(String meetingId, List<String> tags);
 
     /**
      * Generate report for the given meeting.
@@ -48,7 +49,7 @@ public interface MeetingService {
      *            the meeting id.
      * @param tags
      *            tags to create the report.
-     * @return
+     * @return the an structure to generate a report tree
      */
     public D3CollapseTreeModel generateReportByUser(String meetingId, List<String> tags);
 
@@ -59,7 +60,7 @@ public interface MeetingService {
      *            the meeting id.
      * @param tags
      *            tags to create the report.
-     * @return
+     * @return the an structure to generate a report tree
      */
     public D3CollapseTreeModel generateReportByTag(String meetingId, List<String> tags);
 
