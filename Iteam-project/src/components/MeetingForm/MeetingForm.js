@@ -2,8 +2,6 @@ import React, {Component, PropTypes} from "react";
 import classes from './MeetingForm.scss'
 import axios from 'axios'
 import TimePicker from 'react-toolbox/lib/time_picker'
-import {push} from 'react-router-redux'
-import {PATHS} from '../../constants/routes'
 import {connect} from 'react-redux'
 import DatePicker from 'react-toolbox/lib/date_picker';
 import BootstrapModal from '../../components/BootstrapModal/BootstrapModal'
@@ -17,10 +15,6 @@ import Avatar from 'react-toolbox/lib/avatar';
 import {Button, IconButton} from 'react-toolbox/lib/button';
 import {TEAM, MEETING} from '../../constants/HostConfiguration'
 
-
-var datetime = new Date();
-const min_datetime = new Date(new Date(datetime).setDate(datetime.getDate()));
-const end_min_datetime = new Date(new Date(datetime).setDate(datetime.getDate()));
 
 const mapDispatchToProps = dispatch => ({
   saveMeetingInfo: (meeting) => dispatch(saveMeeting(meeting)),
@@ -52,7 +46,8 @@ class MeetingView extends Component {
       endtime: new Date(),
       teamName: '',
       teamsObj: [],
-      teamSelectedName: ''
+      teamSelectedName: '',
+      teamList:[]
     }
   };
 
@@ -69,8 +64,8 @@ class MeetingView extends Component {
   };
 
   handleChangeEnd = (time) => {
-    var beforeEndDate = this.state.programmedDate;
-    var newDate = new Date(MeetingView.checkDate(this.state.time.getHours(),time.getHours(), beforeEndDate));
+    let beforeEndDate = this.state.programmedDate;
+    let newDate = new Date(MeetingView.checkDate(this.state.time.getHours(),time.getHours(), beforeEndDate));
     console.debug('date: ' + newDate);
     newDate.setHours(time.getHours());
     newDate.setMinutes(time.getMinutes());
@@ -79,7 +74,7 @@ class MeetingView extends Component {
 
   static checkDate(startHour, endHour, date) {
     if ((endHour - startHour) < 0) {
-      var newDay = new Date(date);
+      let newDay = new Date(date);
       newDay.setDate(date.getDate() + 1);
       return newDay;
     }
@@ -118,9 +113,8 @@ class MeetingView extends Component {
   }
 
   fillTeam(data) {
-
     let opt = data.map(function (option, index) {
-      var rObj = {};
+      let rObj = {};
       rObj["value"] = index;
       rObj["label"] = option["team"]["name"];
       rObj["id"] = option["teamId"];
@@ -128,13 +122,12 @@ class MeetingView extends Component {
       return rObj;
     });
 
-    this.setState({teamsObj: opt});
-    this.setState({teamList: data});
+    this.setState({teamsObj: opt, teamList: data});
     this.forceUpdate();
   }
 
 
-  configureMeeting(goToMeetingConfig) {
+  configureMeeting() {
     let teamId = '';
     if (this.state.topic === '' || this.state.description === '' || this.state.teamSelectedName === '') {
       this.setState({message: '¡You have to complete the form!'});
@@ -163,7 +156,7 @@ class MeetingView extends Component {
   searchTeamIdGivenTeamName(teamNameCombo) {
     let data = this.state.teamList;
 
-    var filtered = data.filter(team => team["team"]["name"] === teamNameCombo);
+    let filtered = data.filter(team => team["team"]["name"] === teamNameCombo);
 
     return filtered[0]["teamId"]
   }
@@ -198,7 +191,6 @@ class MeetingView extends Component {
   };
 
   render() {
-    const {goToNewMeeting} = this.props;
     return (
 
       <div className={"container"} style={{marginTop: '7%', width:'50%'}}>

@@ -7,22 +7,20 @@ import classes from "../SharedBoard/SharedBoard.scss";
 import Note from "../Note/Note";
 import axios from "axios";
 import {ItemTypes} from "../Constants/Constants";
-import {connectAndSubscribe, disconnect, sendMessage} from '../../websocket/websocket'
-import flow from 'lodash/flow'
-import {connect} from 'react-redux'
-import {push} from 'react-router-redux';
-import {PATHS} from '../../constants/routes';
-import {TEAM, MEETING} from '../../constants/HostConfiguration'
-import Drawer from 'react-toolbox/lib/drawer';
-import {Layout, NavDrawer, Panel, Sidebar} from 'react-toolbox';
-import {Button, IconButton} from 'react-toolbox/lib/button';
-import Clients from '../BoardSidebar/users';
-import {userDisconnection} from '../../redux/reducers/Meeting/MeetingUserConnected'
-import logo from '../Header/image/iteamLogo.jpg';
-import themeButton from './button.scss';
-import navTheme from './NavDrawer.scss';
-import Dropdown from 'react-toolbox/lib/dropdown';
-import {IconMenu, MenuItem, MenuDivider } from 'react-toolbox/lib/menu';
+import {connectAndSubscribe, disconnect, sendMessage} from "../../websocket/websocket";
+import flow from "lodash/flow";
+import {connect} from "react-redux";
+import {push} from "react-router-redux";
+import {PATHS} from "../../constants/routes";
+import {TEAM, MEETING} from "../../constants/HostConfiguration";
+import Drawer from "react-toolbox/lib/drawer";
+import {Layout, NavDrawer, Panel, Sidebar} from "react-toolbox";
+import Clients from "../BoardSidebar/users";
+import {userDisconnection} from "../../redux/reducers/Meeting/MeetingUserConnected";
+import logo from "../Header/image/iteamLogo.jpg";
+import navTheme from "./NavDrawer.scss";
+import Dropdown from "react-toolbox/lib/dropdown";
+import {MenuItem, MenuDivider} from "react-toolbox/lib/menu";
 
 
 const NoteTarget = {
@@ -66,9 +64,9 @@ class SharedBoard extends Component {
       teamName: '',
       participants: [],
       usersConnected: [],
-      mapTag: [{value: 0, label: 'all'}],
+      mapTag: [],
       tagValue: '',
-      tagName: 'all'
+      tagName: 'Miscellaneous'
     }
   }
 
@@ -106,8 +104,8 @@ class SharedBoard extends Component {
     disconnect()
   }
 
-  notes(noteMap, key){
-    return(
+  notes(noteMap, key) {
+    return (
       <Note key={key}
             id={key}
             onRemove={this.remove.bind(this)}
@@ -125,11 +123,11 @@ class SharedBoard extends Component {
 
   renderNotes(noteMap, valueForFilter) {
     return Object.keys(noteMap).map((key) => {
-      if(valueForFilter === "all"){
+      if (valueForFilter === this.state.mapTag[0].label) {
         return this.notes(noteMap, key);
-      }else {
+      } else {
         if (noteMap[key].tag === valueForFilter) {
-           return this.notes(noteMap, key);
+          return this.notes(noteMap, key);
         }
       }
     });
@@ -147,7 +145,7 @@ class SharedBoard extends Component {
     }).then(function (response) {
       if (response.data !== "") {
         this.setState({usersConnected: response.data["users"]});
-        this.updateUsersConnected(response.data["users"]);
+        this.updateUsersConnected();
       }
     }.bind(this));
   };
@@ -177,8 +175,7 @@ class SharedBoard extends Component {
   };
 
   saveNotes() {
-    let notemap = this.state.notes;
-    let ideas = Object.values(notemap).map((value) => {
+    let ideas = Object.values(this.state.notes).map((value) => {
       return (
         {
           username: value.username,
@@ -186,7 +183,7 @@ class SharedBoard extends Component {
           comments: value.comments,
           ranking: value.ranking,
           meetingId: value.meetingId,
-          tag: value.tag
+          tag: value.tag.toLowerCase()
         }
       );
     });
@@ -289,7 +286,7 @@ class SharedBoard extends Component {
 
     let jsonPayload = JSON.parse(payload);
 
-    let jsonPayloadMessage = JSON.parse(jsonPayload.payload)
+    let jsonPayloadMessage = JSON.parse(jsonPayload.payload);
 
     switch (jsonPayload.action) {
 
@@ -344,7 +341,7 @@ class SharedBoard extends Component {
         break;
 
       case "user disconnected":
-        this.updateUsersConnected(jsonPayload.payload);
+        this.updateUsersConnected();
         break;
 
       case "default":
@@ -365,21 +362,16 @@ class SharedBoard extends Component {
 
   setValuesOptionsTags(data) {
     let opt = data.map(function (option, index) {
-      var rObj = {};
-      rObj["value"] = index + 1;
+      let rObj = {};
+      rObj["value"] = index;
       rObj["label"] = option;
       return rObj;
     });
-    opt.push(this.state.mapTag[0]);
-
-    console.log("options " + JSON.stringify(opt));
 
     this.setState({mapTag: opt});
   }
 
-
-
-  updateUsersConnected(payload) {
+  updateUsersConnected() {
 
     let usersStatus = this.state.participants.map((participant) => {
       let obj = {};
@@ -397,25 +389,27 @@ class SharedBoard extends Component {
   }
 
 
-
   render() {
     return this.props.connectDropTarget(
       <div className={classes.board} name="Shared Board Component">
         <Layout>
           <NavDrawer active={true}
                      pinned={true} permanentAt='sm' theme={navTheme}>
-            <div style={{ background:'white', width:'100%'}}> <img src={logo} style={{height: '10%', width: '50%', marginLeft: '20%'}}
-                                                                   onClick={this.props.home}/></div>
+            <div style={{background: 'white', width: '100%'}}><img src={logo} style={{
+              height: '10%',
+              width: '50%',
+              marginLeft: '20%'
+            }} onClick={this.props.home}/>
+            </div>
             <label className={classes.label1}>SHARED BOARD</label>
             <MenuItem value='personalBoard' icon='people' style={{color: '#900C3F'}}
-                      caption='Personal Board' onClick ={this.props.personalBoard} ></MenuItem>
+                      caption='Personal Board' onClick={this.props.personalBoard}/>
             <MenuDivider/>
             <Dropdown label="Tag filter" auto style={{color: '#900C3F'}}
                       onChange={this.filterTags.bind(this)} required
                       source={this.state.mapTag} value={this.state.tagValue}/>
-            <MenuItem value='teamMembers' icon='people_outline' style={{color: 'white', background:'#900C3F'}}
-                      caption='Team members' onClick={this.handleToggle} ></MenuItem>
-
+            <MenuItem value='teamMembers' icon='people_outline' style={{color: 'white', background: '#900C3F'}}
+                      caption='Team members' onClick={this.handleToggle}/>
           </NavDrawer>
           <Panel>
             <div name="Notes container" className={classes.notes}>
@@ -427,14 +421,11 @@ class SharedBoard extends Component {
                   onOverlayClick={this.handleToggle}>
             <Clients clients={this.state.participants} teamName={this.state.teamName}/>
             <div>
-              <MenuItem value='endmeeting' icon='exit_to_app' style={{color: 'white', background:'#900C3F'}}
-                        caption='End meeting' onClick={this.handleEndMeeting.bind(this)} ></MenuItem>
-
+              <MenuItem value='endmeeting' icon='exit_to_app' style={{color: 'white', background: '#900C3F'}}
+                        caption='End meeting' onClick={this.handleEndMeeting.bind(this)}/>
               <MenuDivider/>
-
-              <MenuItem value='leavemeeting' icon='touch_app' style={{color: 'white', background:'#900C3F'}}
-                        caption='Leave meeting' onClick={this.handleLeaveMeeting.bind(this)}></MenuItem>
-
+              <MenuItem value='leavemeeting' icon='touch_app' style={{color: 'white', background: '#900C3F'}}
+                        caption='Leave meeting' onClick={this.handleLeaveMeeting.bind(this)}/>
             </div>
           </Drawer>
         </Layout>
@@ -459,7 +450,7 @@ export default flow(
   DropTarget(ItemTypes.NOTE, NoteTarget,
     connect =>
       ( {
-        connectDropTarget: connect.dropTarget()
-      }
+          connectDropTarget: connect.dropTarget()
+        }
       )), connect(mapStateToProps, mapDispatchToProps))(SharedBoard);
 

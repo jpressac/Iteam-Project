@@ -1,31 +1,33 @@
 import React, {Component, PropTypes} from "react";
-import axios from 'axios';
-import {connect} from 'react-redux';
-import {List, ListItem, ListDivider, ListSubHeader} from 'react-toolbox/lib/list';
-import Dialog from 'react-toolbox/lib/dialog';
-import TimePicker from 'react-toolbox/lib/time_picker';
-import DatePicker from 'react-toolbox/lib/date_picker';
-import {push} from 'react-router-redux';
-import {PATHS} from '../../constants/routes';
-import classes from './MymeetForm.scss';
-import Input from 'react-toolbox/lib/input';
-import BootstrapModal from '../../components/BootstrapModal/BootstrapModal';
-import ListItem1 from './ListItem1.scss'
-import ListItem2 from './ListItem2.scss'
-import listFormat from './List.scss'
-import chipTheme from './chips.scss'
-import {updateMeetingId} from '../../redux/reducers/Meeting/MeetingReducer'
-import {MEETING} from '../../constants/HostConfiguration'
-import themeLabel from './label.scss'
-import Dropdown from 'react-toolbox/lib/dropdown';
-import Tooltip from 'react-toolbox/lib/tooltip';
-import {Button} from 'react-toolbox/lib/button';
-import Chip from 'react-toolbox/lib/chip';
-import {saveConfig} from '../../redux/reducers/Meeting/MeetingConfigReducer'
+import axios from "axios";
+import {connect} from "react-redux";
+import {List, ListItem, ListDivider, ListSubHeader} from "react-toolbox/lib/list";
+import Dialog from "react-toolbox/lib/dialog";
+import TimePicker from "react-toolbox/lib/time_picker";
+import DatePicker from "react-toolbox/lib/date_picker";
+import {push} from "react-router-redux";
+import {PATHS} from "../../constants/routes";
+import classes from "./MymeetForm.scss";
+import Input from "react-toolbox/lib/input";
+import BootstrapModal from "../../components/BootstrapModal/BootstrapModal";
+import ListItem1 from "./ListItem1.scss";
+import ListItem2 from "./ListItem2.scss";
+import listFormat from "./List.scss";
+import chipTheme from "./chips.scss";
+import {updateMeetingId} from "../../redux/reducers/Meeting/MeetingReducer";
+import {MEETING} from "../../constants/HostConfiguration";
+import themeLabel from "./label.scss";
+import Dropdown from "react-toolbox/lib/dropdown";
+import Tooltip from "react-toolbox/lib/tooltip";
+import {Button} from "react-toolbox/lib/button";
+import Chip from "react-toolbox/lib/chip";
+import {saveConfig} from "../../redux/reducers/Meeting/MeetingConfigReducer";
 
 var programDate = new Date();
 var endDate = new Date();
+
 const TooltipButton = Tooltip(Button);
+
 const technics = [{value: 0, label: 'Brainstorming'}, {value: 1, label: 'SCAMPER'}, {
   value: 2,
   label: 'morphological analysis'
@@ -37,9 +39,7 @@ const mapStateToProps = (state) => {
     return {
       user: state.loginUser.user.username
     }
-
   }
-
 };
 
 const mapDispatchToProps = (dispatch) => ({
@@ -69,7 +69,6 @@ class MymeetForm extends Component {
     }
   }
 
-
   goToReports() {
 
     let meetingInfo = {};
@@ -83,9 +82,6 @@ class MymeetForm extends Component {
   }
 
   startMeeting() {
-    console.log('Meeting configuration' + this.state.config);
-    console.log('Meeting topic' + this.state.meetEdit.topic);
-
     //Object that contains meeting info for reducer for Toolbar
     let meetingInfo = {};
     meetingInfo.topic = this.state.meetEdit.topic;
@@ -112,14 +108,15 @@ class MymeetForm extends Component {
       meetEdit: meeting,
       editable: true
     });
-    var datetime = new Date(meeting.programmedDate);
+
+    let datetime = new Date(meeting.programmedDate);
     programDate.setFullYear(datetime.getFullYear());
     programDate.setMonth(datetime.getMonth());
     programDate.setDate(datetime.getDate());
     programDate.setHours(datetime.getHours());
     programDate.setMinutes(datetime.getMinutes());
 
-    var enddatetime = new Date(meeting.endDate);
+    let enddatetime = new Date(meeting.endDate);
     endDate.setFullYear(enddatetime.getFullYear());
     endDate.setMonth(enddatetime.getMonth());
     endDate.setDate(enddatetime.getDate());
@@ -135,19 +132,19 @@ class MymeetForm extends Component {
   }
 
   static validateDate(date) {
-    var meetDate = new Date(date);
-    var dateNow = new Date();
-    var meetDate_minrange = dateNow.setMinutes(dateNow.getMinutes() - 15);
+    let meetDate = new Date(date);
+    let dateNow = new Date();
+    let meetDate_minrange = dateNow.setMinutes(dateNow.getMinutes() - 15);
 
     return meetDate_minrange > meetDate.getTime();
   }
 
   static validateStart(date) {
-    var meetDate = new Date(date);
-    var dateNow = new Date();
+    let meetDate = new Date(date);
+    let dateNow = new Date();
 
-    var meetDate_minrange = dateNow.setMinutes(dateNow.getMinutes() - 150);
-    var meetDate_maxrange = dateNow.setMinutes(dateNow.getMinutes() + 300);
+    let meetDate_minrange = dateNow.setMinutes(dateNow.getMinutes() - 150);
+    let meetDate_maxrange = dateNow.setMinutes(dateNow.getMinutes() + 300);
 
     return (meetDate_minrange < meetDate.getTime() && meetDate.getTime() < meetDate_maxrange);
   }
@@ -169,7 +166,6 @@ class MymeetForm extends Component {
       }
     }
     else {
-      console.log('is user');
       //fecha ya paso
       if (MymeetForm.validateDate(meetingDate)) {
         return this.AdminUserActionsFinish;
@@ -214,13 +210,13 @@ class MymeetForm extends Component {
     return new Date(meetingTime).toLocaleDateString([], {hour: '2-digit', minute: '2-digit'});
   }
 
-  fillfields(meetings) {
+  fillFields(meetings) {
     this.setState({meetings: meetings});
   }
 
   componentDidMount() {
     axios.get(MEETING.MEETING_BY_USER, {params: {username: this.props.user}}).then(function (response) {
-      this.fillfields(response.data)
+      this.fillFields(response.data)
     }.bind(this));
   }
 
@@ -233,7 +229,6 @@ class MymeetForm extends Component {
 
     editedMeeting.meetingId = this.state.meetEdit.meetingId;
     editedMeeting.meetingConfig = this.state.config;
-    console.debug('Save meeting object: ' + JSON.stringify(editedMeeting));
 
     axios.post(MEETING.MEETING_UPDATE, editedMeeting).then(
       function (response) {
@@ -246,7 +241,7 @@ class MymeetForm extends Component {
   }
 
   onChangeTopic = (topic) => {
-    var newMeeting = this.state.meetEdit;
+    let newMeeting = this.state.meetEdit;
     newMeeting.topic = topic;
     this.setState({
       meetEdit: newMeeting
@@ -254,7 +249,7 @@ class MymeetForm extends Component {
   };
 
   onChangeVotes = (votes) => {
-    var newMeeting = this.state.meetEdit;
+    let newMeeting = this.state.meetEdit;
     newMeeting.meetingConfig.votes = votes;
     this.setState({
       meetEdit: newMeeting
@@ -262,7 +257,7 @@ class MymeetForm extends Component {
   };
 
   onChangeSbtime = (sbtime) => {
-    var newMeeting = this.state.meetEdit;
+    let newMeeting = this.state.meetEdit;
     newMeeting.meetingConfig.sbtime = sbtime;
     this.setState({
       meetEdit: newMeeting
@@ -270,7 +265,7 @@ class MymeetForm extends Component {
   };
 
   onChangePbtime = (pbtime) => {
-    var newMeeting = this.state.meetEdit;
+    let newMeeting = this.state.meetEdit;
     newMeeting.meetingConfig.pbtime = pbtime;
     this.setState({
       meetEdit: newMeeting
@@ -278,7 +273,7 @@ class MymeetForm extends Component {
   };
 
   onChangeDescription = (description) => {
-    var newMeeting = this.state.meetEdit;
+    let newMeeting = this.state.meetEdit;
     newMeeting.description = description;
     this.setState({
       meetEdit: newMeeting
@@ -287,7 +282,7 @@ class MymeetForm extends Component {
 
 
   onChangeProgrammedDate = (date) => {
-    var newDate = new Date(MymeetForm.changeEndDate(programDate, endDate, date));
+    let newDate = new Date(MymeetForm.changeEndDate(programDate, endDate, date));
     console.debug('new date: ' + newDate);
 
     programDate.setFullYear(date.getFullYear());
@@ -298,7 +293,7 @@ class MymeetForm extends Component {
     endDate.setMonth(newDate.getMonth());
     endDate.setDate(newDate.getDate());
 
-    var newMeeting = this.state.meetEdit;
+    let newMeeting = this.state.meetEdit;
     newMeeting.programmedDate = programDate.getTime();
     newMeeting.endDate = endDate.getTime();
     this.setState({
@@ -311,8 +306,8 @@ class MymeetForm extends Component {
     if (startDate.getDate() === enddate.getDate()) {
       return newdate;
     }
-    var nextday = new Date(newdate);
-    return nextday.setDate(newdate.getDate() + 1)
+    let nextDay = new Date(newdate);
+    return nextDay.setDate(newdate.getDate() + 1)
   }
 
   static validateHour(newHour) {
@@ -324,26 +319,25 @@ class MymeetForm extends Component {
       programDate.setHours(time.getHours());
       programDate.setMinutes(time.getMinutes());
 
-      var newMeeting = this.state.meetEdit;
+      let newMeeting = this.state.meetEdit;
       newMeeting.programmedDate = programDate.getTime();
       this.setState({
         meetEdit: newMeeting,
         time: time
       });
     }
-    else{
-        this.setState({message: '¡You have to complete with valid time!'});
-        this.refs.mymeetingModal.openModal();
-      }
+    else {
+      this.setState({message: '¡You have to complete with valid time!'});
+      this.refs.mymeetingModal.openModal();
+    }
   };
 
   onChangeEndTime = (time) => {
     endDate = new Date(MymeetForm.checkDate(programDate.getHours(), time.getHours(), programDate));
-    console.debug('end Date: ' + endDate);
     endDate.setHours(time.getHours());
     endDate.setMinutes(time.getMinutes());
 
-    var newMeeting = this.state.meetEdit;
+    let newMeeting = this.state.meetEdit;
     newMeeting.endDate = endDate.getTime();
     this.setState({
       meetEdit: newMeeting,
@@ -353,7 +347,7 @@ class MymeetForm extends Component {
 
   static checkDate(startHour, endHour, date) {
     if ((endHour - startHour) < 0 && (programDate.getDate() === endDate.getDate())) {
-      var newDay = new Date(date);
+      let newDay = new Date(date);
       newDay.setDate(date.getDate() + 1);
       return newDay;
     }
@@ -362,9 +356,11 @@ class MymeetForm extends Component {
 
   handleChangeCombo = (value) => {
     let filteredLabelObject = technics.filter(filter => filter["value"] == value);
-    var newconfig = this.state.config;
-    newconfig.technic = value;
-    this.setState({config: newconfig, technicValue: filteredLabelObject[0]["label"]})
+    let newConfig = this.state.config;
+
+    newConfig.technic = value;
+
+    this.setState({config: newConfig, technicValue: filteredLabelObject[0]["label"]})
   };
 
 
@@ -372,26 +368,31 @@ class MymeetForm extends Component {
     this.setState({...this.state, [name]: value});
   };
 
-  deletetag(pos) {
-    let newtags = this.state.config.tags;
-    newtags.map(function (filter, index) {
+  deleteTag(pos) {
+    let newTags = this.state.config.tags;
+
+    newTags.map(function (filter, index) {
       if (pos === index) {
-        newtags.splice(index, 1);
+        newTags.splice(index, 1);
       }
     });
-    var newconfig = this.state.config;
-    newconfig.tags = newtags;
-    this.setState({config: newconfig, tag: ''});
+
+    let newConfig = this.state.config;
+    newConfig.tags = newTags;
+
+    this.setState({config: newConfig, tag: ''});
   }
 
   handleAddTag() {
     if (this.state.tag !== '') {
-      var newtags = this.state.config.tags;
-      newtags.push((this.state.tag));
-      var newconfig = this.state.config;
-      newconfig.tags = newtags;
-      this.setState({config: newconfig, tag: ''});
-      console.debug('tags: ' + this.state.tags);
+      let newTags = this.state.config.tags;
+
+      newTags.push((this.state.tag));
+
+      let newConfig = this.state.config;
+
+      newConfig.tags = newTags;
+      this.setState({config: newConfig, tag: ''});
     }
   }
 
@@ -399,7 +400,8 @@ class MymeetForm extends Component {
     if (typeof this.state.config.tags !== "undefined") {
       return this.state.config.tags.map(function (tag, index) {
         return (
-          <Chip deletable={!this.state.editable} onDeleteClick={this.deletetag.bind(this, index)} theme={chipTheme}>
+          <Chip key={index} deletable={!this.state.editable} onDeleteClick={this.deleteTag.bind(this, index)}
+                theme={chipTheme}>
             {tag}
           </Chip>
         );
@@ -460,67 +462,67 @@ class MymeetForm extends Component {
         <div className="form-group">
           <div className="row" style={{color: '#900C3F'}}>
             <div className="col-md-4">
-        <DatePicker label='Date' sundayFirstDayOfWeek value={new Date(this.state.datetime)}
-                    readonly={this.state.editable} onChange={this.onChangeProgrammedDate.bind(this)}
-                    minDate={new Date()}
-                    theme={themeLabel}/>
-              </div>
+              <DatePicker label='Date' sundayFirstDayOfWeek value={new Date(this.state.datetime)}
+                          readonly={this.state.editable} onChange={this.onChangeProgrammedDate.bind(this)}
+                          minDate={new Date()}
+                          theme={themeLabel}/>
+            </div>
             <div className="col-md-3">
-        <TimePicker label='Start Time'
-                    value={isNaN(new Date(this.state.time)) ? 0 : new Date(this.state.time)}
-                    readonly={this.state.editable} onChange={this.onChangeProgrammedTime.bind(this)}
-                    theme={themeLabel}/>
-              </div>
-              <div className="col-md-3">
-        <TimePicker label='End Time'
-                    value={isNaN(new Date(this.state.endtime)) ? 0 : new Date(this.state.endtime)}
-                    readonly={this.state.editable} onChange={this.onChangeEndTime.bind(this)}
-                    theme={themeLabel}/>
-                </div>
+              <TimePicker label='Start Time'
+                          value={isNaN(new Date(this.state.time)) ? 0 : new Date(this.state.time)}
+                          readonly={this.state.editable} onChange={this.onChangeProgrammedTime.bind(this)}
+                          theme={themeLabel}/>
+            </div>
+            <div className="col-md-3">
+              <TimePicker label='End Time'
+                          value={isNaN(new Date(this.state.endtime)) ? 0 : new Date(this.state.endtime)}
+                          readonly={this.state.editable} onChange={this.onChangeEndTime.bind(this)}
+                          theme={themeLabel}/>
             </div>
           </div>
+        </div>
         <div className="form-group">
           <div className="row" style={{color: '#900C3F'}}>
             <div className="col-md-3">
-        <Input label="Votes" value={this.state.config.votes}
-               onChange={this.onChangeVotes.bind(this)} disabled={this.state.editable} type='number'
-               theme={themeLabel} min="0"/>
-              </div>
+              <Input label="Votes" value={this.state.config.votes}
+                     onChange={this.onChangeVotes.bind(this)} disabled={this.state.editable} type='number'
+                     theme={themeLabel} min="0"/>
+            </div>
             <div className="col-md-4">
-        <Input label="Minutes in personal board"
-               value={this.state.config.pbtime} onChange={this.onChangePbtime.bind(this)}
-               disabled={this.state.editable} type='number'
-               theme={themeLabel} min="0"/>
-              </div>
+              <Input label="Minutes in personal board"
+                     value={this.state.config.pbtime} onChange={this.onChangePbtime.bind(this)}
+                     disabled={this.state.editable} type='number'
+                     theme={themeLabel} min="0"/>
+            </div>
             <div className="col-md-4">
-        <Input label="Minutes in shared board"
-               value={this.state.config.sbtime} onChange={this.onChangeSbtime.bind(this)}
-               disabled={this.state.editable} type='number'
-               theme={themeLabel} min="0"/>
-              </div>
+              <Input label="Minutes in shared board"
+                     value={this.state.config.sbtime} onChange={this.onChangeSbtime.bind(this)}
+                     disabled={this.state.editable} type='number'
+                     theme={themeLabel} min="0"/>
             </div>
           </div>
+        </div>
         <div className="row" style={{color: '#900C3F'}}>
-        <div className="col-md-5">
-        <Dropdown label="Technic" auto onChange={this.handleChangeCombo.bind(this)} style={{color: '#900C3F'}}
-                  source={technics} disabled={this.state.editable} value={this.state.config.technic}
-                  theme={themeLabel}/>
+          <div className="col-md-5">
+            <Dropdown label="Technic" auto onChange={this.handleChangeCombo.bind(this)} style={{color: '#900C3F'}}
+                      source={technics} disabled={this.state.editable} value={this.state.config.technic}
+                      theme={themeLabel}/>
           </div>
-          </div>
+        </div>
         <div className="form-group">
           <div className="row" style={{color: '#900C3F'}}>
-        <div className="col-md-4">
-        <Input type='text' label='Tag' value={this.state.tag} disabled={this.state.editable}
-               onChange={this.handleChange.bind(this,'tag')} maxLength={30}
-               theme={themeLabel}/>
-          </div>
             <div className="col-md-4">
-        <TooltipButton icon='add' tooltip='Add tag' floating mini
-                       style={{background:'#900C3F', color:'white', marginTop:10}}
-                       disabled={this.state.editable} onClick={this.handleAddTag.bind(this)}/>
+              <Input type='text' label='Tag' value={this.state.tag} disabled={this.state.editable}
+                     onChange={this.handleChange.bind(this, 'tag')} maxLength={30}
+                     theme={themeLabel}/>
             </div>
+            <div className="col-md-4">
+              <TooltipButton icon='add' tooltip='Add tag' floating mini
+                             style={{background: '#900C3F', color: 'white', marginTop: 10}}
+                             disabled={this.state.editable} onClick={this.handleAddTag.bind(this)}/>
             </div>
           </div>
+        </div>
         {this.tagLabels()}
       </Dialog>
     )
@@ -531,12 +533,12 @@ class MymeetForm extends Component {
     let meets = this.state.meetings;
     let meetingTime = new Date;
 
-    var meetmap = [].slice.call(meets).sort(function (a, b) {
+    let meetMap = [].slice.call(meets).sort(function (a, b) {
       return a.programmedDate - b.programmedDate
     });
 
     return (
-      <div className={"container"} style={{marginTop:70}}>
+      <div className={"container"} style={{marginTop: 70}}>
         <div className={classes.content}>
           <div className={classes.label2}>
             <label>MY MEETINGS</label>
@@ -544,20 +546,20 @@ class MymeetForm extends Component {
           <BootstrapModal ref="mymeetingModal" message={this.state.message}/>
           <List theme={listFormat} selectable ripple>
             <ListSubHeader />
-            {Object.keys(meetmap).map((key) => {
-                meetingTime = meetmap[key].programmedDate;
-                var renderDateTime = MymeetForm.renderDate(meetingTime);
-                var future_date = MymeetForm.validateDate(meetingTime);
-                var color = future_date ? ListItem2 : ListItem1;
+            {Object.keys(meetMap).map((key) => {
+                meetingTime = meetMap[key].programmedDate;
+                let renderDateTime = MymeetForm.renderDate(meetingTime);
+                let future_date = MymeetForm.validateDate(meetingTime);
+                let color = future_date ? ListItem2 : ListItem1;
                 return (
-                  <div>
+                  <div key={key}>
                     <ListItem
                       theme={color}
-                      caption={meetmap[key].topic}
+                      caption={meetMap[key].topic}
                       legend={renderDateTime}
                       leftIcon='send'
                       rightIcon='visibility'
-                      onClick={this.handleToggleDialog.bind(this,meetmap[key])}/>
+                      onClick={this.handleToggleDialog.bind(this, meetMap[key])}/>
                     <ListDivider />
                     <BootstrapModal ref="meetingModal" message={this.state.message}/>
                   </div>

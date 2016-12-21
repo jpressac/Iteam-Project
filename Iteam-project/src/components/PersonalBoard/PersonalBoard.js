@@ -3,23 +3,22 @@ import {DropTarget} from "react-dnd";
 import classes from "./PersonalBoard.scss";
 import Note from "../Note/Note";
 import {ItemTypes} from "../Constants/Constants";
-import Button from 'react-toolbox/lib/button';
-import Tooltip from 'react-toolbox/lib/tooltip';
-import flow from 'lodash/flow'
-import {connect as con, initWebSocket, sendMessage, disconnect} from '../../websocket/websocket'
-import {connect} from 'react-redux'
-import axios from 'axios'
-import {MEETING} from '../../constants/HostConfiguration'
-import generateUUID from '../../constants/utils/GetUUID'
-import {userConnection} from '../../redux/reducers/Meeting/MeetingUserConnected'
-import {Layout, NavDrawer, Panel, Sidebar} from 'react-toolbox';
-import logo from '../Header/image/iteamLogo.jpg';
-import themeButton from './button.scss';
-import {PATHS} from '../../constants/routes';
-import {push} from 'react-router-redux'
-import navTheme from './NavDrawer.scss'
-import Dropdown from 'react-toolbox/lib/dropdown';
-import {IconMenu, MenuItem, MenuDivider } from 'react-toolbox/lib/menu';
+import Button from "react-toolbox/lib/button";
+import Tooltip from "react-toolbox/lib/tooltip";
+import flow from "lodash/flow";
+import {connect as con, initWebSocket, sendMessage, disconnect} from "../../websocket/websocket";
+import {connect} from "react-redux";
+import axios from "axios";
+import {MEETING} from "../../constants/HostConfiguration";
+import generateUUID from "../../constants/utils/GetUUID";
+import {userConnection} from "../../redux/reducers/Meeting/MeetingUserConnected";
+import {Layout, NavDrawer, Panel, Sidebar} from "react-toolbox";
+import logo from "../Header/image/iteamLogo.jpg";
+import {PATHS} from "../../constants/routes";
+import {push} from "react-router-redux";
+import navTheme from "./NavDrawer.scss";
+import Dropdown from "react-toolbox/lib/dropdown";
+import {MenuItem, MenuDivider} from "react-toolbox/lib/menu";
 
 const TooltipButton = Tooltip(Button);
 
@@ -61,8 +60,7 @@ class PersonalBoard extends Component {
     super(props);
     this.state = {
       notes: {},
-      mapTag: [
-        {value: 0, label: 'All'}],
+      mapTag: [],
       tagValue: '',
       tagName: ''
     }
@@ -109,21 +107,20 @@ class PersonalBoard extends Component {
   }
 
   comboTags(value) {
-    let filteredLabelObject = this.state.mapTag.filter(filter => filter["value"] == value);
+    let filteredLabelObject = this.state.mapTag
+      .filter(filter => filter["value"] == value);
+
     this.setState({tagValue: value, tagName: filteredLabelObject[0]["label"]})
   }
 
 
   setValuesOptionsTags(data) {
     let opt = data.map(function (option, index) {
-      var rObj = {};
-      rObj["value"] = index + 1;
+      let rObj = {};
+      rObj["value"] = index;
       rObj["label"] = option;
       return rObj;
     });
-    opt.push(this.state.mapTag[0]);
-
-    console.log("options " + JSON.stringify(opt));
 
     this.setState({mapTag: opt});
   }
@@ -158,7 +155,7 @@ class PersonalBoard extends Component {
         username: this.props.user,
         title: text,
         comments: "No comments",
-        tag: '',
+        tag: this.state.mapTag[0].label,
         ranking: 0,
         meetingId: this.props.meetingId,
         boardType: "personal"
@@ -219,27 +216,27 @@ class PersonalBoard extends Component {
         <Layout>
           <NavDrawer active={true}
                      pinned={true} permanentAt='sm' theme={navTheme}>
-           <div style={{ background:'white', width:'100%'}}> <img src={logo} style={{height: '10%', width: '50%', marginLeft: '20%'}}
-                                                                  onClick={this.props.home}/></div>
+            <div style={{background: 'white', width: '100%'}}><img src={logo} style={{
+              height: '10%',
+              width: '50%',
+              marginLeft: '20%'
+            }} onClick={this.props.home}/>
+            </div>
             <label className={classes.label1}>PERSONAL BOARD</label>
             <MenuItem value='sharedBoard' icon='people' style={{color: '#900C3F'}}
-                      caption='Shared Board' onClick ={this.props.sharedBoard} ></MenuItem>
-
+                      caption='Shared Board' onClick={this.props.sharedBoard}/>
             <MenuDivider/>
             <MenuItem value='addnote' icon='note' style={{color: '#900C3F'}}
-                      caption='Add note' onClick={this.add.bind(this, "New note")}  ></MenuItem>
-
-                <MenuDivider/>
+                      caption='Add note' onClick={this.add.bind(this, "New note")}/>
+            <MenuDivider/>
             <MenuItem value='votes' icon='star_half' style={{color: '#900C3F'}}
-                      caption='Available votes:' >{this.props.meetingConfiguration.votes}</MenuItem>
-
+                      caption='Available votes:'>{this.props.meetingConfiguration.votes}</MenuItem>
             <MenuItem value='votes' icon='access_time' style={{color: '#900C3F'}}
-                      caption='Time:' >{this.props.meetingConfiguration.votes}</MenuItem>
+                      caption='Time:'>{this.props.meetingConfiguration.votes}</MenuItem>
             <Dropdown label="Tag filter" auto style={{color: '#900C3F'}}
                       onChange={this.comboTags.bind(this)} required
                       source={this.state.mapTag} value={this.state.tagValue}/>
-                <MenuDivider/>
-
+            <MenuDivider/>
           </NavDrawer>
           <Panel>
             <div name="Notes container" className={classes.noteContainer}>
@@ -268,6 +265,6 @@ export default flow(
   DropTarget(ItemTypes.NOTE, NoteTarget,
     connection =>
       ( {
-        connectDropTarget: connection.dropTarget()
-      }
+          connectDropTarget: connection.dropTarget()
+        }
       )), connect(mapStateToProps, mapDispatchToProps))(PersonalBoard);

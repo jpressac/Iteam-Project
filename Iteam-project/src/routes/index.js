@@ -12,7 +12,6 @@ import PersonalBoardLayout from '../layouts/PersonalBoardLayout/PersonalBoardLay
 import SharedBoardLayout from '../layouts/SharedBoardLayout/SharedBoardLayout'
 import TeamCreationView from '../views/TeamCreationView'
 import MeetingView from '../views/MeetingView'
-import BoardView from '../views/BoardView/BoardView'
 import PersonalBoardView from '../views/PersonalBoardView/PersonalBoardView'
 import ProfileView from '../views/ProfileView/ProfileView'
 import SharedBoardView from '../views/SharedBoardView/SharedBoardView'

@@ -1,8 +1,6 @@
 import React, {Component, PropTypes} from 'react';
-import {Link} from 'react-router'
 import {AppBar} from 'react-toolbox/lib/app_bar'
 import themeAppBar from './HeaderNotLog.scss'
-import themeMenu from './menu.scss'
 import themeNav from './nav.scss'
 import {Button} from 'react-toolbox/lib/button';
 import logo from '../image/iteamLogo.jpg'
@@ -21,31 +19,20 @@ const mapDispatchToProps = dispatch => ({
 
 class HeaderNotLog extends React.Component {
   render() {
-
     return (
-
       <header >
-
         <AppBar fixed flat theme={themeAppBar}>
-
           <div >
-            <img src={logo} style={{height:50,width:100,marginRight:400}}></img>
+            <img src={logo} style={{height:50,width:100,marginRight:400}}/>
             <Navigation type="horizontal" theme={themeNav}>
               <Button icon='home' label='HOME' style={{color:'#900C3F'}} onClick={this.props.home}/>
               <Button icon='create' label='REGISTER' style={{color:'#900C3F'}} onClick={this.props.register}/>
               <Button icon='bookmark' label='ABOUT' style={{color:'#900C3F'}} onClick={this.props.about}/>
               <Button icon='contact_phone' label='CONTACT' style={{color:'#900C3F'}} onClick={this.props.contact}/>
-
-
             </Navigation>
           </div>
         </AppBar>
-
-
       </header>
-
-
-
     );
   };
 }

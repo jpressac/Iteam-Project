@@ -10,7 +10,6 @@ import org.iteam.data.dto.UserDTO;
 import org.iteam.data.model.D3CollapseTreeModel;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
-import org.iteam.data.model.Reports;
 import org.iteam.exceptions.MeetingInfoNotFoundException;
 import org.iteam.services.team.TeamService;
 import org.slf4j.Logger;
@@ -43,10 +42,8 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public Reports generateReport(String meetingId) {
-        return null;
-        // return meetingRepositoryImpl.generateBasicReport(meetingId,
-        // RANKING_ID_FIELD, SortOrder.ASC);
+    public D3CollapseTreeModel generateReportByRanking(String meetingId, List<String> tags) {
+        return meetingRepositoryImpl.generateBasicReportByRanking(meetingId, tags);
     }
 
     @Override
