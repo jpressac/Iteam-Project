@@ -413,7 +413,9 @@ class SharedBoard extends Component {
             <Dropdown label="Tag filter" auto style={{color: '#900C3F'}}
                       onChange={this.filterTags.bind(this)} required
                       source={this.state.mapTag} value={this.state.tagValue}/>
-            <Button icon='user' theme={themeButton} style={{color:'#900C3F'}} onClick={this.handleToggle}/>
+            <MenuItem value='teamMembers' icon='people_outline' style={{color: 'white', background:'#900C3F'}}
+                      caption='Team members' onClick={this.handleToggle} ></MenuItem>
+
           </NavDrawer>
           <Panel>
             <div name="Notes container" className={classes.notes}>
@@ -425,14 +427,14 @@ class SharedBoard extends Component {
                   onOverlayClick={this.handleToggle}>
             <Clients clients={this.state.participants} teamName={this.state.teamName}/>
             <div>
-              <Button style={{margin: 15, color: '#900C3F'}} target='_blank' raised
-                      onClick={this.handleEndMeeting.bind(this)}>
-                End meeting
-              </Button>
-              <Button style={{margin: 15, color: '#900C3F'}} target='_blank' raised
-                      onClick={this.handleLeaveMeeting.bind(this)}>
-                Leave meeting
-              </Button>
+              <MenuItem value='endmeeting' icon='exit_to_app' style={{color: 'white', background:'#900C3F'}}
+                        caption='End meeting' onClick={this.handleEndMeeting.bind(this)} ></MenuItem>
+
+              <MenuDivider/>
+
+              <MenuItem value='leavemeeting' icon='touch_app' style={{color: 'white', background:'#900C3F'}}
+                        caption='Leave meeting' onClick={this.handleLeaveMeeting.bind(this)}></MenuItem>
+
             </div>
           </Drawer>
         </Layout>
