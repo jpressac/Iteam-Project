@@ -7,21 +7,20 @@ import classes from "../SharedBoard/SharedBoard.scss";
 import Note from "../Note/Note";
 import axios from "axios";
 import {ItemTypes} from "../Constants/Constants";
-import {connectAndSubscribe, disconnect, sendMessage} from '../../websocket/websocket'
-import flow from 'lodash/flow'
-import {connect} from 'react-redux'
-import {push} from 'react-router-redux';
-import {PATHS} from '../../constants/routes';
-import {TEAM, MEETING} from '../../constants/HostConfiguration'
-import Drawer from 'react-toolbox/lib/drawer';
-import {Layout, NavDrawer, Panel, Sidebar} from 'react-toolbox';
-import {Button, IconButton} from 'react-toolbox/lib/button';
-import Clients from '../BoardSidebar/users';
-import {userDisconnection} from '../../redux/reducers/Meeting/MeetingUserConnected'
-import logo from '../Header/image/iteamLogo.jpg';
-import themeButton from './button.scss';
-import navTheme from './NavDrawer.scss';
-import Dropdown from 'react-toolbox/lib/dropdown';
+import {connectAndSubscribe, disconnect, sendMessage} from "../../websocket/websocket";
+import flow from "lodash/flow";
+import {connect} from "react-redux";
+import {push} from "react-router-redux";
+import {PATHS} from "../../constants/routes";
+import {TEAM, MEETING} from "../../constants/HostConfiguration";
+import Drawer from "react-toolbox/lib/drawer";
+import {Layout, NavDrawer, Panel, Sidebar} from "react-toolbox";
+import Clients from "../BoardSidebar/users";
+import {userDisconnection} from "../../redux/reducers/Meeting/MeetingUserConnected";
+import logo from "../Header/image/iteamLogo.jpg";
+import navTheme from "./NavDrawer.scss";
+import Dropdown from "react-toolbox/lib/dropdown";
+import {MenuItem, MenuDivider} from "react-toolbox/lib/menu";
 
 
 const NoteTarget = {
@@ -105,8 +104,8 @@ class SharedBoard extends Component {
     disconnect()
   }
 
-  notes(noteMap, key){
-    return(
+  notes(noteMap, key) {
+    return (
       <Note key={key}
             id={key}
             onRemove={this.remove.bind(this)}
@@ -124,11 +123,11 @@ class SharedBoard extends Component {
 
   renderNotes(noteMap, valueForFilter) {
     return Object.keys(noteMap).map((key) => {
-      if(valueForFilter === this.state.mapTag[0].label){
+      if (valueForFilter === this.state.mapTag[0].label) {
         return this.notes(noteMap, key);
-      }else {
+      } else {
         if (noteMap[key].tag === valueForFilter) {
-           return this.notes(noteMap, key);
+          return this.notes(noteMap, key);
         }
       }
     });
@@ -390,21 +389,27 @@ class SharedBoard extends Component {
   }
 
 
-
   render() {
     return this.props.connectDropTarget(
       <div className={classes.board} name="Shared Board Component">
         <Layout>
           <NavDrawer active={true}
                      pinned={true} permanentAt='sm' theme={navTheme}>
-            <img src={logo} style={{height:50,width:100,marginRight:300}} onClick={this.props.home}/>
+            <div style={{background: 'white', width: '100%'}}><img src={logo} style={{
+              height: '10%',
+              width: '50%',
+              marginLeft: '20%'
+            }} onClick={this.props.home}/>
+            </div>
             <label className={classes.label1}>SHARED BOARD</label>
-            <Button icon='person' theme={themeButton} style={{color:'#900C3F'}}
-                    onClick={this.props.personalBoard}/>
+            <MenuItem value='personalBoard' icon='people' style={{color: '#900C3F'}}
+                      caption='Personal Board' onClick={this.props.personalBoard}/>
+            <MenuDivider/>
             <Dropdown label="Tag filter" auto style={{color: '#900C3F'}}
                       onChange={this.filterTags.bind(this)} required
                       source={this.state.mapTag} value={this.state.tagValue}/>
-            <Button icon='user' theme={themeButton} style={{color:'#900C3F'}} onClick={this.handleToggle}/>
+            <MenuItem value='teamMembers' icon='people_outline' style={{color: 'white', background: '#900C3F'}}
+                      caption='Team members' onClick={this.handleToggle}/>
           </NavDrawer>
           <Panel>
             <div name="Notes container" className={classes.notes}>
@@ -416,14 +421,11 @@ class SharedBoard extends Component {
                   onOverlayClick={this.handleToggle}>
             <Clients clients={this.state.participants} teamName={this.state.teamName}/>
             <div>
-              <Button style={{margin: 15, color: '#900C3F'}} target='_blank' raised
-                      onClick={this.handleEndMeeting.bind(this)}>
-                End meeting
-              </Button>
-              <Button style={{margin: 15, color: '#900C3F'}} target='_blank' raised
-                      onClick={this.handleLeaveMeeting.bind(this)}>
-                Leave meeting
-              </Button>
+              <MenuItem value='endmeeting' icon='exit_to_app' style={{color: 'white', background: '#900C3F'}}
+                        caption='End meeting' onClick={this.handleEndMeeting.bind(this)}/>
+              <MenuDivider/>
+              <MenuItem value='leavemeeting' icon='touch_app' style={{color: 'white', background: '#900C3F'}}
+                        caption='Leave meeting' onClick={this.handleLeaveMeeting.bind(this)}/>
             </div>
           </Drawer>
         </Layout>
@@ -448,7 +450,7 @@ export default flow(
   DropTarget(ItemTypes.NOTE, NoteTarget,
     connect =>
       ( {
-        connectDropTarget: connect.dropTarget()
-      }
+          connectDropTarget: connect.dropTarget()
+        }
       )), connect(mapStateToProps, mapDispatchToProps))(SharedBoard);
 

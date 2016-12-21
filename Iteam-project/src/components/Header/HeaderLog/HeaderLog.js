@@ -24,8 +24,12 @@ const mapDispatchToProps = dispatch => ({
 
 });
 const mapStateToProps = (state) => {
+  if(state.loginUser != null) {
     return {
       user: state.loginUser.user.username
+    }
+  }else{
+    return ({})
   }
 };
 

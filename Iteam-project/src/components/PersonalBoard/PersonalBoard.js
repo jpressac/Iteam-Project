@@ -3,22 +3,22 @@ import {DropTarget} from "react-dnd";
 import classes from "./PersonalBoard.scss";
 import Note from "../Note/Note";
 import {ItemTypes} from "../Constants/Constants";
-import Button from 'react-toolbox/lib/button';
-import Tooltip from 'react-toolbox/lib/tooltip';
-import flow from 'lodash/flow'
-import {connect as con, initWebSocket, sendMessage, disconnect} from '../../websocket/websocket'
-import {connect} from 'react-redux'
-import axios from 'axios'
-import {MEETING} from '../../constants/HostConfiguration'
-import generateUUID from '../../constants/utils/GetUUID'
-import {userConnection} from '../../redux/reducers/Meeting/MeetingUserConnected'
-import {Layout, NavDrawer, Panel, Sidebar} from 'react-toolbox';
-import logo from '../Header/image/iteamLogo.jpg';
-import themeButton from './button.scss';
-import {PATHS} from '../../constants/routes';
-import {push} from 'react-router-redux'
-import navTheme from './NavDrawer.scss'
-import Dropdown from 'react-toolbox/lib/dropdown';
+import Button from "react-toolbox/lib/button";
+import Tooltip from "react-toolbox/lib/tooltip";
+import flow from "lodash/flow";
+import {connect as con, initWebSocket, sendMessage, disconnect} from "../../websocket/websocket";
+import {connect} from "react-redux";
+import axios from "axios";
+import {MEETING} from "../../constants/HostConfiguration";
+import generateUUID from "../../constants/utils/GetUUID";
+import {userConnection} from "../../redux/reducers/Meeting/MeetingUserConnected";
+import {Layout, NavDrawer, Panel, Sidebar} from "react-toolbox";
+import logo from "../Header/image/iteamLogo.jpg";
+import {PATHS} from "../../constants/routes";
+import {push} from "react-router-redux";
+import navTheme from "./NavDrawer.scss";
+import Dropdown from "react-toolbox/lib/dropdown";
+import {MenuItem, MenuDivider} from "react-toolbox/lib/menu";
 
 const TooltipButton = Tooltip(Button);
 
@@ -216,18 +216,27 @@ class PersonalBoard extends Component {
         <Layout>
           <NavDrawer active={true}
                      pinned={true} permanentAt='sm' theme={navTheme}>
-            <img src={logo} style={{height: 50, width: 100, marginRight: 300}} onClick={this.props.home}/>
+            <div style={{background: 'white', width: '100%'}}><img src={logo} style={{
+              height: '10%',
+              width: '50%',
+              marginLeft: '20%'
+            }} onClick={this.props.home}/>
+            </div>
             <label className={classes.label1}>PERSONAL BOARD</label>
-            <Button icon='people' theme={themeButton} style={{color: '#900C3F'}}
-                    onClick={this.props.sharedBoard}/>
-            <TooltipButton icon='note add' tooltip='Add Note'
-                           style={{background: '#900C3F', color: 'white', marginTop: 10}} raised primary
-                           onClick={this.add.bind(this, "New note")} tooltipDelay={1000}/>
+            <MenuItem value='sharedBoard' icon='people' style={{color: '#900C3F'}}
+                      caption='Shared Board' onClick={this.props.sharedBoard}/>
+            <MenuDivider/>
+            <MenuItem value='addnote' icon='note' style={{color: '#900C3F'}}
+                      caption='Add note' onClick={this.add.bind(this, "New note")}/>
+            <MenuDivider/>
+            <MenuItem value='votes' icon='star_half' style={{color: '#900C3F'}}
+                      caption='Available votes:'>{this.props.meetingConfiguration.votes}</MenuItem>
+            <MenuItem value='votes' icon='access_time' style={{color: '#900C3F'}}
+                      caption='Time:'>{this.props.meetingConfiguration.votes}</MenuItem>
             <Dropdown label="Tag filter" auto style={{color: '#900C3F'}}
                       onChange={this.comboTags.bind(this)} required
                       source={this.state.mapTag} value={this.state.tagValue}/>
-            <label>Available votes: {this.props.meetingConfiguration.votes}</label>
-            <label>Time: {this.props.meetingConfiguration.pbtime}</label>
+            <MenuDivider/>
           </NavDrawer>
           <Panel>
             <div name="Notes container" className={classes.noteContainer}>
