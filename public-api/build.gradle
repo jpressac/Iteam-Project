@@ -15,6 +15,9 @@ buildscript {
 		contextSupportVersion = '4.3.0.RELEASE'
 		javaMailVersion = '1.4.7'
 		googleAPIMailVersion = 'v1-rev44-1.22.0'
+		dataJPAVersion = '1.4.3.RELEASE'
+		mysqlConnectorVersion = '6.0.5'
+		hibernateVersion = '5.2.5.Final'
 	}
 	repositories {
 		mavenCentral()
@@ -72,6 +75,16 @@ dependencies {
 		exclude module: "logbak-core"
 		exclude module: "log4j-over-slf4j"
 	}
+	
+	compile("org.springframework.boot:spring-boot-starter-data-jpa:${dataJPAVersion}"){
+		exclude module: "logback-classic"
+		exclude module: "logbak-core"
+		exclude module: "log4j-over-slf4j"
+	}
+	
+	compile("mysql:mysql-connector-java:${mysqlConnectorVersion}")
+	compile("org.hibernate:hibernate-core:${hibernateVersion}")
+	
 	
 	compile("org.slf4j:slf4j-simple:${slf4jVersion}")
 	
