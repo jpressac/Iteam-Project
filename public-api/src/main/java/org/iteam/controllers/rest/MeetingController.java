@@ -8,7 +8,6 @@ import org.iteam.data.dto.Meeting;
 import org.iteam.data.model.D3CollapseTreeModel;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
-import org.iteam.data.model.Reports;
 import org.iteam.services.meeting.MeetingService;
 import org.iteam.services.meeting.MeetingServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,18 +76,21 @@ public class MeetingController {
     }
 
     /**
-     * Generate the standard report by the given meeting.
+     * Generate the standard report by tag and ranking for the given meeting.
      * 
      * @param meetingId
      *            the id of the meeting.
+     * @param tags
+     *            the list of tags for the ideas.
      * @return 204 NO CONTENT
      */
     @RequestMapping(value = "/meeting/report", method = RequestMethod.GET)
-    public ResponseEntity<Reports> generateReport(
-            @RequestParam(value = "meetingId", required = true) String meetingId) {
-        Reports report = meetingServiceImpl.generateReport(meetingId);
+    public ResponseEntity<D3CollapseTreeModel> generateReport(
+            @RequestParam(value = "meetingId", required = true) String meetingId,
+            @RequestParam(value = "tags", required = true) List<String> tags) {
+        D3CollapseTreeModel report = meetingServiceImpl.generateReportByRanking(meetingId, tags);
 
-        return new ResponseEntity<Reports>(report, HttpStatus.OK);
+        return new ResponseEntity<D3CollapseTreeModel>(report, HttpStatus.OK);
     }
 
     /**
@@ -96,6 +98,8 @@ public class MeetingController {
      * 
      * @param meetingId
      *            the id of the meeting.
+     * @param tags
+     *            the list of tags for the ideas.
      * @return 204 NO CONTENT
      */
     @RequestMapping(value = "/meeting/report/byuser", method = RequestMethod.GET)
@@ -112,6 +116,8 @@ public class MeetingController {
      * 
      * @param meetingId
      *            the id of the meeting.
+     * @param tags
+     *            the list of tags for the ideas.
      * @return 204 NO CONTENT
      */
     @RequestMapping(value = "/meeting/report/bytag", method = RequestMethod.GET)

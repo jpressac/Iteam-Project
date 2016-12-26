@@ -17,40 +17,6 @@ import D3ChartTree from './D3ChartTree/D3ChartTree'
 
 const report = new jsPDF()
 
-
-var tree =
-  {
-
-    "name": "First Meeting",
-    "children": [{
-      "name": "Rock",
-      "children": [{
-        "name": "Jesus Of Suburbia", "value": 5, "color": "#D6BA33"
-      }, {
-        "name": "American Idiot", "value": 3, "color": "#D6BA33"
-      }, {
-        "name": "Boulevard Of Broken Dreams", "value": 4, "color": "#D6BA33"
-      }]
-    }, {
-      "name": "Pop",
-      "children": [{
-        "name": "Clocks", "value": 3.5, "color": "#D6BA33"
-      }, {
-        "name": "The Scientist", "value": 4, "color": "#D6BA33"
-      }, {
-        "name": "Vive la vida", "value": 2, "color": "#D6BA33"
-      }, {
-        "name": "I'm blue", "value": 4.5, "color": "#D6BA33"
-      }, {
-        "name": "The afternoon", "value": 2.5, "color": "#D6BA33"
-      }, {
-        "name": "Baby now", "value": 5, "color": "#D6BA33"
-      }]
-    }]
-
-
-  };
-
 var specialElementHandlers = {
   '#editor': function (element, renderer) {
     return true;
@@ -85,29 +51,26 @@ class ReportForm extends Component {
   };
 
   generateRankingReport = () => {
-    this.setState({ranking:true});
 
+    axios.get(MEETING.MEETING_REPORT, {
+      params: {
+        meetingId: this.props.meetingId,
+        tags:this.props.meetingConfiguration.tags.toString().toLowerCase()
+      }
+    }).then(function (response) {
 
-    //this.setState({treeData: response.data, ranking:false});
+      this.setState({treeData: response.data, ranking:true});
 
-    // axios.get(MEETING.MEETING_REPORT, {
-    //   params: {
-    //     meetingId: this.props.meetingId
-    //   }
-    // }).then(function (response) {
-    //   this.setState({selectedReport: '3'});
-    //   this.generateHTML(response.data);
-    // }.bind(this)).catch(function (response) {
-    //   this.setState({message: '¡Your report could not be generated!'});
-    //   this.refs.mymodal.openModal();
-    // }.bind(this))
+    }.bind(this)).catch(function (response) {
+      //TODO: what we do here????
+    }.bind(this))
   };
 
   generateUserReport = () => {
     axios.get(MEETING.MEETING_REPORT_BY_USER, {
       params: {
         meetingId: this.props.meetingId,
-        tags:this.props.meetingConfiguration.tags.toString()
+        tags:this.props.meetingConfiguration.tags.toString().toLowerCase()
       }
     }).then(function (response) {
       this.setState({treeData: response.data, ranking:false});
@@ -122,7 +85,7 @@ class ReportForm extends Component {
     axios.get(MEETING.MEETING_REPORT_BY_TAG, {
       params: {
         meetingId: this.props.meetingId,
-        tags: this.props.meetingConfiguration.tags.toString()
+        tags: this.props.meetingConfiguration.tags.toString().toLowerCase()
       }
     }).then(function (response) {
       this.setState({treeData: response.data, ranking:false});
@@ -143,7 +106,7 @@ class ReportForm extends Component {
 
     if (this.state.ranking) {
       return (
-        <D3ChartTree treeData={tree}/>
+        <D3ChartTree treeData={this.state.treeData}/>
       )
     } else {
       return (

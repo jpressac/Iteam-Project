@@ -8,7 +8,7 @@ import buttonNv from './buttonNoVisible.scss';
 import buttonv from './buttonVisible.scss'
 import Dialog from 'react-toolbox/lib/dialog';
 import Input from 'react-toolbox/lib/input';
-import {Button, IconButton} from 'react-toolbox/lib/button';
+import {Button} from 'react-toolbox/lib/button';
 import themeLabel from './label.scss'
 
 
@@ -24,9 +24,9 @@ const mapStateToProps = (state) => {
     return {
       user: state.loginUser.user.username
     }
-
+  }else{
+    return({});
   }
-
 };
 class HomeForm extends React.Component {
   constructor(props) {
@@ -65,7 +65,6 @@ class HomeForm extends React.Component {
     var loginTheme = this.props.user != null ? buttonNv : buttonv;
 
     return (
-
       <div className={classes.container}>
         <div className={classes.background}>
           <div>
@@ -95,15 +94,10 @@ class HomeForm extends React.Component {
                 <Button type="submit" icon="done" label="SING IN"
                         style={{background:'#900C3F',color:'white',marginTop:5}}/>
               </form>
-
             </Dialog>
           </div>
-
-
         </div>
       </div>
-
-
     );
   };
 }

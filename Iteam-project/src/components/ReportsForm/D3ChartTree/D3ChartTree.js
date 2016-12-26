@@ -6,22 +6,15 @@ import classes from './D3ChartTree.scss'
 
 class D3ChartTree extends React.Component {
 
-  componentDidMount() {
-    // Render the tree usng d3 after first component mount
-    this.renderTree(this.props.treeData, ReactDom.findDOMNode(this));
+  componentWillReceiveProps(nextProps) {
+
+    if(nextProps.treeData != this.props.treeData){
+      this.renderTree(nextProps.treeData, ReactDom.findDOMNode(this));
+    }
   };
 
-  shouldComponentUpdate(nextProps, nextState) {
-    // Delegate rendering the tree to a d3 function on prop change
-    this.renderTree(this.props.treeData, ReactDom.findDOMNode(this));
-
-    // Do not allow react to render the component on prop change
-    return false;
-  };
 
   render() {
-
-    // Render a blank svg node
     return (
       <svg/>
     );
