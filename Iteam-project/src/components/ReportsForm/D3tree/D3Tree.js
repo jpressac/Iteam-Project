@@ -33,7 +33,7 @@ class D3Tree extends React.Component {
   renderTree(treeData, svgNode) {
     let margin = {top: 20, right: 90, bottom: 30, left: 90},
       width = 1280 - margin.left - margin.right, //TODO: this is hardcoded so it antoher screen it will not work
-      height = 800 - margin.top - margin.bottom;
+      height = 700 - margin.top - margin.bottom;
 
     i = 0;
     duration = 750;

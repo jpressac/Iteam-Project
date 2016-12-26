@@ -31,8 +31,8 @@ class D3ChartTree extends React.Component {
   renderTree(treeData, svgDomNode) {
 
     let margin = {top: 20, right: 90, bottom: 30, left: 90},
-      width = 1280 - margin.left - margin.right, //TODO: this is hardcoded so it antoher screen it will not work
-      height = 800 - margin.top - margin.bottom;
+      width = 1000 - margin.left - margin.right, //TODO: this is hardcoded so it antoher screen it will not work
+      height = 700 - margin.top - margin.bottom;
 
 
     //Remove all elements before render
@@ -46,7 +46,7 @@ class D3ChartTree extends React.Component {
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     // x-scale and x-axis
-    let experienceName = ["", "Basic 1.0", "Alright 2.0", "Handy 3.0", "Expert 4.0", "Guru 5.0"];
+    let experienceName = [""];
     let formatSkillPoints = function (d) {
       return experienceName[d % 6];
     };
