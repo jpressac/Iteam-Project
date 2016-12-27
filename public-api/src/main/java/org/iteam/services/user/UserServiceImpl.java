@@ -1,7 +1,9 @@
 package org.iteam.services.user;
 
 import org.iteam.data.dal.user.UserRepositoryImpl;
+import org.iteam.data.dal.user.UserRepositoryMySQL;
 import org.iteam.data.dto.UserDTO;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,18 +11,21 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
     private UserRepositoryImpl userRepository;
+    private UserRepositoryMySQL userRepositoryMySQL;
 
     @Override
     public UserDTO getUser(String username) {
-        UserDTO user = userRepository.getUser(username);
-        user.setPassword(null);
 
-        return user;
+        return userRepositoryMySQL.findOne(username);
     }
 
     @Override
     public boolean setUser(UserDTO user) {
-        return userRepository.setUser(user);
+        user.setInsertionDate(DateTime.now().getMillis());
+
+        userRepositoryMySQL.save(user);
+
+        return true;
     }
 
     @Override
@@ -42,4 +47,10 @@ public class UserServiceImpl implements UserService {
     private void setUserRepository(UserRepositoryImpl userRepository) {
         this.userRepository = userRepository;
     }
+
+    @Autowired
+    public void setUserRepositoryMySQL(UserRepositoryMySQL userRepositoryMySQL) {
+        this.userRepositoryMySQL = userRepositoryMySQL;
+    }
+
 }

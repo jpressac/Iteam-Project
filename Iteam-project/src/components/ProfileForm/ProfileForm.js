@@ -11,7 +11,7 @@ import themeLabel from './label.scss'
 import {Button, IconButton} from 'react-toolbox/lib/'
 import Tooltip from 'react-toolbox/lib/tooltip';
 import {push} from 'react-router-redux'
-import {UTILITIES} from '../../constants/HostConfiguration'
+import {UTILITIES, USER} from '../../constants/HostConfiguration'
 
 
 const mapStateToProps = (state) => {
@@ -32,23 +32,16 @@ class ProfileForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      firstName: '',
-      lastName: '',
-      nationality: '',
-      nationalityValue: [],
-      bornDate: new Date(this.props.user.bornDate),
-      mail: '',
-      genderValue: 'male',
+      user: {},
+      hobbies: '',
       professionName: '',
       professionValue: [],
-      hobbies: '',
-      username: '',
       oldPassword: '',
       password: '',
       repeatPassword: ''
     }
   }
-  
+
   saveUser() {
     // validate change password, and we need to re-render
     submitUser(this.state);
@@ -60,6 +53,16 @@ class ProfileForm extends React.Component {
     } else {
       return 'Passwords must match'
     }
+  }
+
+  componentWillMount(){
+    axios.get(USER.GET_USER).then(function (response) {
+      this.setState({user: response.data})
+    }.bind(this))
+      .catch(function (response) {
+        //TODO: we need to manage this.
+        console.log(response.status)
+      });
   }
 
   componentDidMount() {
@@ -97,7 +100,7 @@ class ProfileForm extends React.Component {
   };
 
   handleChangeOldPassword = (oldPassword, value) => {
-    this.setState({...this.state, [OldPassword]: value});
+    this.setState({...this.state, [oldPassword]: value});
   };
 
   handleChangePassword = (password, value) => {
@@ -130,7 +133,7 @@ class ProfileForm extends React.Component {
               <div className="col-md-12">
                 <div className="row">
                   <img src={user} style={{width: 100}}/>
-                  <span className={classes.labelInfo}><label>Welcome {this.props.user.username}!</label></span >
+                  <span className={classes.labelInfo}><label>Welcome {this.state.user.username}!</label></span >
 
                 </div>
               </div>
@@ -143,11 +146,11 @@ class ProfileForm extends React.Component {
                 <div className="row">
                   <div className="col-md-6">
                     <Input type='text' label='First Name' theme={themeLabel} name='firstName'
-                           value={this.props.user.name} disabled/>
+                           value={this.state.user.name} disabled/>
                   </div>
                   <div className="col-md-6">
                     <Input type='text' label='Last Name' disabled theme={themeLabel} name='lastName'
-                           value={this.props.user.lastName}/>
+                           value={this.state.user.lastName}/>
                   </div>
                 </div>
               </div>
@@ -156,12 +159,12 @@ class ProfileForm extends React.Component {
               <div className="col-md-12">
                 <div className="row">
                   <div className="col-md-6">
-                    <Input type='text' label="Born Date" name='bornDate' disabled value={this.state.bornDate.toLocaleDateString()} theme={themeLabel} />
+                    <Input type='text' label="Born Date" name='bornDate' disabled value={new Date(this.state.user.bornDate).toLocaleDateString()} theme={themeLabel} />
                   </div>
                   <div className="row">
                     <div className="col-md-6">
                       <Input type='text' label='Nationality' disabled theme={themeLabel} name='nationality'
-                             value={this.props.user.nationality}/>
+                             value={this.state.user.nationality}/>
                     </div>
                   </div>
                 </div>
@@ -175,7 +178,7 @@ class ProfileForm extends React.Component {
                   </div>
                   <div className="col-md-6 ">
                     <TooltipInput type='text' label='Hobbies' theme={themeLabel} name='hobbies'
-                                  value={this.props.user.hobbies}
+                                  value={this.state.user.hobbies}
                                   required onChange={this.handleChangeHobbies.bind(this, 'hobbies')} maxLength={200}
                                   tooltip='Write hobbies separate by commas'/>
                   </div>
@@ -190,7 +193,7 @@ class ProfileForm extends React.Component {
               <div className="col-md-8">
                 <div className="row">
                   <Input type='email' label='Email address' icon='email' theme={themeLabel}
-                         value={this.props.user.mail} disabled/>
+                         value={this.state.user.mail} disabled/>
                 </div>
               </div>
             </div>

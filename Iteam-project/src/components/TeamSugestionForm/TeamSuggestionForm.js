@@ -109,10 +109,10 @@ class TeamSuggestionForm extends React.Component {
       axios.post(TEAM.TEAM_CREATE, {
         ownerName: this.props.user,
         name: this.state.teamName,
-        members: selected
+        members: selected.toString()
       }).then(function (response) {
-        //TODO: implement a modal with a button that receives a call-function and perform any of the below actions.
-        this.checkWehereItCames()
+        //TODO: implement spinner if it the case, at least it comes from new meeting.
+        this.checkWhereItComes()
       }.bind(this)).catch(function (response) {
         //TODO: handle errors
       })
@@ -122,7 +122,7 @@ class TeamSuggestionForm extends React.Component {
     }
   }
 
-  checkWehereItCames() {
+  checkWhereItComes() {
     if (this.props.fromMeeting === true) {
       this.props.meeting();
     } else {

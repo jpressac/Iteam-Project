@@ -1,12 +1,12 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
-apply plugin: 'spring-boot'
+apply plugin: 'org.springframework.boot'
 apply plugin: 'jacoco'
 
 buildscript {
 	ext {
-		springBootVersion = '1.3.5.RELEASE'
+		springBootVersion = '1.4.3.RELEASE'
 		apacheCommonsLang3Version = '3.4'
 		apacheCommonsCollections4Version = '4.1'
 		elasticsaerchVersion = '2.3.0'
@@ -80,6 +80,7 @@ dependencies {
 		exclude module: "logback-classic"
 		exclude module: "logbak-core"
 		exclude module: "log4j-over-slf4j"
+		exclude module: "hibernate-entitymanager"
 	}
 	
 	compile("mysql:mysql-connector-java:${mysqlConnectorVersion}")

@@ -1,15 +1,31 @@
 package org.iteam.data.dto;
 
-import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.hibernate.annotations.GenericGenerator;
 
+@Entity
 public class Team {
 
+    @Id
+    @Column(name = "team_id")
+    @GeneratedValue(generator = "system-uuid")
+    @GenericGenerator(name = "system-uuid", strategy = "uuid2")
+    private String teamId;
+
+    @Column(name = "owner_name")
     private String ownerName;
+
+    @Column(name = "creation_date")
     private Long creationDate;
+
+    @Column(unique = true)
     private String name;
-    private List<String> members;
+    private String members;
 
     public Team() {
 
@@ -39,11 +55,11 @@ public class Team {
         this.name = name;
     }
 
-    public List<String> getMembers() {
+    public String getMembers() {
         return members;
     }
 
-    public void setMembers(List<String> members) {
+    public void setMembers(String members) {
         this.members = members;
     }
 

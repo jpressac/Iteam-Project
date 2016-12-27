@@ -1,6 +1,7 @@
 package org.iteam.services.user;
 
 import org.iteam.data.dal.user.UserRepositoryImpl;
+import org.iteam.data.dal.user.UserRepositoryMySQL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.User;
@@ -13,14 +14,18 @@ import org.springframework.stereotype.Component;
 public class IteamUserDetailService implements UserDetailsService {
 
     private UserRepositoryImpl userRepository;
+    private UserRepositoryMySQL userRepositoryMySQL;
+
     private static final String ROLE = "ROLE_ADMIN";
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        org.iteam.data.dto.UserDTO user = userRepository.getUser(username);
+        // org.iteam.data.dto.UserDTO user = userRepository.getUser(username);
 
-        if (user == null) {
+        org.iteam.data.dto.UserDTO user = userRepositoryMySQL.findOne(username);
+
+        if(user == null) {
             throw new UsernameNotFoundException("User not fould" + username);
         }
 
@@ -33,4 +38,10 @@ public class IteamUserDetailService implements UserDetailsService {
     private void setUserRepository(UserRepositoryImpl userRepository) {
         this.userRepository = userRepository;
     }
+
+    @Autowired
+    public void setUserRepositoryMySQL(UserRepositoryMySQL userRepositoryMySQL) {
+        this.userRepositoryMySQL = userRepositoryMySQL;
+    }
+
 }

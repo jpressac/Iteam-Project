@@ -1,39 +1,60 @@
 package org.iteam.data.dto;
 
-import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
+@Entity
+@Table(name = "user")
+@DynamicUpdate
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(Include.NON_NULL)
 public class UserDTO {
 
-    // TODO: add creation/modification date
+    private static final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder();
+
+    @Id
     private String username;
+
+    @JsonProperty(access = Access.WRITE_ONLY)
     private String password;
     private String name;
+
+    @Column(name = "last_name")
     private String lastName;
     private String gender;
     private String nationality;
+
+    @Column(name = "born_date")
     private Long bornDate;
-    private List<String> hobbies;
+    private String hobbies;
     private String profession;
-    private String mbtiTest;
-    private String discTest;
+
+    @Column(name = "logical_delete")
     private boolean logicalDelete = false;
+
+    @Column(name = "insertion_date")
     private Long insertionDate;
     private String mail;
 
-    public UserDTO(boolean logicalDelete) {
-        this.logicalDelete = logicalDelete;
-    }
-
     public UserDTO() {
 
+    }
+
+    public UserDTO(boolean logicalDelete) {
+        this.logicalDelete = logicalDelete;
     }
 
     public String getUsername() {
@@ -49,7 +70,7 @@ public class UserDTO {
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = PASSWORD_ENCODER.encode(password);
     }
 
     public String getName() {
@@ -84,11 +105,11 @@ public class UserDTO {
         this.bornDate = bornDate;
     }
 
-    public List<String> getHobbies() {
+    public String getHobbies() {
         return hobbies;
     }
 
-    public void setHobbies(List<String> hobbies) {
+    public void setHobbies(String hobbies) {
         this.hobbies = hobbies;
     }
 
@@ -98,22 +119,6 @@ public class UserDTO {
 
     public void setProfession(String profession) {
         this.profession = profession;
-    }
-
-    public String getMbtiTest() {
-        return mbtiTest;
-    }
-
-    public void setMbtiTest(String mbtiTest) {
-        this.mbtiTest = mbtiTest;
-    }
-
-    public String getDiscTest() {
-        return discTest;
-    }
-
-    public void setDiscTest(String discTest) {
-        this.discTest = discTest;
     }
 
     public boolean isLogicalDelete() {

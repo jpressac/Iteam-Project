@@ -3,6 +3,7 @@ package org.iteam.services.team;
 import java.util.List;
 
 import org.iteam.data.dal.team.TeamRepositoryImpl;
+import org.iteam.data.dal.team.TeamRepositoryMySQL;
 import org.iteam.data.dto.Team;
 import org.iteam.data.dto.UserDTO;
 import org.iteam.data.model.FilterList;
@@ -15,10 +16,16 @@ import org.springframework.stereotype.Service;
 public class TeamServiceImpl implements TeamService {
 
     private TeamRepositoryImpl teamRepository;
+    private TeamRepositoryMySQL teamRepositoryMySQL;
 
     @Override
     public boolean putTeam(Team team) {
-        return teamRepository.putTeam(team);
+
+        // TODO: catch exception for duplicate key
+        // java.sql.SQLIntegrityConstraintViolationException
+        teamRepositoryMySQL.save(team);
+
+        return true;
     }
 
     @Override
@@ -50,4 +57,10 @@ public class TeamServiceImpl implements TeamService {
     private void setTeamRepository(TeamRepositoryImpl teamRepository) {
         this.teamRepository = teamRepository;
     }
+
+    @Autowired
+    public void setTeamRepositoryMySQL(TeamRepositoryMySQL teamRepositoryMySQL) {
+        this.teamRepositoryMySQL = teamRepositoryMySQL;
+    }
+
 }

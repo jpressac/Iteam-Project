@@ -41,7 +41,7 @@ public class UserRepositoryImpl implements UserRepsoitory {
 
         SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_USER, query);
 
-        if (response != null && response.getHits().getTotalHits() == 1) {
+        if(response != null && response.getHits().getTotalHits() == 1) {
             return (UserDTO) JSONUtils.JSONToObject(response.getHits().getAt(0).getSourceAsString(), UserDTO.class);
         }
         return null;
@@ -54,7 +54,7 @@ public class UserRepositoryImpl implements UserRepsoitory {
 
         user.setInsertionDate(DateTime.now().getMillis());
 
-        if (!USER_GENDER_MALE.equals(user.getGender()) && !USER_GENDER_FEMALE.equals(user.getGender())) {
+        if(!USER_GENDER_MALE.equals(user.getGender()) && !USER_GENDER_FEMALE.equals(user.getGender())) {
             throw new JsonParsingException("Incorrect User information");
         }
 
@@ -63,7 +63,7 @@ public class UserRepositoryImpl implements UserRepsoitory {
         IndexResponse indexResponse = elasticsearchClient.insertData(data, StringUtilities.INDEX_USER,
                 StringUtilities.INDEX_TYPE_USER, user.getUsername());
 
-        if (indexResponse != null && indexResponse.isCreated()) {
+        if(indexResponse != null && indexResponse.isCreated()) {
             LOGGER.info("User created");
             return true;
         }
@@ -78,7 +78,7 @@ public class UserRepositoryImpl implements UserRepsoitory {
         GetResponse response = elasticsearchClient.getDocument(StringUtilities.INDEX_USER,
                 StringUtilities.INDEX_TYPE_USER, username);
 
-        if (response != null && response.isExists()) {
+        if(response != null && response.isExists()) {
             return true;
         }
         return false;
