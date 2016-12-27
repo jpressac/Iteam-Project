@@ -117,6 +117,7 @@ class SharedBoard extends Component {
             comments={noteMap[key].comments}
             title={noteMap[key].title}
             tag={noteMap[key].tag}
+            ranking={noteMap[key].ranking}
       />
     )
   }

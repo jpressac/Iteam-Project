@@ -62,7 +62,7 @@ class PersonalBoard extends Component {
       notes: {},
       mapTag: [],
       tagValue: '',
-      tagName: ''
+      tagName: 'Miscellaneous'
     }
 
   };
@@ -106,7 +106,7 @@ class PersonalBoard extends Component {
     disconnect();
   }
 
-  comboTags(value) {
+  filterTags(value) {
     let filteredLabelObject = this.state.mapTag
       .filter(filter => filter["value"] == value);
 
@@ -125,8 +125,7 @@ class PersonalBoard extends Component {
     this.setState({mapTag: opt});
   }
 
-  createNotes(noteMap) {
-    return Object.keys(noteMap).map((key) => {
+  notes(noteMap,key) {
       return (
         <Note key={key}
               id={key}
@@ -140,7 +139,18 @@ class PersonalBoard extends Component {
               tag={noteMap[key].tag}
               tagMap={this.props.meetingConfiguration.tags}
         />
-      );
+    );
+  }
+
+  renderNotes(noteMap, valueForFilter) {
+    return Object.keys(noteMap).map((key) => {
+      if (valueForFilter === this.state.mapTag[0].label) {
+        return this.notes(noteMap, key);
+      } else {
+        if (noteMap[key].tag === valueForFilter) {
+          return this.notes(noteMap, key);
+        }
+      }
     });
   }
 
@@ -154,7 +164,7 @@ class PersonalBoard extends Component {
         top: generateRandomNumber(),
         username: this.props.user,
         title: text,
-        comments: "No comments",
+        comments: "",
         tag: this.state.mapTag[0].label,
         ranking: 0,
         meetingId: this.props.meetingId,
@@ -193,7 +203,7 @@ class PersonalBoard extends Component {
     this.setState({notes: map});
   }
 
-// Method for sending notes to shared board
+  //Function for sending notes to shared board
   send(id) {
     let map = {};
     map[id] = this.state.notes[id];
@@ -201,6 +211,15 @@ class PersonalBoard extends Component {
     this.remove(id)
   }
 
+  //Function that sends all notes together
+  sendAll() {
+    let map = {};
+    map = this.state.notes;
+    sendMessage("insertSharedBoard", this.props.meetingId, JSON.stringify(map));
+    //Clean the personal board
+    this.setState({notes:{}});
+
+  }
   updateNotesCacheByUser(map) {
     //Here we need to send the message to the backend through the web-socket
     sendMessage("insertCache", this.props.meetingId, JSON.stringify(
@@ -228,19 +247,21 @@ class PersonalBoard extends Component {
             <MenuDivider/>
             <MenuItem value='addnote' icon='note' style={{color: '#900C3F'}}
                       caption='Add note' onClick={this.add.bind(this, "New note")}/>
+            <MenuItem value='sharenotes' icon='share' style={{color: '#900C3F'}}
+                      caption='Share all' onClick={this.sendAll.bind(this)}/>
             <MenuDivider/>
             <MenuItem value='votes' icon='star_half' style={{color: '#900C3F'}}
                       caption='Available votes:'>{this.props.meetingConfiguration.votes}</MenuItem>
             <MenuItem value='votes' icon='access_time' style={{color: '#900C3F'}}
                       caption='Time:'>{this.props.meetingConfiguration.votes}</MenuItem>
             <Dropdown label="Tag filter" auto style={{color: '#900C3F'}}
-                      onChange={this.comboTags.bind(this)} required
+                      onChange={this.filterTags.bind(this)} required
                       source={this.state.mapTag} value={this.state.tagValue}/>
             <MenuDivider/>
           </NavDrawer>
           <Panel>
             <div name="Notes container" className={classes.noteContainer}>
-              {this.createNotes(this.state.notes)}
+              {this.renderNotes(this.state.notes, this.state.tagName)}
             </div>
           </Panel>
         </Layout>
