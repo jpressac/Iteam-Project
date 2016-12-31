@@ -1,3 +1,3 @@
-import TeamSugestionForm from './TeamSugestionForm'
+import TeamSuggestionForm from './TeamSuggestionForm'
 
-export default TeamSugestionForm
+export default TeamSuggestionForm

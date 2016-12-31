@@ -3,7 +3,7 @@ package org.iteam.services.utilities;
 import java.util.List;
 
 import org.iteam.data.dal.utilities.UtilitiesRepositoryImpl;
-import org.iteam.data.model.Nationalities;
+import org.iteam.data.dto.Nationalities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

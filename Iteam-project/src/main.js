@@ -7,6 +7,7 @@ import makeRoutes from './routes'
 import Root from './containers/Root'
 import configureStore from './redux/configureStore'
 import { PATHS } from './constants/routes'
+import  {USER} from './constants/HostConfiguration'
 import { userExists , fetchUser} from './redux/modules/UserAuthenticated'
 import {push} from 'react-router-redux'
 import axios from 'axios'
@@ -34,13 +35,13 @@ const history = syncHistoryWithStore(browserHistory, store, {
 const routes = makeRoutes(store)
 
 userExists().then( () => {
-  store.dispatch(push("/application/member/home"));
-  axios.get('http://localhost:8080/user')
+  store.dispatch(push("/application/member/home"))
+  axios.get(USER.GET_USER)
     .then((response) => {
       store.dispatch(user(response.data))
     })
 }, () => {
-  store.dispatch(push(PATHS.COMMON.LOGIN));
+  store.dispatch(push("/application/nmember/home"))
 })
 
 // Now that redux and react-router have been configured, we can render the

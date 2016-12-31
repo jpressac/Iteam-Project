@@ -1,7 +1,7 @@
 package org.iteam.services.user;
 
 import org.iteam.data.dal.user.UserRepositoryImpl;
-import org.iteam.data.model.UserDTO;
+import org.iteam.data.dto.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

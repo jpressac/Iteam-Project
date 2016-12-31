@@ -1,0 +1,54 @@
+.container {
+
+  background-size: cover;
+   background: #333;
+  margin-top:70px;
+
+}
+.background{
+  background-image:  url("../LoginForm/image/table_dark.png");
+
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position-x: center;
+  background-position-y: center;
+
+
+  margin-top: 40px;
+  width:100%;
+  height: 700px;
+
+  align-items: center;
+  z-index: -1;
+}
+.background:before{
+  z-index: 1;
+
+}
+
+.label{
+  color:white;
+  font-size: 50px;
+  background-position-x: center;
+  margin-top: 200px;
+
+}
+.p{
+  color:white;
+  font-size: x-large;
+  background-position-x: center;
+
+
+}
+.title{
+  color:#900C3F;
+  font-size: x-large;
+}
+
+.form{
+  width:50%;
+}
+.content{
+  width: 70%;
+  margin-left: 10%;
+}

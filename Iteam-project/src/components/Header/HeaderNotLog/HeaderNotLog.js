@@ -1,12 +1,23 @@
 import React, {Component, PropTypes} from 'react';
-import {IndexLink, Link} from 'react-router'
-import classes from './HeaderNotLog.scss'
-import {Button} from 'react-bootstrap';
-import logo from '../image/logo.png'
+import {AppBar} from 'react-toolbox/lib/app_bar'
+import themeAppBar from './HeaderNotLog.scss'
+import themeNav from './nav.scss'
+import {Button} from 'react-toolbox/lib/button';
+import logo from '../image/iteamLogo.jpg'
 import {PATHS} from '../../../constants/routes'
+import Navigation from 'react-toolbox/lib/navigation'
+import {connect} from 'react-redux'
+import {push} from 'react-router-redux'
 import GoogleLogin from 'react-google-login'
 import axios from 'axios'
 
+const mapDispatchToProps = dispatch => ({
+  home: () => dispatch(push('/' + PATHS.MENUNOTLOGGEDIN.HOME)),
+  about: ()=> dispatch(push('/' + PATHS.MENUNOTLOGGEDIN.ABOUT)),
+  contact: ()=> dispatch(push('/' + PATHS.MENUNOTLOGGEDIN.CONTACT)),
+  register: ()=> dispatch(push('/' + PATHS.MENUNOTLOGGEDIN.REGISTER))
+
+});
 
 var onSignIn = function (response) {
   console.log('puto el que lee ' + response.googleId);
@@ -37,53 +48,35 @@ var onSignIn = function (response) {
 
 };
 
-class HeaderNotLog extends Component {
+class HeaderNotLog extends React.Component {
   render() {
     return (
-
-      <div className={"navbar navbar-inverse navbar-static-top", classes.wrapper}>
-        <div className="container">
-          <div className={"navbar-header"}>
-            <button type="button" className="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar3">
-
-              <span className="icon-bar"></span>
-              <span className="icon-bar"></span>
-              <span className="icon-bar"></span>
-            </button>
-            <a className="navbar-brand" href="#">
-              <img src={logo} className={classes.logo} alt="Iteam"/></a>
-
-          </div>
-          <div id="navbar3" className="navbar-collapse collapse">
-            <ul className="nav navbar-nav navbar-right navbar-brand">
-              <li ><Link className={classes.menus} to={'/' + PATHS.MENUNOTLOGGEDIN.HOME} activeClassName="active">
-                <span className="glyphicon glyphicon-home"></span>HOME</Link></li>
-              <li><Link className={classes.menus} to={'/' + PATHS.MENUNOTLOGGEDIN.ABOUT} activeClassName="active">
-                <span className="glyphicon glyphicon-paperclip"></span>ABOUT</Link></li>
-              <li><Link className={classes.menus} to={'/' + PATHS.MENUNOTLOGGEDIN.CONTACT} activeClassName="active">
-                <span className="glyphicon glyphicon-paperclip"></span>CONTACT</Link></li>
-              <li></li>
-              <li><Link className={classes.menus} to={'/' + PATHS.MENUNOTLOGGEDIN.REGISTER} activeClassName="active">
-                <span className="glyphicon glyphicon-user"></span> Register </Link></li>
-              <li><Link className={classes.menus} to={'/' + PATHS.MENUNOTLOGGEDIN.LOGIN} activeClassName="active">
-                <span className="glyphicon glyphicon-log-in"></span> Login </Link>
-                <GoogleLogin clientId="89509495276-65c7sk1u2vl5csup6gv0542oi3eg459j.apps.googleusercontent.com"
+      <header >
+        <AppBar fixed flat theme={themeAppBar}>
+          <div >
+            <img src={logo} style={{height:50,width:100,marginRight:400}}/>
+            <Navigation type="horizontal" theme={themeNav}>
+              <Button icon='home' label='HOME' style={{color:'#900C3F'}} onClick={this.props.home}/>
+              <Button icon='create' label='REGISTER' style={{color:'#900C3F'}} onClick={this.props.register}/>
+              <Button icon='bookmark' label='ABOUT' style={{color:'#900C3F'}} onClick={this.props.about}/>
+              <Button icon='contact_phone' label='CONTACT' style={{color:'#900C3F'}} onClick={this.props.contact}/>
+<GoogleLogin clientId="89509495276-65c7sk1u2vl5csup6gv0542oi3eg459j.apps.googleusercontent.com"
                              buttonText="Google Sign in" callback={onSignIn}/>
               </li>
-
-            </ul>
-
-
+            </Navigation>
           </div>
-
-        </div>
-
-      </div>
-
-
-
+        </AppBar>
+      </header>
     );
   };
 }
+HeaderNotLog.propTypes = {
+  home: PropTypes.func,
+  register: PropTypes.func,
+  about: PropTypes.func,
+  contact: PropTypes.func,
+  login: PropTypes.func
 
-export default HeaderNotLog
+};
+
+export default connect(null, mapDispatchToProps)(HeaderNotLog)

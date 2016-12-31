@@ -11,7 +11,7 @@ export const logout = () => {
       dispatch(logoutUser())
     });
   }
-}
+};
 
 export default function loginUser(state = null, action) {
   switch (action.type) {

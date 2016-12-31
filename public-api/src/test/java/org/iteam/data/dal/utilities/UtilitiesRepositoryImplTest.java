@@ -12,7 +12,7 @@ import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.iteam.data.dal.client.ElasticsearchClientImpl;
-import org.iteam.data.model.Nationalities;
+import org.iteam.data.dto.Nationalities;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

@@ -3,8 +3,8 @@ package org.iteam.controllers.rest;
 import java.beans.PropertyEditorSupport;
 import java.io.IOException;
 
-import org.iteam.data.model.ErrorDTO;
-import org.iteam.data.model.Filter;
+import org.iteam.data.dto.ErrorDTO;
+import org.iteam.data.dto.Filter;
 import org.iteam.data.model.FilterList;
 import org.iteam.exceptions.ElasticsearchClientException;
 import org.iteam.exceptions.HashingException;

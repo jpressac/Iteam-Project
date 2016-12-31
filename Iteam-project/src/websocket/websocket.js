@@ -18,6 +18,7 @@ export function connectAndSubscribe(topic, resolve){
 
   var socket = SockJs('/channel');
   stompClient = Stomp.over(socket);
+  
 
   //TODO: sacar el console.log
   stompClient.connect({}, function (frame) {
@@ -28,15 +29,14 @@ export function connectAndSubscribe(topic, resolve){
 }
 
 
-export function sendNote(action, topic, content){
-  //en el 13 va el meeting id y en el channel va tambien el meetingid
+export function sendMessage(action, topic, content,users){
   stompClient.send("/channel", {},JSON.stringify(
-    { 
+    {
       "topic": topic,
       "message":{
-        "action": action,
-        "payload" : content
-      }      
+        "payload" : content,
+        "action": action
+      }
     })
   );
 }

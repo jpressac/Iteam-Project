@@ -13,7 +13,7 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Order;
 import org.iteam.configuration.StringUtilities;
 import org.iteam.data.dal.client.ElasticsearchClient;
-import org.iteam.data.model.Nationalities;
+import org.iteam.data.dto.Nationalities;
 import org.iteam.services.utils.JSONUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

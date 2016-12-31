@@ -2,9 +2,11 @@ package org.iteam.data.dal.team;
 
 import java.util.List;
 
+import org.iteam.data.dto.Team;
+import org.iteam.data.dto.UserDTO;
 import org.iteam.data.model.FilterList;
-import org.iteam.data.model.Team;
-import org.iteam.data.model.UserDTO;
+import org.iteam.data.model.TeamModel;
+import org.iteam.data.model.TeamUserModel;
 
 /**
  * Repository for team.
@@ -48,5 +50,23 @@ public interface TeamRepository {
      *            the owner of the teams.
      * @return a list of teams.
      */
-    public List<Team> getTeams(String ownerName);
+    public List<TeamModel> getTeams(String ownerName);
+
+    /**
+     * Retrieved the list of teams where a user is part of.
+     * 
+     * @param username
+     *            the username.
+     * @return the list of team names.
+     */
+    public List<String> getTeamByUser(String username);
+
+    /**
+     * Retrieve team and user information given a meetingId.
+     * 
+     * @param meetingId
+     *            the id of the meeting.
+     * @return the list with the team information.
+     */
+    public TeamUserModel getTeamUsersByMeeting(String meetingId);
 }

@@ -1,4 +1,23 @@
-.form {
-    align-content: center;
-    height: 100px;
+.form{
+  height: 100%;
+  width: 100%;
+  background: #eee;
+  padding-left: 50px;
+  margin-left: 50%;
+  margin-right: 50%;
+  padding-right: 50px;
+  margin-top: 20px;
+}
+
+.label2
+{
+  color: #900C3F;
+  font-family:monospace;
+  align-items: center;
+  font-size: 35px;
+  width: 100%;
+  margin-left: 50%;
+  margin-right: 50%;
+
+
 }

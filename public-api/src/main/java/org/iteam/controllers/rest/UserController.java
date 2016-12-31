@@ -6,7 +6,7 @@ import java.util.Arrays;
 
 import javax.validation.Valid;
 
-import org.iteam.data.model.UserDTO;
+import org.iteam.data.dto.UserDTO;
 import org.iteam.services.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

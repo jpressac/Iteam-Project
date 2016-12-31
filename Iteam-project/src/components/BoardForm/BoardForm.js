@@ -9,12 +9,14 @@ class BoardForm extends Component {
 
   render() {
     return (
-      <div className="col-md-12">
-        <div className="col-md-6">
-          <PersonalBoard></PersonalBoard>
-        </div>
-        <div className="col-md-6">
-          <SharedBoard></SharedBoard>
+      <div id='board container' className="col-md-12">
+        <div id="row" className="row">
+          <div id='personal board' className="col-md-6">
+            <PersonalBoard/>
+          </div>
+          <div id='shared board' className="col-md-6">
+            <SharedBoard/>
+          </div>
         </div>
       </div>
     );

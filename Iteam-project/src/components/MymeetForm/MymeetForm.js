@@ -1,74 +1,585 @@
-import React, {Component} from 'react'
-import TextBox from '../Form/TextBox/TextBox.js'
-import {Form, FormGroup, FormControl, ControlLabel, Col} from 'react-bootstrap'
-import classes from './MymeetForm.scss'
-import {getUserData} from '../../redux/modules/ProfileData'
-import axios from 'axios'
-import { List, ListItem, ListSubHeader, ListDivider, ListCheckbox } from 'react-toolbox/lib/list'
+import React, {Component, PropTypes} from "react";
+import axios from "axios";
+import {connect} from "react-redux";
+import {List, ListItem, ListDivider, ListSubHeader} from "react-toolbox/lib/list";
+import Dialog from "react-toolbox/lib/dialog";
+import TimePicker from "react-toolbox/lib/time_picker";
+import DatePicker from "react-toolbox/lib/date_picker";
+import {push} from "react-router-redux";
+import {PATHS} from "../../constants/routes";
+import classes from "./MymeetForm.scss";
+import Input from "react-toolbox/lib/input";
+import BootstrapModal from "../../components/BootstrapModal/BootstrapModal";
+import ListItem1 from "./ListItem1.scss";
+import ListItem2 from "./ListItem2.scss";
+import listFormat from "./List.scss";
+import chipTheme from "./chips.scss";
+import {updateMeetingId} from "../../redux/reducers/Meeting/MeetingReducer";
+import {MEETING} from "../../constants/HostConfiguration";
+import themeLabel from "./label.scss";
+import Dropdown from "react-toolbox/lib/dropdown";
+import Tooltip from "react-toolbox/lib/tooltip";
+import {Button} from "react-toolbox/lib/button";
+import Chip from "react-toolbox/lib/chip";
+import {saveConfig} from "../../redux/reducers/Meeting/MeetingConfigReducer";
+
+var programDate = new Date();
+var endDate = new Date();
+
+const TooltipButton = Tooltip(Button);
+
+const technics = [{value: 0, label: 'Brainstorming'}, {value: 1, label: 'SCAMPER'}, {
+  value: 2,
+  label: 'morphological analysis'
+}];
 
 
-class MymeetForm extends React.Component {
+const mapStateToProps = (state) => {
+  if (state.loginUser !== null) {
+    return {
+      user: state.loginUser.user.username
+    }
+  }
+};
 
-    constructor(props){
-      super(props);
-      this.state= {
-        data: []
+const mapDispatchToProps = (dispatch) => ({
+
+  onClick: () => dispatch(push('/' + PATHS.MENULOGGEDIN.PERSONALBOARD)),
+  updateMyMeetingId: (meetingId) => dispatch(updateMeetingId(meetingId)),
+  saveMeetingConfig: (meeting) => dispatch(saveConfig(meeting))
+});
+
+
+class MymeetForm extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      time: new Date(),
+      endtime: new Date(),
+      meetings: {},
+      date: new Date(),
+      active: false,
+      config: {},
+      meetEdit: {},
+      editable: true,
+      technicValue: '',
+      teamName: {},
+      tag: ''
+    }
+  }
+
+  goToReports() {
+
+    let meetingInfo = {};
+    meetingInfo.topic = this.state.meetEdit.topic;
+    meetingInfo.config = this.state.config;
+
+    //Reducer containing toolbar info
+    this.props.saveMeetingConfig(meetingInfo);
+
+    this.props.updateMyMeetingId(this.state.meetEdit.meetingId);
+  }
+
+  startMeeting() {
+    //Object that contains meeting info for reducer for Toolbar
+    let meetingInfo = {};
+    meetingInfo.topic = this.state.meetEdit.topic;
+    meetingInfo.config = this.state.config;
+    console.log(JSON.stringify(meetingInfo));
+
+    //Reducer containing toolbar info
+    this.props.saveMeetingConfig(meetingInfo);
+
+    //Reducer for meeting ID
+    this.props.updateMyMeetingId(this.state.meetEdit.meetingId);
+
+    //Dispatch to personal board
+    this.props.onClick();
+  }
+
+  handleToggleDialog = (meeting) => {
+    this.setState({
+      active: !this.state.active,
+      datetime: meeting.programmedDate,
+      time: meeting.programmedDate,
+      endtime: meeting.endDate,
+      config: meeting.meetingConfig,
+      meetEdit: meeting,
+      editable: true
+    });
+
+    let datetime = new Date(meeting.programmedDate);
+    programDate.setFullYear(datetime.getFullYear());
+    programDate.setMonth(datetime.getMonth());
+    programDate.setDate(datetime.getDate());
+    programDate.setHours(datetime.getHours());
+    programDate.setMinutes(datetime.getMinutes());
+
+    let enddatetime = new Date(meeting.endDate);
+    endDate.setFullYear(enddatetime.getFullYear());
+    endDate.setMonth(enddatetime.getMonth());
+    endDate.setDate(enddatetime.getDate());
+    endDate.setHours(enddatetime.getHours());
+    endDate.setMinutes(enddatetime.getMinutes());
+
+    //Save configuration to reducer
+
+  };
+
+  isAdmin(owner) {
+    return this.props.user === owner;
+  }
+
+  static validateDate(date) {
+    let meetDate = new Date(date);
+    let dateNow = new Date();
+    let meetDate_minrange = dateNow.setMinutes(dateNow.getMinutes() - 15);
+
+    return meetDate_minrange > meetDate.getTime();
+  }
+
+  static validateStart(date) {
+    let meetDate = new Date(date);
+    let dateNow = new Date();
+
+    let meetDate_minrange = dateNow.setMinutes(dateNow.getMinutes() - 150);
+    let meetDate_maxrange = dateNow.setMinutes(dateNow.getMinutes() + 300);
+
+    return (meetDate_minrange < meetDate.getTime() && meetDate.getTime() < meetDate_maxrange);
+  }
+
+
+  showActions(meetingOwner, meetingDate) {
+    if (this.isAdmin(meetingOwner)) {
+      //fecha ya paso, puede ver reportes
+      if (MymeetForm.validateDate(meetingDate)) {
+        return this.AdminUserActionsFinish;
+      }
+      else {
+        //rango de tiempo aceptable para comenzar reunion
+        if (MymeetForm.validateStart(meetingDate)) {
+          return this.AdminActionsStart;
         }
-
+        //fecha mayor, puede editar
+        return this.AdminActionsEdit;
       }
-      fillfields() {
-        let data= this.state.data;
-        this.refs.meet.value= data.ownerName;
-
-
+    }
+    else {
+      //fecha ya paso
+      if (MymeetForm.validateDate(meetingDate)) {
+        return this.AdminUserActionsFinish;
       }
-      componentDidMount(){
-        getMeetingData().then( (response) => {
-                 axios.get('http://localhost:8080//meeting/meetingbyuser'
-                               ).then(function(response){
-                               this.setState({ data: response.data} );
-                               this.fillfields();
-                         }.bind(this)).catch(function(response){
-                         console.log(response.error);
-                       });
-          });
-          }
+      else {
+        //rango de tiempo aceptable para unirse reunion
+        if (MymeetForm.validateStart(meetingDate)) {
+          return this.UserActionsJoin;
+        }
+        // fecha mayor, puede poner ver
+        return this.UserActionsView;
+      }
+    }
+  }
+
+  AdminActionsStart = [
+    {label: "Cancel", onClick: this.handleToggleDialog},
+    {label: "Start", onClick: this.startMeeting.bind(this)}
+  ];
+
+  AdminActionsEdit = [
+    {label: "Cancel", onClick: this.handleToggleDialog},
+    {label: "Delete MeetingConfig", onClick: this.handleToggleDialog},
+    {label: "Edit", onClick: this.edit.bind(this)},
+    {label: "Save", onClick: this.save.bind(this)}
+  ];
+  AdminUserActionsFinish = [
+    {label: "Cancel", onClick: this.handleToggleDialog},
+    {label: "View Reports", onClick: this.goToReports.bind(this)}
+  ];
+
+  UserActionsJoin = [
+    {label: "Cancel", onClick: this.handleToggleDialog},
+    {label: "Join", onClick: this.startMeeting.bind(this)}
+  ];
+
+  UserActionsView = [
+    {label: "OK", onClick: this.handleToggleDialog}
+  ];
+
+  static renderDate(meetingTime) {
+    return new Date(meetingTime).toLocaleDateString([], {hour: '2-digit', minute: '2-digit'});
+  }
+
+  fillFields(meetings) {
+    this.setState({meetings: meetings});
+  }
+
+  componentDidMount() {
+    axios.get(MEETING.MEETING_BY_USER, {params: {username: this.props.user}}).then(function (response) {
+      this.fillFields(response.data)
+    }.bind(this));
+  }
+
+  edit() {
+    this.setState({editable: false})
+  }
+
+  save() {
+    let editedMeeting = this.state.meetEdit;
+
+    editedMeeting.meetingId = this.state.meetEdit.meetingId;
+    editedMeeting.meetingConfig = this.state.config;
+
+    axios.post(MEETING.MEETING_UPDATE, editedMeeting).then(
+      function (response) {
+      }
+    ).catch(
+      function (response) {
+      });
+
+    this.setState({active: !this.state.active});
+  }
+
+  onChangeTopic = (topic) => {
+    let newMeeting = this.state.meetEdit;
+    newMeeting.topic = topic;
+    this.setState({
+      meetEdit: newMeeting
+    });
+  };
+
+  onChangeVotes = (votes) => {
+    let newMeeting = this.state.meetEdit;
+    newMeeting.meetingConfig.votes = votes;
+    this.setState({
+      meetEdit: newMeeting
+    });
+  };
+
+  onChangeSbtime = (sbtime) => {
+    let newMeeting = this.state.meetEdit;
+    newMeeting.meetingConfig.sbtime = sbtime;
+    this.setState({
+      meetEdit: newMeeting
+    });
+  };
+
+  onChangePbtime = (pbtime) => {
+    let newMeeting = this.state.meetEdit;
+    newMeeting.meetingConfig.pbtime = pbtime;
+    this.setState({
+      meetEdit: newMeeting
+    });
+  };
+
+  onChangeDescription = (description) => {
+    let newMeeting = this.state.meetEdit;
+    newMeeting.description = description;
+    this.setState({
+      meetEdit: newMeeting
+    });
+  };
 
 
-  render(){
-    return(
-  <div className={"container"}>
+  onChangeProgrammedDate = (date) => {
+    let newDate = new Date(MymeetForm.changeEndDate(programDate, endDate, date));
+    console.debug('new date: ' + newDate);
 
-              <div className={classes.label}  >
-                    <label>MY MEETINGS</label>
+    programDate.setFullYear(date.getFullYear());
+    programDate.setMonth(date.getMonth());
+    programDate.setDate(date.getDate());
+
+    endDate.setFullYear(newDate.getFullYear());
+    endDate.setMonth(newDate.getMonth());
+    endDate.setDate(newDate.getDate());
+
+    let newMeeting = this.state.meetEdit;
+    newMeeting.programmedDate = programDate.getTime();
+    newMeeting.endDate = endDate.getTime();
+    this.setState({
+      meetEdit: newMeeting,
+      datetime: date
+    });
+  };
+
+  static changeEndDate(startDate, enddate, newdate) {
+    if (startDate.getDate() === enddate.getDate()) {
+      return newdate;
+    }
+    let nextDay = new Date(newdate);
+    return nextDay.setDate(newdate.getDate() + 1)
+  }
+
+  static validateHour(newHour) {
+    return Date.now() < newHour;
+  }
+
+  onChangeProgrammedTime = (time) => {
+    if (MymeetForm.validateHour(time)) {
+      programDate.setHours(time.getHours());
+      programDate.setMinutes(time.getMinutes());
+
+      let newMeeting = this.state.meetEdit;
+      newMeeting.programmedDate = programDate.getTime();
+      this.setState({
+        meetEdit: newMeeting,
+        time: time
+      });
+    }
+    else {
+      this.setState({message: '¡You have to complete with valid time!'});
+      this.refs.mymeetingModal.openModal();
+    }
+  };
+
+  onChangeEndTime = (time) => {
+    endDate = new Date(MymeetForm.checkDate(programDate.getHours(), time.getHours(), programDate));
+    endDate.setHours(time.getHours());
+    endDate.setMinutes(time.getMinutes());
+
+    let newMeeting = this.state.meetEdit;
+    newMeeting.endDate = endDate.getTime();
+    this.setState({
+      meetEdit: newMeeting,
+      endtime: time
+    });
+  };
+
+  static checkDate(startHour, endHour, date) {
+    if ((endHour - startHour) < 0 && (programDate.getDate() === endDate.getDate())) {
+      let newDay = new Date(date);
+      newDay.setDate(date.getDate() + 1);
+      return newDay;
+    }
+    return endDate;
+  }
+
+  handleChangeCombo = (value) => {
+    let filteredLabelObject = technics.filter(filter => filter["value"] == value);
+    let newConfig = this.state.config;
+
+    newConfig.technic = value;
+
+    this.setState({config: newConfig, technicValue: filteredLabelObject[0]["label"]})
+  };
+
+
+  handleChange = (name, value) => {
+    this.setState({...this.state, [name]: value});
+  };
+
+  deleteTag(pos) {
+    let newTags = this.state.config.tags;
+
+    newTags.map(function (filter, index) {
+      if (pos === index) {
+        newTags.splice(index, 1);
+      }
+    });
+
+    let newConfig = this.state.config;
+    newConfig.tags = newTags;
+
+    this.setState({config: newConfig, tag: ''});
+  }
+
+  handleAddTag() {
+    if (this.state.tag !== '') {
+      let newTags = this.state.config.tags;
+
+      newTags.push((this.state.tag));
+
+      let newConfig = this.state.config;
+
+      newConfig.tags = newTags;
+      this.setState({config: newConfig, tag: ''});
+    }
+  }
+
+  tagLabels() {
+    if (typeof this.state.config.tags !== "undefined") {
+      return this.state.config.tags.map(function (tag, index) {
+        return (
+          <Chip key={index} deletable={!this.state.editable} onDeleteClick={this.deleteTag.bind(this, index)}
+                theme={chipTheme}>
+            {tag}
+          </Chip>
+        );
+      }.bind(this));
+    }
+  }
+
+  showDialog() {
+    if (this.isAdmin(this.state.meetEdit.ownerName)) {
+      return this.showDialogForAdmin();
+    }
+    else {
+      return this.showDialogForUser()
+        ;
+    }
+  }
+
+  showDialogForUser() {
+    return (
+      <Dialog
+        actions={this.showActions(this.state.meetEdit.ownerName, this.state.meetEdit.programmedDate)}
+        active={this.state.active}
+        onEscKeyDown={this.handleToggleDialog}
+        onOverlayClick={this.handleToggleDialog}>
+        <Input type='text' label='Topic' value={this.state.meetEdit.topic} maxLength={30}
+               onChange={this.onChangeTopic.bind(this)} disabled={this.state.editable}
+               theme={themeLabel}/>
+        <Input type='text' label='Description' value={this.state.meetEdit.description} maxLength={144}
+               onChange={this.onChangeDescription.bind(this)} disabled={this.state.editable}
+               theme={themeLabel}/>
+        <DatePicker label='Date' sundayFirstDayOfWeek value={new Date(this.state.datetime)}
+                    readonly={this.state.editable} onChange={this.onChangeProgrammedDate.bind(this)}
+                    minDate={new Date()}/>
+        <TimePicker label='Time'
+                    value={isNaN(new Date(this.state.time)) ? 0 : new Date(this.state.time)}
+                    readonly={this.state.editable} onChange={this.onChangeProgrammedTime.bind(this)}/>
+        <TimePicker label='End Time'
+                    value={isNaN(new Date(this.state.endtime)) ? 0 : new Date(this.state.endtime)}
+                    readonly={this.state.editable} onChange={this.onChangeEndTime.bind(this)}
+                    theme={themeLabel}/>
+      </Dialog>
+    )
+  }
+
+  showDialogForAdmin() {
+    return (
+      <Dialog
+        actions={this.showActions(this.state.meetEdit.ownerName, this.state.meetEdit.programmedDate)}
+        active={this.state.active}
+        onEscKeyDown={this.handleToggleDialog}
+        onOverlayClick={this.handleToggleDialog}>
+        <Input type='text' label='Topic' value={this.state.meetEdit.topic} maxLength={30}
+               onChange={this.onChangeTopic.bind(this)} disabled={this.state.editable}
+               theme={themeLabel}/>
+        <Input type='text' label='Description' value={this.state.meetEdit.description} maxLength={144}
+               onChange={this.onChangeDescription.bind(this)} disabled={this.state.editable}
+               theme={themeLabel}/>
+        <div className="form-group">
+          <div className="row" style={{color: '#900C3F'}}>
+            <div className="col-md-4">
+              <DatePicker label='Date' sundayFirstDayOfWeek value={new Date(this.state.datetime)}
+                          readonly={this.state.editable} onChange={this.onChangeProgrammedDate.bind(this)}
+                          minDate={new Date()}
+                          theme={themeLabel}/>
             </div>
+            <div className="col-md-3">
+              <TimePicker label='Start Time'
+                          value={isNaN(new Date(this.state.time)) ? 0 : new Date(this.state.time)}
+                          readonly={this.state.editable} onChange={this.onChangeProgrammedTime.bind(this)}
+                          theme={themeLabel}/>
+            </div>
+            <div className="col-md-3">
+              <TimePicker label='End Time'
+                          value={isNaN(new Date(this.state.endtime)) ? 0 : new Date(this.state.endtime)}
+                          readonly={this.state.editable} onChange={this.onChangeEndTime.bind(this)}
+                          theme={themeLabel}/>
+            </div>
+          </div>
+        </div>
+        <div className="form-group">
+          <div className="row" style={{color: '#900C3F'}}>
+            <div className="col-md-3">
+              <Input label="Votes" value={this.state.config.votes}
+                     onChange={this.onChangeVotes.bind(this)} disabled={this.state.editable} type='number'
+                     theme={themeLabel} min="0"/>
+            </div>
+            <div className="col-md-4">
+              <Input label="Minutes in personal board"
+                     value={this.state.config.pbtime} onChange={this.onChangePbtime.bind(this)}
+                     disabled={this.state.editable} type='number'
+                     theme={themeLabel} min="0"/>
+            </div>
+            <div className="col-md-4">
+              <Input label="Minutes in shared board"
+                     value={this.state.config.sbtime} onChange={this.onChangeSbtime.bind(this)}
+                     disabled={this.state.editable} type='number'
+                     theme={themeLabel} min="0"/>
+            </div>
+          </div>
+        </div>
+        <div className="row" style={{color: '#900C3F'}}>
+          <div className="col-md-5">
+            <Dropdown label="Technic" auto onChange={this.handleChangeCombo.bind(this)} style={{color: '#900C3F'}}
+                      source={technics} disabled={this.state.editable} value={this.state.config.technic}
+                      theme={themeLabel}/>
+          </div>
+        </div>
+        <div className="form-group">
+          <div className="row" style={{color: '#900C3F'}}>
+            <div className="col-md-4">
+              <Input type='text' label='Tag' value={this.state.tag} disabled={this.state.editable}
+                     onChange={this.handleChange.bind(this, 'tag')} maxLength={30}
+                     theme={themeLabel}/>
+            </div>
+            <div className="col-md-4">
+              <TooltipButton icon='add' tooltip='Add tag' floating mini
+                             style={{background: '#900C3F', color: 'white', marginTop: 10}}
+                             disabled={this.state.editable} onClick={this.handleAddTag.bind(this)}/>
+            </div>
+          </div>
+        </div>
+        {this.tagLabels()}
+      </Dialog>
+    )
+  }
 
 
-<input type="text" className="form-control" id="inputname" ref="meet"  style={{marginLeft:10, marginTop:10}}></input>
-              /*<List selectable ripple>
-       <ListSubHeader caption='Explore characters' />
-       <ListItem
+  render() {
+    let meets = this.state.meetings;
+    let meetingTime = new Date;
 
-         caption='Dr. Manhattan'
-         legend="Jonathan 'Jon' Osterman"
-         rightIcon='star'
-       />
-       <ListItem
+    let meetMap = [].slice.call(meets).sort(function (a, b) {
+      return a.programmedDate - b.programmedDate
+    });
 
-         caption='Ozymandias'
-         legend='Adrian Veidt'
-         rightIcon='star'
-       />
-       <ListItem
-
-         caption='Rorschach'
-         legend='Walter Joseph Kovacs'
-         rightIcon='star'
-       />
-
-     </List>*/
-</div>
-
-)};
+    return (
+      <div className={"container"} style={{marginTop: 70}}>
+        <div className={classes.content}>
+          <div className={classes.label2}>
+            <label>MY MEETINGS</label>
+          </div>
+          <BootstrapModal ref="mymeetingModal" message={this.state.message}/>
+          <List theme={listFormat} selectable ripple>
+            <ListSubHeader />
+            {Object.keys(meetMap).map((key) => {
+                meetingTime = meetMap[key].programmedDate;
+                let renderDateTime = MymeetForm.renderDate(meetingTime);
+                let future_date = MymeetForm.validateDate(meetingTime);
+                let color = future_date ? ListItem2 : ListItem1;
+                return (
+                  <div key={key}>
+                    <ListItem
+                      theme={color}
+                      caption={meetMap[key].topic}
+                      legend={renderDateTime}
+                      leftIcon='send'
+                      rightIcon='visibility'
+                      onClick={this.handleToggleDialog.bind(this, meetMap[key])}/>
+                    <ListDivider />
+                    <BootstrapModal ref="meetingModal" message={this.state.message}/>
+                  </div>
+                );
+              }
+            )}
+            {this.showDialog()}
+          </List>
+        </div>
+      </div>
+    )
+  }
 }
-export default MymeetForm
+
+
+MymeetForm.propTypes = {
+  onClick: PropTypes.func,
+  user: PropTypes.any,
+  goToReports: PropTypes.func,
+  saveMeetingConfig: PropTypes.func
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(MymeetForm);

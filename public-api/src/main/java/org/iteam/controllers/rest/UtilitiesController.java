@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import org.iteam.data.model.Nationalities;
+import org.iteam.data.dto.Nationalities;
 import org.iteam.services.utilities.UtilitiesServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

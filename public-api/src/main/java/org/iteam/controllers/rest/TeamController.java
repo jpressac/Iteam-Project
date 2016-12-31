@@ -4,9 +4,11 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.iteam.data.dto.Team;
+import org.iteam.data.dto.UserDTO;
 import org.iteam.data.model.FilterList;
-import org.iteam.data.model.Team;
-import org.iteam.data.model.UserDTO;
+import org.iteam.data.model.TeamModel;
+import org.iteam.data.model.TeamUserModel;
 import org.iteam.services.team.TeamServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -71,8 +73,21 @@ public class TeamController {
      * @return a list of teams.
      */
     @RequestMapping(value = "team/byowner", method = RequestMethod.GET)
-    public List<Team> getTeamByOwner() {
+    public List<TeamModel> getTeamByOwner() {
         return teamService.getTeams(SecurityContextHolder.getContext().getAuthentication().getName());
+    }
+
+    /**
+     * Get the team id and the list of members with their personal information,
+     * given a meeting id.
+     * 
+     * @param meetingId
+     *            the id of the meeting.
+     * @return a model representation of the information.
+     */
+    @RequestMapping(value = "team/users/bymeeting", method = RequestMethod.GET)
+    public TeamUserModel getTeamUserInformation(@RequestParam(value = "meetingId", required = true) String meetingId) {
+        return teamService.getTeamUserInformationByMeeting(meetingId);
     }
 
     private ResponseEntity<Void> checkResult(boolean flag) {
