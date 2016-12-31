@@ -2,7 +2,16 @@ import React, {Component} from 'react'
 import classes from './LoginForm.scss'
 import {PATHS} from '../../constants/routes'
 import {Link} from 'react-router'
+import GoogleLogin from 'react-google-login'
 
+var onSignIn = function (response) {
+  debugger;
+  console.log('puto el que lee  ' + response.wc);
+  console.log('puto el que lee  ' + response.hg);
+  console.log('puto el que lee  ' + response.el);
+  console.log('puto el que lee ' + response);
+
+};
 
 class LoginForm extends Component {
 
@@ -63,6 +72,8 @@ class LoginForm extends Component {
                       </label>
                     </div>
                     <div className="col-md-5 col-sm-6 col-xs-8">
+                      <GoogleLogin clientId="89509495276-65c7sk1u2vl5csup6gv0542oi3eg459j.apps.googleusercontent.com"
+                                   buttonText="Google Sign in" callback={onSignIn}/>
                     </div>
                   </div>
                 </div>
@@ -74,7 +85,5 @@ class LoginForm extends Component {
     );
   };
 }
-// <button type="submit" className={"btn btn-primary", classes.btn} style={{marginLeft: 10}}>
-//   <span className="glyphicon glyphicon-ok"/> SIGN IN
-// </button>
+
 export default LoginForm

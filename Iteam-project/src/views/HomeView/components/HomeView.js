@@ -21,7 +21,7 @@ export class HomeView extends React.Component {
 
               <div id="home-carousel" className ={"carousel slide", classes.carouselDiv } data-ride="carousel">
 
-                <div className={"carousel-inner"} style={{marginLeft:230}}>
+                <div className={"carousel-inner"} style={{marginLeft:180}}>
                         <div className="item active">
                           <img  alt="team" src={team} className={classes.image}/>
                             <div className={"carousel-caption", classes.carouselText}>
