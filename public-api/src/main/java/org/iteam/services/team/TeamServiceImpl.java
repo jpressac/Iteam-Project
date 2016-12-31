@@ -19,13 +19,8 @@ public class TeamServiceImpl implements TeamService {
     private TeamRepositoryMySQL teamRepositoryMySQL;
 
     @Override
-    public boolean putTeam(Team team) {
-
-        // TODO: catch exception for duplicate key
-        // java.sql.SQLIntegrityConstraintViolationException
+    public void putTeam(Team team) {
         teamRepositoryMySQL.save(team);
-
-        return true;
     }
 
     @Override

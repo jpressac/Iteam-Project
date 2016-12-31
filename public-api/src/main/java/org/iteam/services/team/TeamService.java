@@ -19,7 +19,7 @@ public interface TeamService {
      * 
      * @return true if it was successful, false otherwise
      */
-    public boolean putTeam(Team team);
+    public void putTeam(Team team);
 
     /**
      * Delete an existing team.

@@ -32,11 +32,13 @@ public class TeamController {
      * 
      * @param team
      *            the team to create.
-     * @return 200 OK if it was successful.
+     * @return 204 NO CONTENT if it was successful.
      */
     @RequestMapping(value = "/team/create", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
     public ResponseEntity<Void> createTeam(@RequestBody @Valid Team team) {
-        return checkResult(teamService.putTeam(team));
+        teamService.putTeam(team);
+
+        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }
 
     /**
@@ -62,7 +64,7 @@ public class TeamController {
      *            a filter list to apply to users.
      * @return a list of user.
      */
-    @RequestMapping(value = "/team/select", method = RequestMethod.GET)
+    @RequestMapping(value = "/team/userselection", method = RequestMethod.GET)
     public List<UserDTO> filterTeam(@RequestParam(value = "filter") FilterList filter) {
         return teamService.filterToCreateTeam(filter);
     }
