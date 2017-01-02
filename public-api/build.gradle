@@ -75,6 +75,8 @@ dependencies {
 	
 	compile("org.slf4j:slf4j-simple:${slf4jVersion}")
 	
+	compile group: 'org.springframework.security.oauth', name: 'spring-security-oauth2', version: '2.0.12.RELEASE'
+	
 	
 	testCompile("org.springframework.boot:spring-boot-starter-test:${springBootVersion}"){
 		exclude module: "logback-classic"
