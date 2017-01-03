@@ -1,20 +1,20 @@
-import React, {Component, PropTypes} from 'react';
-import {submitUser} from '../../redux/RegistrationForm/actions.js'
-import axios from 'axios'
-import user from './user.png'
-import classes from './RegistrationForm.scss'
-import {RadioGroup, RadioButton} from 'react-toolbox/lib/radio';
-import DatePicker from 'react-toolbox/lib/date_picker';
-import Dropdown from 'react-toolbox/lib/dropdown';
-import Input from 'react-toolbox/lib/input';
-import themeLabel from './label.scss'
-import Tooltip from 'react-toolbox/lib/tooltip';
-import {Button, IconButton} from 'react-toolbox/lib/'
-import {UTILITIES} from '../../constants/HostConfiguration';
-import {PATHS} from '../../constants/routes';
-import {connect} from 'react-redux';
-import {push} from 'react-router-redux';
-import Spinner from '../Spinner/Spinner';
+import React, {Component, PropTypes} from "react";
+import {submitUser} from "../../redux/RegistrationForm/actions.js";
+import axios from "axios";
+import user from "./user.png";
+import classes from "./RegistrationForm.scss";
+import {RadioGroup, RadioButton} from "react-toolbox/lib/radio";
+import DatePicker from "react-toolbox/lib/date_picker";
+import Dropdown from "react-toolbox/lib/dropdown";
+import Input from "react-toolbox/lib/input";
+import themeLabel from "./label.scss";
+import Tooltip from "react-toolbox/lib/tooltip";
+import {Button, IconButton} from "react-toolbox/lib/";
+import {UTILITIES} from "../../constants/HostConfiguration";
+import {PATHS} from "../../constants/routes";
+import {connect} from "react-redux";
+import {push} from "react-router-redux";
+import Spinner from "../Spinner/Spinner";
 
 const TooltipInput = Tooltip(Input);
 
@@ -71,8 +71,8 @@ class RegistrationForm extends Component {
   saveUser() {
     this.setState({showSpinner: true});
     this.forceUpdate();
-    submitUser(this.state).then(()=> {
-      //This should be moved to submit user the sumbit method should perform the dipatch once it was save, otherwise throw error
+    submitUser(this.state).then(() => {
+      //This should be moved to submit user the submit method should perform the dispatch once it was save, otherwise throw error
       this.props.goToHome()
     }).catch(() => {
       }
@@ -101,7 +101,7 @@ class RegistrationForm extends Component {
 
   setValuesOptionsProfessions(data) {
     let opt = data.map(function (option, index) {
-      var rObj = {};
+      let rObj = {};
       rObj["value"] = index;
       rObj["label"] = option;
       return rObj;
@@ -124,7 +124,7 @@ class RegistrationForm extends Component {
 
   setValuesOptionsNationalities(data) {
     let opt = data["nationalities"].map(function (option, index) {
-      var rObj = {};
+      let rObj = {};
       rObj["value"] = index;
       rObj["label"] = option;
       return rObj;
@@ -279,7 +279,7 @@ class RegistrationForm extends Component {
               <div className="form-group">
                 <div className="col-md-6">
                   <div className="row">
-                    <Button style={{margin: 15, color: 'white', background:'#900C3F'}} raised
+                    <Button style={{margin: 15, color: 'white', background: '#900C3F'}} raised
                             onClick={this.saveUser.bind(this)}>
                       Create
                     </Button>
@@ -294,27 +294,15 @@ class RegistrationForm extends Component {
     }
     else {
       return (
-        <div className={classes.form}>
           <Spinner/>
-        </div>
       )
     }
   }
 
 }
 
-RegistrationForm
-  .propTypes = {
+RegistrationForm.propTypes = {
   goToHome: PropTypes.func
 };
 
-export
-default
-
-connect(
-  null
-  ,
-  mapDispatchToProps
-)(
-  RegistrationForm
-)
+export default connect(null, mapDispatchToProps)(RegistrationForm)

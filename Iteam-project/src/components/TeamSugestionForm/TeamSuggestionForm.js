@@ -1,19 +1,19 @@
-import React, {PropTypes} from 'react';
-import axios from 'axios';
-import BootstrapModal from '../BootstrapModal';
-import {connect} from 'react-redux';
-import Input from 'react-toolbox/lib/input';
-import Dropdown from 'react-toolbox/lib/dropdown';
-import {Button, IconButton} from 'react-toolbox/lib/button';
-import {push} from 'react-router-redux'
-import {PATHS} from '../../constants/routes'
-import classes from './TeamSuggestionForm.scss'
-import themeLabel from './label.scss'
-import chipTheme from './chips.scss'
-import Tooltip from 'react-toolbox/lib/tooltip';
-import {TEAM, UTILITIES} from '../../constants/HostConfiguration'
-import Chip from 'react-toolbox/lib/chip';
-import Spinner from '../Spinner/Spinner';
+import React, {PropTypes} from "react";
+import axios from "axios";
+import BootstrapModal from "../BootstrapModal";
+import {connect} from "react-redux";
+import Input from "react-toolbox/lib/input";
+import Dropdown from "react-toolbox/lib/dropdown";
+import {Button} from "react-toolbox/lib/button";
+import {push} from "react-router-redux";
+import {PATHS} from "../../constants/routes";
+import classes from "./TeamSuggestionForm.scss";
+import themeLabel from "./label.scss";
+import chipTheme from "./chips.scss";
+import Tooltip from "react-toolbox/lib/tooltip";
+import {TEAM, UTILITIES} from "../../constants/HostConfiguration";
+import Chip from "react-toolbox/lib/chip";
+import Spinner from "../Spinner/Spinner";
 
 
 const mapStateToProps = (state) => {
@@ -198,25 +198,25 @@ class TeamSuggestionForm extends React.Component {
   setValuesOptionsNationalities(data) {
 
     let opt = data["nationalities"].map(function (option, index) {
-      var rObj = {};
+      let rObj = {};
       rObj["value"] = index;
       rObj["label"] = option;
 
       return rObj;
     });
+
     this.setState({values: opt});
   }
 
   setValuesOptionsProfessions(data) {
     let opt = data.map(function (option, index) {
-      var rObj = {};
+      let rObj = {};
       rObj["value"] = index;
       rObj["label"] = option;
       return rObj;
     });
     this.setState({values: opt});
   }
-
 
   setFilteredValue(value) {
 
@@ -259,7 +259,7 @@ class TeamSuggestionForm extends React.Component {
   render() {
     if (!this.state.showSpinner) {
       return (
-        <div className="container" style={{marginTop:70, width:700}}>
+        <div className="container" style={{marginTop: 70, width: 700}}>
           <div className={classes.label2}>
             <label>CREATE TEAM</label>
           </div>
@@ -285,7 +285,7 @@ class TeamSuggestionForm extends React.Component {
                     </div>
                     <div className="col-md-4">
                       <TooltipButton icon='add' tooltip='Add filter'
-                                     style={{background:'#900C3F', color:'white', marginTop:10}} floating mini
+                                     style={{background: '#900C3F', color: 'white', marginTop: 10}} floating mini
                                      onClick={this.handleClick.bind(this)}/>
                     </div>
                   </div>
@@ -293,7 +293,7 @@ class TeamSuggestionForm extends React.Component {
               </div>
               <div className="form-group">
                 <div className="row">
-                  <div className="col-md-8" style={{marginTop:20}}>
+                  <div className="col-md-8" style={{marginTop: 20}}>
                     {this.filterLabels()}
                   </div>
                 </div>
@@ -303,19 +303,19 @@ class TeamSuggestionForm extends React.Component {
                   <div className="col-md-12">
                     <div className="col-md-2">
                       <TooltipButton icon='search' tooltip='Search members'
-                                     style={{background:'#900C3F', color:'white'}}
+                                     style={{background: '#900C3F', color: 'white'}}
                                      floating onClick={this.searchUsers.bind(this)}/>
                     </div>
                     <div className="col-md-8">
                       <table className="table table-condensed table-striped table-bordered table-hover no-margin"
-                             style={{marginTop:20, background:'white'}} data-height="299" data-click-to-select="true">
+                             style={{marginTop: 20, background: 'white'}} data-height="299" data-click-to-select="true">
                         <thead>
                         <tr>
                           <th style={{"width": "5%"}}>
                             <input className="no-margin" type="checkbox"/>
                           </th>
-                          <th style={{"width" : "45%" , "align":"center"}}>Last name</th>
-                          <th style={{"width" : "50%"}}>Name</th>
+                          <th style={{"width": "45%", "align": "center"}}>Last name</th>
+                          <th style={{"width": "50%"}}>Name</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -326,7 +326,7 @@ class TeamSuggestionForm extends React.Component {
                   </div>
                 </div>
                 <div className="row">
-                  <Button style={{margin:15,color:'white',background:'#900C3F'}} target='_blank' raised
+                  <Button style={{margin: 15, color: 'white', background: '#900C3F'}} target='_blank' raised
                           onClick={this.createMeeting.bind(this)}>
                     Create
                   </Button>
@@ -345,22 +345,21 @@ class TeamSuggestionForm extends React.Component {
   }
 }
 
-  TeamSuggestionForm
-.
-  propTypes = {
-    user: PropTypes.any,
-    fromMeeting: PropTypes.bool,
-    meeting: PropTypes.func,
-    normal: PropTypes.func
-  };
+TeamSuggestionForm
+  .propTypes = {
+  user: PropTypes.any,
+  fromMeeting: PropTypes.bool,
+  meeting: PropTypes.func,
+  normal: PropTypes.func
+};
 
 
-  export
-  default
+export
+default
 
-  connect(mapStateToProps, mapDispatchToProps)
+connect(mapStateToProps, mapDispatchToProps)
 
 (
   TeamSuggestionForm
 )
-  ;
+;

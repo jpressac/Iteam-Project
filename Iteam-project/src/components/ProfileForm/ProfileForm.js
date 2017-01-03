@@ -1,17 +1,19 @@
-import React, {Component, PropTypes} from 'react'
-import {submitUser} from '../../redux/profileForm/actions.js'
-import classes from './ProfileForm.scss'
-import {PATHS} from './../../constants/routes'
-import axios from 'axios'
-import user from './user.png'
-import {connect} from 'react-redux'
-import Dropdown from 'react-toolbox/lib/dropdown';
-import Input from 'react-toolbox/lib/input';
-import themeLabel from './label.scss'
-import {Button, IconButton} from 'react-toolbox/lib/'
-import Tooltip from 'react-toolbox/lib/tooltip';
-import {push} from 'react-router-redux'
-import {UTILITIES} from '../../constants/HostConfiguration'
+import React, {Component, PropTypes} from "react";
+import {submitUser} from "../../redux/profileForm/actions.js";
+import classes from "./ProfileForm.scss";
+import {PATHS} from "./../../constants/routes";
+import axios from "axios";
+import user from "./user.png";
+import {connect} from "react-redux";
+import Dropdown from "react-toolbox/lib/dropdown";
+import Input from "react-toolbox/lib/input";
+import themeLabel from "./label.scss";
+import {Button, IconButton} from "react-toolbox/lib/";
+import Tooltip from "react-toolbox/lib/tooltip";
+import {push} from "react-router-redux";
+import {UTILITIES} from "../../constants/HostConfiguration";
+import Spinner from "../Spinner/Spinner";
+
 
 
 const mapStateToProps = (state) => {
@@ -45,10 +47,11 @@ class ProfileForm extends React.Component {
       username: '',
       oldPassword: '',
       password: '',
-      repeatPassword: ''
+      repeatPassword: '',
+      showSpinner: true
     }
   }
-  
+
   saveUser() {
     // validate change password, and we need to re-render
     submitUser(this.state);
@@ -89,7 +92,7 @@ class ProfileForm extends React.Component {
 
     this.initialComboProfession(opt);
 
-    this.setState({professionValue: opt});
+    this.setState({professionValue: opt, showSpinner: false});
   }
 
   handleChangeHobbies = (hobbies, value) => {
@@ -118,130 +121,135 @@ class ProfileForm extends React.Component {
 
 
   render() {
-    return (
-      <div className={"container"} style={{marginTop: 80, width: 800}}>
-        <div className={classes.label2}>
-          <label>MY PROFILE</label>
-        </div>
+    if (!this.state.showSpinner) {
+      return (
+        <div className={"container"} style={{marginTop: 80, width: 800}}>
+          <div className={classes.label2}>
+            <label>MY PROFILE</label>
+          </div>
 
-        <div className={classes.form}>
-          <div className={"form-horizontal"}>
-            <div className="form-group">
-              <div className="col-md-12">
-                <div className="row">
-                  <img src={user} style={{width: 100}}/>
-                  <span className={classes.labelInfo}><label>Welcome {this.props.user.username}!</label></span >
+          <div className={classes.form}>
+            <div className={"form-horizontal"}>
+              <div className="form-group">
+                <div className="col-md-12">
+                  <div className="row">
+                    <img src={user} style={{width: 100}}/>
+                    <span className={classes.labelInfo}><label>Welcome {this.props.user.username}!</label></span >
 
-                </div>
-              </div>
-            </div>
-            <div className="form-group">
-              <div className="col-md-12">
-                <div className={classes.labelInfo}>
-                  <label style={{margin: 15}}>Personal information</label>
-                </div>
-                <div className="row">
-                  <div className="col-md-6">
-                    <Input type='text' label='First Name' theme={themeLabel} name='firstName'
-                           value={this.props.user.name} disabled/>
-                  </div>
-                  <div className="col-md-6">
-                    <Input type='text' label='Last Name' disabled theme={themeLabel} name='lastName'
-                           value={this.props.user.lastName}/>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="form-group">
-              <div className="col-md-12">
-                <div className="row">
-                  <div className="col-md-6">
-                    <Input type='text' label="Born Date" name='bornDate' disabled value={this.state.bornDate.toLocaleDateString()} theme={themeLabel} />
+              <div className="form-group">
+                <div className="col-md-12">
+                  <div className={classes.labelInfo}>
+                    <label style={{margin: 15}}>Personal information</label>
                   </div>
                   <div className="row">
                     <div className="col-md-6">
-                      <Input type='text' label='Nationality' disabled theme={themeLabel} name='nationality'
-                             value={this.props.user.nationality}/>
+                      <Input type='text' label='First Name' theme={themeLabel} name='firstName'
+                             value={this.props.user.name} disabled/>
+                    </div>
+                    <div className="col-md-6">
+                      <Input type='text' label='Last Name' disabled theme={themeLabel} name='lastName'
+                             value={this.props.user.lastName}/>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div className="form-group">
-              <div className="col-md-12">
-                <div className="row">
-                  <div className="col-md-6">
-                    {this.dropdownProfession()}
-                  </div>
-                  <div className="col-md-6 ">
-                    <TooltipInput type='text' label='Hobbies' theme={themeLabel} name='hobbies'
-                                  value={this.props.user.hobbies}
-                                  required onChange={this.handleChangeHobbies.bind(this, 'hobbies')} maxLength={200}
-                                  tooltip='Write hobbies separate by commas'/>
+              <div className="form-group">
+                <div className="col-md-12">
+                  <div className="row">
+                    <div className="col-md-6">
+                      <Input type='text' label="Born Date" name='bornDate' disabled
+                             value={this.state.bornDate.toLocaleDateString()} theme={themeLabel}/>
+                    </div>
+                    <div className="row">
+                      <div className="col-md-6">
+                        <Input type='text' label='Nationality' disabled theme={themeLabel} name='nationality'
+                               value={this.props.user.nationality}/>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+              <div className="form-group">
+                <div className="col-md-12">
+                  <div className="row">
+                    <div className="col-md-6">
+                      {this.dropdownProfession()}
+                    </div>
+                    <div className="col-md-6 ">
+                      <TooltipInput type='text' label='Hobbies' theme={themeLabel} name='hobbies'
+                                    value={this.props.user.hobbies}
+                                    required onChange={this.handleChangeHobbies.bind(this, 'hobbies')} maxLength={200}
+                                    tooltip='Write hobbies separate by commas'/>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-            <div className="form-group">
-              <div className={classes.labelInfo}>
-                <label>Account information</label>
-              </div>
-              <div className="col-md-8">
-                <div className="row">
-                  <Input type='email' label='Email address' icon='email' theme={themeLabel}
-                         value={this.props.user.mail} disabled/>
+              <div className="form-group">
+                <div className={classes.labelInfo}>
+                  <label>Account information</label>
                 </div>
-              </div>
-            </div>
-            <div className="form-group">
-              <div className="row">
-                <div className="col-md-6">
-                  <Input type='password' label='Old Password' required theme={themeLabel}
-                         value={this.state.oldPassword}
-                         onChange={this.handleChangeOldPassword.bind(this, 'oldPassword')}/>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-md-6">
-                  <Input type='password' label='New Password' required theme={themeLabel}
-                         value={this.state.password} onChange={this.handleChangePassword.bind(this, 'password')}
-                         error={this.validatePassword()}/>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-md-6">
-                  <Input type='password' label='Repeat Password' required theme={themeLabel}
-                         value={this.state.repeatPassword}
-                         onChange={this.handleChangeRepeatPassword.bind(this, 'repeatPassword')}
-                         error={this.validatePassword()}/>
-                </div>
-              </div>
-            </div>
-            <div className="form-group">
-              <div className="col-md-12">
-                <div className="row">
-                  <div className="col-md-6">
-                    <Button style={{color: 'white', background: '#900C3F'}} raised
-                            onClick={this.saveUser.bind(this)} icon='save'>
-                      SAVE CHANGE
-                    </Button>
+                <div className="col-md-8">
+                  <div className="row">
+                    <Input type='email' label='Email address' icon='email' theme={themeLabel}
+                           value={this.props.user.mail} disabled/>
                   </div>
+                </div>
+              </div>
+              <div className="form-group">
+                <div className="row">
                   <div className="col-md-6">
-                    <Button style={{color: 'white', background: '#900C3F'}} raised
-                            onClick={this.props.home} icon='backspace'>
-                      BACK
-                    </Button>
+                    <Input type='password' label='Old Password' required theme={themeLabel}
+                           value={this.state.oldPassword}
+                           onChange={this.handleChangeOldPassword.bind(this, 'oldPassword')}/>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-md-6">
+                    <Input type='password' label='New Password' required theme={themeLabel}
+                           value={this.state.password} onChange={this.handleChangePassword.bind(this, 'password')}
+                           error={this.validatePassword()}/>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-md-6">
+                    <Input type='password' label='Repeat Password' required theme={themeLabel}
+                           value={this.state.repeatPassword}
+                           onChange={this.handleChangeRepeatPassword.bind(this, 'repeatPassword')}
+                           error={this.validatePassword()}/>
+                  </div>
+                </div>
+              </div>
+              <div className="form-group">
+                <div className="col-md-12">
+                  <div className="row">
+                    <div className="col-md-6">
+                      <Button style={{color: 'white', background: '#900C3F'}} raised
+                              onClick={this.saveUser.bind(this)} icon='save'>
+                        SAVE CHANGE
+                      </Button>
+                    </div>
+                    <div className="col-md-6">
+                      <Button style={{color: 'white', background: '#900C3F'}} raised
+                              onClick={this.props.home} icon='backspace'>
+                        BACK
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-
-
-    );
+      )
+    } else {
+      return (
+        <Spinner/>
+      )
+    }
   };
 }
 ProfileForm.propTypes = {
