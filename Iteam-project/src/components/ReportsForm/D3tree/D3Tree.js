@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from 'react';
 import * as d3 from 'd3'
 import ReactDom from 'react-dom'
+import {Button, IconButton} from 'react-toolbox/lib/button';
 
 import classes from './D3Tree.scss'
 
@@ -18,22 +19,17 @@ class D3Tree extends React.Component {
 
   componentWillReceiveProps(nextProps) {
 
-    if(nextProps.treeData != this.props.treeData){
-      this.renderTree(nextProps.treeData, ReactDom.findDOMNode(this));
+    if (nextProps.treeData != this.props.treeData) {
+      //this.renderTreeCollapse(nextProps.treeData, ReactDom.findDOMNode(this));
+      this.renderTreeExpand(nextProps.treeData, ReactDom.findDOMNode(this));
     }
   };
 
-  render() {
-    // Render a blank svg node
-    return (
-      <svg/>
-    );
-  };
 
-  renderTree(treeData, svgNode) {
-    let margin = {top: 20, right: 90, bottom: 30, left: 90},
-      width = 1280 - margin.left - margin.right, //TODO: this is hardcoded so it antoher screen it will not work
-      height = 700 - margin.top - margin.bottom;
+  renderTreeExpand(treeData, svgNode) {
+    let margin = {top: 20, right: 90, bottom: 10, left: 120},
+      width = window.innerWidth -margin.right, //TODO: this is hardcoded so it antoher screen it will not work
+      height = window.innerHeight ;//- margin.top - margin.bottom;
 
     i = 0;
     duration = 750;
@@ -42,7 +38,7 @@ class D3Tree extends React.Component {
     treemap = d3.tree()
       .size([height, width]);
 
-  // remove the last SVG Node, just to create a new one
+    // remove the last SVG Node, just to create a new one
     d3.select(svgNode)
       .selectAll("*")
       .remove();
@@ -52,31 +48,49 @@ class D3Tree extends React.Component {
 // moves the 'group' element to the top left margin
 
     svg = d3.select(svgNode)
-      .attr("width", width + margin.right + margin.left)
-      .attr("height", height + margin.top + margin.bottom)
+      .attr("width", width )
+      .attr("height", height)
+      .attr("align","center")
       .append("g")
       .attr("transform", "translate("
-        + margin.left + "," + margin.top + ")");
+        + margin.left + "," + margin.top+ ")");
 
-    root = d3.hierarchy(treeData, function (d) {
+    // var svg = d3.select(classes.container)
+    //   .append("g")
+    //   .attr("preserveAspectRatio", "xMinYMin meet")
+    //   .attr("viewBox", "0 0 300 300")
+    //   .classed(classes.content, true);
+
+    root = d3.hierarchy(treeData, function (d) { console.log(d);
       return d.children;
     });
-    root.x0 = height / 2;
+    root.x0 = height/2;
     root.y0 = 0;
 
 // Collapse after the second level
-    root.children.forEach(collapse);
+    root.children.forEach(expandAll);
 
     update(root);
 
 // Collapse the node and all it's children
-    function collapse(d) {
-      if (d.children) {
-        d._children = d.children;
-        d._children.forEach(collapse);
-        d.children = null
+
+    function expand(d) {
+      var children = (d.children) ? d.children : d._children;
+      if (d._children) {
+        d.children = d._children;
+        d._children = null;
       }
+      if (children)
+        children.forEach(expand);
     }
+
+    function expandAll() {
+      expand(root);
+      update(root);
+    }
+
+
+
 
     function update(source) {
 
@@ -124,15 +138,17 @@ class D3Tree extends React.Component {
           if (d.depth === 3) {
             color = "#eee"
           }
-          console.log(color);
+
           return d._children ? "lightsteelblue" : color;
         });
 
       // Add labels for the nodes
       nodeEnter.append('text')
-        .attr("dy", ".35em")
+        .attr("dy", function (d) {
+          return d.children || d._children ? -7 : ".35em";
+        })
         .attr("x", function (d) {
-          return d.children || d._children ? -13 : 13;
+          return d.children || d._children ? 13 : 13;
         })
         .attr("text-anchor", function (d) {
           return d.children || d._children ? "end" : "start";
@@ -153,7 +169,7 @@ class D3Tree extends React.Component {
 
       // Update the node attributes and style
       nodeUpdate.select('circle.' + classes.node)
-        .attr('r', 10)
+        .attr('r', 5)
         .style("fill", function (d) {
           let color;
           if (d.depth === 1) {
@@ -251,9 +267,27 @@ class D3Tree extends React.Component {
         update(d);
 
       }
+
     }
   };
+
+  render() {
+
+    // Render a blank svg node
+    return (
+
+
+      <svg>
+
+      </svg>
+
+
+
+
+    );
+  };
 }
+
 
 D3Tree.propTypes = {
   treeData: PropTypes.any

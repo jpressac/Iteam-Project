@@ -15,8 +15,8 @@ import {MEETING} from '../../constants/HostConfiguration'
 import D3Tree from './D3tree/D3Tree'
 import D3ChartTree from './D3ChartTree/D3ChartTree'
 
-const report = new jsPDF()
-
+const report = new jsPDF();
+var d3expand = new D3Tree();
 var specialElementHandlers = {
   '#editor': function (element, renderer) {
     return true;
@@ -107,6 +107,8 @@ class ReportForm extends Component {
     if (this.state.ranking) {
       return (
         <D3ChartTree treeData={this.state.treeData}/>
+
+
       )
     } else {
       return (
@@ -121,6 +123,7 @@ class ReportForm extends Component {
       <div style={{marginTop: 70}}>
         <BootstrapModal ref="mymodal" message={this.state.message}/>
         <Button label='Reports bar' theme={buttonBasic} style={{color: 'white'}} onClick={this.handleToggle}/>
+        
         <Drawer active={this.state.active}
                 type="left"
                 onOverlayClick={this.handleToggle}>

@@ -3,7 +3,7 @@
 }
 
 .node text {
-  font: 10px sans-serif;
+  font: 12px sans-serif;
 }
 
 .node--internal circle {
@@ -18,5 +18,20 @@
   fill: none;
   stroke: #555;
   stroke-opacity: 0.4;
-  stroke-width: 1.5px;
+  stroke-width: 1px;
+}
+
+.container {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+  padding-bottom: 100%;
+  vertical-align: top;
+  overflow: hidden;
+}
+.content {
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
