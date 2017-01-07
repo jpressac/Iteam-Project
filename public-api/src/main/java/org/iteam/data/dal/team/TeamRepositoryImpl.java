@@ -51,7 +51,7 @@ public class TeamRepositoryImpl implements TeamRepository {
         IndexResponse response = elasticsearchClient.insertData(data, StringUtilities.INDEX_TEAM,
                 StringUtilities.INDEX_TYPE_TEAM, UUID.randomUUID().toString());
 
-        if(response.isCreated()) {
+        if (response.isCreated()) {
             LOGGER.info("Team successfully created");
             return true;
         }
@@ -71,12 +71,12 @@ public class TeamRepositoryImpl implements TeamRepository {
 
         DeleteResponse deleteResponse = null;
 
-        if(searchResponse.getHits().getTotalHits() == 1) {
+        if (searchResponse.getHits().getTotalHits() == 1) {
             deleteResponse = elasticsearchClient.delete(StringUtilities.INDEX_TEAM, StringUtilities.INDEX_TYPE_TEAM,
                     searchResponse.getHits().getAt(0).getId());
         }
 
-        if(deleteResponse != null && deleteResponse.isFound()) {
+        if (deleteResponse != null && deleteResponse.isFound()) {
             LOGGER.info("Team was successfully deleted");
             return true;
         }
@@ -92,8 +92,8 @@ public class TeamRepositoryImpl implements TeamRepository {
 
         SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_USER,
                 applyFiltersToQuery(filterList));
-        if(response != null) {
-            for(SearchHit hit : response.getHits()) {
+        if (response != null) {
+            for (SearchHit hit : response.getHits()) {
                 UserDTO user = (UserDTO) JSONUtils.JSONToObject(hit.getSourceAsString(), UserDTO.class);
                 userList.add(user);
             }
@@ -111,8 +111,8 @@ public class TeamRepositoryImpl implements TeamRepository {
 
         List<TeamModel> teamList = new ArrayList<>();
 
-        if(response != null) {
-            for(SearchHit hit : response.getHits()) {
+        if (response != null) {
+            for (SearchHit hit : response.getHits()) {
                 teamList.add(
                         new TeamModel(hit.getId(), (Team) JSONUtils.JSONToObject(hit.getSourceAsString(), Team.class)));
             }
@@ -123,7 +123,7 @@ public class TeamRepositoryImpl implements TeamRepository {
     private QueryBuilder applyFiltersToQuery(FilterList filterList) {
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
 
-        for(Filter filter : filterList.getFilters()) {
+        for (Filter filter : filterList.getFilters()) {
             queryBuilder.should(QueryBuilders.termsQuery(filter.getField(), filter.getValues()));
         }
 
@@ -141,8 +141,8 @@ public class TeamRepositoryImpl implements TeamRepository {
 
         List<String> teamList = new ArrayList<>();
 
-        if(response != null) {
-            for(SearchHit hit : response.getHits()) {
+        if (response != null) {
+            for (SearchHit hit : response.getHits()) {
                 LOGGER.debug("User '{}' teams: '{}'", username, hit.getSourceAsString());
                 teamList.add(hit.getId());
                 LOGGER.debug("teams: " + hit.getId());
@@ -161,7 +161,7 @@ public class TeamRepositoryImpl implements TeamRepository {
 
         TeamUserModel teamUserModel = new TeamUserModel();
 
-        if(meetingResponse.isExists()) {
+        if (meetingResponse.isExists()) {
             Meeting meeting = (Meeting) JSONUtils.JSONToObject(meetingResponse.getSourceAsString(), Meeting.class);
 
             LOGGER.debug("Meeting retrieved '{}'", meeting.toString());
@@ -169,7 +169,7 @@ public class TeamRepositoryImpl implements TeamRepository {
             GetResponse teamResponse = elasticsearchClient.getDocument(StringUtilities.INDEX_TEAM,
                     StringUtilities.INDEX_TYPE_TEAM, meeting.getTeamName());
 
-            if(teamResponse.isExists()) {
+            if (teamResponse.isExists()) {
 
                 LOGGER.debug("Team retrieved '{}'", teamResponse.toString());
 
@@ -188,9 +188,9 @@ public class TeamRepositoryImpl implements TeamRepository {
 
                 List<UserDTO> usersList = new ArrayList<>();
 
-                if(response.getHits().getTotalHits() > 0) {
+                if (response.getHits().getTotalHits() > 0) {
 
-                    for(SearchHit hit : response.getHits()) {
+                    for (SearchHit hit : response.getHits()) {
 
                         UserDTO user = (UserDTO) JSONUtils.JSONToObject(hit.getSourceAsString(), UserDTO.class);
 
@@ -203,6 +203,19 @@ public class TeamRepositoryImpl implements TeamRepository {
         }
 
         return teamUserModel;
+    }
+
+    @Override
+    public boolean checkTeamNameExistent(String teamName, String teamOwner) {
+
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+
+        queryBuilder.must(QueryBuilders.termQuery(OWNER_NAME_FIELD, teamOwner));
+        queryBuilder.must(QueryBuilders.termQuery(TEAM_NAME_FIELD, teamName));
+
+        SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_TEAM, queryBuilder);
+
+        return response.getHits().getTotalHits() > 0;
     }
 
     @Autowired

@@ -7,14 +7,13 @@ import Dropdown from "react-toolbox/lib/dropdown";
 import {Button} from "react-toolbox/lib/button";
 import {push} from "react-router-redux";
 import {PATHS} from "../../constants/routes";
-import classes from "./TeamSuggestionForm.scss";
+import classes from "./TeamForm.scss";
 import themeLabel from "./label.scss";
 import chipTheme from "./chips.scss";
 import Tooltip from "react-toolbox/lib/tooltip";
 import {TEAM, UTILITIES} from "../../constants/HostConfiguration";
 import Chip from "react-toolbox/lib/chip";
 import Spinner from "../Spinner/Spinner";
-
 
 const mapStateToProps = (state) => {
   if (state.loginUser !== null) {
@@ -30,19 +29,17 @@ const mapDispatchToProps = dispatch => ({
   meeting: () => {
     dispatch(push('/' + PATHS.MENULOGGEDIN.MEETING))
   },
-
   normal: () => {
     dispatch(push('/' + PATHS.MENULOGGEDIN.HOME))
   }
 });
 
-const filtro = [
+const filter = [
   {value: 1, label: 'Profession'},
   {value: 2, label: 'Nationality'}
   // {value: 3, label: 'Age'},
   // {value: 4, label: 'Job position'},
   // {value: 5, label: 'Hobbies'}
-
 ];
 
 const TooltipButton = Tooltip(Button);
@@ -60,7 +57,8 @@ class TeamSuggestionForm extends React.Component {
       message: '',
       filterName: '',
       filteredName: '',
-      showSpinner: false
+      showSpinner: false,
+      showErrorTeamName: false
     }
   }
 
@@ -86,16 +84,18 @@ class TeamSuggestionForm extends React.Component {
       axios.get(TEAM.TEAM_SELECT,
         {
           params: {filter: JSON.stringify(this.state.filters)}
-        }).then(function (response) {
-        this.fillUsersTable(response.data);
-      }.bind(this)).catch(function (response) {
-        //TODO: handle errors
-      });
+        })
+        .then(function (response) {
+          this.fillUsersTable(response.data);
+        }.bind(this))
+        .catch(function (response) {
+          //TODO: handle errors
+        });
     }
   }
 
   createMeeting() {
-    this.setState({showSpinner: true});
+
     let usersMap = this.state.usernames;
     let selected = [];
     for (let user in usersMap) {
@@ -105,24 +105,28 @@ class TeamSuggestionForm extends React.Component {
     }
     selected.push(this.props.user);
 
-    if ((selected.length > 0) && (this.state.teamName !== '')) {
+    if ((selected.length > 0) && (this.state.teamName !== '') && !this.state.showErrorTeamName) {
+      
+      this.setState({showSpinner: true});
+
       axios.post(TEAM.TEAM_CREATE, {
         ownerName: this.props.user,
         name: this.state.teamName,
         members: selected
       }).then(function (response) {
         //TODO: implement a modal with a button that receives a call-function and perform any of the below actions.
-        this.checkWehereItCames()
-      }.bind(this)).catch(function (response) {
-        //TODO: handle errors
-      })
+        this.checkWhereItCames()
+      }.bind(this))
+        .catch(function (response) {
+          //TODO: handle errors
+        })
     } else {
-      this.setState({message: '¡please complete the required fields!'});
+      this.setState({message: '¡Please complete the required fields!'});
       this.refs.mymodal.openModal();
     }
   }
 
-  checkWehereItCames() {
+  checkWhereItCames() {
     if (this.props.fromMeeting === true) {
       this.props.meeting();
     } else {
@@ -144,7 +148,7 @@ class TeamSuggestionForm extends React.Component {
   fillUsersTable(data) {
     let us = [];
     let names = {};
-    data.map(function (user, index) {
+    data.map(function (user) {
       if (user.username !== this.props.user) {
         us.push(
           <tr key={us.length}>
@@ -158,15 +162,13 @@ class TeamSuggestionForm extends React.Component {
       }
     }.bind(this));
 
-    this.setState({users: us});
-    this.setState({usernames: names});
+    this.setState({users: us, usernames: names});
   }
 
   fillFilterValues(value) {
 
-    let filtered = filtro.filter(teamFilter => teamFilter["value"] === value);
+    let filtered = filter.filter(teamFilter => teamFilter["value"] === value);
 
-    let url = '';
     let filterLabelName = filtered[0]["label"];
 
     switch (filterLabelName) {
@@ -221,8 +223,6 @@ class TeamSuggestionForm extends React.Component {
   setFilteredValue(value) {
 
     let filteredLabelObject = this.state.values.filter(filter => filter["value"] == value);
-    let json = JSON.stringify(filteredLabelObject);
-    console.log('json ' + json);
     this.setState({filteredValue: value, filteredName: filteredLabelObject[0]["label"]})
   }
 
@@ -232,7 +232,7 @@ class TeamSuggestionForm extends React.Component {
 
   dropdownObjectForFilter() {
     return (
-      <Dropdown label="Select filter" theme={themeLabel} onChange={this.fillFilterValues.bind(this)} source={filtro}
+      <Dropdown label="Select filter" theme={themeLabel} onChange={this.fillFilterValues.bind(this)} source={filter}
                 value={this.state.value}/>
     );
   };
@@ -245,7 +245,6 @@ class TeamSuggestionForm extends React.Component {
     );
   };
 
-
   filterLabels() {
     return this.state.filters.map(function (filter, index) {
       return (
@@ -254,6 +253,36 @@ class TeamSuggestionForm extends React.Component {
         </Chip>
       );
     }.bind(this));
+  }
+
+  checkName() {
+    axios.get(TEAM.TEAM_NAME_EXISTENT, {
+      params: {
+        teamName: this.state.teamName,
+        teamOwner: this.props.user
+      }
+    }).then(function () {
+      this.setState({showErrorTeamName: false})
+    }.bind(this))
+      .catch(function () {
+        this.setState({showErrorTeamName: true})
+      }.bind(this));
+  }
+
+  renderTeamNameInput() {
+    if (!this.state.showErrorTeamName) {
+      return (
+        <Input type='text' label='Name' name='teamName' theme={themeLabel}
+               value={this.state.teamName} onChange={this.handleChange.bind(this, 'teamName')}
+               maxLength={16} onBlur={this.checkName.bind(this)}/>
+      )
+    } else {
+      return (
+        <Input type='text' label='Name' name='teamName' theme={themeLabel}
+               value={this.state.teamName} onChange={this.handleChange.bind(this, 'teamName')}
+               maxLength={16} onBlur={this.checkName.bind(this)} error='This team name already exists'/>
+      )
+    }
   }
 
   render() {
@@ -268,9 +297,7 @@ class TeamSuggestionForm extends React.Component {
               <div className="form-group">
                 <div className="col-md-8">
                   <div className="row">
-                    <Input type='text' label='Name' name='teamName' theme={themeLabel}
-                           value={this.state.teamName} onChange={this.handleChange.bind(this, 'teamName')}
-                           maxLength={16}/>
+                    {this.renderTeamNameInput()}
                   </div>
                 </div>
               </div>
@@ -345,21 +372,11 @@ class TeamSuggestionForm extends React.Component {
   }
 }
 
-TeamSuggestionForm
-  .propTypes = {
+TeamSuggestionForm.propTypes = {
   user: PropTypes.any,
   fromMeeting: PropTypes.bool,
   meeting: PropTypes.func,
   normal: PropTypes.func
 };
 
-
-export
-default
-
-connect(mapStateToProps, mapDispatchToProps)
-
-(
-  TeamSuggestionForm
-)
-;
+export default connect(mapStateToProps, mapDispatchToProps)(TeamSuggestionForm);
