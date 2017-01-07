@@ -2,8 +2,8 @@
  * Created by Usuario on 02/01/2017.
  */
 
-import React, {Component, PropTypes} from "react";
-
+import React, {Component, PropTypes} from 'react';
+import classes from './ChatStyle.scss';
 
 class ChatMessageForm extends Component {
 
@@ -28,10 +28,9 @@ class ChatMessageForm extends Component {
 
   render() {
     return (
-      <div className='message_form'>
-        <h3>Write New Message</h3>
+      <div>
         <form onSubmit={this.handleSubmit.bind(this)}>
-          <input
+          <input className={classes.input} maxLength="140"
             onChange={this.changeHandler.bind(this)}
             value={this.state.text}
           />

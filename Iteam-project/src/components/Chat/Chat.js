@@ -2,11 +2,12 @@
  * Created by Usuario on 02/01/2017.
  */
 
-import React, {Component, PropTypes} from "react";
+import React, {Component, PropTypes} from 'react';
 import {connect} from "react-redux";
 import MessageForm from './ChatMessageForm'
 import MessageList from './ChatMessageList'
 import {joinChat, connectChat, initWebSocketChat, sendMessageToChat} from '../../websocket/websocket';
+import classes from './ChatStyle.scss';
 
 
 const mapStateToProps = (state) => {
@@ -64,7 +65,8 @@ class Chat extends Component {
 
   render() {
     return (
-      <div>
+      <div className={classes.chatContainer}>
+        <div className={classes.msgWgtHeader}>CHAT</div>
         <MessageList
           messages={this.state.messages}
         />

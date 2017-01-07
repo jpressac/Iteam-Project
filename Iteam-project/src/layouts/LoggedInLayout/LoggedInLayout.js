@@ -3,7 +3,7 @@ import HeaderLog from '../../components/Header/HeaderLog'
 
 
 export const LoggedInLayout = ({ children }) => (
-  <div className="text-center">
+  <div>
     <HeaderLog />
     <div>
       {children}

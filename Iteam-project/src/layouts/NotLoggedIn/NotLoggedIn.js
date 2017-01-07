@@ -3,7 +3,7 @@ import HeaderNotLog from '../../components/Header/HeaderNotLog'
 
 export const NotLoggedIn = ({ children }) => (
 
-  <div className="text-center">
+  <div>
     <HeaderNotLog />
     <div>
       {children}

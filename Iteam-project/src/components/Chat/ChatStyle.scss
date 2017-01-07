@@ -1,19 +1,21 @@
-.chat-container {
+.chatContainer {
   bottom: 0px;
-  width: 250px;
+  width: 25%;
   position: fixed;
   z-index: 300;
-  right: 50px;
+  right: 1%;
   border-top-right-radius: 3px;
   border-top-left-radius: 3px;
-  font-family: 'tahoma';
+  font-family: monospace;
   font-size: 12px;
   border: 1px solid lightgray;
+  height: 300px;
+  overflow-y: auto;
 }
 
 /* message box header styles*/
 
-.msg-wgt-header {
+.msgWgtHeader {
   background-color: #6D84B4;
   border: 1px solid rgba(67, 106, 187, 0.76);
   border-top-right-radius: 3px;
@@ -23,7 +25,7 @@
   height: 28px;
 }
 
-.msg-wgt-header a {
+.msgWgtHeader a {
   text-decoration: none;
   font-weight: bold;
   color: white;
@@ -32,11 +34,12 @@
 
 /* message box body styles*/
 
-.msg-row-container {
+.msgRowContainer {
   border-bottom: 1px solid lightgray;
+  height: 50px;
 }
 
-.msg-row {
+.msgRow {
   width: 100%;
   display: inline-block;
 }
@@ -58,24 +61,32 @@
   padding: 5px;
 }
 
-.user-label {
+.userLabel {
   font-size: 11px;
 }
 
-.chat-username {
-  color: '#6D84B4';
+.chatUsername {
+  color: rgba(243, 20, 111, 0.76);
+  font-size: large;
 }
 
-.msg-time {
-  font-size: 10px;
+.msgTime {
+  font-size: medium;
   float: right;
-  color: gray;
+  color: black;
 }
 
 .avatar {
   width: 30px;
   height: 30px;
   float: left;
-  background: url('/chat/public/assets/chat_avatar.png');
   border: 1px solid lightgray;
+}
+
+.input {
+  width: 100%;
+  bottom: 0px;
+  position: fixed;
+  resize: inherit;
+  overflow: initial;
 }
