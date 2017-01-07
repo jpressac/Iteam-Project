@@ -130,7 +130,7 @@ class Note extends Component {
                   theme={cardTitlescss}
                   title={this.props.title}
                 />
-                <Input theme={imputSize} type='text' label='Comments' value={this.state.comments}
+                <Input theme={inputSize} type='text' label='Comments' value={this.state.comments}
                        onChange={this.handleChange.bind(this, 'comments')} maxLength={60} multiline={'True'}/>
                 <CardActions theme={cardActionsscss}>
                   <IconButton icon="save" onClick={this.saveComment.bind(this)}/>

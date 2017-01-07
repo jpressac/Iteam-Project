@@ -216,10 +216,19 @@ class PersonalBoard extends Component {
     let map = {};
     map = this.state.notes;
     sendMessage("insertSharedBoard", this.props.meetingId, JSON.stringify(map));
+    this.deleteAll();
     //Clean the personal board
     this.setState({notes:{}});
 
   }
+  deleteAll(){
+    sendMessage("insertCache", this.props.meetingId, JSON.stringify(
+      {
+        "username": this.props.user,
+        "info": {}
+      }));
+  }
+
   updateNotesCacheByUser(map) {
     //Here we need to send the message to the backend through the web-socket
     sendMessage("insertCache", this.props.meetingId, JSON.stringify(

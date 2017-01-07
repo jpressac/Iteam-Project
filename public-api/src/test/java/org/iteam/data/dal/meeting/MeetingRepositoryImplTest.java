@@ -283,7 +283,7 @@ public class MeetingRepositoryImplTest {
     }
 
     private void whenSaveIdeasIsCalled() {
-        success = underTest.saveIdeas(ideas);
+        underTest.saveIdeas(ideas);
     }
 
     @SuppressWarnings("unchecked")

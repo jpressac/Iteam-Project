@@ -22,81 +22,79 @@ import com.google.common.collect.Lists;
 
 public class MeetingControllerTest {
 
-	@InjectMocks
-	private MeetingController underTest;
+    @InjectMocks
+    private MeetingController underTest;
 
-	@Mock
-	private MeetingServiceImpl meetingServiceImpl;
+    @Mock
+    private MeetingServiceImpl meetingServiceImpl;
 
-	private Meeting meeting;
+    private Meeting meeting;
 
-	private ResponseEntity<Void> response;
+    private ResponseEntity<Void> response;
 
-	private IdeasDTO ideas;
+    private IdeasDTO ideas;
 
-	@Before
-	public void init() {
-		MockitoAnnotations.initMocks(this);
-	}
+    @Before
+    public void init() {
+        MockitoAnnotations.initMocks(this);
+    }
 
-	@Test
-	public void createMeetingSuccess() {
-		givenQueryCreateMeetingParameters();
-		givenAMeetingService(true);
-		whenCreateMeetingIsCalled();
-		thenCheckStatus(HttpStatus.OK);
-	}
+    @Test
+    public void createMeetingSuccess() {
+        givenQueryCreateMeetingParameters();
+        givenAMeetingService(true);
+        whenCreateMeetingIsCalled();
+        thenCheckStatus(HttpStatus.OK);
+    }
 
-	@Test
-	public void createMeetingFail() {
-		givenQueryCreateMeetingParameters();
-		givenAMeetingService(false);
-		whenCreateMeetingIsCalled();
-		thenCheckStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-	}
+    @Test
+    public void createMeetingFail() {
+        givenQueryCreateMeetingParameters();
+        givenAMeetingService(false);
+        whenCreateMeetingIsCalled();
+        thenCheckStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
-	@Test
-	public void saveIdeasSuccess() {
-		givenIdeas();
-		givenAMeetingService(true);
-		whenSaveIdeasIsCalled();
-		thenCheckStatus(HttpStatus.OK);
-	}
+    @Test
+    public void saveIdeasSuccess() {
+        givenIdeas();
+        givenAMeetingService(true);
+        whenSaveIdeasIsCalled();
+        thenCheckStatus(HttpStatus.OK);
+    }
 
-	@Test
-	public void saveIdeasFail() {
-		givenIdeas();
-		givenAMeetingService(false);
-		whenSaveIdeasIsCalled();
-		thenCheckStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+    @Test
+    public void saveIdeasFail() {
+        givenIdeas();
+        givenAMeetingService(false);
+        whenSaveIdeasIsCalled();
+        thenCheckStatus(HttpStatus.INTERNAL_SERVER_ERROR);
 
-	}
+    }
 
-	private void whenSaveIdeasIsCalled() {
-		response = underTest.saveIdeas(ideas);
-	}
+    private void whenSaveIdeasIsCalled() {
+        response = underTest.saveIdeas(ideas);
+    }
 
-	private void givenIdeas() {
-		ideas = new IdeasDTO(Lists.newArrayList(new Idea()), new ISO8601DateFormat().format(new Date()));
-	}
+    private void givenIdeas() {
+        ideas = new IdeasDTO(Lists.newArrayList(new Idea()), new ISO8601DateFormat().format(new Date()));
+    }
 
-	private void thenCheckStatus(HttpStatus status) {
-		Assert.assertEquals(response.getStatusCode(), status);
-	}
+    private void thenCheckStatus(HttpStatus status) {
+        Assert.assertEquals(response.getStatusCode(), status);
+    }
 
-	private void whenCreateMeetingIsCalled() {
-		response = underTest.createMeeting(meeting);
-	}
+    private void whenCreateMeetingIsCalled() {
+        response = underTest.createMeeting(meeting);
+    }
 
-	private void givenAMeetingService(boolean created) {
-		Mockito.when(meetingServiceImpl.createMeeting(Mockito.anyObject())).thenReturn(created);
-		Mockito.when(meetingServiceImpl.savedIdeas(Mockito.anyObject())).thenReturn(created);
+    private void givenAMeetingService(boolean created) {
+        Mockito.when(meetingServiceImpl.createMeeting(Mockito.anyObject())).thenReturn(created);
+        ReflectionTestUtils.setField(underTest, "meetingServiceImpl", meetingServiceImpl);
+    }
 
-		ReflectionTestUtils.setField(underTest, "meetingServiceImpl", meetingServiceImpl);
-	}
-
-	private void givenQueryCreateMeetingParameters() {
-		meeting = new Meeting();
-	}
+    private void givenQueryCreateMeetingParameters() {
+        meeting = new Meeting();
+    }
 
 }

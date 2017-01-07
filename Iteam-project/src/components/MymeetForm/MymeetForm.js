@@ -56,7 +56,7 @@ class MymeetForm extends Component {
     super(props);
     this.state = {
       time: new Date(),
-      endtime: new Date(),
+      owner: '',
       meetings: {},
       date: new Date(),
       active: false,
@@ -73,6 +73,7 @@ class MymeetForm extends Component {
 
     let meetingInfo = {};
     meetingInfo.topic = this.state.meetEdit.topic;
+    meetingInfo.owner= this.state.owner;
     meetingInfo.config = this.state.config;
 
     //Reducer containing toolbar info
@@ -85,6 +86,7 @@ class MymeetForm extends Component {
     //Object that contains meeting info for reducer for Toolbar
     let meetingInfo = {};
     meetingInfo.topic = this.state.meetEdit.topic;
+    meetingInfo.owner= this.state.owner;
     meetingInfo.config = this.state.config;
     console.log(JSON.stringify(meetingInfo));
 
@@ -102,6 +104,7 @@ class MymeetForm extends Component {
     this.setState({
       active: !this.state.active,
       datetime: meeting.programmedDate,
+      owner: meeting.ownerName,
       time: meeting.programmedDate,
       endtime: meeting.endDate,
       config: meeting.meetingConfig,

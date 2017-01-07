@@ -39,7 +39,8 @@ const mapStateToProps = (state) => {
       meetingId: state.meetingReducer.meetingId,
       connected: state.meetingUser,
       user: state.loginUser.user.username,
-      meetingConfiguration: state.meetingConfigurationReducer.meeting.config
+      meetingConfiguration: state.meetingConfigurationReducer.meeting.config,
+      meetingOwner:state.meetingConfigurationReducer.meeting.owner
     }
   }
 };
@@ -52,6 +53,7 @@ const mapDispatchToProps = (dispatch) => ({
   userDisconnected: () => dispatch(userDisconnection())
 
 });
+
 
 
 class SharedBoard extends Component {
@@ -178,33 +180,41 @@ class SharedBoard extends Component {
   saveNotes() {
     let ideas = Object.values(this.state.notes).map((value) => {
       return (
-        {
-          username: value.username,
-          title: value.title,
-          comments: value.comments,
-          ranking: value.ranking,
-          meetingId: value.meetingId,
-          tag: value.tag.toLowerCase()
-        }
+      {
+        username: value.username,
+        title: value.title,
+        comments: value.comments,
+        ranking: value.ranking,
+        meetingId: value.meetingId,
+        tag: value.tag.toLowerCase()
+      }
       );
     });
 
-    //TODO: remove axios from here
-    axios.post(MEETING.MEETING_IDEAS_SAVE, {
-      ideas
-    }).then(function (response) {
+    if (ideas.length !== 0) {
+      //TODO: remove axios from here
+      axios.post(MEETING.MEETING_IDEAS_SAVE, {
+        ideas
+      }).then(function (response) {
 
-    }.bind(this)).catch(function (response) {
+      }.bind(this)).catch(function (response) {
 
-    });
+      });
+    }
   }
 
   handleEndMeeting() {
     this.saveNotes();
-    this.props.onClick();
     this.props.userDisconnected();
+    axios.post(MEETING.MEETING_UPDATE, {ended: true}).then(
+      function (response) {
+      }
+    ).catch(
+      function (response) {
+      });
+    this.props.onClick();
   }
-
+  
   handleLeaveMeeting() {
     if (this.props.connected) {
       //Request for deleting user from connected users
@@ -302,7 +312,7 @@ class SharedBoard extends Component {
               top: SharedBoard.generateRandomNumber(),
               username: jsonPayloadMessage[key].username,
               title: jsonPayloadMessage[key].title,
-              comments: 'No comments',
+              comments: '',
               ranking: 0,
               meetingId: this.props.meetingId,
               boardType: "shared",
@@ -320,8 +330,9 @@ class SharedBoard extends Component {
             {
               id: jsonPayloadMessage.id,
               username: jsonPayloadMessage.username,
-              left: jsonPayloadMessage.left,
-              top: jsonPayloadMessage.top,
+              left: map[jsonPayloadMessage.id].left,
+              top: map[jsonPayloadMessage.id].top,
+
               title: jsonPayloadMessage.title,
               comments: jsonPayloadMessage.comments,
               ranking: jsonPayloadMessage.ranking,
@@ -389,6 +400,17 @@ class SharedBoard extends Component {
     this.setState({participants: usersStatus});
   }
 
+  renderEndMeetingButton(){
+    if(this.props.user == this.props.meetingOwner){
+      return (<MenuItem value='endmeeting' icon='touch_app' style={{color: 'white', background: '#900C3F'}}
+                       caption='End Meeting' onClick={this.handleEndMeeting.bind(this)}/>);
+    }
+    else{
+      return (<MenuItem value='leavemeeting' icon='touch_app' style={{color: 'white', background: '#900C3F'}}
+                        caption='Leave Meeting' onClick={this.handleLeaveMeeting.bind(this)}/>);
+    }
+  }
+
 
   render() {
     return this.props.connectDropTarget(
@@ -422,11 +444,7 @@ class SharedBoard extends Component {
                   onOverlayClick={this.handleToggle}>
             <Clients clients={this.state.participants} teamName={this.state.teamName}/>
             <div>
-              <MenuItem value='endmeeting' icon='exit_to_app' style={{color: 'white', background: '#900C3F'}}
-                        caption='End meeting' onClick={this.handleEndMeeting.bind(this)}/>
-              <MenuDivider/>
-              <MenuItem value='leavemeeting' icon='touch_app' style={{color: 'white', background: '#900C3F'}}
-                        caption='Leave meeting' onClick={this.handleLeaveMeeting.bind(this)}/>
+              {this.renderEndMeetingButton(this.props.user)}
             </div>
           </Drawer>
         </Layout>
@@ -444,7 +462,9 @@ SharedBoard.propTypes = {
   connect: PropTypes.bool,
   user: PropTypes.string,
   userDisconnected: PropTypes.func,
-  meetingConfiguration: PropTypes.any
+  meetingConfiguration: PropTypes.any,
+  meetingEndingDate: PropTypes.any,
+  meetingOwner: PropTypes.string
 };
 
 export default flow(

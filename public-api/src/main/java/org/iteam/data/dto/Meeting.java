@@ -15,6 +15,7 @@ public class Meeting {
     private Long creationDate;
     private Long programmedDate;
     private Long endDate;
+    private Boolean ended;
     private String ownerName;
     private String teamName;
     private String description;
@@ -95,6 +96,14 @@ public class Meeting {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    public Boolean getEnded() {
+        return ended;
+    }
+
+    public void setEnded(Boolean ended) {
+        this.ended = ended;
     }
 
 }

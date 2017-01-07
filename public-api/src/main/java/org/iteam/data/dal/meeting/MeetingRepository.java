@@ -29,7 +29,7 @@ public interface MeetingRepository {
      *            ideas which have to be saved.
      * @return true if it was successful, false otherwise.
      */
-    public boolean saveIdeas(IdeasDTO ideas);
+    public void saveIdeas(IdeasDTO ideas);
 
     /**
      * Generate the report aggregated by user

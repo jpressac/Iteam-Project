@@ -29,7 +29,7 @@ public interface MeetingService {
      *            ideas generated.
      * @return true if it was successful, false otherwise
      */
-    public boolean savedIdeas(IdeasDTO ideas);
+    public void savedIdeas(IdeasDTO ideas);
 
     /**
      * Generate report by tag and ranking for the given meeting.

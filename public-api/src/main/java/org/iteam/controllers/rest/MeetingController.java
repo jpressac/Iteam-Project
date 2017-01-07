@@ -64,11 +64,13 @@ public class MeetingController {
     @RequestMapping(value = "/meeting/ideas/save", method = RequestMethod.POST)
     public ResponseEntity<Void> saveIdeas(@RequestBody @Valid IdeasDTO ideas) {
 
-        return checkResult(meetingServiceImpl.savedIdeas(ideas));
+        meetingServiceImpl.savedIdeas(ideas);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     private ResponseEntity<Void> checkResult(boolean flag) {
-        if(flag) {
+        if (flag) {
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
