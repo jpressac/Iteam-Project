@@ -3,73 +3,62 @@
  */
 
 import React, {Component, PropTypes} from "react";
+import {connect} from "react-redux";
 import MessageForm from './ChatMessageForm'
 import MessageList from './ChatMessageList'
+import {joinChat, connectChat, initWebSocketChat, sendMessageToChat} from '../../websocket/websocket';
 
 
 const mapStateToProps = (state) => {
   if (state.loginUser !== null) {
     return {
-      user: state.loginUser.user.username
+      user: state.loginUser.user.username,
+      meetingId: state.meetingReducer.meetingId
     }
   }
 };
 
 
+class Chat extends Component {
 
-class Chat extends Component{
-
-  getInitialState() {
-    return {users: [], messages:[], text: ''};
+  constructor(props) {
+    super(props);
+    this.state = {
+      users: [],
+      messages: [],
+      text: ''
+    };
   }
+
 
   componentDidMount() {
-    socket.on('init', this._initialize);
-    socket.on('send:message', this._messageRecieve);
-    socket.on('user:join', this._userJoined);
-    socket.on('user:left', this._userLeft);
+    //Connect with socket
+    console.debug('chat component did mount');
+    initWebSocketChat();
+    connectChat();
+    joinChat(this.props.meetingId, this.messageRecieve.bind(this) )
+
   }
 
-  _initialize(data) {
-    var {users, name} = data;
-    this.setState({users, user: name});
-  }
 
-  _messageRecieve(message) {
+  messageRecieve(payload) {
+
+    let jsonPayload = JSON.parse(payload);
+    console.debug('payload: ' + payload);
+
     var {messages} = this.state;
-    messages.push(message);
+    messages.push({
+        user: jsonPayload.user,
+        text: jsonPayload.text
+      }
+    );
     this.setState({messages});
   }
 
-  _userJoined(data) {
-    var {users, messages} = this.state;
-    var {name} = data;
-    users.push(name);
-    messages.push({
-      user: this.props.user,
-      text : ' Joined'
-    });
-    this.setState({users, messages});
-  }
 
-  _userLeft(data) {
-    var {users, messages} = this.state;
-    var {name} = data;
-    var index = users.indexOf(name);
-    users.splice(index, 1);
-    messages.push({
-      user: 'APPLICATION BOT',
-      text : name +' Left'
-    });
-    this.setState({users, messages});
-  }
-
-
-  handleMessageSubmit(message) {
+  handleMessageSubmit(text) {
     var {messages} = this.state;
-    messages.push(message);
-    this.setState({messages});
-    socket.emit('send:message', message);
+    sendMessageToChat(this.props.meetingId, this.props.user, text);
   }
 
 
@@ -80,8 +69,7 @@ class Chat extends Component{
           messages={this.state.messages}
         />
         <MessageForm
-          onMessageSubmit={this.handleMessageSubmit}
-          user={this.props.user}
+          onMessageSubmit={this.handleMessageSubmit.bind(this)}
         />
       </div>
     );
@@ -90,7 +78,8 @@ class Chat extends Component{
 }
 
 Chat.propTypes = {
-  user: PropTypes.any
+  user: PropTypes.any,
+  meetingId: PropTypes.string
 };
 
 export default connect(mapStateToProps)(Chat)

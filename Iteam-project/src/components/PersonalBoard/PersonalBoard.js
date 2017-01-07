@@ -36,7 +36,8 @@ const mapDispatchToProps = (dispatch) => ({
 
   home: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HOME)),
   userConnected: () => dispatch(userConnection()),
-  sharedBoard: () => dispatch(push('/' + PATHS.MENULOGGEDIN.SHAREDBOARD))
+  sharedBoard: () => dispatch(push('/' + PATHS.MENULOGGEDIN.SHAREDBOARD)),
+  chat: ()=> dispatch(push('/' + PATHS.MENULOGGEDIN.CHAT))
 
 });
 
@@ -148,18 +149,18 @@ class PersonalBoard extends Component {
     let map = this.state.notes;
     let id = generateUUID();
     map[id] =
-      {
-        id: id,
-        left: generateRandomNumber(),
-        top: generateRandomNumber(),
-        username: this.props.user,
-        title: text,
-        comments: "No comments",
-        tag: this.state.mapTag[0].label,
-        ranking: 0,
-        meetingId: this.props.meetingId,
-        boardType: "personal"
-      };
+    {
+      id: id,
+      left: generateRandomNumber(),
+      top: generateRandomNumber(),
+      username: this.props.user,
+      title: text,
+      comments: "No comments",
+      tag: this.state.mapTag[0].label,
+      ranking: 0,
+      meetingId: this.props.meetingId,
+      boardType: "personal"
+    };
     this.updateNotesCacheByUser(map);
 
     this.setState({notes: map});
@@ -237,6 +238,9 @@ class PersonalBoard extends Component {
                       onChange={this.comboTags.bind(this)} required
                       source={this.state.mapTag} value={this.state.tagValue}/>
             <MenuDivider/>
+            <MenuItem value='CHAT' auto style={{color: '#900C3F'}}
+                      onClick={this.props.chat}> CHAT
+            </MenuItem>
           </NavDrawer>
           <Panel>
             <div name="Notes container" className={classes.noteContainer}>
@@ -258,13 +262,14 @@ PersonalBoard.propTypes = {
   user: PropTypes.any,
   meetingId: PropTypes.string,
   connected: PropTypes.bool,
-  meetingConfiguration: PropTypes.any
+  meetingConfiguration: PropTypes.any,
+  chat: PropTypes.func
 };
 
 export default flow(
   DropTarget(ItemTypes.NOTE, NoteTarget,
     connection =>
       ( {
-          connectDropTarget: connection.dropTarget()
-        }
+        connectDropTarget: connection.dropTarget()
+      }
       )), connect(mapStateToProps, mapDispatchToProps))(PersonalBoard);

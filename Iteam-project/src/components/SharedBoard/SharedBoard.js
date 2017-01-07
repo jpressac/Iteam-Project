@@ -17,6 +17,7 @@ import Drawer from "react-toolbox/lib/drawer";
 import {Layout, NavDrawer, Panel, Sidebar} from "react-toolbox";
 import Clients from "../BoardSidebar/users";
 import {userDisconnection} from "../../redux/reducers/Meeting/MeetingUserConnected";
+import {disconnectChat} from '../../websocket/websocket';
 import logo from "../Header/image/iteamLogo.jpg";
 import navTheme from "./NavDrawer.scss";
 import Dropdown from "react-toolbox/lib/dropdown";
@@ -101,7 +102,8 @@ class SharedBoard extends Component {
 
   componentWillUnmount() {
     //End socket connection
-    disconnect()
+    disconnect();
+    disconnectChat();
   }
 
   notes(noteMap, key) {

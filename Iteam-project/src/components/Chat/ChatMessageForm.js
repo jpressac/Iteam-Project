@@ -7,13 +7,16 @@ import React, {Component, PropTypes} from "react";
 
 class ChatMessageForm extends Component {
 
+  constructor(props){
+    super(props);
+    this.state={
+      text:''
+    }
+  }
+
   handleSubmit(e) {
     e.preventDefault();
-    var message = {
-      user: this.props.user,
-      text: this.props.text
-    };
-    this.props.onMessageSubmit(message);
+    this.props.onMessageSubmit(this.state.text);
     this.setState({text: ''});
   }
 
@@ -27,9 +30,9 @@ class ChatMessageForm extends Component {
     return (
       <div className='message_form'>
         <h3>Write New Message</h3>
-        <form onSubmit={this.handleSubmit}>
+        <form onSubmit={this.handleSubmit.bind(this)}>
           <input
-            onChange={this.changeHandler}
+            onChange={this.changeHandler.bind(this)}
             value={this.state.text}
           />
         </form>
@@ -39,9 +42,7 @@ class ChatMessageForm extends Component {
 }
 
 ChatMessageForm.propTypes = {
-  user: PropTypes.any,
-  text: PropTypes.string,
-  onMessageSubmit: PropTypes.func
+  text: PropTypes.string
 };
 
 export default ChatMessageForm
