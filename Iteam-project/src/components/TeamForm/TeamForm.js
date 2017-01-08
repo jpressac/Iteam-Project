@@ -106,7 +106,6 @@ class TeamSuggestionForm extends React.Component {
     selected.push(this.props.user);
 
     if ((selected.length > 0) && (this.state.teamName !== '') && !this.state.showErrorTeamName) {
-      
       this.setState({showSpinner: true});
 
       axios.post(TEAM.TEAM_CREATE, {
@@ -265,8 +264,8 @@ class TeamSuggestionForm extends React.Component {
       this.setState({showErrorTeamName: false})
     }.bind(this))
       .catch(function () {
-        this.setState({showErrorTeamName: true})
-      }.bind(this));
+      this.setState({showErrorTeamName: true})
+    }.bind(this));
   }
 
   renderTeamNameInput() {

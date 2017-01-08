@@ -9,7 +9,8 @@ export const USER = {
   POST_USER : URL + '/user',
   UPDATE_USER : URL + '/user/modify',
   DELETE_USER : URL + '/user/delete',
-  USER_EXISTS : URL + '/user/exists'
+  USER_EXISTS : URL + '/user/exists',
+  PASSWORD_VALIDATION: URL + '/validate/password'
 };
 
 export const TEAM = {

@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.ObjectUtils;
 
 @Repository
 public class UserRepositoryImpl implements UserRepsoitory {
@@ -48,7 +49,7 @@ public class UserRepositoryImpl implements UserRepsoitory {
     }
 
     @Override
-    public boolean setUser(UserDTO user) {
+    public void setUser(UserDTO user) {
 
         user.setPassword(PASSWORD_ENCODER.encode(user.getPassword()));
 
@@ -65,11 +66,9 @@ public class UserRepositoryImpl implements UserRepsoitory {
 
         if (indexResponse != null && indexResponse.isCreated()) {
             LOGGER.info("User created");
-            return true;
         }
 
         LOGGER.warn("User cannot be created - User: '{}'", user.toString());
-        return false;
     }
 
     @Override
@@ -85,13 +84,20 @@ public class UserRepositoryImpl implements UserRepsoitory {
     }
 
     @Override
-    public boolean modifyUser(String doc, String username) {
+    public void modifyUser(UserDTO user, String username) {
 
         // TODO: verify how to validate update response.
-        elasticsearchClient.modifyData(doc, StringUtilities.INDEX_USER, StringUtilities.INDEX_TYPE_USER, username);
 
-        LOGGER.info("User modified");
-        return true;
+        if (!ObjectUtils.isEmpty(user.getPassword()) && validatePassword(username, user.getPassword())) {
+            // TODO: refactor me
+            user.setPassword(PASSWORD_ENCODER.encode(user.getNewPassword()));
+            user.setNewPassword(null);
+        }
+
+        elasticsearchClient.modifyData(JSONUtils.ObjectToJSON(user), StringUtilities.INDEX_USER,
+                StringUtilities.INDEX_TYPE_USER, username);
+
+        LOGGER.info("User modified - username: '{}'", username);
     }
 
     @Override
@@ -101,6 +107,20 @@ public class UserRepositoryImpl implements UserRepsoitory {
         elasticsearchClient.logicalDelete(doc, StringUtilities.INDEX_USER, StringUtilities.INDEX_TYPE_USER, username);
         LOGGER.info("User deleted");
         return true;
+    }
+
+    @Override
+    public boolean validatePassword(String username, String password) {
+
+        GetResponse response = elasticsearchClient.getDocument(StringUtilities.INDEX_USER,
+                StringUtilities.INDEX_TYPE_USER, username);
+
+        if (response.isExists()) {
+            UserDTO user = (UserDTO) JSONUtils.JSONToObject(response.getSourceAsString(), UserDTO.class);
+            return PASSWORD_ENCODER.matches(password, user.getPassword());
+        }
+
+        return false;
     }
 
     @Autowired
