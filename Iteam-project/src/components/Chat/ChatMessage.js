@@ -8,8 +8,10 @@ import classes from './ChatStyle.scss';
 
 class ChatMessage extends Component{
 
-  static dateToString(){
-    var StringDate=new Date();
+  dateToString(){
+    console.debug("date: " + this.props.time);
+    var StringDate=new Date(this.props.time);
+    console.debug("dateToString: " + StringDate);
     return StringDate.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
   }
 
@@ -19,7 +21,7 @@ class ChatMessage extends Component{
         <div className={classes.msgRow}>
           <span className={classes.userLabel}>
             <a className={classes.chatUsername}>{this.props.user} </a>
-            <span className={classes.msgTime}>{ChatMessage.dateToString()}</span>
+            <span className={classes.msgTime}>{this.dateToString()}</span>
           </span><br/>
           <p>{this.props.text}</p><br/>
         </div>
@@ -30,7 +32,8 @@ class ChatMessage extends Component{
 
 ChatMessage.propTypes = {
   user: PropTypes.any,
-  text: PropTypes.string
+  text: PropTypes.string,
+  time:PropTypes.any
 };
 
 export default ChatMessage

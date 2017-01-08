@@ -18,6 +18,7 @@ class ChatMessageList extends Component {
                   key={i}
                   user={message.user}
                   text={message.text}
+                  time={message.time}
                 />
               );
             })

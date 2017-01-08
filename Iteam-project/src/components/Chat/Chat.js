@@ -19,6 +19,7 @@ const mapStateToProps = (state) => {
   }
 };
 
+const StringDate=new Date();
 
 class Chat extends Component {
 
@@ -37,7 +38,7 @@ class Chat extends Component {
     console.debug('chat component did mount');
     initWebSocketChat();
     connectChat();
-    joinChat(this.props.meetingId, this.messageRecieve.bind(this) )
+    joinChat(this.props.meetingId, this.messageRecieve.bind(this))
 
   }
 
@@ -50,22 +51,26 @@ class Chat extends Component {
     var {messages} = this.state;
     messages.push({
         user: jsonPayload.user,
-        text: jsonPayload.text
+        text: jsonPayload.text,
+        time:jsonPayload.time
       }
     );
     this.setState({messages});
+
+    var element = document.getElementById("chatMessages");
+    element.scrollTop = element.scrollHeight;
   }
 
 
-  handleMessageSubmit(text) {
+  handleMessageSubmit(text, time) {
     var {messages} = this.state;
-    sendMessageToChat(this.props.meetingId, this.props.user, text);
+    sendMessageToChat(this.props.meetingId, this.props.user, text, time);
   }
 
 
   render() {
     return (
-      <div className={classes.chatContainer}>
+      <div id="chatMessages" className={classes.chatContainer}>
         <div className={classes.msgWgtHeader}>CHAT</div>
         <MessageList
           messages={this.state.messages}

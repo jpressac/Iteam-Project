@@ -6,6 +6,7 @@ public class chatPayload {
 
     private String user;
     private String text;
+    private Long time;
 
     public String getUser() {
         return user;
@@ -23,8 +24,17 @@ public class chatPayload {
         this.text = text;
     }
 
+    public Long getTime() {
+        return time;
+    }
+
+    public void setTime(Long time) {
+        this.time = time;
+    }
+
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
     }
+
 }

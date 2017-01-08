@@ -4,6 +4,8 @@
 
 import React, {Component, PropTypes} from 'react';
 import classes from './ChatStyle.scss';
+import Input from 'react-toolbox/lib/input';
+
 
 class ChatMessageForm extends Component {
 
@@ -15,8 +17,9 @@ class ChatMessageForm extends Component {
   }
 
   handleSubmit(e) {
+    if(this.state.text != '')
     e.preventDefault();
-    this.props.onMessageSubmit(this.state.text);
+    this.props.onMessageSubmit(this.state.text, Date.now());
     this.setState({text: ''});
   }
 
@@ -30,10 +33,10 @@ class ChatMessageForm extends Component {
     return (
       <div>
         <form onSubmit={this.handleSubmit.bind(this)}>
-          <input className={classes.input} maxLength="140"
-            onChange={this.changeHandler.bind(this)}
-            value={this.state.text}
-          />
+          <Input type='text' multiline hint='Type your message here'
+                 className={classes.input}
+                 maxLength={140} value={this.state.text}
+                 onChange={this.changeHandler.bind(this)} />
         </form>
       </div>
     );

@@ -65,13 +65,14 @@ export function joinChat(topic, resolve) {
 }
 
 
-export function sendMessageToChat(topic, user, text) {
+export function sendMessageToChat(topic, user, text, time) {
   stompChatClient.send("/chat", {}, JSON.stringify(
     {
       "topic": topic,
       "payload": {
         "user": user,
-        "text": text
+        "text": text,
+        "time": time
       }
     })
   );
