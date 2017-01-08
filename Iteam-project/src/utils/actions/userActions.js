@@ -1,12 +1,11 @@
 import axios from 'axios'
 import {USER} from '../../constants/HostConfiguration'
 
-
 export function submitUser(data) {
 
   let hobbiesList = data.hobbies.split(',');
 
-  axios.post(USER.UPDATE_USER, {
+  return axios.post(USER.UPDATE_USER, {
     username: data.username,
     password: data.password,
     nationality: data.nationality,
@@ -14,13 +13,9 @@ export function submitUser(data) {
     mail: data.mail,
     gender: data.genderValue,
     hobbies: hobbiesList,
-    profession: data.professionName,
+    profession: data.profession,
     name: data.firstName,
     lastName: data.lastName
-  }).then(function (response) {
-    console.log(response.status);
-  }).catch(function (response) {
-    //TODO:define what to do here
   })
 }
 

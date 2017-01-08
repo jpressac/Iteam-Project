@@ -1,16 +1,17 @@
 import React, {Component, PropTypes} from "react";
-import {submitUser} from "../../redux/RegistrationForm/actions.js";
-import axios from "axios";
+import {submitUser} from "../../utils/actions/userActions";
+import {getProfessions, getNationalities} from '../../utils/actions/utilsActions';
+import InputComponent from '../IpuntComponent/InputComponent';
+import ButtonComponent from '../ButtonComponent/ButtonComponent';
+import DropdownComponent from '../DropdownComponent/DropdownComponent';
+import BootstrapModal from "../BootstrapModal";
 import user from "./user.png";
 import classes from "./RegistrationForm.scss";
 import {RadioGroup, RadioButton} from "react-toolbox/lib/radio";
 import DatePicker from "react-toolbox/lib/date_picker";
-import Dropdown from "react-toolbox/lib/dropdown";
 import Input from "react-toolbox/lib/input";
 import themeLabel from "./label.scss";
 import Tooltip from "react-toolbox/lib/tooltip";
-import {Button, IconButton} from "react-toolbox/lib/";
-import {UTILITIES} from "../../constants/HostConfiguration";
 import {PATHS} from "../../constants/routes";
 import {connect} from "react-redux";
 import {push} from "react-router-redux";
@@ -23,41 +24,40 @@ const mapDispatchToProps = (dispatch) => ({
   goToHome: () => dispatch(push('/' + PATHS.MENUNOTLOGGEDIN.HOME))
 });
 
-class RegistrationForm extends Component {
+class RegistrationForm extends React.Component {
 
   constructor(props) {
     super(props);
-
     this.state = {
       firstName: '',
       lastName: '',
       nationality: '',
-      nationalityValue: [],
+      dropDownSourceNationalities: [],
       date: new Date(),
       mail: '',
       genderValue: 'male',
-      professionName: '',
-      professionValue: [],
+      profession: '',
+      dropDownSourceProfession: [],
       hobbies: '',
       username: '',
       password: '',
       repeatPassword: '',
       errors: {},
-      showSpinner: false
+      showSpinner: true,
+      messageModal: '',
     };
-
   }
 
   componentDidMount() {
-
-    axios.get(UTILITIES.PROFESSIONS).then(function (response) {
-      this.setValuesOptionsProfessions(response.data);
-    }.bind(this));
-
-    axios.get(UTILITIES.NATIONALITIES).then(function (response) {
-      this.setValuesOptionsNationalities(response.data);
-    }.bind(this));
-
+    getProfessions()
+      .then((response) => {
+        getNationalities()
+          .then((response) => {
+            console.log(response.data["nationalities"]);
+            this.setState({showSpinner: false, dropDownSourceNationalities: response.data["nationalities"]});
+          });
+        this.setState({dropDownSourceProfession: response.data});
+      });
   }
 
   validatePassword() {
@@ -70,108 +70,34 @@ class RegistrationForm extends Component {
 
   saveUser() {
     this.setState({showSpinner: true});
-    this.forceUpdate();
-    submitUser(this.state).then(() => {
-      //This should be moved to submit user the submit method should perform the dispatch once it was save, otherwise throw error
-      this.props.goToHome()
-    }).catch(() => {
-      }
-    );
-
+    submitUser(this.state)
+      .then(() => {
+        this.props.goToHome()
+      })
+      .catch(() => {
+        this.setState({messageModal: 'New user cannot be created at this moment, try again later, thanks'});
+        this.refs.registrationModal.openModal();
+      });
   }
 
-  handleChangeFirstName = (firstName, value) => {
-    this.setState({...this.state, [firstName]: value});
+  handleChange = (key, value) => {
+    this.setState({[key]: value});
   };
-  handleChangeLastName = (lastName, value) => {
-    this.setState({...this.state, [lastName]: value});
-  };
+
   dateChange = (datetime) => {
     this.state.date.setFullYear(datetime.getFullYear());
     this.state.date.setMonth(datetime.getMonth());
     this.state.date.setDate(datetime.getDate());
-
-  };
-
-  comboProfession(value) {
-    let filteredLabelObject = this.state.professionValue.filter(filter => filter["value"] == value);
-    this.setState({Value: value, professionName: filteredLabelObject[0]["label"]})
-  }
-
-
-  setValuesOptionsProfessions(data) {
-    let opt = data.map(function (option, index) {
-      let rObj = {};
-      rObj["value"] = index;
-      rObj["label"] = option;
-      return rObj;
-    });
-    this.setState({professionValue: opt});
-  }
-
-  dropdownProfession() {
-    return (
-      <Dropdown label="Select profession" auto theme={themeLabel} style={{color: '#900C3F'}}
-                onChange={this.comboProfession.bind(this)} required
-                source={this.state.professionValue} value={this.state.Value}/>
-    );
-  };
-
-  comboNationality(value) {
-    let filteredLabelObject = this.state.nationalityValue.filter(filter => filter["value"] == value);
-    this.setState({nValue: value, nationality: filteredLabelObject[0]["label"]})
-  }
-
-  setValuesOptionsNationalities(data) {
-    let opt = data["nationalities"].map(function (option, index) {
-      let rObj = {};
-      rObj["value"] = index;
-      rObj["label"] = option;
-      return rObj;
-    });
-    this.setState({nationalityValue: opt});
-  }
-
-  dropdownNationalities() {
-    return (
-      <Dropdown label="Select Nationality" auto theme={themeLabel} style={{color: '#900C3F'}} required
-                onChange={this.comboNationality.bind(this)}
-                source={this.state.nationalityValue} value={this.state.nValue}/>
-    );
-  };
-
-  handleChangeHobbies = (hobbies, value) => {
-    this.setState({...this.state, [hobbies]: value});
-  };
-
-  handleChangeMail = (mail, value) => {
-    this.setState({...this.state, [mail]: value});
-  };
-
-  handleChangeUsername = (username, value) => {
-    this.setState({...this.state, [username]: value});
-  };
-
-  handleChangePassword = (password, value) => {
-    this.setState({...this.state, [password]: value});
-  };
-
-  handleChangeRepeatPassword = (repeatPassword, value) => {
-    this.setState({...this.state, [repeatPassword]: value});
-  };
-
-  handleChangeGender = (genderValue) => {
-    this.setState({genderValue: genderValue});
   };
 
   render() {
     if (!this.state.showSpinner) {
       return (
-        <div className={"container"} style={{marginTop: 80, width: 800}}>
+        <div className="container" style={{marginTop: 80, width: 800}}>
+          <BootstrapModal ref="registrationModal" message={this.state.messageModal}/>
           <div className={classes.label2}>
             <label>CREATE YOUR ACCOUNT</label>
           </div>
-
           <div className={classes.form}>
             <div className={"form-horizontal"}>
               <div className="form-group">
@@ -188,16 +114,13 @@ class RegistrationForm extends Component {
               <div className="form-group">
                 <div className="col-md-12">
                   <div className="row">
-                    <div className="col-md-6">
-                      <Input type='text' label='First Name' theme={themeLabel} name='firstName'
-                             value={this.state.firstName} required
-                             onChange={this.handleChangeFirstName.bind(this, 'firstName')} maxLength={150}/>
-                    </div>
-                    <div className="col-md-6">
-                      <Input type='text' label='Last Name' required theme={themeLabel} name='lastName'
-                             value={this.state.lastName}
-                             onChange={this.handleChangeLastName.bind(this, 'lastName')} maxLength={150}/>
-                    </div>
+                    <InputComponent className="col-md-6" type='text' label='First Name' name='firstName'
+                                    value={this.state.firstName}
+                                    onValueChange={this.handleChange.bind(this, 'firstName')}/>
+                    <InputComponent className="col-md-6" type='text' label='Last Name'
+                                    name='lastName'
+                                    value={this.state.lastName}
+                                    onValueChange={this.handleChange.bind(this, 'lastName')}/>
                   </div>
                 </div>
               </div>
@@ -212,7 +135,7 @@ class RegistrationForm extends Component {
                     <div className="row">
                       <div className="col-md-6">
                         <RadioGroup name='gender' value={this.state.genderValue}
-                                    onChange={this.handleChangeGender.bind(this)}>
+                                    onChange={this.handleChange.bind(this, 'genderValue')}>
                           <RadioButton label='Female' value='female' theme={themeLabel}/>
                           <RadioButton label='Male' value='male' theme={themeLabel}/>
                         </RadioGroup>
@@ -225,10 +148,12 @@ class RegistrationForm extends Component {
                 <div className="col-md-12">
                   <div className="row">
                     <div className="col-md-6">
-                      {this.dropdownProfession()}
+                      <DropdownComponent source={this.state.dropDownSourceProfession} label="Select profession"
+                                         initialValue={this.state.profession}/>
                     </div>
                     <div className="col-md-6 ">
-                      {this.dropdownNationalities()}
+                      <DropdownComponent source={this.state.dropDownSourceNationalities} label="Select nationality"
+                                         initialValue={this.state.nationality}/>
                     </div>
                   </div>
                 </div>
@@ -238,67 +163,53 @@ class RegistrationForm extends Component {
                   <div className="row">
                     <TooltipInput type='text' label='Hobbies' theme={themeLabel} name='hobbies'
                                   value={this.state.hobbies}
-                                  required onChange={this.handleChangeHobbies.bind(this, 'hobbies')} maxLength={200}
+                                  required onChange={this.handleChange.bind(this, 'hobbies')} maxLength={200}
                                   tooltip='Write hobbies separate by commas'/>
                   </div>
                 </div>
               </div>
-
               <div className="form-group">
                 <div className="row">
-                  <div className="col-md-6">
-                    <Input type='email' label='Email address' icon='email' theme={themeLabel}
-                           value={this.state.mail} required onChange={this.handleChangeMail.bind(this, 'mail')}/>
-                  </div>
-                  <div className="col-md-6">
-                    <Input label='Username' theme={themeLabel}
-                           value={this.state.username} required
-                           onChange={this.handleChangeUsername.bind(this, 'username')}/>
-                  </div>
+                  <InputComponent className="col-md-6" type='email' label='Email address' icon='email'
+                                  value={this.state.mail} onValueChange={this.handleChange.bind(this, 'mail')}/>
+                  <InputComponent className="col-md-6" label='Username'
+                                  value={this.state.username}
+                                  onValueChange={this.handleChange.bind(this, 'username')}/>
                 </div>
               </div>
               <div className="form-group">
                 <div className="col-md-12">
-                  <div className="col-md-6">
-                    <div className="row">
-                      <Input type='password' label='Password' required theme={themeLabel}
-                             value={this.state.password} onChange={this.handleChangePassword.bind(this, 'password')}
-                             error={this.validatePassword()}/>
-                    </div>
+                  <div className="row">
+                    <InputComponent className="col-md-6" type='password' label='Password'
+                                    value={this.state.password}
+                                    onValueChange={this.handleChange.bind(this, 'password')}
+                                    onValueError={this.validatePassword()}/>
                   </div>
-                  <div className="col-md-6">
-                    <div className="row">
-                      <Input type='password' label='Repeat Password' required theme={themeLabel}
-                             value={this.state.repeatPassword}
-                             onChange={this.handleChangeRepeatPassword.bind(this, 'repeatPassword')}
-                             error={this.validatePassword()}/>
-                    </div>
+                  <div className="row">
+                    <InputComponent className="col-md-6" type='password' label='Repeat Password'
+                                    value={this.state.repeatPassword}
+                                    onValueChange={this.handleChange.bind(this, 'repeatPassword')}
+                                    onValueError={this.validatePassword()}/>
                   </div>
                 </div>
               </div>
               <div className="form-group">
-                <div className="col-md-6">
-                  <div className="row">
-                    <Button style={{margin: 15, color: 'white', background: '#900C3F'}} raised
-                            onClick={this.saveUser.bind(this)}>
-                      Create
-                    </Button>
-                  </div>
+                <div className="row">
+                  <ButtonComponent className="col-md-6" iconButton="save" value="Create"
+                                   onClick={this.saveUser.bind(this)}/>
                 </div>
               </div>
             </div>
           </div>
         </div>
       )
-        ;
     }
     else {
       return (
-          <Spinner/>
+        <Spinner/>
       )
     }
   }
-
 }
 
 RegistrationForm.propTypes = {

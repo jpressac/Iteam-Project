@@ -86,8 +86,6 @@ public class UserRepositoryImpl implements UserRepsoitory {
     @Override
     public void modifyUser(UserDTO user, String username) {
 
-        // TODO: verify how to validate update response.
-
         if (!ObjectUtils.isEmpty(user.getPassword()) && validatePassword(username, user.getPassword())) {
             // TODO: refactor me
             user.setPassword(PASSWORD_ENCODER.encode(user.getNewPassword()));

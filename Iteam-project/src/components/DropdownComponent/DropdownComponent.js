@@ -3,7 +3,7 @@ import Dropdown from 'react-toolbox/lib/dropdown';
 import dropdownLabel from './dropdownLabel.scss';
 
 class DropdownComponent extends React.Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
       label: '',
@@ -13,7 +13,7 @@ class DropdownComponent extends React.Component {
     }
   }
 
-  componentWillMount(){
+  componentWillMount() {
     this.setValueOptions(this.props.source)
   }
 
@@ -26,13 +26,16 @@ class DropdownComponent extends React.Component {
     console.log("filtered combo");
     console.log(filteredLabelObject);
 
-    this.setState({value: filteredLabelObject[0]["value"], label: filteredLabelObject[0]["label"]})
+    if (filteredLabelObject.length > 0) {
+      this.setState({value: filteredLabelObject[0]["value"], label: filteredLabelObject[0]["label"]})
+    }
   }
 
   comboProfession(value) {
     console.log("combo profession");
     console.log(value);
     let filteredLabelObject = this.state.source.filter(filter => filter["value"] == value);
+
     this.setState({value: value, label: filteredLabelObject[0]["label"]})
   }
 
@@ -52,7 +55,7 @@ class DropdownComponent extends React.Component {
     this.setState({source: opt});
   }
 
-  render(){
+  render() {
     return (
       <Dropdown label={this.props.label} auto theme={dropdownLabel}
                 onChange={this.comboProfession.bind(this)} required
