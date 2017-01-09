@@ -38,7 +38,7 @@
 
 .msgRowContainer {
   border-bottom: 1px solid lightgray;
-  height: 50px;
+  height: auto;
 }
 
 .msgRow {
@@ -95,4 +95,9 @@
   right: 1%;
   border-top-right-radius: 3px;
   border-top-left-radius: 3px;
+}
+
+.p{
+  text-align: left;
+  margin: 0 0 0 0;
 }

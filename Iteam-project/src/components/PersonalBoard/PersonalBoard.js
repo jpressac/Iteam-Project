@@ -19,6 +19,7 @@ import {push} from "react-router-redux";
 import navTheme from "./NavDrawer.scss";
 import Dropdown from "react-toolbox/lib/dropdown";
 import {MenuItem, MenuDivider} from "react-toolbox/lib/menu";
+import Chat from '../Chat/Chat';
 
 const TooltipButton = Tooltip(Button);
 
@@ -36,8 +37,7 @@ const mapDispatchToProps = (dispatch) => ({
 
   home: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HOME)),
   userConnected: () => dispatch(userConnection()),
-  sharedBoard: () => dispatch(push('/' + PATHS.MENULOGGEDIN.SHAREDBOARD)),
-  chat: ()=> dispatch(push('/' + PATHS.MENULOGGEDIN.CHAT))
+  sharedBoard: () => dispatch(push('/' + PATHS.MENULOGGEDIN.SHAREDBOARD))
 
 });
 
@@ -211,6 +211,7 @@ class PersonalBoard extends Component {
       }));
   }
 
+
   render() {
     return this.props.connectDropTarget(
       <div name="Personal Board Component" className={classes.board}>
@@ -238,9 +239,6 @@ class PersonalBoard extends Component {
                       onChange={this.comboTags.bind(this)} required
                       source={this.state.mapTag} value={this.state.tagValue}/>
             <MenuDivider/>
-            <MenuItem value='CHAT' auto style={{color: '#900C3F'}}
-                      onClick={this.props.chat}> CHAT
-            </MenuItem>
           </NavDrawer>
           <Panel>
             <div name="Notes container" className={classes.noteContainer}>
@@ -248,6 +246,7 @@ class PersonalBoard extends Component {
             </div>
           </Panel>
         </Layout>
+        <Chat/>
       </div>
     );
   }

@@ -17,11 +17,11 @@ import Drawer from "react-toolbox/lib/drawer";
 import {Layout, NavDrawer, Panel, Sidebar} from "react-toolbox";
 import Clients from "../BoardSidebar/users";
 import {userDisconnection} from "../../redux/reducers/Meeting/MeetingUserConnected";
-import {disconnectChat} from '../../websocket/websocket';
 import logo from "../Header/image/iteamLogo.jpg";
 import navTheme from "./NavDrawer.scss";
 import Dropdown from "react-toolbox/lib/dropdown";
 import {MenuItem, MenuDivider} from "react-toolbox/lib/menu";
+import Chat from '../Chat/Chat';
 
 
 const NoteTarget = {
@@ -103,7 +103,6 @@ class SharedBoard extends Component {
   componentWillUnmount() {
     //End socket connection
     disconnect();
-    disconnectChat();
   }
 
   notes(noteMap, key) {
@@ -431,6 +430,7 @@ class SharedBoard extends Component {
             </div>
           </Drawer>
         </Layout>
+        <Chat/>
       </div>
     );
   }

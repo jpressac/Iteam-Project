@@ -6,20 +6,28 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from "react-redux";
 import MessageForm from './ChatMessageForm'
 import MessageList from './ChatMessageList'
-import {joinChat, connectChat, initWebSocketChat, sendMessageToChat} from '../../websocket/websocket';
+import {joinChat, connectChat, initWebSocketChat, sendMessageToChat, disconnectChat} from '../../websocket/websocket';
 import classes from './ChatStyle.scss';
+import {saveMeetingChats} from '../../redux/reducers/Meeting/MeetingChatMessagesReducer';
+
+
+const mapDispatchToProps = dispatch => ({
+  saveMeetingChatMessages: (messages) => dispatch(saveMeetingChats(messages))
+});
 
 
 const mapStateToProps = (state) => {
   if (state.loginUser !== null) {
     return {
       user: state.loginUser.user.username,
-      meetingId: state.meetingReducer.meetingId
+      meetingId: state.meetingReducer.meetingId,
+      meetingChatMessages: state.meetingChatMessagesReducer
     }
   }
 };
 
-const StringDate=new Date();
+const StringDate = new Date();
+
 
 class Chat extends Component {
 
@@ -35,13 +43,22 @@ class Chat extends Component {
 
   componentDidMount() {
     //Connect with socket
-    console.debug('chat component did mount');
+    console.debug('chat messages: ' + this.props.meetingChatMessages);
     initWebSocketChat();
     connectChat();
-    joinChat(this.props.meetingId, this.messageRecieve.bind(this))
+    joinChat(this.props.meetingId, this.messageRecieve.bind(this));
+    if (this.props.meetingChatMessages != null) {
+      this.setState({messages: this.props.meetingChatMessages})
+    }
 
   }
 
+  componentWillUnmount() {
+    //End socket connection
+    console.debug('state: ' + this.state.messages);
+    //this.props.saveMeetingChatMessages(this.state.messages);
+    disconnectChat();
+  }
 
   messageRecieve(payload) {
 
@@ -52,11 +69,11 @@ class Chat extends Component {
     messages.push({
         user: jsonPayload.user,
         text: jsonPayload.text,
-        time:jsonPayload.time
+        time: jsonPayload.time
       }
     );
     this.setState({messages});
-
+    this.props.saveMeetingChatMessages(this.state.messages);
     var element = document.getElementById("chatMessages");
     element.scrollTop = element.scrollHeight;
   }
@@ -86,7 +103,10 @@ class Chat extends Component {
 
 Chat.propTypes = {
   user: PropTypes.any,
-  meetingId: PropTypes.string
+  meetingId: PropTypes.string,
+  meetingChatMessages: PropTypes.any,
+  saveMeetingChatMessages: PropTypes.any,
+  onChangeBoard:PropTypes.func
 };
 
-export default connect(mapStateToProps)(Chat)
+export default connect(mapStateToProps, mapDispatchToProps)(Chat)
