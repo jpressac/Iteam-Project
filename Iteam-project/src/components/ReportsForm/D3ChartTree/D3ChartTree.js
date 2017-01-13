@@ -179,7 +179,7 @@ class D3ChartTree extends React.Component {
       let leafG = d3.select(this);
 
       leafG.select("rect")
-        .attr("stroke", "#4D4D4D")
+        .attr("stroke", "#900c3f")
         .attr("stroke-width", "2");
 
 

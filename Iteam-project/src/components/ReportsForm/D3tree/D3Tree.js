@@ -106,6 +106,13 @@ class D3Tree extends React.Component {
         d.y = d.depth * 180;
         console.log(d.depth);
       });
+      // add the tool tip
+      var div = d3.select("body").append("div")
+        .style('position', 'absolute')
+        .style('padding', '0 10px')
+        .style('background', 'yellow')
+        .style('opacity', 0)
+
 
       // ****************** Nodes section ***************************
 
@@ -121,7 +128,27 @@ class D3Tree extends React.Component {
         .attr("transform", function () {
           return "translate(" + source.y0 + "," + source.x0 + ")";
         })
-        .on('click', click);
+        .on('click', click)
+        .on("mouseover", function(d) {
+          div.transition()
+            .style("opacity", .9);
+
+          div.html( d.data.name)
+            .style("left", (d3.event.pageX -35 ) + "px")
+            .style("top", (d3.event.pageY -30) + "px");
+
+
+          tempColor= this.style.fill;
+          d3.select(this)
+            .style("opacity", 1)
+            .style("fill", 'yellow');
+
+        })
+        .on("mouseout", function(d) {
+          d3.select(this)
+            .style('opacity', 1)
+            .style('fill', tempColor)
+        });
 
       // Add Circle for the nodes
       nodeEnter.append('circle')
@@ -243,6 +270,8 @@ class D3Tree extends React.Component {
         d.x0 = d.x;
         d.y0 = d.y;
       });
+
+
 
       // Creates a curved (diagonal) path from parent to the child nodes
       function diagonal(s, d) {
