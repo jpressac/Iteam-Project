@@ -8,7 +8,7 @@ import {connect} from 'react-redux';
 import Tooltip from 'react-toolbox/lib/tooltip';
 import {push} from 'react-router-redux';
 import Spinner from '../Spinner/Spinner';
-import InputComponent from '../IpuntComponent/InputComponent';
+import InputComponent from '../InputComponent/InputComponent';
 import ButtonComponent from '../ButtonComponent/ButtonComponent';
 import DropdownComponent from '../DropdownComponent/DropdownComponent';
 import Input from 'react-toolbox/lib/input';

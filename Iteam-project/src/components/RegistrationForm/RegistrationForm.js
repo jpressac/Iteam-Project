@@ -1,7 +1,7 @@
 import React, {Component, PropTypes} from "react";
 import {submitUser} from "../../utils/actions/userActions";
 import {getProfessions, getNationalities} from '../../utils/actions/utilsActions';
-import InputComponent from '../IpuntComponent/InputComponent';
+import InputComponent from '../InputComponent/InputComponent';
 import ButtonComponent from '../ButtonComponent/ButtonComponent';
 import DropdownComponent from '../DropdownComponent/DropdownComponent';
 import BootstrapModal from "../BootstrapModal";
