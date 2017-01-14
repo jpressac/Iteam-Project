@@ -4,6 +4,7 @@
 
 import React, {Component, PropTypes} from 'react';
 import {connect} from "react-redux";
+import {IconButton, Button} from 'react-toolbox/lib/button';
 import MessageForm from './ChatMessageForm'
 import MessageList from './ChatMessageList'
 import {joinChat, connectChat, initWebSocketChat, sendMessageToChat, disconnectChat} from '../../websocket/websocket';
@@ -35,45 +36,60 @@ class Chat extends Component {
     super(props);
     this.state = {
       users: [],
-      messages: [],
-      text: ''
+      messages: props.meetingChatMessages != null ? props.meetingChatMessages.messages : [],
+      text: '',
+      expand: props.meetingChatMessages != null ? props.meetingChatMessages.size : true,
+      expandButton: "expand_less",
+      count: props.meetingChatMessages != null ? props.meetingChatMessages.count : 0,
+      showLabel: props.meetingChatMessages != null ? props.meetingChatMessages.showLabel : false
     };
   }
 
-
-  componentDidMount() {
+  componentWillMount() {
     //Connect with socket
-    console.debug('chat messages: ' + this.props.meetingChatMessages);
     initWebSocketChat();
     connectChat();
-    joinChat(this.props.meetingId, this.messageRecieve.bind(this));
-    if (this.props.meetingChatMessages != null) {
-      this.setState({messages: this.props.meetingChatMessages})
-    }
-
   }
 
+  componentDidMount() {
+    joinChat(this.props.meetingId, this.messageReceive.bind(this));
+  }
+
+
   componentWillUnmount() {
+    console.debug('chat size: ' + this.state.expand);
     //End socket connection
     console.debug('state: ' + this.state.messages);
-    //this.props.saveMeetingChatMessages(this.state.messages);
+    this.props.saveMeetingChatMessages({
+      messages: this.state.messages,
+      size: this.state.expand,
+      showLabel: this.state.showLabel,
+      count: this.state.count
+    });
     disconnectChat();
   }
 
-  messageRecieve(payload) {
+  messageReceive(payload) {
 
     let jsonPayload = JSON.parse(payload);
     console.debug('payload: ' + payload);
 
-    var {messages} = this.state;
-    messages.push({
+    var newmessage = this.state.messages;
+    newmessage.push({
         user: jsonPayload.user,
         text: jsonPayload.text,
         time: jsonPayload.time
       }
     );
-    this.setState({messages});
-    this.props.saveMeetingChatMessages(this.state.messages);
+    this.setState({
+      messages: newmessage,
+      count: this.state.count + 1,
+      showLabel: true
+    });
+    /*this.props.saveMeetingChatMessages({
+     messages: this.state.messages,
+     size: this.state.expand
+     });*/
     var element = document.getElementById("chatMessages");
     element.scrollTop = element.scrollHeight;
   }
@@ -85,10 +101,40 @@ class Chat extends Component {
   }
 
 
-  render() {
+  onChangeSize() {
+    if (this.state.expand) {
+      this.setState({
+        expand: !this.state.expand,
+        expandButton: "expand_less",
+        count: 0,
+        showLabel: false
+      })
+    }
+    else {
+      this.setState({
+        expand: !this.state.expand,
+        expandButton: "expand_more"
+      })
+    }
+  }
+
+  renderMinimize() {
+    return (
+      <div id="chatMessages" className={classes.chatContainer}>
+        <div className={classes.msgWgtHeader}>CHAT
+          <IconButton icon={this.state.expandButton} onClick={this.onChangeSize()}/>
+          <label value={this.state.count}/>
+        </div>
+      </div>
+    )
+  }
+
+
+  renderMaximize() {
     return (
       <div id="chatMessages" className={classes.chatContainer}>
         <div className={classes.msgWgtHeader}>CHAT</div>
+        <IconButton icon={this.state.expandButton} onClick={this.onChangeSize.bind(this)}/>
         <MessageList
           messages={this.state.messages}
         />
@@ -96,7 +142,42 @@ class Chat extends Component {
           onMessageSubmit={this.handleMessageSubmit.bind(this)}
         />
       </div>
-    );
+    )
+  }
+
+  render() {
+    if (this.state.expand) {
+      return (
+        <div id="chatMessages" className={classes.chatContainerMax}>
+          <div className={classes.msgWgtHeaderMax} onClick={this.onChangeSize.bind(this)}>CHAT
+            <IconButton icon={this.state.expandButton} onClick={this.onChangeSize.bind(this)}/>
+          </div>
+          <MessageList
+            messages={this.state.messages}
+          />
+          <MessageForm
+            onMessageSubmit={this.handleMessageSubmit.bind(this)}
+          />
+        </div>
+      )
+    }
+    if (!this.state.expand && this.state.showLabel) {
+      return (
+        <div id="chatMessages" className={classes.chatContainerMin}>
+          <div className={classes.msgWgtHeaderMin} onClick={this.onChangeSize.bind(this)}>CHAT
+            <IconButton icon={this.state.expandButton} onClick={this.onChangeSize.bind(this)}/>
+            <Button label={this.state.count} style={{background:'yellow', color:'black'}} mini floating disabled/>
+          </div>
+        </div>
+      )
+    }
+    return (
+      <div id="chatMessages" className={classes.chatContainerMin}>
+        <div className={classes.msgWgtHeaderMax} onClick={this.onChangeSize.bind(this)}>CHAT
+          <IconButton icon={this.state.expandButton} onClick={this.onChangeSize.bind(this)}/>
+        </div>
+      </div>
+    )
   }
 
 }
@@ -105,8 +186,7 @@ Chat.propTypes = {
   user: PropTypes.any,
   meetingId: PropTypes.string,
   meetingChatMessages: PropTypes.any,
-  saveMeetingChatMessages: PropTypes.any,
-  onChangeBoard:PropTypes.func
+  saveMeetingChatMessages: PropTypes.any
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Chat)

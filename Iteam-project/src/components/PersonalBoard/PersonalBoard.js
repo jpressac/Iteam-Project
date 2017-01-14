@@ -211,7 +211,6 @@ class PersonalBoard extends Component {
       }));
   }
 
-
   render() {
     return this.props.connectDropTarget(
       <div name="Personal Board Component" className={classes.board}>
@@ -261,8 +260,7 @@ PersonalBoard.propTypes = {
   user: PropTypes.any,
   meetingId: PropTypes.string,
   connected: PropTypes.bool,
-  meetingConfiguration: PropTypes.any,
-  chat: PropTypes.func
+  meetingConfiguration: PropTypes.any
 };
 
 export default flow(

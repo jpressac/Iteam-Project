@@ -1,4 +1,4 @@
-.chatContainer {
+.chatContainerMax {
   bottom: 0;
   width: 25%;
   position: fixed;
@@ -15,16 +15,41 @@
   overflow: auto;
 }
 
+.chatContainerMin {
+  bottom: 0;
+  width: 25%;
+  position: fixed;
+  z-index: 300;
+  right: 1%;
+  border-top-right-radius: 3px;
+  border-top-left-radius: 3px;
+  font-family: monospace;
+  font-size: 12px;
+  border: 1px solid lightgray;
+  display: flex;
+  flex-direction: column;
+}
+
 /* message box header styles*/
 
-.msgWgtHeader {
-  background-color: #6D84B4;
-  border: 1px solid rgba(67, 106, 187, 0.76);
+.msgWgtHeaderMin {
+  background-color: #900C3F;
+  border: 1px solid #900C3F ;
   border-top-right-radius: 3px;
   border-top-left-radius: 3px;
   color: white;
   text-align: center;
-  height: 28px;
+  height: 40px;
+}
+
+.msgWgtHeaderMax {
+  background-color: #cbcbcb;
+  border: 1px solid #cbcbcb ;
+  border-top-right-radius: 3px;
+  border-top-left-radius: 3px;
+  color: black;
+  text-align: center;
+  height: 40px;
 }
 
 .msgWgtHeader a {
@@ -68,7 +93,7 @@
 }
 
 .chatUsername {
-  color: rgba(243, 20, 111, 0.76);
+  color: #900C3F;
   font-size: large;
 }
 
