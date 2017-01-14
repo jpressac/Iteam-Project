@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from "react";
-import {submitUser} from "../../utils/actions/userActions";
+import {submitUser, userExistence} from "../../utils/actions/userActions";
 import {getProfessions, getNationalities} from '../../utils/actions/utilsActions';
 import InputComponent from '../InputComponent/InputComponent';
 import ButtonComponent from '../ButtonComponent/ButtonComponent';
@@ -16,13 +16,21 @@ import {PATHS} from "../../constants/routes";
 import {connect} from "react-redux";
 import {push} from "react-router-redux";
 import Spinner from "../Spinner/Spinner";
+import {saveProfessions} from '../../redux/reducers/User/ProfessionReducer';
+import {saveNationality} from '../../redux/reducers/User/NationalityReducer';
 
 const TooltipInput = Tooltip(Input);
 
 const mapDispatchToProps = (dispatch) => ({
-
   goToHome: () => dispatch(push('/' + PATHS.MENUNOTLOGGEDIN.HOME))
 });
+
+const mapStateToProps = (state) => {
+  return {
+    nationality: state.nationalityReducer,
+    profession: state.professionsReducer
+  }
+};
 
 class RegistrationForm extends React.Component {
 
@@ -31,12 +39,12 @@ class RegistrationForm extends React.Component {
     this.state = {
       firstName: '',
       lastName: '',
-      nationality: '',
+      nationality: props.nationality,
       dropDownSourceNationalities: [],
       date: new Date(),
       mail: '',
       genderValue: 'male',
-      profession: '',
+      profession: props.profession,
       dropDownSourceProfession: [],
       hobbies: '',
       username: '',
@@ -45,6 +53,7 @@ class RegistrationForm extends React.Component {
       errors: {},
       showSpinner: true,
       messageModal: '',
+      userExists: ''
     };
   }
 
@@ -70,7 +79,7 @@ class RegistrationForm extends React.Component {
 
   saveUser() {
     this.setState({showSpinner: true});
-    submitUser(this.state)
+    submitUser(this.state, this.props.nationality, this.props.profession)
       .then(() => {
         this.props.goToHome()
       })
@@ -89,6 +98,16 @@ class RegistrationForm extends React.Component {
     this.state.date.setMonth(datetime.getMonth());
     this.state.date.setDate(datetime.getDate());
   };
+
+  checkUsername(){
+    userExistence(this.state.username)
+      .then( () => {
+        this.setState({userExists: 'This username already exists, please try another'})
+      })
+      .catch(() => {
+      this.setState({userExists: ''})
+      })
+  }
 
   render() {
     if (!this.state.showSpinner) {
@@ -115,11 +134,11 @@ class RegistrationForm extends React.Component {
                 <div className="col-md-12">
                   <div className="row">
                     <InputComponent className="col-md-6" type='text' label='First Name' name='firstName'
-                                    value={this.state.firstName}
+                                    value={this.state.firstName} required
                                     onValueChange={this.handleChange.bind(this, 'firstName')}/>
                     <InputComponent className="col-md-6" type='text' label='Last Name'
                                     name='lastName'
-                                    value={this.state.lastName}
+                                    value={this.state.lastName} required
                                     onValueChange={this.handleChange.bind(this, 'lastName')}/>
                   </div>
                 </div>
@@ -149,11 +168,11 @@ class RegistrationForm extends React.Component {
                   <div className="row">
                     <div className="col-md-6">
                       <DropdownComponent source={this.state.dropDownSourceProfession} label="Select profession"
-                                         initialValue={this.state.profession}/>
+                                         initialValue={this.state.profession} saveValue={saveProfessions}/>
                     </div>
                     <div className="col-md-6 ">
                       <DropdownComponent source={this.state.dropDownSourceNationalities} label="Select nationality"
-                                         initialValue={this.state.nationality}/>
+                                         initialValue={this.state.nationality} saveValue={saveNationality}/>
                     </div>
                   </div>
                 </div>
@@ -171,10 +190,13 @@ class RegistrationForm extends React.Component {
               <div className="form-group">
                 <div className="row">
                   <InputComponent className="col-md-6" type='email' label='Email address' icon='email'
-                                  value={this.state.mail} onValueChange={this.handleChange.bind(this, 'mail')}/>
+                                  value={this.state.mail} onValueChange={this.handleChange.bind(this, 'mail')}
+                                  required/>
                   <InputComponent className="col-md-6" label='Username'
                                   value={this.state.username}
-                                  onValueChange={this.handleChange.bind(this, 'username')}/>
+                                  onValueChange={this.handleChange.bind(this, 'username')} required
+                                  onBlur={this.checkUsername.bind(this)}
+                                  onValueError={this.state.userExists}/>
                 </div>
               </div>
               <div className="form-group">
@@ -213,7 +235,9 @@ class RegistrationForm extends React.Component {
 }
 
 RegistrationForm.propTypes = {
-  goToHome: PropTypes.func
+  goToHome: PropTypes.func,
+  nationality: PropTypes.string,
+  profession: PropTypes.string
 };
 
-export default connect(null, mapDispatchToProps)(RegistrationForm)
+export default connect(mapStateToProps, mapDispatchToProps)(RegistrationForm)

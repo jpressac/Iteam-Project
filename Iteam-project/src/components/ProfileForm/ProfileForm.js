@@ -14,10 +14,14 @@ import DropdownComponent from '../DropdownComponent/DropdownComponent';
 import Input from 'react-toolbox/lib/input';
 import tooltopLabel from './tooltipLabel.css';
 import BootstrapModal from "../BootstrapModal";
+import {saveProfessions} from '../../redux/reducers/User/ProfessionReducer';
 
 const mapStateToProps = (state) => {
-  return {}
+  return {
+    profession: state.professionsReducer
+  }
 };
+
 
 const mapDispatchToProps = dispatch => ({
   home: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HOME))
@@ -75,7 +79,7 @@ class ProfileForm extends React.Component {
 
   saveUser() {
     if (this.state.canSave) {
-      updateUser(this.state)
+      updateUser(this.state, this.props.profession)
         .then(() => {
           this.setState({messageModal: 'Profile information successfully updated'});
           this.refs.profileModal.openModal();
@@ -165,7 +169,8 @@ class ProfileForm extends React.Component {
                 <div className="col-md-12">
                   <div className="row">
                     <div className="col-md-6">
-                      <DropdownComponent source={this.state.dropDownSource} label="Select profession" initialValue={this.state.profession}/>
+                      <DropdownComponent source={this.state.dropDownSource} label="Select profession"
+                                         initialValue={this.state.profession} saveValue={saveProfessions}/>
                     </div>
                     <div className="col-md-6 ">
                       <TooltipInput type='text' label='Hobbies' theme={tooltopLabel} name='hobbies'
@@ -227,7 +232,8 @@ class ProfileForm extends React.Component {
   };
 }
 ProfileForm.propTypes = {
-  home: PropTypes.func
+  home: PropTypes.func,
+  profession: PropTypes.string
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ProfileForm)

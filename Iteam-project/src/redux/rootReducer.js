@@ -5,6 +5,8 @@ import meetingReducer from './reducers/Meeting/MeetingReducer'
 import meetingForTeamReducer from './reducers/Meeting/MeetingForTeamReducer'
 import meetingUser from './reducers/Meeting/MeetingUserConnected'
 import meetingConfigurationReducer from './reducers/Meeting/MeetingConfigReducer'
+import professionsReducer from './reducers/User/ProfessionReducer'
+import nationalityReducer from './reducers/User/NationalityReducer'
 
 export default combineReducers({
   router,
@@ -12,5 +14,7 @@ export default combineReducers({
   meetingReducer,
   meetingForTeamReducer,
   meetingUser,
-  meetingConfigurationReducer
+  meetingConfigurationReducer,
+  professionsReducer,
+  nationalityReducer
 })
