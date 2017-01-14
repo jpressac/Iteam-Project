@@ -19,232 +19,232 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 public class UserRepositoryImplTest {
 
-	@InjectMocks
-	private UserRepositoryImpl underTest;
+    @InjectMocks
+    private UserRepositoryImpl underTest;
 
-	@Mock
-	private ElasticsearchClientImpl elasticsearchClient;
+    @Mock
+    private ElasticsearchClientImpl elasticsearchClient;
 
-	private static final String USER_AS_JSON = "{\"username\":\"iteam\",\"password\":\"005f6e6f2dda2\",\"name\":\"iteamProject\"}";
-	private UserDTO user;
-	private String username;
-	private boolean flag;
+    private static final String USER_AS_JSON = "{\"username\":\"iteam\",\"password\":\"005f6e6f2dda2\",\"name\":\"iteamProject\"}";
+    private UserDTO user;
+    private String username;
+    private boolean flag;
 
-	@Before
-	public void init() {
-		MockitoAnnotations.initMocks(this);
-	}
+    @Before
+    public void init() {
+        MockitoAnnotations.initMocks(this);
+    }
 
-	@Test
-	public void getUserSuccessful() {
-		givenAnUsername();
-		givenAnElasticsearchResponseOk();
-		whenGetUserIsCalled();
-		thenUserIsOk();
-	}
+    @Test
+    public void getUserSuccessful() {
+        givenAnUsername();
+        givenAnElasticsearchResponseOk();
+        whenGetUserIsCalled();
+        thenUserIsOk();
+    }
 
-	@Test
-	public void getUserNotSuccessfulResponseNull() {
-		givenAnUsername();
-		givenAnElasticsearchResponseNull();
-		whenGetUserIsCalled();
-		thenUserIsNull();
-	}
+    @Test
+    public void getUserNotSuccessfulResponseNull() {
+        givenAnUsername();
+        givenAnElasticsearchResponseNull();
+        whenGetUserIsCalled();
+        thenUserIsNull();
+    }
 
-	@Test
-	public void getUserNotSuccessfulResponseFailure() {
-		givenAnUsername();
-		givenAnElasticsearchResponseFailure();
-		whenGetUserIsCalled();
-		thenUserIsNull();
-	}
+    @Test
+    public void getUserNotSuccessfulResponseFailure() {
+        givenAnUsername();
+        givenAnElasticsearchResponseFailure();
+        whenGetUserIsCalled();
+        thenUserIsNull();
+    }
 
-	@Test
-	public void setUserSuccessful() {
-		givenANewUser("male");
-		givenAnElasticsearchIndexResponseOk();
-		whenSetUserIsCalled();
-		thenUserWasInserted();
-	}
+    @Test
+    public void setUserSuccessful() {
+        givenANewUser("male");
+        givenAnElasticsearchIndexResponseOk();
+        whenSetUserIsCalled();
+        thenUserWasInserted();
+    }
 
-	@Test
-	public void setUserNotSuccessfulResponseNull() {
-		givenANewUser("male");
-		givenAnElasticsearchIndexResponseNull();
-		whenSetUserIsCalled();
-		thenUserWasntInserted();
-	}
+    @Test
+    public void setUserNotSuccessfulResponseNull() {
+        givenANewUser("male");
+        givenAnElasticsearchIndexResponseNull();
+        whenSetUserIsCalled();
+        thenUserWasntInserted();
+    }
 
-	@Test
-	public void setUserNotSuccessfulFailure() {
-		givenANewUser("female");
-		givenAnElasticsearchIndexResponseFailure();
-		whenSetUserIsCalled();
+    @Test
+    public void setUserNotSuccessfulFailure() {
+        givenANewUser("female");
+        givenAnElasticsearchIndexResponseFailure();
+        whenSetUserIsCalled();
 
-	}
+    }
 
-	@Test(expected = JsonParsingException.class)
-	public void checkGenderUserFailed() {
-		givenANewUser("hola");
-		whenSetUserIsCalled();
-		thenUserWasntInserted();
-	}
+    @Test(expected = JsonParsingException.class)
+    public void checkGenderUserFailed() {
+        givenANewUser("hola");
+        whenSetUserIsCalled();
+        thenUserWasntInserted();
+    }
 
-	@Test
-	public void checkUserExitenceSuccessful() {
-		givenAnUsername();
-		givenAnElasticsearchGetResponseOk();
-		whenCheckUserExistenceIsCalled();
-		thenUserExists();
-	}
+    @Test
+    public void checkUserExitenceSuccessful() {
+        givenAnUsername();
+        givenAnElasticsearchGetResponseOk();
+        whenCheckUserExistenceIsCalled();
+        thenUserExists();
+    }
 
-	@Test
-	public void checkUserExistenceNotSuccessfulNull() {
-		givenAnUsername();
-		givenAnElasticsearchGetResponseNull();
-		whenCheckUserExistenceIsCalled();
-		thenUserNotExists();
-	}
+    @Test
+    public void checkUserExistenceNotSuccessfulNull() {
+        givenAnUsername();
+        givenAnElasticsearchGetResponseNull();
+        whenCheckUserExistenceIsCalled();
+        thenUserNotExists();
+    }
 
-	@Test
-	public void checkUserExistenceResponseFailure() {
-		givenAnUsername();
-		givenAnElasticsearchGetResponseFailure();
-		whenCheckUserExistenceIsCalled();
-		thenUserNotExists();
-	}
+    @Test
+    public void checkUserExistenceResponseFailure() {
+        givenAnUsername();
+        givenAnElasticsearchGetResponseFailure();
+        whenCheckUserExistenceIsCalled();
+        thenUserNotExists();
+    }
 
-	private void givenAnElasticsearchGetResponseFailure() {
-		givenAnElasticsearchGetResponse(false);
-	}
+    private void givenAnElasticsearchGetResponseFailure() {
+        givenAnElasticsearchGetResponse(false);
+    }
 
-	private void thenUserNotExists() {
-		Assert.assertFalse(flag);
-	}
+    private void thenUserNotExists() {
+        Assert.assertFalse(flag);
+    }
 
-	private void givenAnElasticsearchGetResponseNull() {
-		Mockito.when(elasticsearchClient.getDocument(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
-				.thenReturn(null);
+    private void givenAnElasticsearchGetResponseNull() {
+        Mockito.when(elasticsearchClient.getDocument(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(null);
 
-		ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClient);
-	}
+        ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClient);
+    }
 
-	private void thenUserExists() {
-		Assert.assertTrue(flag);
-	}
+    private void thenUserExists() {
+        Assert.assertTrue(flag);
+    }
 
-	private void whenCheckUserExistenceIsCalled() {
-		flag = underTest.checkUserExistance(username);
-	}
+    private void whenCheckUserExistenceIsCalled() {
+        flag = underTest.checkUserExistance(username);
+    }
 
-	private void givenAnElasticsearchGetResponseOk() {
-		givenAnElasticsearchGetResponse(true);
-	}
+    private void givenAnElasticsearchGetResponseOk() {
+        givenAnElasticsearchGetResponse(true);
+    }
 
-	private void givenAnElasticsearchIndexResponseFailure() {
-		givenAnElasticsearchIndexResponse(false);
-	}
+    private void givenAnElasticsearchIndexResponseFailure() {
+        givenAnElasticsearchIndexResponse(false);
+    }
 
-	private void thenUserWasntInserted() {
-		Assert.assertFalse(flag);
-	}
+    private void thenUserWasntInserted() {
+        Assert.assertFalse(flag);
+    }
 
-	private void givenAnElasticsearchIndexResponseNull() {
-		Mockito.when(elasticsearchClient.insertData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
-				Mockito.anyString())).thenReturn(null);
+    private void givenAnElasticsearchIndexResponseNull() {
+        Mockito.when(elasticsearchClient.insertData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
+                Mockito.anyString())).thenReturn(null);
 
-		ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClient);
-	}
+        ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClient);
+    }
 
-	private void thenUserWasInserted() {
-		Assert.assertTrue(flag);
-	}
+    private void thenUserWasInserted() {
+        Assert.assertTrue(flag);
+    }
 
-	private void whenSetUserIsCalled() {
-		flag = underTest.setUser(user);
-	}
+    private void whenSetUserIsCalled() {
+        underTest.setUser(user);
+    }
 
-	private void givenAnElasticsearchIndexResponseOk() {
-		givenAnElasticsearchIndexResponse(true);
-	}
+    private void givenAnElasticsearchIndexResponseOk() {
+        givenAnElasticsearchIndexResponse(true);
+    }
 
-	private void givenANewUser(String gender) {
-		user = new UserDTO();
-		user.setUsername("iteam");
-		user.setPassword("admin");
-		user.setGender(gender);
-	}
+    private void givenANewUser(String gender) {
+        user = new UserDTO();
+        user.setUsername("iteam");
+        user.setPassword("admin");
+        user.setGender(gender);
+    }
 
-	private void givenAnElasticsearchResponseFailure() {
-		SearchResponse response = Mockito.mock(SearchResponse.class);
-		SearchHits searchHits = Mockito.mock(SearchHits.class);
+    private void givenAnElasticsearchResponseFailure() {
+        SearchResponse response = Mockito.mock(SearchResponse.class);
+        SearchHits searchHits = Mockito.mock(SearchHits.class);
 
-		Mockito.when(response.getHits()).thenReturn(searchHits);
-		Mockito.when(searchHits.getTotalHits()).thenReturn(0l);
+        Mockito.when(response.getHits()).thenReturn(searchHits);
+        Mockito.when(searchHits.getTotalHits()).thenReturn(0l);
 
-		Mockito.when(elasticsearchClient.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
+        Mockito.when(elasticsearchClient.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
 
-		ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClient);
-	}
+        ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClient);
+    }
 
-	private void thenUserIsNull() {
-		Assert.assertNull(user);
-	}
+    private void thenUserIsNull() {
+        Assert.assertNull(user);
+    }
 
-	private void givenAnElasticsearchResponseNull() {
-		Mockito.when(elasticsearchClient.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(null);
+    private void givenAnElasticsearchResponseNull() {
+        Mockito.when(elasticsearchClient.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(null);
 
-		ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClient);
-	}
+        ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClient);
+    }
 
-	private void givenAnUsername() {
-		username = "iteam";
-	}
+    private void givenAnUsername() {
+        username = "iteam";
+    }
 
-	private void thenUserIsOk() {
-		Assert.assertEquals(username, user.getUsername());
-		Assert.assertEquals("iteamProject", user.getName());
-	}
+    private void thenUserIsOk() {
+        Assert.assertEquals(username, user.getUsername());
+        Assert.assertEquals("iteamProject", user.getName());
+    }
 
-	private void whenGetUserIsCalled() {
-		user = underTest.getUser(username);
-	}
+    private void whenGetUserIsCalled() {
+        user = underTest.getUser(username);
+    }
 
-	private void givenAnElasticsearchResponseOk() {
-		SearchResponse response = Mockito.mock(SearchResponse.class);
-		SearchHits searchHits = Mockito.mock(SearchHits.class);
-		SearchHit hit = Mockito.mock(SearchHit.class);
+    private void givenAnElasticsearchResponseOk() {
+        SearchResponse response = Mockito.mock(SearchResponse.class);
+        SearchHits searchHits = Mockito.mock(SearchHits.class);
+        SearchHit hit = Mockito.mock(SearchHit.class);
 
-		Mockito.when(response.getHits()).thenReturn(searchHits);
-		Mockito.when(searchHits.getTotalHits()).thenReturn(1l);
-		Mockito.when(searchHits.getAt(0)).thenReturn(hit);
-		Mockito.when(hit.getSourceAsString()).thenReturn(USER_AS_JSON);
+        Mockito.when(response.getHits()).thenReturn(searchHits);
+        Mockito.when(searchHits.getTotalHits()).thenReturn(1l);
+        Mockito.when(searchHits.getAt(0)).thenReturn(hit);
+        Mockito.when(hit.getSourceAsString()).thenReturn(USER_AS_JSON);
 
-		Mockito.when(elasticsearchClient.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
+        Mockito.when(elasticsearchClient.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
 
-		ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClient);
-	}
+        ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClient);
+    }
 
-	private void givenAnElasticsearchIndexResponse(boolean flag) {
-		IndexResponse response = Mockito.mock(IndexResponse.class);
+    private void givenAnElasticsearchIndexResponse(boolean flag) {
+        IndexResponse response = Mockito.mock(IndexResponse.class);
 
-		Mockito.when(response.isCreated()).thenReturn(flag);
+        Mockito.when(response.isCreated()).thenReturn(flag);
 
-		Mockito.when(elasticsearchClient.insertData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
-				Mockito.anyString())).thenReturn(response);
+        Mockito.when(elasticsearchClient.insertData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
+                Mockito.anyString())).thenReturn(response);
 
-		ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClient);
-	}
+        ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClient);
+    }
 
-	private void givenAnElasticsearchGetResponse(boolean flag) {
-		GetResponse response = Mockito.mock(GetResponse.class);
+    private void givenAnElasticsearchGetResponse(boolean flag) {
+        GetResponse response = Mockito.mock(GetResponse.class);
 
-		Mockito.when(response.isExists()).thenReturn(flag);
+        Mockito.when(response.isExists()).thenReturn(flag);
 
-		Mockito.when(elasticsearchClient.getDocument(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
-				.thenReturn(response);
+        Mockito.when(elasticsearchClient.getDocument(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(response);
 
-		ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClient);
-	}
+        ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClient);
+    }
 
 }

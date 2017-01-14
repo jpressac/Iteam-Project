@@ -1,11 +1,12 @@
 import React from 'react'
-import TeamSuggestionForm from '../../components/TeamSugestionForm'
+import TeamForm from '../../components/TeamForm'
 import classes from './TeamCreationView.scss'
+
 export class TeamCreationView extends React.Component {
   render() {
     return (
       <div className={classes.form}>
-        <TeamSuggestionForm  />
+        <TeamForm  />
       </div>
     );
   }

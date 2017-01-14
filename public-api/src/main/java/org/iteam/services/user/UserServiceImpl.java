@@ -19,8 +19,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean setUser(UserDTO user) {
-        return userRepository.setUser(user);
+    public void setUser(UserDTO user) {
+        userRepository.setUser(user);
     }
 
     @Override
@@ -29,13 +29,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean modifyUser(String doc, String username) {
-        return userRepository.modifyUser(doc, username);
+    public void modifyUser(UserDTO user, String username) {
+        userRepository.modifyUser(user, username);
     }
 
     @Override
     public boolean logicalDelete(String doc, String username) {
         return userRepository.logicalDelete(doc, username);
+    }
+
+    @Override
+    public boolean validatePassord(String username, String password) {
+        return userRepository.validatePassword(username, password);
     }
 
     @Autowired
