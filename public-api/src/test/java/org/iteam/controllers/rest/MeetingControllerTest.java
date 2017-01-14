@@ -94,7 +94,7 @@ public class MeetingControllerTest {
     }
 
     private void givenQueryCreateMeetingParameters() {
-        meeting = new Meeting();
+        // meeting = new Meeting();
     }
 
 }

@@ -112,7 +112,7 @@ class TeamSuggestionForm extends React.Component {
         members: selected
       }).then(function (response) {
         //TODO: implement a modal with a button that receives a call-function and perform any of the below actions.
-        this.checkWehereItCames()
+        this.checkWhereItComesFrom();
       }.bind(this)).catch(function (response) {
         //TODO: handle errors
       })
@@ -122,7 +122,7 @@ class TeamSuggestionForm extends React.Component {
     }
   }
 
-  checkWehereItCames() {
+  checkWhereItComesFrom() {
     if (this.props.fromMeeting === true) {
       this.props.meeting();
     } else {

@@ -322,6 +322,6 @@ public class MeetingRepositoryImplTest {
     }
 
     private void givenAMeeting() {
-        meeting = new Meeting();
+        // meeting = new Meeting();
     }
 }

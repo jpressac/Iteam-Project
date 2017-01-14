@@ -21,7 +21,7 @@ import logo from "../Header/image/iteamLogo.jpg";
 import navTheme from "./NavDrawer.scss";
 import Dropdown from "react-toolbox/lib/dropdown";
 import {MenuItem, MenuDivider} from "react-toolbox/lib/menu";
-
+import Modal from '../BootstrapModal/BootstrapModal';
 
 const NoteTarget = {
   drop(props, monitor, component) {
@@ -40,7 +40,7 @@ const mapStateToProps = (state) => {
       connected: state.meetingUser,
       user: state.loginUser.user.username,
       meetingConfiguration: state.meetingConfigurationReducer.meeting.config,
-      meetingOwner:state.meetingConfigurationReducer.meeting.owner
+      meetingOwner: state.meetingConfigurationReducer.meeting.owner
     }
   }
 };
@@ -55,7 +55,6 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 
-
 class SharedBoard extends Component {
 
   constructor(props) {
@@ -64,11 +63,15 @@ class SharedBoard extends Component {
       notes: {},
       active: false,
       teamName: '',
+      modalMessage: '',
       participants: [],
       usersConnected: [],
-      mapTag: [],
+      users: [{value: 0, label: 'All'}],
+      mapTag: [{value: 0, label: 'All'}],
       tagValue: '',
-      tagName: 'Miscellaneous'
+      tagName: 'All',
+      userValue: '',
+      userName: 'All'
     }
   }
 
@@ -106,34 +109,58 @@ class SharedBoard extends Component {
     disconnect()
   }
 
-  notes(noteMap, key) {
+  notes(note) {
     return (
-      <Note key={key}
-            id={key}
+      <Note key={note.id}
+            id={note.id}
             onRemove={this.remove.bind(this)}
             onAddComment={this.onChangeComment.bind(this)}
             onVote={this.onUpdateRanking.bind(this)}
-            left={noteMap[key].left}
-            top={noteMap[key].top}
+            left={note.left}
+            top={note.top}
             boardType="shared"
-            comments={noteMap[key].comments}
-            title={noteMap[key].title}
-            tag={noteMap[key].tag}
-            ranking={noteMap[key].ranking}
+            comments={note.comments}
+            title={note.title}
+            tag={note.tag}
+            ranking={note.ranking}
       />
     )
   }
 
-  renderNotes(noteMap, valueForFilter) {
-    return Object.keys(noteMap).map((key) => {
-      if (valueForFilter === this.state.mapTag[0].label) {
-        return this.notes(noteMap, key);
-      } else {
-        if (noteMap[key].tag === valueForFilter) {
-          return this.notes(noteMap, key);
+  renderNotes(noteMap, valueForTagFilter, valueForUserFilter) {
+    console.log('Filters:' + ' ' + valueForTagFilter + ' ' + valueForUserFilter);
+    //First get notes that have the selected tag
+    let filteredNotes = Object.values(noteMap).filter((note) => {
+        if (valueForTagFilter === this.state.mapTag[0].label) {
+          console.log('Miscellaneuos')
+          return note;
+        } else {
+          if (note.tag === valueForTagFilter) {
+            console.log('Other tags')
+            return note;
+          }
+        }
+      }
+    ).filter((note) => {
+      if (valueForUserFilter === this.state.users[0].label) {
+        console.log('All users')
+        return note;
+      }
+      else {
+        if (note.username === valueForUserFilter) {
+          console.log('otros tags')
+          return note;
         }
       }
     });
+    console.log(filteredNotes)
+
+    //Finally get the notes that have the combination of both filters selected
+    return filteredNotes.map((note)=>{
+      return this.notes(note);
+    })
+
+
   }
 
   receiveConnectionStatus() {
@@ -174,7 +201,19 @@ class SharedBoard extends Component {
       userInfo["status"] = 'Offline';
       return userInfo;
     });
-    this.setState({participants: participantInfo});
+
+    let usersForCombo = teamParticipants.map(function (user, index) {
+      let rObj = {};
+      rObj["value"] = index + 1;
+      rObj["label"] = user["username"];
+      return rObj;
+    });
+    console.log('Users' + JSON.stringify(usersForCombo));
+    this.setState(
+      { participants: participantInfo,
+        users: this.state.users.concat(usersForCombo)
+      });
+    console.log('UsersAll' + JSON.stringify(usersForCombo));
   };
 
   saveNotes() {
@@ -206,15 +245,11 @@ class SharedBoard extends Component {
   handleEndMeeting() {
     this.saveNotes();
     this.props.userDisconnected();
-    axios.post(MEETING.MEETING_UPDATE, {ended: true}).then(
-      function (response) {
-      }
-    ).catch(
-      function (response) {
-      });
+    //Send socket message to end meeting
+    sendMessage('endMeeting', this.props.meetingId, JSON.stringify({}));
     this.props.onClick();
   }
-  
+
   handleLeaveMeeting() {
     if (this.props.connected) {
       //Request for deleting user from connected users
@@ -306,18 +341,18 @@ class SharedBoard extends Component {
         //TODO:same as update.
         Object.keys(jsonPayloadMessage).map((key) => {
           map[key] =
-            {
-              id: key,
-              left: SharedBoard.generateRandomNumber(),
-              top: SharedBoard.generateRandomNumber(),
-              username: jsonPayloadMessage[key].username,
-              title: jsonPayloadMessage[key].title,
-              comments: '',
-              ranking: 0,
-              meetingId: this.props.meetingId,
-              boardType: "shared",
-              tag: jsonPayloadMessage[key].tag
-            }
+          {
+            id: key,
+            left: SharedBoard.generateRandomNumber(),
+            top: SharedBoard.generateRandomNumber(),
+            username: jsonPayloadMessage[key].username,
+            title: jsonPayloadMessage[key].title,
+            comments: '',
+            ranking: 0,
+            meetingId: this.props.meetingId,
+            boardType: "shared",
+            tag: jsonPayloadMessage[key].tag
+          }
         });
 
         this.setState({notes: map});
@@ -327,19 +362,19 @@ class SharedBoard extends Component {
 
         if (map[jsonPayloadMessage.id].comments != jsonPayloadMessage.comments || map[jsonPayloadMessage.id].ranking != jsonPayloadMessage.ranking) {
           map[jsonPayloadMessage.id] =
-            {
-              id: jsonPayloadMessage.id,
-              username: jsonPayloadMessage.username,
-              left: map[jsonPayloadMessage.id].left,
-              top: map[jsonPayloadMessage.id].top,
+          {
+            id: jsonPayloadMessage.id,
+            username: jsonPayloadMessage.username,
+            left: map[jsonPayloadMessage.id].left,
+            top: map[jsonPayloadMessage.id].top,
 
-              title: jsonPayloadMessage.title,
-              comments: jsonPayloadMessage.comments,
-              ranking: jsonPayloadMessage.ranking,
-              meetingId: this.props.meetingId,
-              boardType: "shared",
-              tag: jsonPayloadMessage.tag
-            };
+            title: jsonPayloadMessage.title,
+            comments: jsonPayloadMessage.comments,
+            ranking: jsonPayloadMessage.ranking,
+            meetingId: this.props.meetingId,
+            boardType: "shared",
+            tag: jsonPayloadMessage.tag
+          };
         }
         this.setState({notes: map});
         break;
@@ -355,11 +390,18 @@ class SharedBoard extends Component {
       case "user disconnected":
         this.updateUsersConnected();
         break;
+      case "endMeeting":
+        this.informMeetingEnding();
 
       case "default":
         //ver que hacer aca, si vale la pena ponerlo o no
         break;
     }
+  }
+
+  informMeetingEnding() {
+    this.setState({modalMessage: 'This meeting has been ended by the owner. ¡Thank you for participating!'});
+    this.refs.mymodal.openModal();
   }
 
   handleToggle = () => {
@@ -372,15 +414,20 @@ class SharedBoard extends Component {
     this.setState({tagValue: value, tagName: filteredLabelObject[0]["label"]})
   }
 
+  filterByUser(value) {
+    let filteredLabelObject = this.state.users.filter(filter => filter["value"] == value);
+    this.setState({userValue: value, userName: filteredLabelObject[0]["label"]});
+  }
+
   setValuesOptionsTags(data) {
     let opt = data.map(function (option, index) {
       let rObj = {};
-      rObj["value"] = index;
+      rObj["value"] = index + 1;
       rObj["label"] = option;
       return rObj;
     });
 
-    this.setState({mapTag: opt});
+    this.setState({mapTag: this.state.mapTag.concat(opt)});
   }
 
   updateUsersConnected() {
@@ -400,17 +447,16 @@ class SharedBoard extends Component {
     this.setState({participants: usersStatus});
   }
 
-  renderEndMeetingButton(){
-    if(this.props.user == this.props.meetingOwner){
+  renderEndMeetingButton() {
+    if (this.props.user == this.props.meetingOwner) {
       return (<MenuItem value='endmeeting' icon='touch_app' style={{color: 'white', background: '#900C3F'}}
-                       caption='End Meeting' onClick={this.handleEndMeeting.bind(this)}/>);
+                        caption='End Meeting' onClick={this.handleEndMeeting.bind(this)}/>);
     }
-    else{
+    else {
       return (<MenuItem value='leavemeeting' icon='touch_app' style={{color: 'white', background: '#900C3F'}}
                         caption='Leave Meeting' onClick={this.handleLeaveMeeting.bind(this)}/>);
     }
   }
-
 
   render() {
     return this.props.connectDropTarget(
@@ -431,22 +477,26 @@ class SharedBoard extends Component {
             <Dropdown label="Tag filter" auto style={{color: '#900C3F'}}
                       onChange={this.filterTags.bind(this)} required
                       source={this.state.mapTag} value={this.state.tagValue}/>
+            <Dropdown label="User filter" auto style={{color: '#900C3F'}}
+                      onChange={this.filterByUser.bind(this)} required
+                      source={this.state.users} value={this.state.userValue}/>
             <MenuItem value='teamMembers' icon='people_outline' style={{color: 'white', background: '#900C3F'}}
                       caption='Team members' onClick={this.handleToggle}/>
+            <div>
+              {this.renderEndMeetingButton(this.props.user)}
+            </div>
           </NavDrawer>
           <Panel>
             <div name="Notes container" className={classes.notes}>
-              {this.renderNotes(this.state.notes, this.state.tagName)}
+              {this.renderNotes(this.state.notes, this.state.tagName, this.state.userName)}
             </div>
           </Panel>
           <Drawer active={this.state.active} theme={classes}
                   type="right"
                   onOverlayClick={this.handleToggle}>
             <Clients clients={this.state.participants} teamName={this.state.teamName}/>
-            <div>
-              {this.renderEndMeetingButton(this.props.user)}
-            </div>
           </Drawer>
+          <Modal ref="mymodal" onOk={this.props.home} message={this.state.modalMessage}/>
         </Layout>
       </div>
     );
@@ -471,7 +521,7 @@ export default flow(
   DropTarget(ItemTypes.NOTE, NoteTarget,
     connect =>
       ( {
-          connectDropTarget: connect.dropTarget()
-        }
+        connectDropTarget: connect.dropTarget()
+      }
       )), connect(mapStateToProps, mapDispatchToProps))(SharedBoard);
 

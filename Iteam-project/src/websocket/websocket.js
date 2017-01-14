@@ -18,7 +18,7 @@ export function connectAndSubscribe(topic, resolve){
 
   var socket = SockJs('/channel');
   stompClient = Stomp.over(socket);
-  
+
 
   //TODO: sacar el console.log
   stompClient.connect({}, function (frame) {
@@ -29,7 +29,7 @@ export function connectAndSubscribe(topic, resolve){
 }
 
 
-export function sendMessage(action, topic, content,users){
+export function sendMessage(action, topic, content){
   stompClient.send("/channel", {},JSON.stringify(
     {
       "topic": topic,

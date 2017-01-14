@@ -6,7 +6,7 @@ import {ItemTypes} from "../Constants/Constants";
 import Button from "react-toolbox/lib/button";
 import Tooltip from "react-toolbox/lib/tooltip";
 import flow from "lodash/flow";
-import {connect as con, initWebSocket, sendMessage, disconnect} from "../../websocket/websocket";
+import {connectAndSubscribe, initWebSocket, sendMessage, disconnect} from "../../websocket/websocket";
 import {connect} from "react-redux";
 import axios from "axios";
 import {MEETING} from "../../constants/HostConfiguration";
@@ -19,6 +19,7 @@ import {push} from "react-router-redux";
 import navTheme from "./NavDrawer.scss";
 import Dropdown from "react-toolbox/lib/dropdown";
 import {MenuItem, MenuDivider} from "react-toolbox/lib/menu";
+import Modal from '../BootstrapModal/BootstrapModal';
 
 const TooltipButton = Tooltip(Button);
 
@@ -68,13 +69,12 @@ class PersonalBoard extends Component {
   };
 
   componentWillMount() {
-    console.debug('puto entre: ' + this.props.meetingConfiguration.tags);
     this.setValuesOptionsTags(this.props.meetingConfiguration.tags);
   }
 
   componentDidMount() {
     initWebSocket();
-    con();
+    connectAndSubscribe(this.props.meetingId, this.receiveMessage.bind(this));
 
     if (this.props.connected == null || !this.props.connected) {
       this.props.userConnected();
@@ -104,6 +104,20 @@ class PersonalBoard extends Component {
 
   componentWillUnmount() {
     disconnect();
+  }
+
+  receiveMessage(payload){
+    let jsonPayload = JSON.parse(payload);
+
+    switch (jsonPayload.action) {
+      case "endMeeting":
+        this.informMeetingEnding();
+    }
+  }
+
+  informMeetingEnding(){
+    this.setState({modalMessage: 'This meeting has been ended by the owner. ¡Thank you for participating!'});
+    this.refs.mymodal.openModal();
   }
 
   filterTags(value) {
@@ -273,6 +287,7 @@ class PersonalBoard extends Component {
               {this.renderNotes(this.state.notes, this.state.tagName)}
             </div>
           </Panel>
+          <Modal ref="mymodal"  onOk={this.props.home} message={this.state.modalMessage}/>
         </Layout>
       </div>
     );
