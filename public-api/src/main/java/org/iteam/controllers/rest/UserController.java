@@ -102,10 +102,10 @@ public class UserController {
      *            the user name to check
      * @return 200 OK if the user exists or 404 otherwise
      */
-    @RequestMapping(value = "/user/exists", method = RequestMethod.HEAD)
+    @RequestMapping(value = "/user/exists", method = RequestMethod.GET)
     public ResponseEntity<Void> checkUserIfExists(@RequestParam(value = "username", required = true) String userName) {
 
-        return checkResult(userServiceImpl.checkUserExistence(userName), HttpStatus.NOT_FOUND);
+        return checkResult(userServiceImpl.checkUserExistence(userName), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @RequestMapping(value = "/validate/password", method = RequestMethod.GET)

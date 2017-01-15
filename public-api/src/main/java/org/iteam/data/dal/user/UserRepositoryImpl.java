@@ -77,7 +77,7 @@ public class UserRepositoryImpl implements UserRepsoitory {
         GetResponse response = elasticsearchClient.getDocument(StringUtilities.INDEX_USER,
                 StringUtilities.INDEX_TYPE_USER, username);
 
-        if (response != null && response.isExists()) {
+        if (response.isExists()) {
             return true;
         }
         return false;

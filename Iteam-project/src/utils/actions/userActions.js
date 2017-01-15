@@ -1,31 +1,31 @@
 import axios from 'axios'
 import {USER} from '../../constants/HostConfiguration'
 
-export function submitUser(data) {
+export function submitUser(data, nationality, profession) {
 
   let hobbiesList = data.hobbies.split(',');
 
-  return axios.post(USER.UPDATE_USER, {
+  return axios.post(USER.POST_USER, {
     username: data.username,
     password: data.password,
-    nationality: data.nationality,
+    nationality: nationality,
     bornDate: data.date.getTime(),
     mail: data.mail,
     gender: data.genderValue,
     hobbies: hobbiesList,
-    profession: data.profession,
+    profession: profession,
     name: data.firstName,
     lastName: data.lastName
   })
 }
 
-export function updateUser(data) {
+export function updateUser(data, profession) {
 
   let hobbiesList = data.hobbies.split(',');
 
   let objToUpdate = {
     hobbies: hobbiesList,
-    profession: data.professionName,
+    profession: profession,
   };
 
   if (data.oldPassword !== '' && data.password !== '') {
@@ -46,6 +46,14 @@ export function validatePasswordUser(oldPassword) {
 
 export function getUserInformation() {
   return axios.get(USER.GET_USER)
+}
+
+export function userExistence(username) {
+  return axios.get(USER.USER_EXISTS, {
+    params: {
+      username: username
+    }
+  })
 }
 
 

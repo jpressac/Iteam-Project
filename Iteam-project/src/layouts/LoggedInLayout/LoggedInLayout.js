@@ -9,10 +9,10 @@ export const LoggedInLayout = ({ children }) => (
       {children}
     </div>
   </div>
-)
+);
 
 LoggedInLayout.propTypes = {
   children: React.PropTypes.element.isRequired
-}
+};
 
 export default LoggedInLayout
