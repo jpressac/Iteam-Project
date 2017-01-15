@@ -20,9 +20,7 @@ const mapDispatchToProps = dispatch => ({
   meeting: () => dispatch(push('/' + PATHS.MENULOGGEDIN.MEETING)),
   teamList: () => dispatch(push('/' + PATHS.MENULOGGEDIN.TEAMLIST)),
   team: () => dispatch(push('/' + PATHS.MENULOGGEDIN.NEWTEAM)),
-  newMeeting: () => dispatch(fromMeetingOrTeam()),
-  chat: ()=> dispatch(push('/' + PATHS.MENULOGGEDIN.CHAT))
-
+  newMeeting: () => dispatch(fromMeetingOrTeam())
 });
 const mapStateToProps = (state) => {
   if (state.loginUser != null) {
@@ -57,9 +55,7 @@ class HeaderLog extends Component {
       <header >
         <AppBar fixed flat theme={themeAppBar}>
           <div >
-
-            <img src={logo} style={{height: 50, width: 100, marginRight: 300}}/>
-
+            <img src={logo} style={{height: 50, width: 100, marginRight: '30%'}}/>
             <Navigation type="horizontal" theme={themeNav}>
               <ul className={classes.ul}>
                 <li><Button label='HOME' className={themeButton.button} style={{color: '#900C3F'}}
@@ -76,8 +72,6 @@ class HeaderLog extends Component {
                             onClick={this.props.teamList}/></li>
                 <li><span className={classes.span}><label> {this.props.user}</label></span ></li>
                 <li><LogoutButton style={{color: '#900C3F'}}/>></li>
-                <li><Button label='CHAT' theme={themeButton} style={{color: '#900C3F'}}
-                            onClick={this.props.chat}/></li>
               </ul>
             </Navigation>
           </div>

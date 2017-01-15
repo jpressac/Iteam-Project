@@ -39,7 +39,7 @@ class Chat extends Component {
       messages: props.meetingChatMessages != null ? props.meetingChatMessages.messages : [],
       text: '',
       expand: props.meetingChatMessages != null ? props.meetingChatMessages.size : true,
-      expandButton: "expand_less",
+      expandButton: props.meetingChatMessages != null ? props.meetingChatMessages.expandButton : "expand_less",
       count: props.meetingChatMessages != null ? props.meetingChatMessages.count : 0,
       showLabel: props.meetingChatMessages != null ? props.meetingChatMessages.showLabel : false
     };
@@ -64,7 +64,8 @@ class Chat extends Component {
       messages: this.state.messages,
       size: this.state.expand,
       showLabel: this.state.showLabel,
-      count: this.state.count
+      count: this.state.count,
+      expandButton: this.state.expandButton
     });
     disconnectChat();
   }
@@ -86,10 +87,6 @@ class Chat extends Component {
       count: this.state.count + 1,
       showLabel: true
     });
-    /*this.props.saveMeetingChatMessages({
-     messages: this.state.messages,
-     size: this.state.expand
-     });*/
     var element = document.getElementById("chatMessages");
     element.scrollTop = element.scrollHeight;
   }
@@ -120,7 +117,7 @@ class Chat extends Component {
 
   renderMinimize() {
     return (
-      <div id="chatMessages" className={classes.chatContainer}>
+      <div className={classes.chatContainer}>
         <div className={classes.msgWgtHeader}>CHAT
           <IconButton icon={this.state.expandButton} onClick={this.onChangeSize()}/>
           <label value={this.state.count}/>
@@ -132,7 +129,7 @@ class Chat extends Component {
 
   renderMaximize() {
     return (
-      <div id="chatMessages" className={classes.chatContainer}>
+      <div className={classes.chatContainer}>
         <div className={classes.msgWgtHeader}>CHAT</div>
         <IconButton icon={this.state.expandButton} onClick={this.onChangeSize.bind(this)}/>
         <MessageList
@@ -148,9 +145,9 @@ class Chat extends Component {
   render() {
     if (this.state.expand) {
       return (
-        <div id="chatMessages" className={classes.chatContainerMax}>
+        <div className={classes.chatContainerMax}>
           <div className={classes.msgWgtHeaderMax} onClick={this.onChangeSize.bind(this)}>CHAT
-            <IconButton icon={this.state.expandButton} onClick={this.onChangeSize.bind(this)}/>
+            <IconButton icon={this.state.expandButton} style={{float: 'right'}} onClick={this.onChangeSize.bind(this)}/>
           </div>
           <MessageList
             messages={this.state.messages}
@@ -163,18 +160,18 @@ class Chat extends Component {
     }
     if (!this.state.expand && this.state.showLabel) {
       return (
-        <div id="chatMessages" className={classes.chatContainerMin}>
+        <div className={classes.chatContainerMin}>
           <div className={classes.msgWgtHeaderMin} onClick={this.onChangeSize.bind(this)}>CHAT
-            <IconButton icon={this.state.expandButton} onClick={this.onChangeSize.bind(this)}/>
-            <Button label={this.state.count} style={{background:'yellow', color:'black'}} mini floating disabled/>
+            <IconButton icon={this.state.expandButton} style={{float: 'right'}} onClick={this.onChangeSize.bind(this)}/>
+            <Button label={this.state.count} style={{background:'yellow', color:'black', float:'left'}} mini floating disabled/>
           </div>
         </div>
       )
     }
     return (
-      <div id="chatMessages" className={classes.chatContainerMin}>
+      <div className={classes.chatContainerMin}>
         <div className={classes.msgWgtHeaderMax} onClick={this.onChangeSize.bind(this)}>CHAT
-          <IconButton icon={this.state.expandButton} onClick={this.onChangeSize.bind(this)}/>
+          <IconButton icon={this.state.expandButton} style={{float: 'right'}} onClick={this.onChangeSize.bind(this)}/>
         </div>
       </div>
     )

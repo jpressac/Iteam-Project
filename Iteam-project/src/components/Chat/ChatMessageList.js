@@ -4,11 +4,15 @@
 
 import React, {Component, PropTypes} from 'react';
 import Message from './ChatMessage'
-
-const StringDate=new Date();
+import classes from './ChatStyle.scss'
 
 class ChatMessageList extends Component {
 
+
+  componentDidMount(){
+    var element = document.getElementById("chatMessages");
+    element.scrollTop = element.scrollHeight;
+  }
 
   renderMessages(){
     if(this.props.messages != ''){
@@ -27,7 +31,7 @@ class ChatMessageList extends Component {
 
   render() {
     return (
-        <div>
+        <div id="chatMessages" className={classes.messageList}>
           {this.renderMessages()}
         </div>
     );

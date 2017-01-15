@@ -1,27 +1,26 @@
-.label
-{
-  color:#900C3F;
-  font-family:monospace;
-    align-items: center;
-    font-size: 35px;
-}
-.label2
-{
+.label {
   color: #900C3F;
-  font-family:monospace;
+  font-family: monospace;
+  align-items: center;
+  font-size: 35px;
+}
+
+.label2 {
+  color: #900C3F;
+  font-family: monospace;
   align-items: center;
   font-size: 35px;
 
-
 }
-.content{
 
+.content {
+  text-align: center;
   background-position-x: center;
   background-position-y: center;
-  margin-top:10%;
-
+  margin-top: 10%;
 
 }
-.listSH{
-  width:600px;
+
+.listSH {
+  width: 600px;
 }

@@ -12,7 +12,12 @@
   height: 300px;
   display: flex;
   flex-direction: column;
+}
+
+.messageList{
   overflow: auto;
+  position: relative;
+  height: 220px;
 }
 
 .chatContainerMin {
@@ -40,6 +45,8 @@
   color: white;
   text-align: center;
   height: 40px;
+  font-size: medium;
+  display: inline-block;
 }
 
 .msgWgtHeaderMax {
