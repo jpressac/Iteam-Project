@@ -21,6 +21,7 @@ import logo from "../Header/image/iteamLogo.jpg";
 import navTheme from "./NavDrawer.scss";
 import Dropdown from "react-toolbox/lib/dropdown";
 import {MenuItem, MenuDivider} from "react-toolbox/lib/menu";
+import Chat from '../Chat/Chat';
 
 
 const NoteTarget = {
@@ -101,7 +102,7 @@ class SharedBoard extends Component {
 
   componentWillUnmount() {
     //End socket connection
-    disconnect()
+    disconnect();
   }
 
   notes(noteMap, key) {
@@ -429,6 +430,7 @@ class SharedBoard extends Component {
             </div>
           </Drawer>
         </Layout>
+        <Chat/>
       </div>
     );
   }

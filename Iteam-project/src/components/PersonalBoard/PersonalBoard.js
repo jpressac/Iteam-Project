@@ -19,6 +19,7 @@ import {push} from "react-router-redux";
 import navTheme from "./NavDrawer.scss";
 import Dropdown from "react-toolbox/lib/dropdown";
 import {MenuItem, MenuDivider} from "react-toolbox/lib/menu";
+import Chat from '../Chat/Chat';
 
 const TooltipButton = Tooltip(Button);
 
@@ -148,18 +149,18 @@ class PersonalBoard extends Component {
     let map = this.state.notes;
     let id = generateUUID();
     map[id] =
-      {
-        id: id,
-        left: generateRandomNumber(),
-        top: generateRandomNumber(),
-        username: this.props.user,
-        title: text,
-        comments: "No comments",
-        tag: this.state.mapTag[0].label,
-        ranking: 0,
-        meetingId: this.props.meetingId,
-        boardType: "personal"
-      };
+    {
+      id: id,
+      left: generateRandomNumber(),
+      top: generateRandomNumber(),
+      username: this.props.user,
+      title: text,
+      comments: "No comments",
+      tag: this.state.mapTag[0].label,
+      ranking: 0,
+      meetingId: this.props.meetingId,
+      boardType: "personal"
+    };
     this.updateNotesCacheByUser(map);
 
     this.setState({notes: map});
@@ -244,6 +245,7 @@ class PersonalBoard extends Component {
             </div>
           </Panel>
         </Layout>
+        <Chat/>
       </div>
     );
   }
@@ -265,6 +267,6 @@ export default flow(
   DropTarget(ItemTypes.NOTE, NoteTarget,
     connection =>
       ( {
-          connectDropTarget: connection.dropTarget()
-        }
+        connectDropTarget: connection.dropTarget()
+      }
       )), connect(mapStateToProps, mapDispatchToProps))(PersonalBoard);
