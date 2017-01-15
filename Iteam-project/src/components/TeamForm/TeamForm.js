@@ -1,8 +1,6 @@
 import React, {PropTypes} from "react";
-import axios from "axios";
 import BootstrapModal from "../BootstrapModal";
 import {connect} from "react-redux";
-import Input from "react-toolbox/lib/input";
 import Dropdown from "react-toolbox/lib/dropdown";
 import {Button} from "react-toolbox/lib/button";
 import {push} from "react-router-redux";
@@ -11,9 +9,14 @@ import classes from "./TeamForm.scss";
 import themeLabel from "./label.scss";
 import chipTheme from "./chips.scss";
 import Tooltip from "react-toolbox/lib/tooltip";
-import {TEAM, UTILITIES} from "../../constants/HostConfiguration";
 import Chip from "react-toolbox/lib/chip";
 import Spinner from "../Spinner/Spinner";
+import InputComponent from '../InputComponent/InputComponent'
+import {getProfessions, getNationalities} from '../../utils/actions/utilsActions';
+import {createTeam, teamNameExistence, selectTeam} from '../../utils/actions/teamActions';
+import {List, ListItem, ListSubHeader} from 'react-toolbox/lib/list';
+import generateUUID from "../../constants/utils/GetUUID";
+import listSubheader from './ListSubheader.css'
 
 const mapStateToProps = (state) => {
   if (state.loginUser !== null) {
@@ -58,7 +61,11 @@ class TeamSuggestionForm extends React.Component {
       filterName: '',
       filteredName: '',
       showSpinner: false,
-      showErrorTeamName: false
+      showErrorTeamName: false,
+      errorTeamName: '',
+      checkbox: false,
+      userInformation: [],
+      usersSelected: []
     }
   }
 
@@ -71,22 +78,14 @@ class TeamSuggestionForm extends React.Component {
     }
   }
 
-  handleOnChange(username) {
-    let newMap = this.state.usernames;
-    newMap[username] = newMap[username] == false;
-    this.setState({usernames: newMap});
-  }
-
   //TODO: use a set<string> for filling the table with columns that details the filter applied
 
   searchUsers() {
     if (this.state.filters.length >= 0) {
-      axios.get(TEAM.TEAM_SELECT,
-        {
-          params: {filter: JSON.stringify(this.state.filters)}
-        })
+      selectTeam(JSON.stringify(this.state.filters))
         .then(function (response) {
-          this.fillUsersTable(response.data);
+          this.setState({userInformation: response.data});
+          //this.fillUsersTable(response.data);
         }.bind(this))
         .catch(function (response) {
           //TODO: handle errors
@@ -94,28 +93,20 @@ class TeamSuggestionForm extends React.Component {
     }
   }
 
-  createMeeting() {
+  create() {
 
-    let usersMap = this.state.usernames;
-    let selected = [];
-    for (let user in usersMap) {
-      if (usersMap[user] == true) {
-        selected.push(user);
-      }
-    }
+    let selected = this.state.usersSelected.map((user) => user.username);
+
     selected.push(this.props.user);
 
-    if ((selected.length > 0) && (this.state.teamName !== '') && !this.state.showErrorTeamName) {
+    if ((selected.length > 1) && (this.state.teamName !== '') && !this.state.showErrorTeamName) {
       this.setState({showSpinner: true});
 
-      axios.post(TEAM.TEAM_CREATE, {
-        ownerName: this.props.user,
-        name: this.state.teamName,
-        members: selected
-      }).then(function (response) {
-        //TODO: implement a modal with a button that receives a call-function and perform any of the below actions.
-        this.checkWhereItCames()
-      }.bind(this))
+      createTeam(this.props.user, this.state.teamName, selected)
+        .then(function (response) {
+          //TODO: implement a modal with a button that receives a call-function and perform any of the below actions.
+          this.checkWhereItCames()
+        }.bind(this))
         .catch(function (response) {
           //TODO: handle errors
         })
@@ -144,26 +135,6 @@ class TeamSuggestionForm extends React.Component {
     this.searchUsers.bind(this);
   }
 
-  fillUsersTable(data) {
-    let us = [];
-    let names = {};
-    data.map(function (user) {
-      if (user.username !== this.props.user) {
-        us.push(
-          <tr key={us.length}>
-            <td><input className="no-margin" type="checkbox"
-                       onChange={this.handleOnChange.bind(this, user.username)}/></td>
-            <td>{user.lastName}</td>
-            <td>{user.name}</td>
-          </tr>
-        );
-        names[user.username] = false;
-      }
-    }.bind(this));
-
-    this.setState({users: us, usernames: names});
-  }
-
   fillFilterValues(value) {
 
     let filtered = filter.filter(teamFilter => teamFilter["value"] === value);
@@ -173,7 +144,7 @@ class TeamSuggestionForm extends React.Component {
     switch (filterLabelName) {
       case "Profession":
 
-        axios.get(UTILITIES.PROFESSIONS).then(function (response) {
+        getProfessions().then(function (response) {
           this.setValuesOptionsProfessions(response.data);
         }.bind(this));
 
@@ -182,7 +153,7 @@ class TeamSuggestionForm extends React.Component {
         break;
       case "Nationality":
 
-        axios.get(UTILITIES.NATIONALITIES).then(function (response) {
+        getNationalities().then(function (response) {
           this.setValuesOptionsNationalities(response.data);
         }.bind(this));
 
@@ -226,7 +197,7 @@ class TeamSuggestionForm extends React.Component {
   }
 
   handleChange = (teamName, value) => {
-    this.setState({...this.state, [teamName]: value});
+    this.setState({[teamName]: value});
   };
 
   dropdownObjectForFilter() {
@@ -255,33 +226,70 @@ class TeamSuggestionForm extends React.Component {
   }
 
   checkName() {
-    axios.get(TEAM.TEAM_NAME_EXISTENT, {
-      params: {
-        teamName: this.state.teamName,
-        teamOwner: this.props.user
-      }
-    }).then(function () {
-      this.setState({showErrorTeamName: false})
-    }.bind(this))
+    teamNameExistence(this.state.teamName, this.props.user)
+      .then(function () {
+        this.setState({errorTeamName: ''})
+      }.bind(this))
       .catch(function () {
-      this.setState({showErrorTeamName: true})
-    }.bind(this));
+        this.setState({errorTeamName: 'This team name already exists'})
+      }.bind(this));
   }
 
-  renderTeamNameInput() {
-    if (!this.state.showErrorTeamName) {
-      return (
-        <Input type='text' label='Name' name='teamName' theme={themeLabel}
-               value={this.state.teamName} onChange={this.handleChange.bind(this, 'teamName')}
-               maxLength={16} onBlur={this.checkName.bind(this)}/>
-      )
-    } else {
-      return (
-        <Input type='text' label='Name' name='teamName' theme={themeLabel}
-               value={this.state.teamName} onChange={this.handleChange.bind(this, 'teamName')}
-               maxLength={16} onBlur={this.checkName.bind(this)} error='This team name already exists'/>
-      )
+  selectUser(username){
+    let userSelected = this.state.usersSelected;
+
+    let userToAdd = this.state.userInformation.filter((user) => user.username === username)[0];
+
+    if(userSelected.filter((user) => user.username === userToAdd.username).length != 1){
+      userSelected.push(userToAdd)
     }
+
+    this.setState({
+      userInformation: this.state.userInformation.filter((user) => user.username !== username),
+      usersSelected: userSelected
+    })
+  }
+
+  removeUser(username){
+    let removedUser = this.state.userInformation;
+
+    let userToRemove = this.state.usersSelected.filter((user) => user.username === username)[0];
+
+    if (removedUser.filter((user) => userToRemove.username === user.username).length != 1){
+      removedUser.push(userToRemove)
+    }
+
+    this.setState({
+      userInformation: removedUser,
+      usersSelected: this.state.usersSelected.filter((user) => user.username !== username)
+    })
+  }
+
+  renderUsers() {
+    return this.state.userInformation.map((user) => {
+      return (
+        <ListItem key={generateUUID()}
+                  avatar='https://dl.dropboxusercontent.com/u/2247264/assets/m.jpg'
+                  caption= {[user.username, [user.name, user.lastName].join(" ")].join(": ")}
+                  legend='Here will be the feedback points'
+                  onClick={this.selectUser.bind(this, user.username)}
+                  rightIcon='star'/>
+      )
+    })
+  }
+
+  renderUserSelected(){
+    return this.state.usersSelected.map((user) => {
+      return (
+        <ListItem key={generateUUID()}
+                  avatar='https://dl.dropboxusercontent.com/u/2247264/assets/m.jpg'
+                  caption= {[user.username, [user.name, user.lastName].join(" ")].join(": ")}
+                  legend='Here will be the feedback points'
+                  onClick={this.removeUser.bind(this, user.username)}
+                  rightIcon='star'/>
+      )
+
+    })
   }
 
   render() {
@@ -294,10 +302,11 @@ class TeamSuggestionForm extends React.Component {
           <div className={classes.form}>
             <div className="form-horizontal">
               <div className="form-group">
-                <div className="col-md-8">
-                  <div className="row">
-                    {this.renderTeamNameInput()}
-                  </div>
+                <div className="row">
+                  <InputComponent className="col-md-8" label='Team name' type='type' required
+                                  value={this.state.teamName}
+                                  onValueChange={this.handleChange.bind(this, 'teamName')}
+                                  onBlur={this.checkName.bind(this)} onValueError={this.state.errorTeamName}/>
                 </div>
               </div>
               <div className="form-group">
@@ -326,34 +335,29 @@ class TeamSuggestionForm extends React.Component {
               </div>
               <div className="form-group">
                 <div className="row">
-                  <div className="col-md-12">
-                    <div className="col-md-2">
-                      <TooltipButton icon='search' tooltip='Search members'
-                                     style={{background: '#900C3F', color: 'white'}}
-                                     floating onClick={this.searchUsers.bind(this)}/>
-                    </div>
-                    <div className="col-md-8">
-                      <table className="table table-condensed table-striped table-bordered table-hover no-margin"
-                             style={{marginTop: 20, background: 'white'}} data-height="299" data-click-to-select="true">
-                        <thead>
-                        <tr>
-                          <th style={{"width": "5%"}}>
-                            <input className="no-margin" type="checkbox"/>
-                          </th>
-                          <th style={{"width": "45%", "align": "center"}}>Last name</th>
-                          <th style={{"width": "50%"}}>Name</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {this.state.users}
-                        </tbody>
-                      </table>
-                    </div>
+                  <div className="col-md-offset-6">
+                    <TooltipButton icon='search' tooltip='Search members'
+                                   style={{background: '#900C3F', color: 'white'}}
+                                   floating onClick={this.searchUsers.bind(this)}/>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col-md-6">
+                    <List selectable ripple className={classes.verticalbarright}>
+                      <ListSubHeader caption='Select Users' theme={listSubheader} />
+                      {this.renderUsers()}
+                    </List>
+                  </div>
+                  <div className="col-md-6">
+                    <List selectable ripple className={classes.verticalbarleft}>
+                      <ListSubHeader caption='Users Selected' theme={listSubheader} />
+                      {this.renderUserSelected()}
+                    </List>
                   </div>
                 </div>
                 <div className="row">
                   <Button style={{margin: 15, color: 'white', background: '#900C3F'}} target='_blank' raised
-                          onClick={this.createMeeting.bind(this)}>
+                          onClick={this.create.bind(this)}>
                     Create
                   </Button>
                 </div>
@@ -361,7 +365,8 @@ class TeamSuggestionForm extends React.Component {
               <BootstrapModal ref="mymodal" message={this.state.message}/>
             </div>
           </div>
-        </div>);
+        </div>
+      );
     }
     else {
       return (
