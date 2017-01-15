@@ -16,7 +16,6 @@ class ChatMessageForm extends Component {
   }
 
   handleSubmit(e) {
-    console.debug('event: ' + e.which);
     if(this.state.text != '' && e.which==13) {
       e.preventDefault();
       this.props.onMessageSubmit(this.state.text, Date.now());

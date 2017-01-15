@@ -57,9 +57,7 @@ class Chat extends Component {
 
 
   componentWillUnmount() {
-    console.debug('chat size: ' + this.state.expand);
     //End socket connection
-    console.debug('state: ' + this.state.messages);
     this.props.saveMeetingChatMessages({
       messages: this.state.messages,
       size: this.state.expand,
@@ -71,10 +69,7 @@ class Chat extends Component {
   }
 
   messageReceive(payload) {
-
     let jsonPayload = JSON.parse(payload);
-    console.debug('payload: ' + payload);
-
     var newmessage = this.state.messages;
     newmessage.push({
         user: jsonPayload.user,
@@ -87,8 +82,10 @@ class Chat extends Component {
       count: this.state.count + 1,
       showLabel: true
     });
-    var element = document.getElementById("chatMessages");
-    element.scrollTop = element.scrollHeight;
+    if (this.state.expand) {
+      var element = document.getElementById("chatMessages");
+      element.scrollTop = element.scrollHeight;
+    }
   }
 
 
@@ -116,11 +113,20 @@ class Chat extends Component {
   }
 
   renderMinimize() {
+    if (this.state.showLabel) {
+      return (
+        <div className={classes.chatContainerMin}>
+          <div className={classes.msgWgtHeaderMin} onClick={this.onChangeSize.bind(this)}>CHAT
+            <IconButton icon={this.state.expandButton} style={{float: 'right'}} onClick={this.onChangeSize.bind(this)}/>
+            <Button label={this.state.count.toString()} style={{background:'yellow', color:'black', float:'left'}} mini floating disabled/>
+          </div>
+        </div>
+      )
+    }
     return (
-      <div className={classes.chatContainer}>
-        <div className={classes.msgWgtHeader}>CHAT
-          <IconButton icon={this.state.expandButton} onClick={this.onChangeSize()}/>
-          <label value={this.state.count}/>
+      <div className={classes.chatContainerMin}>
+        <div className={classes.msgWgtHeaderMax} onClick={this.onChangeSize.bind(this)}>CHAT
+          <IconButton icon={this.state.expandButton} style={{float: 'right'}} onClick={this.onChangeSize.bind(this)}/>
         </div>
       </div>
     )
@@ -129,9 +135,10 @@ class Chat extends Component {
 
   renderMaximize() {
     return (
-      <div className={classes.chatContainer}>
-        <div className={classes.msgWgtHeader}>CHAT</div>
-        <IconButton icon={this.state.expandButton} onClick={this.onChangeSize.bind(this)}/>
+      <div className={classes.chatContainerMax}>
+        <div className={classes.msgWgtHeaderMax} onClick={this.onChangeSize.bind(this)}>CHAT
+          <IconButton icon={this.state.expandButton} style={{float: 'right'}} onClick={this.onChangeSize.bind(this)}/>
+        </div>
         <MessageList
           messages={this.state.messages}
         />
@@ -144,37 +151,11 @@ class Chat extends Component {
 
   render() {
     if (this.state.expand) {
-      return (
-        <div className={classes.chatContainerMax}>
-          <div className={classes.msgWgtHeaderMax} onClick={this.onChangeSize.bind(this)}>CHAT
-            <IconButton icon={this.state.expandButton} style={{float: 'right'}} onClick={this.onChangeSize.bind(this)}/>
-          </div>
-          <MessageList
-            messages={this.state.messages}
-          />
-          <MessageForm
-            onMessageSubmit={this.handleMessageSubmit.bind(this)}
-          />
-        </div>
-      )
+      return this.renderMaximize()
     }
-    if (!this.state.expand && this.state.showLabel) {
-      return (
-        <div className={classes.chatContainerMin}>
-          <div className={classes.msgWgtHeaderMin} onClick={this.onChangeSize.bind(this)}>CHAT
-            <IconButton icon={this.state.expandButton} style={{float: 'right'}} onClick={this.onChangeSize.bind(this)}/>
-            <Button label={this.state.count} style={{background:'yellow', color:'black', float:'left'}} mini floating disabled/>
-          </div>
-        </div>
-      )
+    else {
+      return this.renderMinimize()
     }
-    return (
-      <div className={classes.chatContainerMin}>
-        <div className={classes.msgWgtHeaderMax} onClick={this.onChangeSize.bind(this)}>CHAT
-          <IconButton icon={this.state.expandButton} style={{float: 'right'}} onClick={this.onChangeSize.bind(this)}/>
-        </div>
-      </div>
-    )
   }
 
 }

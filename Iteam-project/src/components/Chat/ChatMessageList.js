@@ -8,12 +8,6 @@ import classes from './ChatStyle.scss'
 
 class ChatMessageList extends Component {
 
-
-  componentDidMount(){
-    var element = document.getElementById("chatMessages");
-    element.scrollTop = element.scrollHeight;
-  }
-
   renderMessages(){
     if(this.props.messages != ''){
       return this.props.messages.map((message, i) => {
