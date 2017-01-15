@@ -1,5 +1,6 @@
 package org.iteam.controllers.socket;
 
+import org.iteam.data.model.ChatMessage;
 import org.iteam.data.model.SocketMessage;
 import org.iteam.services.meeting.MeetingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,28 +30,32 @@ public class WebsocketController {
     // TODO:remove channelId
     public void sendMessage(String channelId, SocketMessage message) {
 
-        if(message.getMessage().getAction().equals("insertSharedBoard")) {
+        if (message.getMessage().getAction().equals("insertSharedBoard")) {
             meetingService.updateMeetingInfo(message.getTopic(), message.getMessage().getPayload());
         }
 
-        if(message.getMessage().getAction().equals("user connected")) {
+        if (message.getMessage().getAction().equals("user connected")) {
             meetingService.updateMeetingUsers(message.getTopic(), message.getMessage().getPayload());
         }
 
-        if(message.getMessage().getAction().equals("insertCache")) {
+        if (message.getMessage().getAction().equals("insertCache")) {
             meetingService.saveMeetingInfoPersonalBoard(message.getTopic(), message.getMessage().getPayload());
         }
 
-        if(message.getMessage().getAction().equals("updateSharedBoardCache")) {
+        if (message.getMessage().getAction().equals("updateSharedBoardCache")) {
             meetingService.updateSharedBoardCache(message.getTopic(), message.getMessage().getPayload());
         }
 
-        if(message.getMessage().getAction().equals("updateCacheDelete")) {
+        if (message.getMessage().getAction().equals("updateCacheDelete")) {
             meetingService.removeIdeasFromCacheSharedBoard(message.getTopic(), message.getMessage().getPayload());
         }
 
         template.convertAndSend("/topic/" + message.getTopic(), message.getMessage());
-        
+    }
+
+    @MessageMapping("/chat")
+    public void sendMessageToChat(ChatMessage message) {
+        template.convertAndSend("/chatRoom/" + message.getTopic(), message.getPayload());
     }
 
     @Autowired

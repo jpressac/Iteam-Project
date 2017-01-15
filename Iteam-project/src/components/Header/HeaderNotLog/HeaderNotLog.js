@@ -23,7 +23,7 @@ class HeaderNotLog extends React.Component {
       <header >
         <AppBar fixed flat theme={themeAppBar}>
           <div >
-            <img src={logo} style={{height: 50, width: 100, marginRight: 400}}/>
+            <img src={logo} style={{height: 50, width: 100, marginRight: '55%'}}/>
             <Navigation type="horizontal" theme={themeNav}>
               <Button icon='home' label='HOME' style={{color: '#900C3F'}} onClick={this.props.home}/>
               <Button icon='create' label='REGISTER' style={{color: '#900C3F'}} onClick={this.props.register}/>
