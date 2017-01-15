@@ -90,8 +90,19 @@ public class TeamController {
         return teamService.getTeamUserInformationByMeeting(meetingId);
     }
 
+    @RequestMapping(value = "team/name/existent", method = RequestMethod.GET)
+    public ResponseEntity<Void> checkTeamNameExistent(
+            @RequestParam(value = "teamName", required = true) String teamName,
+            @RequestParam(value = "teamOwner", required = true) String teamOwner) {
+
+        return teamService.checkTeamNameExistent(teamName, teamOwner)
+                ? new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR)
+                : new ResponseEntity<Void>(HttpStatus.ACCEPTED);
+
+    }
+
     private ResponseEntity<Void> checkResult(boolean flag) {
-        if(flag) {
+        if (flag) {
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

@@ -68,4 +68,15 @@ public interface TeamService {
      */
     public TeamUserModel getTeamUserInformationByMeeting(String meetingId);
 
+    /**
+     * Verified if the given team name already exists for that team owner
+     * 
+     * @param teamName
+     *            the name of the team.
+     * @param teamOwner
+     *            the name of the owner
+     * @return true if the team name already exists and false otherwise.
+     */
+    public boolean checkTeamNameExistent(String teamName, String teamOwner);
+
 }

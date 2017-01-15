@@ -1,19 +1,20 @@
 /**
  * Created by Randanne on 15/10/2016.
  */
-import React, {Component, PropTypes} from 'react'
-import jsPDF from 'jspdf'
-import {connect} from 'react-redux';
-import axios from 'axios';
-import Drawer from 'react-toolbox/lib/drawer';
-import Button from 'react-toolbox/lib/button';
-import classes from './ReportForm.scss';
-import BootstrapModal from '../BootstrapModal/BootstrapModal'
-import buttonBasic from './buttonBasic.scss'
-import buttonPdf from './buttonPdf.scss'
-import {MEETING} from '../../constants/HostConfiguration'
-import D3Tree from './D3tree/D3Tree'
-import D3ChartTree from './D3ChartTree/D3ChartTree'
+import React, {Component, PropTypes} from "react";
+import jsPDF from "jspdf";
+import {connect} from "react-redux";
+import axios from "axios";
+import Drawer from "react-toolbox/lib/drawer";
+import Button from "react-toolbox/lib/button";
+import classes from "./ReportForm.scss";
+import BootstrapModal from "../BootstrapModal/BootstrapModal";
+import buttonBasic from "./buttonBasic.scss";
+import buttonPdf from "./buttonPdf.scss";
+import {MEETING} from "../../constants/HostConfiguration";
+import D3Tree from "./D3tree/D3Tree";
+import D3ChartTree from "./D3ChartTree/D3ChartTree";
+import Spinner from "../Spinner/Spinner";
 
 const report = new jsPDF()
 
@@ -42,7 +43,8 @@ class ReportForm extends Component {
       meetingIdeas: [],
       selectedReport: '',
       treeData: {},
-      ranking: false
+      ranking: false,
+      showSpinner: false
     }
   }
 
@@ -52,43 +54,54 @@ class ReportForm extends Component {
 
   generateRankingReport = () => {
 
+    this.setState({showSpinner: true});
     axios.get(MEETING.MEETING_REPORT, {
       params: {
         meetingId: this.props.meetingId,
-        tags:this.props.meetingConfiguration.tags.toString().toLowerCase()
+        tags: this.props.meetingConfiguration.tags.toString().toLowerCase()
       }
     }).then(function (response) {
 
-      this.setState({treeData: response.data, ranking:true});
+      this.setState({showSpinner: false}, () => {
+        this.setState({treeData: response.data, ranking: true});
+      });
 
     }.bind(this)).catch(function (response) {
       //TODO: what we do here????
-    }.bind(this))
+    })
   };
 
   generateUserReport = () => {
+    this.setState({showSpinner: true});
+
     axios.get(MEETING.MEETING_REPORT_BY_USER, {
       params: {
         meetingId: this.props.meetingId,
-        tags:this.props.meetingConfiguration.tags.toString().toLowerCase()
+        tags: this.props.meetingConfiguration.tags.toString().toLowerCase()
       }
     }).then(function (response) {
-      this.setState({treeData: response.data, ranking:false});
-
+      this.setState({showSpinner: false}, () => {
+        this.setState({treeData: response.data, ranking: false});
+      });
 
     }.bind(this)).catch(function (response) {
       //TODO: what we do here????
-    });
+    })
   };
 
   generateTagReport = () => {
+
+    this.setState({showSpinner: true});
+
     axios.get(MEETING.MEETING_REPORT_BY_TAG, {
       params: {
         meetingId: this.props.meetingId,
         tags: this.props.meetingConfiguration.tags.toString().toLowerCase()
       }
     }).then(function (response) {
-      this.setState({treeData: response.data, ranking:false});
+      this.setState({showSpinner: false}, () => {
+        this.setState({treeData: response.data, ranking: false});
+      });
     }.bind(this)).catch(function (response) {
       //TODO: what we do here????
     })
@@ -117,30 +130,36 @@ class ReportForm extends Component {
   }
 
   render() {
-    return (
-      <div style={{marginTop: 70}}>
-        <BootstrapModal ref="mymodal" message={this.state.message}/>
-        <Button label='Reports bar' theme={buttonBasic} style={{color: 'white'}} onClick={this.handleToggle}/>
-        <Drawer active={this.state.active}
-                type="left"
-                onOverlayClick={this.handleToggle}>
-          <label className={classes.reportTitle}>Report options</label>
-          <div>
-            < Button label="Ideas by ranking" icon='star' theme={buttonPdf} style={{color: 'white'}}
-                     onClick={this.generateRankingReport} active/>
-            < Button label="Ideas by user" icon='group' theme={buttonPdf} style={{color: 'white'}}
-                     onClick={this.generateUserReport.bind(this)}/>
-            < Button label="Ideas by tag" icon='lightbulb_outline' theme={buttonPdf} style={{color: 'white'}}
-                     onClick={this.generateTagReport}/>
-            < Button label="Download PDF" icon='get_app' style={{color: 'white'}} theme={buttonPdf}
-                     onClick={this.generatePDF}/>
+    if (!this.state.showSpinner) {
+      return (
+        <div style={{marginTop: 70}}>
+          <BootstrapModal ref="mymodal" message={this.state.message}/>
+          <Button label='Reports bar' theme={buttonBasic} style={{color: 'white'}} onClick={this.handleToggle}/>
+          <Drawer active={this.state.active}
+                  type="left"
+                  onOverlayClick={this.handleToggle}>
+            <label className={classes.reportTitle}>Report options</label>
+            <div>
+              < Button label="Ideas by ranking" icon='star' theme={buttonPdf} style={{color: 'white'}}
+                       onClick={this.generateRankingReport} active/>
+              < Button label="Ideas by user" icon='group' theme={buttonPdf} style={{color: 'white'}}
+                       onClick={this.generateUserReport.bind(this)}/>
+              < Button label="Ideas by tag" icon='lightbulb_outline' theme={buttonPdf} style={{color: 'white'}}
+                       onClick={this.generateTagReport}/>
+              < Button label="Download PDF" icon='get_app' style={{color: 'white'}} theme={buttonPdf}
+                       onClick={this.generatePDF}/>
+            </div>
+          </Drawer>
+          <div id="reportHTML">
+            {this.renderTrees()}
           </div>
-        </Drawer>
-        <div id="reportHTML">
-          {this.renderTrees()}
         </div>
-      </div>
-    );
+      );
+    } else {
+      return (
+        <Spinner/>
+      )
+    }
   };
 }
 
