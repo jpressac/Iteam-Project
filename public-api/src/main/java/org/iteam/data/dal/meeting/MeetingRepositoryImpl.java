@@ -37,7 +37,6 @@ import org.springframework.util.ObjectUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 
 @Repository
 public class MeetingRepositoryImpl implements MeetingRepository {
@@ -66,7 +65,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         IndexResponse response = elasticsearchClientImpl.insertData(data, StringUtilities.INDEX_MEETING,
                 StringUtilities.INDEX_TYPE_MEETING, meeting.getMeetingId());
 
-        if(!response.isCreated()) {
+        if (!response.isCreated()) {
             LOGGER.error("The meeting couldn't be created - Meeting: '{}'", meeting.toString());
             return false;
         }
@@ -80,7 +79,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         LOGGER.info("Updating meeting");
         LOGGER.debug("Meeting: '{}'", updatedMeeting.toString());
 
-        if(!ObjectUtils.isEmpty(updatedMeeting.getProgrammedDate())) {
+        if (!ObjectUtils.isEmpty(updatedMeeting.getProgrammedDate())) {
             DateTime date = new DateTime(updatedMeeting.getProgrammedDate());
             updatedMeeting.setProgrammedDate(date.withZone(DateTimeZone.UTC).getMillis());
         }
@@ -129,7 +128,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
         String topic = getMeetingTopic(meetingId);
 
-        if(!ObjectUtils.isEmpty(topic)) {
+        if (!ObjectUtils.isEmpty(topic)) {
             return createRankingTree(tags, getIdeasGivenMeetingId(meetingId), new D3CollapseTreeModel(topic));
         }
         return null;
@@ -142,7 +141,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
         String topic = getMeetingTopic(meetingId);
 
-        if(!ObjectUtils.isEmpty(topic)) {
+        if (!ObjectUtils.isEmpty(topic)) {
             return createTagTree(tags, getIdeasGivenMeetingId(meetingId), new D3CollapseTreeModel(topic));
         }
         return null;
@@ -155,7 +154,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
         String topic = getMeetingTopic(meetingId);
 
-        if(!ObjectUtils.isEmpty(topic)) {
+        if (!ObjectUtils.isEmpty(topic)) {
 
             return createUserTree(users, tags, getIdeasGivenMeetingId(meetingId), new D3CollapseTreeModel(topic));
         }
@@ -175,7 +174,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
         LOGGER.debug("meetings retrieved: ", response.getHits().getTotalHits());
 
-        for(SearchHit hit : response.getHits()) {
+        for (SearchHit hit : response.getHits()) {
 
             LOGGER.debug("User '{}' meeting: '{}'", username, hit.getSourceAsString());
 
@@ -196,7 +195,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
                 QueryBuilders.termsQuery(MEETING_TEAM_NAME_FIELD, teamName),
                 SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD).order(SortOrder.ASC));
 
-        for(SearchHit hit : response.getHits()) {
+        for (SearchHit hit : response.getHits()) {
 
             Meeting meeting = (Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class);
             meetingList.add(meeting);
@@ -221,7 +220,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         GetResponse response = elasticsearchClientImpl.getDocument(StringUtilities.INDEX_MEETING_INFO,
                 StringUtilities.INDEX_TYPE_MEETING_INFO, meetingId);
 
-        if(response.isExists()) {
+        if (response.isExists()) {
             return response.getSourceAsString();
         }
         return null;
@@ -242,7 +241,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
             GetResponse response = elasticsearchClientImpl.getDocument(StringUtilities.INDEX_MEETING_INFO,
                     StringUtilities.INDEX_TYPE_MEETING_INFO_USERS, meetingId);
 
-            if(response.isExists()) {
+            if (response.isExists()) {
                 usersList = (MeetingUsers) JSONUtils.JSONToObject(response.getSourceAsString(), MeetingUsers.class);
             }
         } catch (IndexNotFoundException exception) {
@@ -299,7 +298,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
             Map<String, Object> notesMapCache = new HashMap<>();
 
-            if(getResponse.isExists()) {
+            if (getResponse.isExists()) {
                 notesMapCache = (Map<String, Object>) JSONUtils.JSONToObject(getResponse.getSourceAsString(),
                         HashMap.class);
 
@@ -328,11 +327,11 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         GetResponse getResponse = elasticsearchClientImpl.getDocument(StringUtilities.INDEX_MEETING_INFO,
                 StringUtilities.INDEX_TYPE_MEETING_INFO, meetingId);
 
-        if(getResponse.isExists()) {
+        if (getResponse.isExists()) {
             Map<String, Object> notesMapCache = (Map<String, Object>) JSONUtils
                     .JSONToObject(getResponse.getSourceAsString(), HashMap.class);
 
-            if(!ObjectUtils.isEmpty(notesMapCache.get(idea.getId()))) {
+            if (!ObjectUtils.isEmpty(notesMapCache.get(idea.getId()))) {
                 notesMapCache.put(idea.getId(), idea);
             }
 
@@ -354,7 +353,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
             String id = node.get("id").asText();
 
-            if(getResponse.isExists()) {
+            if (getResponse.isExists()) {
                 Map<String, Object> notesMapCache = (Map<String, Object>) JSONUtils
                         .JSONToObject(getResponse.getSourceAsString(), HashMap.class);
 
@@ -375,7 +374,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     private D3CollapseTreeModel createUserTree(List<String> users, List<String> tags, List<Idea> ideasList,
             D3CollapseTreeModel treeModel) {
 
-        for(String user : users) {
+        for (String user : users) {
             List<Idea> ideasByUser = ideasList.stream().filter(u -> user.equals(u.getUsername()))
                     .collect(Collectors.toList());
 
@@ -387,15 +386,14 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
     private D3CollapseTreeModel createTagTree(List<String> tags, List<Idea> ideasList, D3CollapseTreeModel treeModel) {
 
-        for(String tag : tags) {
+        for (String tag : tags) {
 
             List<D3CollapseTreeModel> treeModelTag = new ArrayList<>();
 
-            for(Idea idea : ideasList) {
+            for (Idea idea : ideasList) {
 
-                if(tag.equals(idea.getTag())) {
-                    treeModelTag.add(new D3CollapseTreeModel(idea.getTitle(),
-                            Lists.newArrayList(new D3CollapseTreeModel(idea.getComments()))));
+                if (tag.equals(idea.getTag())) {
+                    treeModelTag.add(new D3CollapseTreeModel(idea.getTitle()));
                 }
             }
 
@@ -408,14 +406,14 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     private D3CollapseTreeModel createRankingTree(List<String> tags, List<Idea> ideasList,
             D3CollapseTreeModel treeModel) {
 
-        for(String tag : tags) {
+        for (String tag : tags) {
 
             List<D3CollapseTreeModel> treeModelTag = new ArrayList<>();
 
-            for(Idea idea : ideasList) {
+            for (Idea idea : ideasList) {
 
-                if(tag.equals(idea.getTag())) {
-                    treeModelTag.add(new D3CollapseTreeModel(idea.getTitle(), idea.getRanking(), "#D6BA33"));
+                if (tag.equals(idea.getTag())) {
+                    treeModelTag.add(new D3CollapseTreeModel(idea.getTitle(), idea.getRanking(), "#FBBD16"));
                 }
             }
 
@@ -428,7 +426,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     private void saveUsersRetry(int count, String user, String meetingId) {
         MeetingUsers connectedUsers = getConnectedUsers(meetingId);
 
-        if(!connectedUsers.getUsers().contains(user)) {
+        if (!connectedUsers.getUsers().contains(user)) {
             connectedUsers.addUser(user);
         } else {
             connectedUsers.getUsers().remove(user);
@@ -439,7 +437,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
             LOGGER.info("Meeting connected users updated - Meeting: '{}'", meetingId);
         } catch (ElasticsearchException e) {
             LOGGER.error("Failed to update meeting connected users - Retry '{}'", count);
-            if(MAX_RETRIES > count) {
+            if (MAX_RETRIES > count) {
                 saveUsersRetry(count += 1, user, meetingId);
             }
         }
@@ -463,7 +461,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
         Map<String, Object> notesMapCache = new HashMap<>();
 
-        if(getResponse.isExists()) {
+        if (getResponse.isExists()) {
             notesMapCache = (Map<String, Object>) JSONUtils.JSONToObject(getResponse.getSourceAsString(),
                     HashMap.class);
         }
@@ -477,7 +475,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
             LOGGER.info("Meeting info updated - Meeting: '{}'", meetingId);
         } catch (ElasticsearchException e) {
             LOGGER.error("Failed to update meeting info - Retry '{}'", count);
-            if(MAX_RETRIES > count) {
+            if (MAX_RETRIES > count) {
                 saveInfoRetry(count += 1, data, meetingId);
             }
         }
@@ -489,7 +487,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
         String topic = null;
 
-        if(meetingResponse.isExists()) {
+        if (meetingResponse.isExists()) {
             JsonNode meetingNode;
             try {
                 meetingNode = OBJECT_MAPPER.readTree(meetingResponse.getSourceAsString());
@@ -514,8 +512,8 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
         List<Idea> ideasList = new ArrayList<>();
 
-        if(response.getHits().getTotalHits() > 0) {
-            for(SearchHit hit : response.getHits()) {
+        if (response.getHits().getTotalHits() > 0) {
+            for (SearchHit hit : response.getHits()) {
                 ideasList.add((Idea) JSONUtils.JSONToObject(hit.getSourceAsString(), Idea.class));
             }
         }

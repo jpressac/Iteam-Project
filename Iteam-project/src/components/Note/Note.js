@@ -38,7 +38,7 @@ class Note extends Component {
       view: 'normal',
       board: props.boardType,
       title: "No title",
-      comments: "No comments",
+      comments: null,
       mapTag: [],
       tagValue: '',
       tagName: 'Miscellaneous'
@@ -67,7 +67,7 @@ class Note extends Component {
                           onChange={this.comboTags.bind(this)} required
                           source={this.state.mapTag} value={this.state.tagValue}/>
                 <Input theme={imputSize} type='text' label='Title' value={this.state.title} required
-                       onChange={this.handleChange.bind(this, 'title')} maxLength={30} multiline={'True'}/>
+                       onChange={this.handleChange.bind(this, 'title')} maxLength={150} multiline={'True'}/>
                 <CardActions theme={cardActionsscss}>
                   <IconButton icon="save" onClick={this.save.bind(this)}/>
                   <IconButton icon="clear" onClick={this.cancelComment.bind(this)}/>

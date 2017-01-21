@@ -1,6 +1,8 @@
 import React, {Component, PropTypes} from 'react';
 import * as d3 from 'd3'
 import ReactDom from 'react-dom'
+import textwrap from 'd3-textwrap'
+
 import {Button, IconButton} from 'react-toolbox/lib/button';
 
 import classes from './D3Tree.scss'
@@ -28,15 +30,17 @@ class D3Tree extends React.Component {
 
   renderTreeExpand(treeData, svgNode) {
     let margin = {top: 20, right: 90, bottom: 10, left: 120},
-      width = window.innerWidth -margin.right, //TODO: this is hardcoded so it antoher screen it will not work
-      height = window.innerHeight ;//- margin.top - margin.bottom;
+      width = window.innerWidth - margin.right, //TODO: this is hardcoded so it antoher screen it will not work
+      height = window.innerHeight + 600;// TODO: calculate with a amount of nodes
 
     i = 0;
     duration = 750;
 
 // declares a tree layout and assigns the size
     treemap = d3.tree()
-      .size([height, width]);
+      .size([width, height])
+      .nodeSize([60, 25]);
+
 
     // remove the last SVG Node, just to create a new one
     d3.select(svgNode)
@@ -48,12 +52,12 @@ class D3Tree extends React.Component {
 // moves the 'group' element to the top left margin
 
     svg = d3.select(svgNode)
-      .attr("width", width )
+      .attr("width", width)
       .attr("height", height)
-      .attr("align","center")
+      .attr("align", "center")
       .append("g")
       .attr("transform", "translate("
-        + margin.left + "," + margin.top+ ")");
+        + margin.left + "," + height*0.5 + ")");
 
     // var svg = d3.select(classes.container)
     //   .append("g")
@@ -61,10 +65,11 @@ class D3Tree extends React.Component {
     //   .attr("viewBox", "0 0 300 300")
     //   .classed(classes.content, true);
 
-    root = d3.hierarchy(treeData, function (d) { console.log(d);
+    root = d3.hierarchy(treeData, function (d) {
+      ;
       return d.children;
     });
-    root.x0 = height/2;
+    root.x0 = height + 200 ;
     root.y0 = 0;
 
 // Collapse after the second level
@@ -90,8 +95,6 @@ class D3Tree extends React.Component {
     }
 
 
-
-
     function update(source) {
 
       // Assigns the x and y position for the nodes
@@ -104,14 +107,14 @@ class D3Tree extends React.Component {
       // Normalize for fixed-depth.
       nodes.forEach(function (d) {
         d.y = d.depth * 180;
-        console.log(d.depth);
+
       });
       // add the tool tip
       var div = d3.select("body").append("div")
         .style('position', 'absolute')
         .style('padding', '0 10px')
-        .style('background', 'yellow')
-        .style('opacity', 0)
+        .style('background', '#FFFEAB')
+        .style('opacity', 0);
 
 
       // ****************** Nodes section ***************************
@@ -122,33 +125,27 @@ class D3Tree extends React.Component {
           return d.id || (d.id = ++i);
         });
 
-      // Enter any new modes at the parent's previous position.
+      // Enter any new nodes at the parent's previous position.
       let nodeEnter = node.enter().append('g')
         .classed(classes.node, true)
         .attr("transform", function () {
           return "translate(" + source.y0 + "," + source.x0 + ")";
         })
-        .on('click', click)
-        .on("mouseover", function(d) {
-          div.transition()
-            .style("opacity", .9);
-
-          div.html( d.data.name)
-            .style("left", (d3.event.pageX -35 ) + "px")
-            .style("top", (d3.event.pageY -30) + "px");
-
-
-          tempColor= this.style.fill;
-          d3.select(this)
-            .style("opacity", 1)
-            .style("fill", 'yellow');
-
-        })
-        .on("mouseout", function(d) {
-          d3.select(this)
-            .style('opacity', 1)
-            .style('fill', tempColor)
-        });
+        .on('click', click);
+        // .on("mouseover", function (d) {
+        //   div.transition()
+        //     .style("opacity", .9);
+        //
+        //   div.html(d.data.name)
+        //     .style("display", "inline-block")
+        //     .style("left", (d3.event.pageX - 35 ) + "px")
+        //     .style("top", (d3.event.pageY - 30) + "px");
+        //
+        //
+        // })
+        // .on("mouseout", function (d) {
+        //   div.style("display", "none");
+        // });
 
       // Add Circle for the nodes
       nodeEnter.append('circle')
@@ -169,6 +166,7 @@ class D3Tree extends React.Component {
           return d._children ? "lightsteelblue" : color;
         });
 
+
       // Add labels for the nodes
       nodeEnter.append('text')
         .attr("dy", function (d) {
@@ -182,7 +180,9 @@ class D3Tree extends React.Component {
         })
         .text(function (d) {
           return d.data.name;
-        });
+        })
+        .call(wrap, 200);
+
 
       // UPDATE
       let nodeUpdate = nodeEnter.merge(node);
@@ -208,7 +208,7 @@ class D3Tree extends React.Component {
           if (d.depth === 3) {
             color = "blue"
           }
-          console.log(color);
+          ;
           return d._children ? "lightsteelblue" : color;
         })
         .attr('cursor', 'pointer');
@@ -242,7 +242,7 @@ class D3Tree extends React.Component {
       let linkEnter = link.enter().insert('path', "g")
         .classed(classes.link, true)
         .attr('d', function (d) {
-          let o = {x: source.x0, y: source.y0};
+          let o = {x: source.x0 , y: source.y0 };
           return diagonal(o, o)
         });
 
@@ -260,7 +260,7 @@ class D3Tree extends React.Component {
       let linkExit = link.exit().transition()
         .duration(duration)
         .attr('d', function (d) {
-          let o = {x: source.x, y: source.y};
+          let o = {x: source.x , y: source.y };
           return diagonal(o, o)
         })
         .remove();
@@ -272,14 +272,13 @@ class D3Tree extends React.Component {
       });
 
 
-
       // Creates a curved (diagonal) path from parent to the child nodes
       function diagonal(s, d) {
 
-        path = `M ${s.y} ${s.x}
-            C ${(s.y + d.y) / 2} ${s.x},
-              ${(s.y + d.y) / 2} ${d.x},
-              ${d.y} ${d.x}`;
+        path = `M ${s.y} ${s.x }
+            C ${(s.y + d.y) / 2} ${s.x },
+              ${(s.y + d.y) / 2} ${d.x },
+              ${d.y} ${d.x }`;
 
         return path
       }
@@ -297,6 +296,39 @@ class D3Tree extends React.Component {
 
       }
 
+      function wrap(text, width) {
+        text.each(function () {
+          var text = d3.select(this),
+            words = text.text().split(/\s+/).reverse(),
+            word,
+            line = [],
+            lineNumber = 0,
+            lineHeight = 1.1, // ems
+            x = text.attr('x'),
+            y = text.attr('y'),
+            dy = 0, //parseFloat(text.attr('dy')),
+            tspan = text.text(null)
+              .append('tspan')
+              .attr('x', x)
+              .attr('y', y)
+              .attr('dy', dy + 'em');
+          while (word = words.pop()) {
+            line.push(word);
+            tspan.text(line.join(' '));
+            if (tspan.node().getComputedTextLength() > width) {
+              line.pop();
+              tspan.text(line.join(' '));
+              line = [word];
+              tspan = text.append('tspan')
+                .attr('x', x)
+                .attr('y', y)
+                .attr('dy', lineHeight + dy + 'em')
+                .text(word);
+            }
+          }
+        });
+
+      }
     }
   };
 
