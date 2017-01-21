@@ -19,7 +19,9 @@ import {push} from "react-router-redux";
 import navTheme from "./NavDrawer.scss";
 import Dropdown from "react-toolbox/lib/dropdown";
 import {MenuItem, MenuDivider} from "react-toolbox/lib/menu";
+import Chat from '../Chat/Chat';
 import Modal from '../BootstrapModal/BootstrapModal';
+
 
 const TooltipButton = Tooltip(Button);
 
@@ -289,6 +291,7 @@ class PersonalBoard extends Component {
           </Panel>
           <Modal ref="mymodal"  onOk={this.props.home} message={this.state.modalMessage}/>
         </Layout>
+        <Chat/>
       </div>
     );
   }
@@ -310,6 +313,6 @@ export default flow(
   DropTarget(ItemTypes.NOTE, NoteTarget,
     connection =>
       ( {
-          connectDropTarget: connection.dropTarget()
-        }
+        connectDropTarget: connection.dropTarget()
+      }
       )), connect(mapStateToProps, mapDispatchToProps))(PersonalBoard);

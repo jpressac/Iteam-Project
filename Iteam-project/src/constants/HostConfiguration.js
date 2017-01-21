@@ -9,7 +9,8 @@ export const USER = {
   POST_USER : URL + '/user',
   UPDATE_USER : URL + '/user/modify',
   DELETE_USER : URL + '/user/delete',
-  USER_EXISTS : URL + '/user/exists'
+  USER_EXISTS : URL + '/user/exists',
+  PASSWORD_VALIDATION: URL + '/validate/password'
 };
 
 export const TEAM = {
@@ -17,7 +18,8 @@ export const TEAM = {
   TEAM_DELETE : URL + '/team/delete',
   TEAM_BY_OWNER : URL + '/team/byowner',
   TEAM_SELECT : URL + '/team/select',
-  TEAM_USER_BY_MEETING : URL + '/team/users/bymeeting'
+  TEAM_USER_BY_MEETING : URL + '/team/users/bymeeting',
+  TEAM_NAME_EXISTENT: URL + '/team/name/existent'
 };
 
 export const MEETING = {

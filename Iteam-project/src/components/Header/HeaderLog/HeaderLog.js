@@ -60,9 +60,7 @@ class HeaderLog extends Component {
       <header >
         <AppBar fixed flat theme={themeAppBar}>
           <div >
-
-            <img src={logo} style={{height: 50, width: 100, marginRight: 300}}/>
-
+            <img src={logo} style={{height: 50, width: 100, marginRight: '30%'}}/>
             <Navigation type="horizontal" theme={themeNav}>
               <ul className={classes.ul}>
                 <li><Button label='HOME' className={themeButton.button} style={{color: '#900C3F'}}

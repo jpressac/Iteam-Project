@@ -2,6 +2,7 @@ package org.iteam.controllers.socket;
 
 import org.iteam.data.dto.ActionsEnum;
 import org.iteam.data.dto.Meeting;
+import org.iteam.data.model.ChatMessage;
 import org.iteam.data.model.SocketMessage;
 import org.iteam.services.meeting.MeetingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +60,11 @@ public class WebsocketController {
         }
 
         template.convertAndSend("/topic/" + message.getTopic(), message.getMessage());
+    }
 
+    @MessageMapping("/chat")
+    public void sendMessageToChat(ChatMessage message) {
+        template.convertAndSend("/chatRoom/" + message.getTopic(), message.getPayload());
     }
 
     @Autowired

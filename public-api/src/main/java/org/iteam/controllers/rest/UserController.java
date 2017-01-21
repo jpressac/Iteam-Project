@@ -52,62 +52,71 @@ public class UserController {
     /**
      * Request for inserting a new user to the database.
      * 
-     * @param user,
+     * @param user
      *            json representation of the user to create.
      * @return 200 OK if it was successful.
      */
     @RequestMapping(value = "/user", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
     public ResponseEntity<Void> insertUser(@RequestBody @Valid UserDTO user) {
 
-        return checkResult(userServiceImpl.setUser(user), HttpStatus.INTERNAL_SERVER_ERROR);
+        userServiceImpl.setUser(user);
+
+        return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
     }
 
     /**
      * Modify user's information.
      * 
-     * @param doc,
+     * @param doc
      *            JSON representation of the fields that will be modified.
      * @return 200 OK if it was successful or.
      */
     @RequestMapping(value = "/user/modify", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-    public ResponseEntity<Void> modifyUser(@RequestBody String doc) {
+    public ResponseEntity<Void> modifyUser(@RequestBody UserDTO user) {
 
-        return checkResult(
-                userServiceImpl.modifyUser(doc, SecurityContextHolder.getContext().getAuthentication().getName()),
-                HttpStatus.INTERNAL_SERVER_ERROR);
+        userServiceImpl.modifyUser(user, SecurityContextHolder.getContext().getAuthentication().getName());
+
+        return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
     }
 
     /**
      * Delete logically a user.
      * 
-     * @param doc,
+     * @param doc
      *            JSON representation of the delete field.
      * @return 200 OK if it was successful.
      */
     @RequestMapping(value = "/user/delete", method = RequestMethod.POST)
     public ResponseEntity<Void> deleteUser(@RequestBody String doc) {
 
-        return checkResult(
-                userServiceImpl.logicalDelete(doc, SecurityContextHolder.getContext().getAuthentication().getName()),
-                HttpStatus.INTERNAL_SERVER_ERROR);
+        userServiceImpl.logicalDelete(doc, SecurityContextHolder.getContext().getAuthentication().getName());
+
+        return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
 
     }
 
     /**
      * Request that check for an existing user.
      * 
-     * @param userName,
+     * @param userName
      *            the user name to check
      * @return 200 OK if the user exists or 404 otherwise
      */
-    @RequestMapping(value = "/user/exists", method = RequestMethod.HEAD)
+    @RequestMapping(value = "/user/exists", method = RequestMethod.GET)
     public ResponseEntity<Void> checkUserIfExists(@RequestParam(value = "username", required = true) String userName) {
 
-        return checkResult(userServiceImpl.checkUserExistence(userName), HttpStatus.NOT_FOUND);
+        return checkResult(userServiceImpl.checkUserExistence(userName), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @RequestMapping(value = "/validate/password", method = RequestMethod.GET)
+    public ResponseEntity<Void> validatePassword(@RequestParam(value = "password", required = true) String password) {
+        return userServiceImpl.validatePassord(SecurityContextHolder.getContext().getAuthentication().getName(),
+                password) ? new ResponseEntity<Void>(HttpStatus.ACCEPTED)
+                        : new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     private ResponseEntity<Void> checkResult(boolean flag, HttpStatus errorCode) {
-        if(!flag) {
+        if (!flag) {
             return new ResponseEntity<>(errorCode);
         } else {
             return new ResponseEntity<>(HttpStatus.OK);

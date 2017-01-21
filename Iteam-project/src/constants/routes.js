@@ -23,6 +23,7 @@ export const PATHS = {
    MEETCONFIG: 'meetingconfig',
    TEAMLIST: 'myteams',
    REPORTS: 'reports',
+   CHAT: 'chat',
    HISTORY: 'history'
  },
   PERSONALBOARD:{
@@ -53,6 +54,7 @@ export const PATHS = {
    REPORTS: 'application/member/reports',
    PERSONALBOARD: 'application/member/pboard/personal',
    SHAREDBOARD: 'application/member/sboard/shared',
+   CHAT:'application/member/chat',
    HISTORY: 'application/member/history'
  }
 };

@@ -21,7 +21,9 @@ import logo from "../Header/image/iteamLogo.jpg";
 import navTheme from "./NavDrawer.scss";
 import Dropdown from "react-toolbox/lib/dropdown";
 import {MenuItem, MenuDivider} from "react-toolbox/lib/menu";
+import Chat from '../Chat/Chat';
 import Modal from '../BootstrapModal/BootstrapModal';
+
 
 const NoteTarget = {
   drop(props, monitor, component) {
@@ -106,7 +108,7 @@ class SharedBoard extends Component {
 
   componentWillUnmount() {
     //End socket connection
-    disconnect()
+    disconnect();
   }
 
   notes(note) {
@@ -498,6 +500,7 @@ class SharedBoard extends Component {
           </Drawer>
           <Modal ref="mymodal" onOk={this.props.home} message={this.state.modalMessage}/>
         </Layout>
+        <Chat/>
       </div>
     );
   }
