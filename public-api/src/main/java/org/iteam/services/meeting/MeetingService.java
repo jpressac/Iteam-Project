@@ -169,4 +169,6 @@ public interface MeetingService {
      *            the id of the idea to remove.
      */
     public void removeIdeasFromCacheSharedBoard(String meetingId, String info);
+
+    public List<Meeting> getMeetingByState(String string);
 }

@@ -1,5 +1,7 @@
 package org.iteam.controllers.socket;
 
+import org.iteam.data.dto.ActionsEnum;
+import org.iteam.data.dto.Meeting;
 import org.iteam.data.model.SocketMessage;
 import org.iteam.services.meeting.MeetingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,28 +31,35 @@ public class WebsocketController {
     // TODO:remove channelId
     public void sendMessage(String channelId, SocketMessage message) {
 
-        if(message.getMessage().getAction().equals("insertSharedBoard")) {
-            meetingService.updateMeetingInfo(message.getTopic(), message.getMessage().getPayload());
-        }
+        ActionsEnum action = ActionsEnum.toActionName(message.getMessage().getAction());
+        String payload = message.getMessage().getPayload();
 
-        if(message.getMessage().getAction().equals("user connected")) {
-            meetingService.updateMeetingUsers(message.getTopic(), message.getMessage().getPayload());
-        }
+        switch (action) {
 
-        if(message.getMessage().getAction().equals("insertCache")) {
-            meetingService.saveMeetingInfoPersonalBoard(message.getTopic(), message.getMessage().getPayload());
-        }
-
-        if(message.getMessage().getAction().equals("updateSharedBoardCache")) {
-            meetingService.updateSharedBoardCache(message.getTopic(), message.getMessage().getPayload());
-        }
-
-        if(message.getMessage().getAction().equals("updateCacheDelete")) {
-            meetingService.removeIdeasFromCacheSharedBoard(message.getTopic(), message.getMessage().getPayload());
+        case INSERT_SHARED_BOARD:
+            meetingService.updateMeetingInfo(message.getTopic(), payload);
+            break;
+        case USER_CONNECTED:
+            meetingService.updateMeetingUsers(message.getTopic(), payload);
+            break;
+        case INSERT_CACHE:
+            meetingService.saveMeetingInfoPersonalBoard(message.getTopic(), payload);
+            break;
+        case UPDATE_SHARED_BOARD_CACHE:
+            meetingService.saveMeetingInfoPersonalBoard(message.getTopic(), payload);
+            break;
+        case UPDATE_DELETE_CACHE:
+            meetingService.removeIdeasFromCacheSharedBoard(message.getTopic(), payload);
+            break;
+        case END_MEETING:
+            meetingService.updateMeeting(new Meeting(message.getTopic(), true));
+            break;
+        default:
+            break;
         }
 
         template.convertAndSend("/topic/" + message.getTopic(), message.getMessage());
-        
+
     }
 
     @Autowired

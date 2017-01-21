@@ -182,4 +182,6 @@ public interface MeetingRepository {
      */
     public void removeIdeasFromCacheSharedBoard(String meetingId, String info);
 
+    public List<Meeting> getMeetingsByState(String username);
+
 }

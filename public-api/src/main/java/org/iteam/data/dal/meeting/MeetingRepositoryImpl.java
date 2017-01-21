@@ -48,6 +48,8 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
     private static final String IDEA_MEETING_ID_FIELD = "meetingId";
     private static final String MEETING_TEAM_NAME_FIELD = "teamName";
+    private static final String MEETING_STATE_NAME_FIELD = "ended";
+    private static final String MEETING_OWNER_NAME_FIELD = "ownerName";
     private static final String PROGRAMMED_DATE_FIELD = "programmedDate";
     private static final int MAX_RETRIES = 5;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -184,6 +186,27 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         LOGGER.debug("User '{}' list of meetings: '{}'", username, meetingList.toString());
 
         return meetingList;
+    }
+
+    @Override
+    public List<Meeting> getMeetingsByState(String username) {
+        LOGGER.info("Getting all ended meetings");
+        List<Meeting> meetings = new ArrayList<>();
+
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+        queryBuilder.must(QueryBuilders.termQuery(MEETING_OWNER_NAME_FIELD, username))
+                .must(QueryBuilders.existsQuery(MEETING_STATE_NAME_FIELD));
+
+        SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING, queryBuilder,
+                SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD).order(SortOrder.DESC));
+
+        if (response.getHits().getTotalHits() > 0) {
+
+            for (SearchHit hit : response.getHits()) {
+                meetings.add((Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class));
+            }
+        }
+        return meetings;
     }
 
     @Override

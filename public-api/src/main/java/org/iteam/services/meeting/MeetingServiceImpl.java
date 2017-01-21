@@ -72,6 +72,11 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
+    public List<Meeting> getMeetingByState(String username) {
+        return meetingRepositoryImpl.getMeetingsByState(username);
+    }
+
+    @Override
     public D3CollapseTreeModel generateReportByUser(String meetingId, List<String> tags) {
 
         List<String> users = teamServiceImpl.getTeamUserInformationByMeeting(meetingId).getTeamUsers().stream()

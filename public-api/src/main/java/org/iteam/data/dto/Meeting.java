@@ -29,6 +29,14 @@ public class Meeting {
         return programmedDate;
     }
 
+    public Meeting() {
+    }
+
+    public Meeting(String id, boolean ended) {
+        this.meetingId = id;
+        this.ended = ended;
+    }
+
     public Long getCreationDate() {
         return creationDate;
     }
