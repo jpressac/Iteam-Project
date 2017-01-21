@@ -34,6 +34,7 @@ const technics = [{value: 0, label: 'Brainstorming'}, {value: 1, label: 'SCAMPER
   label: 'morphological analysis'
 }];
 
+
 class MeetingConfigForm extends Component {
 
   constructor(props) {

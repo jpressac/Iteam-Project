@@ -31,8 +31,8 @@ export function connectAndSubscribe(topic, resolve) {
 }
 
 
-export function sendMessage(action, topic, content, users) {
-  stompClient.send("/channel", {}, JSON.stringify(
+export function sendMessage(action, topic, content,users){
+  stompClient.send("/channel", {},JSON.stringify(
     {
       "topic": topic,
       "message": {

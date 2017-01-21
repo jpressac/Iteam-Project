@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -64,11 +65,13 @@ public class MeetingController {
     @RequestMapping(value = "/meeting/ideas/save", method = RequestMethod.POST)
     public ResponseEntity<Void> saveIdeas(@RequestBody @Valid IdeasDTO ideas) {
 
-        return checkResult(meetingServiceImpl.savedIdeas(ideas));
+        meetingServiceImpl.savedIdeas(ideas);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     private ResponseEntity<Void> checkResult(boolean flag) {
-        if(flag) {
+        if (flag) {
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -138,6 +141,7 @@ public class MeetingController {
      *            the username of the user
      * @return the list of meetings by user.
      */
+
     @RequestMapping(value = "/meeting/meetingbyuser")
     public List<Meeting> getUserMeetings(@RequestParam(value = "username", required = true) String username) {
         return meetingServiceImpl.getMeetingByTeamName(username);
@@ -163,6 +167,13 @@ public class MeetingController {
     public void setUserState(@RequestHeader(value = "username", required = true) String username,
             @RequestHeader(value = "meetingId", required = true) String meetingId) {
         meetingServiceImpl.updateMeetingUsers(meetingId, username);
+    }
+
+    @RequestMapping(value = "meeting/bystate", method = RequestMethod.GET)
+    public ResponseEntity<List<Meeting>> getMeetingsByState() {
+        List<Meeting> meetings = meetingServiceImpl
+                .getMeetingByState(SecurityContextHolder.getContext().getAuthentication().getName());
+        return new ResponseEntity<List<Meeting>>(meetings, HttpStatus.OK);
     }
 
     @Autowired

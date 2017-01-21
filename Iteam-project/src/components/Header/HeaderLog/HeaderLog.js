@@ -20,14 +20,16 @@ const mapDispatchToProps = dispatch => ({
   meeting: () => dispatch(push('/' + PATHS.MENULOGGEDIN.MEETING)),
   teamList: () => dispatch(push('/' + PATHS.MENULOGGEDIN.TEAMLIST)),
   team: () => dispatch(push('/' + PATHS.MENULOGGEDIN.NEWTEAM)),
-  newMeeting: () => dispatch(fromMeetingOrTeam())
+  newMeeting: () => dispatch(fromMeetingOrTeam()),
+  meetingHistory: () =>dispatch(push('/'+ PATHS.MENULOGGEDIN.HISTORY))
 });
+
 const mapStateToProps = (state) => {
-  if (state.loginUser != null) {
+  if(state.loginUser != null) {
     return {
       user: state.loginUser.user.username
     }
-  } else {
+  }else{
     return ({})
   }
 };
@@ -48,6 +50,9 @@ class HeaderLog extends Component {
     this.props.team();
   }
 
+  goToHistory(){
+    this.props.meetingHistory();
+  }
 
   render() {
     return (
@@ -66,6 +71,8 @@ class HeaderLog extends Component {
                             onClick={this.props.myMeeting}/></li>
                 <li><Button label='NEW MEETING' theme={themeButton} style={{color: '#900C3F'}}
                             onClick={this.goToNewMeeting.bind(this)}/></li>
+                <li><Button label='HISTORY' theme={themeButton} style={{color: '#900C3F'}}
+                            onClick={this.goToHistory.bind(this)}/></li>
                 <li><Button label='NEW TEAM' theme={themeButton} style={{color: '#900C3F'}}
                             onClick={this.goToNewTeam.bind(this)}/></li>
                 <li><Button label='MY TEAMS' theme={themeButton} style={{color: '#900C3F'}}
@@ -90,7 +97,7 @@ HeaderLog.propTypes = {
   team: PropTypes.func,
   newMeeting: PropTypes.func,
   teamList: PropTypes.func,
-  chat: PropTypes.func
+  meetingHistory:PropTypes.func
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(HeaderLog)

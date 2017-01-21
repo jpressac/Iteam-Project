@@ -57,7 +57,7 @@ class MymeetForm extends Component {
     super(props);
     this.state = {
       time: new Date(),
-      endTime: new Date(),
+      owner: '',
       meetings: {},
       date: new Date(),
       active: false,
@@ -67,7 +67,8 @@ class MymeetForm extends Component {
       technicValue: '',
       teamName: {},
       tag: '',
-      showSpinner: true
+      showSpinner: true,
+      endTime: new Date()
     }
   }
 
@@ -105,16 +106,28 @@ class MymeetForm extends Component {
 
 
   goToReports() {
+
+let meetingInfo = {};
+    meetingInfo.topic = this.state.meetEdit.topic;
+    meetingInfo.owner= this.state.owner;
+    meetingInfo.config = this.state.config;
     //Reducer containing toolbar info
-    this.props.saveMeetingConfig({topic: this.state.meetEdit.topic, config: this.state.config});
+    this.props.saveMeetingConfig(meetingInfo);
 
     //Reducer for meeting ID
     this.props.updateMyMeetingId(this.state.meetEdit.meetingId);
   }
 
   startMeeting() {
+    //Object that contains meeting info for reducer for Toolbar
+    let meetingInfo = {};
+    meetingInfo.topic = this.state.meetEdit.topic;
+    meetingInfo.owner= this.state.owner;
+    meetingInfo.config = this.state.config;
+    console.log(JSON.stringify(meetingInfo));
+
     //Reducer containing toolbar info
-    this.props.saveMeetingConfig({topic: this.state.meetEdit.topic, config: this.state.config});
+    this.props.saveMeetingConfig(meetingInfo);
 
     //Reducer for meeting ID
     this.props.updateMyMeetingId(this.state.meetEdit.meetingId);
@@ -127,6 +140,7 @@ class MymeetForm extends Component {
     this.setState({
       active: !this.state.active,
       datetime: meeting.programmedDate,
+      owner: meeting.ownerName,
       time: meeting.programmedDate,
       endTime: meeting.endDate,
       config: meeting.meetingConfig,
@@ -471,8 +485,7 @@ class MymeetForm extends Component {
       </Dialog>
     )
   }
-
-
+  
   render() {
     if(!this.state.showSpinner) {
       let meets = this.state.meetings;

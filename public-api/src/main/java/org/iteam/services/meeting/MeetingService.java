@@ -29,7 +29,7 @@ public interface MeetingService {
      *            ideas generated.
      * @return true if it was successful, false otherwise
      */
-    public boolean savedIdeas(IdeasDTO ideas);
+    public void savedIdeas(IdeasDTO ideas);
 
     /**
      * Generate report by tag and ranking for the given meeting.
@@ -169,4 +169,6 @@ public interface MeetingService {
      *            the id of the idea to remove.
      */
     public void removeIdeasFromCacheSharedBoard(String meetingId, String info);
+
+    public List<Meeting> getMeetingByState(String string);
 }
