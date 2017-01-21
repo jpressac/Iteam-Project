@@ -37,12 +37,19 @@ const mapDispatchToProps = dispatch => ({
   }
 });
 
+
+const PROFESSION = 'Profession';
+const NATIONALITY = 'Nationality';
+const AGE = 'Age';
+const SCORING = 'Scoring';
+const HOBBIES = 'Hobbies';
+
 const filter = [
-  {value: 1, label: 'Profession'},
-  {value: 2, label: 'Nationality'}
-  // {value: 3, label: 'Age'},
-  // {value: 4, label: 'Job position'},
-  // {value: 5, label: 'Hobbies'}
+  {value: 1, label: PROFESSION},
+  {value: 2, label: NATIONALITY},
+  {value: 3, label: AGE},
+  {value: 4, label: SCORING}
+  //{value: 5, label: 'Hobbies'}
 ];
 
 const TooltipButton = Tooltip(Button);
@@ -52,7 +59,7 @@ class TeamSuggestionForm extends React.Component {
     super(props);
     this.state = {
       teamName: '',
-      filters: [],
+      filters: {},
       users: [],
       selectedUsers: [],
       usernames: {},
@@ -60,22 +67,47 @@ class TeamSuggestionForm extends React.Component {
       message: '',
       filterName: '',
       filteredName: '',
+      filteredValue: 0,
       showSpinner: false,
       showErrorTeamName: false,
       errorTeamName: '',
       checkbox: false,
       userInformation: [],
-      usersSelected: []
+      usersSelected: [],
+      rangeFrom: 0,
+      rangeTo: 0,
     }
   }
 
-  handleClick() {
+  addFilter() {
     if ((this.state.filterName !== '') && (this.state.filteredName !== '')) {
-      let valueFields = [];
-      valueFields.push((this.state.filteredName));
-      this.state.filters.push({field: this.state.filterName.toLowerCase(), values: valueFields});
-      this.forceUpdate();
+
+      console.log(this.state.filteredName);
+      console.log(this.state.filterName);
+
+      let newFilters = this.state.filters;
+
+      newFilters[this.state.filteredName] = {
+        values: this.state.filteredName
+      };
+
+      this.setState({
+        filters: newFilters
+      });
     }
+  }
+
+  addRangeFilter() {
+    let rangeFilterName = '';
+    if (this.state.rangeFrom != 0) {
+      rangeFilterName.concat("from:", this.state.rangeFrom.toString());
+    }
+
+    if (this.state.rangeTo != 0) {
+      rangeFilterName.concat("to:", this.state.rangeTo.toString());
+    }
+
+    this.setState({filters: this.state.filters[this.state.filterName] = {values: rangeFilterName}})
   }
 
   //TODO: use a set<string> for filling the table with columns that details the filter applied
@@ -85,7 +117,6 @@ class TeamSuggestionForm extends React.Component {
       selectTeam(JSON.stringify(this.state.filters))
         .then(function (response) {
           this.setState({userInformation: response.data});
-          //this.fillUsersTable(response.data);
         }.bind(this))
         .catch(function (response) {
           //TODO: handle errors
@@ -124,14 +155,13 @@ class TeamSuggestionForm extends React.Component {
     }
   }
 
-  deleteFilter(pos) {
+  deleteFilter(key) {
     let newFilters = this.state.filters;
-    newFilters.map(function (filter, index) {
-      if (pos === index) {
-        newFilters.splice(index, 1);
-      }
-    });
+
+    delete newFilters[key];
+
     this.setState({filters: newFilters});
+
     this.searchUsers.bind(this);
   }
 
@@ -142,51 +172,31 @@ class TeamSuggestionForm extends React.Component {
     let filterLabelName = filtered[0]["label"];
 
     switch (filterLabelName) {
-      case "Profession":
-
+      case PROFESSION:
         getProfessions().then(function (response) {
-          this.setValuesOptionsProfessions(response.data);
+          this.setValuesOptions(response.data);
         }.bind(this));
-
         break;
-      case "Age":
-        break;
-      case "Nationality":
-
+      case NATIONALITY:
         getNationalities().then(function (response) {
-          this.setValuesOptionsNationalities(response.data);
+          this.setValuesOptions(response.data["nationalities"]);
         }.bind(this));
-
-        break;
-      case "Job position":
-        break;
-      case "Hobbies":
         break;
     }
     this.setState({value: value});
     this.setState({filterName: filterLabelName});
   }
 
-  setValuesOptionsNationalities(data) {
+  setValuesOptions(data) {
 
-    let opt = data["nationalities"].map(function (option, index) {
-      let rObj = {};
-      rObj["value"] = index;
-      rObj["label"] = option;
-
-      return rObj;
-    });
-
-    this.setState({values: opt});
-  }
-
-  setValuesOptionsProfessions(data) {
     let opt = data.map(function (option, index) {
       let rObj = {};
       rObj["value"] = index;
       rObj["label"] = option;
+
       return rObj;
     });
+
     this.setState({values: opt});
   }
 
@@ -210,19 +220,21 @@ class TeamSuggestionForm extends React.Component {
   dropdownObjectFilteredValues() {
     return (
       <Dropdown label="Select filter" auto onChange={this.setFilteredValue.bind(this)} source={this.state.values}
-                flat primary value={this.state.filteredValue}>
+                value={this.state.filteredValue}>
       </Dropdown>
     );
   };
 
   filterLabels() {
-    return this.state.filters.map(function (filter, index) {
+
+    console.log(this.state.filters);
+    return Object.keys(this.state.filters).map((key) => {
       return (
-        <Chip deletable onDeleteClick={this.deleteFilter.bind(this, index)} theme={chipTheme}>
-          {filter.values}
+        <Chip key={generateUUID()} deletable onDeleteClick={this.deleteFilter.bind(this, key)} theme={chipTheme}>
+          {this.state.filters[key].values}
         </Chip>
-      );
-    }.bind(this));
+      )
+    });
   }
 
   checkName() {
@@ -235,12 +247,12 @@ class TeamSuggestionForm extends React.Component {
       }.bind(this));
   }
 
-  selectUser(username){
+  selectUser(username) {
     let userSelected = this.state.usersSelected;
 
     let userToAdd = this.state.userInformation.filter((user) => user.username === username)[0];
 
-    if(userSelected.filter((user) => user.username === userToAdd.username).length != 1){
+    if (userSelected.filter((user) => user.username === userToAdd.username).length != 1) {
       userSelected.push(userToAdd)
     }
 
@@ -250,12 +262,12 @@ class TeamSuggestionForm extends React.Component {
     })
   }
 
-  removeUser(username){
+  removeUser(username) {
     let removedUser = this.state.userInformation;
 
     let userToRemove = this.state.usersSelected.filter((user) => user.username === username)[0];
 
-    if (removedUser.filter((user) => userToRemove.username === user.username).length != 1){
+    if (removedUser.filter((user) => userToRemove.username === user.username).length != 1) {
       removedUser.push(userToRemove)
     }
 
@@ -270,7 +282,7 @@ class TeamSuggestionForm extends React.Component {
       return (
         <ListItem key={generateUUID()}
                   avatar='https://dl.dropboxusercontent.com/u/2247264/assets/m.jpg'
-                  caption= {[user.username, [user.name, user.lastName].join(" ")].join(": ")}
+                  caption={[user.username, [user.name, user.lastName].join(" ")].join(": ")}
                   legend='Here will be the feedback points'
                   onClick={this.selectUser.bind(this, user.username)}
                   rightIcon='star'/>
@@ -278,18 +290,53 @@ class TeamSuggestionForm extends React.Component {
     })
   }
 
-  renderUserSelected(){
+  renderUserSelected() {
     return this.state.usersSelected.map((user) => {
       return (
         <ListItem key={generateUUID()}
                   avatar='https://dl.dropboxusercontent.com/u/2247264/assets/m.jpg'
-                  caption= {[user.username, [user.name, user.lastName].join(" ")].join(": ")}
+                  caption={[user.username, [user.name, user.lastName].join(" ")].join(": ")}
                   legend='Here will be the feedback points'
                   onClick={this.removeUser.bind(this, user.username)}
                   rightIcon='star'/>
       )
-
     })
+  }
+
+  handleAgeChange(key, value) {
+    this.setState({[key]: value})
+  }
+
+  rangeFilter() {
+    return (
+      <div className="row">
+        <InputComponent label="From" type="number" value={this.state.rangeFrom}
+                        onValueChange={this.handleAgeChange.bind(this, "rangeFrom")} className="col-md-6"/>
+        <InputComponent label="To" type="number" value={this.state.rangeTo}
+                        onValueChange={this.handleAgeChange.bind(this, "rangeTo")} className="col-md-6"/>
+      </div>
+    )
+  }
+
+  //TODO: this should be another component.
+  filters(filter) {
+
+    switch (filter) {
+      case PROFESSION:
+        return this.dropdownObjectFilteredValues();
+        break;
+      case AGE:
+        return this.rangeFilter();
+      case NATIONALITY:
+        return this.dropdownObjectFilteredValues();
+        break;
+      case SCORING:
+        return this.rangeFilter();
+      case HOBBIES:
+        break;
+      default:
+        break;
+    }
   }
 
   render() {
@@ -316,41 +363,39 @@ class TeamSuggestionForm extends React.Component {
                       {this.dropdownObjectForFilter()}
                     </div>
                     <div className="col-md-4">
-                      {this.dropdownObjectFilteredValues()}
-                    </div>
-                    <div className="col-md-4">
                       <TooltipButton icon='add' tooltip='Add filter'
                                      style={{background: '#900C3F', color: 'white', marginTop: 10}} floating mini
-                                     onClick={this.handleClick.bind(this)}/>
+                                     onClick={this.addFilter.bind(this)}/>
                     </div>
+                    <div className="col-md-4">
+                      <TooltipButton icon='search' tooltip='Search members'
+                                     style={{background: '#900C3F', color: 'white'}}
+                                     floating onClick={this.searchUsers.bind(this)}/>
+                    </div>
+                  </div>
+                  <div className="row col-md-12">
+                    {this.filters(this.state.filterName)}
                   </div>
                 </div>
               </div>
               <div className="form-group">
                 <div className="row">
-                  <div className="col-md-8" style={{marginTop: 20}}>
+                  <div className="col-md-12" style={{marginTop: 20}}>
                     {this.filterLabels()}
                   </div>
                 </div>
               </div>
               <div className="form-group">
                 <div className="row">
-                  <div className="col-md-offset-6">
-                    <TooltipButton icon='search' tooltip='Search members'
-                                   style={{background: '#900C3F', color: 'white'}}
-                                   floating onClick={this.searchUsers.bind(this)}/>
-                  </div>
-                </div>
-                <div className="row">
                   <div className="col-md-6">
                     <List selectable ripple className={classes.verticalbarright}>
-                      <ListSubHeader caption='Select Users' theme={listSubheader} />
+                      <ListSubHeader caption='Select Users' theme={listSubheader}/>
                       {this.renderUsers()}
                     </List>
                   </div>
                   <div className="col-md-6">
                     <List selectable ripple className={classes.verticalbarleft}>
-                      <ListSubHeader caption='Users Selected' theme={listSubheader} />
+                      <ListSubHeader caption='Users Selected' theme={listSubheader}/>
                       {this.renderUserSelected()}
                     </List>
                   </div>
