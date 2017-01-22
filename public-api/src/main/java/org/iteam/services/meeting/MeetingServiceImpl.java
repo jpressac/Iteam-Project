@@ -72,8 +72,8 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public List<Meeting> getMeetingByState(String username) {
-        return meetingRepositoryImpl.getMeetingsByState(username);
+    public List<Meeting> getEndedMeetings(String username) {
+        return meetingRepositoryImpl.getEndedMeetings(username);
     }
 
     @Override
@@ -120,6 +120,11 @@ public class MeetingServiceImpl implements MeetingService {
     @Override
     public void removeIdeasFromCacheSharedBoard(String meetingId, String id) {
         meetingRepositoryImpl.removeIdeasFromCacheSharedBoard(meetingId, id);
+    }
+
+    @Override
+    public List<Meeting> getProgrammedMeetings(String username) {
+        return meetingRepositoryImpl.getProgrammedMeetings(username);
     }
 
     @Autowired

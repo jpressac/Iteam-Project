@@ -170,5 +170,7 @@ public interface MeetingService {
      */
     public void removeIdeasFromCacheSharedBoard(String meetingId, String info);
 
-    public List<Meeting> getMeetingByState(String string);
+    public List<Meeting> getEndedMeetings(String string);
+
+    public List<Meeting> getProgrammedMeetings(String username);
 }

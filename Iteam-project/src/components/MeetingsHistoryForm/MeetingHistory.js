@@ -7,7 +7,7 @@ import {MEETING} from '../../constants/HostConfiguration';
 import axios from 'axios';
 import MeetingCard from '../MeetingCard/MeetingCard';
 import Input from "react-toolbox/lib/input";
-
+import rootdiv from './formContainer.scss'
 
 class MeetingHistory extends Component {
 
@@ -19,7 +19,7 @@ class MeetingHistory extends Component {
   }
 
   componentDidMount(){
-    axios.get(MEETING.MEETING_BYSTATE).then(function(response){
+    axios.get(MEETING.MEETING_ENDED).then(function(response){
     this.fillMeetings(response.data)
     }.bind(this));
   }
@@ -34,7 +34,7 @@ class MeetingHistory extends Component {
 
   render(){
     return(
-      <div>
+      <div >
         <Input type='text' label='Meeting name' value=""/>
         <MeetingCard endedMeetings={this.state.meetings}/>
       </div>

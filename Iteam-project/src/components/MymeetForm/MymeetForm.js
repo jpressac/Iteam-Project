@@ -73,26 +73,16 @@ class MymeetForm extends Component {
   }
 
   componentDidMount() {
-    axios.get(MEETING.MEETING_BY_USER, {params: {username: this.props.user}}).then(function (response) {
+    axios.get(MEETING.MEETING_PROGRAMMED).then(function (response) {
       this.fillFields(response.data)
     }.bind(this));
   }
-
-  adminActionsStart = [
-    //FIXME: cancel button cannot have the same behave as the onclick in the "card meeting"
-  {label: "Cancel", onClick: this.handleToggleDialog},
-  {label: "Start", onClick: this.startMeeting.bind(this)}
-];
 
   adminActionsEdit = [
   {label: "Cancel", onClick: this.handleToggleDialog},
   {label: "Delete MeetingConfig", onClick: this.handleToggleDialog},
   {label: "Edit", onClick: this.edit.bind(this)},
   {label: "Save", onClick: this.save.bind(this)}
-];
-  adminUserActionsFinish = [
-  {label: "Cancel", onClick: this.handleToggleDialog},
-  {label: "View Reports", onClick: this.goToReports.bind(this)}
 ];
 
   userActionsJoin = [
@@ -170,24 +160,19 @@ let meetingInfo = {};
   showActions(meetingOwner, meetingDate) {
     if (this.isAdmin(meetingOwner)) {
       //fecha ya paso, puede ver reportes
-      if (validateDate(meetingDate)) {
-        return this.adminUserActionsFinish;
-      }
-      else {
-        //rango de tiempo aceptable para comenzar reunion
+      if (!validateDate(meetingDate)) {
         if (validateStart(meetingDate)) {
-          return this.adminActionsStart;
+          return this.userActionsJoin;
         }
         //fecha mayor, puede editar
         return this.adminActionsEdit;
       }
+      //update meeting to ended
+
     }
     else {
       //fecha ya paso
-      if (validateDate(meetingDate)) {
-        return this.adminUserActionsFinish;
-      }
-      else {
+      if (!validateDate(meetingDate)) {
         //rango de tiempo aceptable para unirse reunion
         if (validateStart(meetingDate)) {
           return this.userActionsJoin;
@@ -195,6 +180,8 @@ let meetingInfo = {};
         // fecha mayor, puede poner ver
         return this.userActionsView;
       }
+      //update meeting to ended
+
     }
   }
 
@@ -204,6 +191,10 @@ let meetingInfo = {};
 
   fillFields(meetings) {
     this.setState({meetings: meetings, showSpinner: false});
+  }
+
+  setMeetingEnding(meetingId){
+    axios.post(MEETING.MEETING_MARK_ENDED, {})
   }
 
   edit() {
@@ -485,7 +476,7 @@ let meetingInfo = {};
       </Dialog>
     )
   }
-  
+
   render() {
     if(!this.state.showSpinner) {
       let meets = this.state.meetings;

@@ -169,10 +169,17 @@ public class MeetingController {
         meetingServiceImpl.updateMeetingUsers(meetingId, username);
     }
 
-    @RequestMapping(value = "meeting/bystate", method = RequestMethod.GET)
-    public ResponseEntity<List<Meeting>> getMeetingsByState() {
+    @RequestMapping(value = "meeting/ended", method = RequestMethod.GET)
+    public ResponseEntity<List<Meeting>> getEndedMeetings() {
         List<Meeting> meetings = meetingServiceImpl
-                .getMeetingByState(SecurityContextHolder.getContext().getAuthentication().getName());
+                .getEndedMeetings(SecurityContextHolder.getContext().getAuthentication().getName());
+        return new ResponseEntity<List<Meeting>>(meetings, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "meeting/programmed", method = RequestMethod.GET)
+    public ResponseEntity<List<Meeting>> getProgrammedMeetings() {
+        List<Meeting> meetings = meetingServiceImpl
+                .getProgrammedMeetings(SecurityContextHolder.getContext().getAuthentication().getName());
         return new ResponseEntity<List<Meeting>>(meetings, HttpStatus.OK);
     }
 

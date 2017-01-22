@@ -9,6 +9,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.elasticsearch.ElasticsearchException;
+import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
@@ -189,7 +190,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     }
 
     @Override
-    public List<Meeting> getMeetingsByState(String username) {
+    public List<Meeting> getEndedMeetings(String username) {
         LOGGER.info("Getting all ended meetings");
         List<Meeting> meetings = new ArrayList<>();
 
@@ -206,6 +207,34 @@ public class MeetingRepositoryImpl implements MeetingRepository {
                 meetings.add((Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class));
             }
         }
+        return meetings;
+    }
+
+    public List<Meeting> getNotPerformedMeetings(String username) {
+        LOGGER.info("Getting all ended meetings");
+
+        List<Meeting> meetings = new ArrayList<>();
+
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+        queryBuilder.must(QueryBuilders.termQuery(MEETING_OWNER_NAME_FIELD, username))
+                .mustNot(QueryBuilders.existsQuery(MEETING_STATE_NAME_FIELD))
+                .must(QueryBuilders.rangeQuery(PROGRAMMED_DATE_FIELD).to(DateTime.now().getMillis()));
+
+        SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING, queryBuilder,
+                SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD).order(SortOrder.DESC));
+
+        BulkRequest bulkReq = new BulkRequest();
+
+        if (response.getHits().getTotalHits() > 0) {
+
+            for (SearchHit hit : response.getHits()) {
+                // meetings.add((Meeting)
+                // JSONUtils.JSONToObject(hit.getSourceAsString(),
+                // Meeting.class));
+
+            }
+        }
+
         return meetings;
     }
 
@@ -546,6 +575,26 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         }
 
         return ideasList;
+    }
+
+    public List<Meeting> getProgrammedMeetings(String username) {
+        LOGGER.info("Getting all programmed meetings");
+        List<Meeting> meetings = new ArrayList<>();
+
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+        queryBuilder.must(QueryBuilders.termQuery(MEETING_OWNER_NAME_FIELD, username))
+                .mustNot(QueryBuilders.existsQuery(MEETING_STATE_NAME_FIELD));
+
+        SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING, queryBuilder,
+                SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD).order(SortOrder.DESC));
+
+        if (response.getHits().getTotalHits() > 0) {
+
+            for (SearchHit hit : response.getHits()) {
+                meetings.add((Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class));
+            }
+        }
+        return meetings;
     }
 
     @Autowired

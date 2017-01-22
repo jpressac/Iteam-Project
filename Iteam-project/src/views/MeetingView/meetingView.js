@@ -7,7 +7,6 @@ class MeetingView extends React.Component {
   render(){
     return(
       <div className={classes.formContainer}>
-        
         <Meeting></Meeting>
       </div>
     )
