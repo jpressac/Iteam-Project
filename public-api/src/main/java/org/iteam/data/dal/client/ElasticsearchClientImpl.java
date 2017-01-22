@@ -14,6 +14,7 @@ import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.update.UpdateRequestBuilder;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
@@ -23,7 +24,9 @@ import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.iteam.configuration.ExternalConfigurationProperties;
+import org.iteam.data.model.BiFieldModel;
 import org.iteam.exceptions.ElasticsearchClientException;
+import org.iteam.services.utils.JSONUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,19 +107,19 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
 
         search.setIndices(index);
 
-        if(!ObjectUtils.isEmpty(queryBuilder)) {
+        if (!ObjectUtils.isEmpty(queryBuilder)) {
             search.setQuery(queryBuilder);
         }
 
-        if(!ObjectUtils.isEmpty(aggregationBuilder)) {
+        if (!ObjectUtils.isEmpty(aggregationBuilder)) {
             search.addAggregation(aggregationBuilder);
         }
 
-        if(!ObjectUtils.isEmpty(size)) {
+        if (!ObjectUtils.isEmpty(size)) {
             search.setSize(size);
         }
 
-        if(!ObjectUtils.isEmpty(sort)) {
+        if (!ObjectUtils.isEmpty(sort)) {
             search.addSort(sort);
         }
 
@@ -155,7 +158,7 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
         IndexRequestBuilder indexRequest = client.prepareIndex();
         indexRequest.setIndex(index).setType(type);
 
-        if(!ObjectUtils.isEmpty(id)) {
+        if (!ObjectUtils.isEmpty(id)) {
             indexRequest.setId(id);
         }
 
@@ -165,5 +168,23 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
     @Autowired
     private void setConfiguration(ExternalConfigurationProperties configuration) {
         this.configuration = configuration;
+    }
+
+    @Override
+    public BulkResponse updateData(List<BiFieldModel> data, String index, String type) {
+        BulkRequestBuilder updateBulk = client.prepareBulk();
+
+        data.forEach((dataToUpdate) -> {
+            updateBulk.add(update(dataToUpdate.getField(), index, type, dataToUpdate.getValue()));
+        });
+
+        return updateBulk.execute().actionGet();
+    }
+
+    private UpdateRequestBuilder update(String dataToUpdate, String index, String type, String id) {
+        UpdateRequestBuilder updateRequest = client.prepareUpdate();
+        updateRequest.setType(type).setIndex(index).setId(id);
+
+        return updateRequest.setDoc(JSONUtils.ObjectToJSON(dataToUpdate));
     }
 }
