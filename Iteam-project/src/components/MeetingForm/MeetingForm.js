@@ -43,7 +43,7 @@ class MeetingView extends Component {
       programmedDate: new Date(),
       endDate: new Date(),
       time: new Date(),
-      endtime: new Date(),
+      endTime: new Date(),
       teamName: '',
       teamsObj: [],
       teamSelectedName: '',
@@ -53,7 +53,7 @@ class MeetingView extends Component {
 
   handleChangeStart = (time) => {
     if(MeetingView.validateHour(time)){
-      this.setState({time: time, endtime: time});
+      this.setState({time: time, endTime: time});
       this.state.programmedDate.setHours(time.getHours());
       this.state.programmedDate.setMinutes(time.getMinutes());
     }
@@ -69,7 +69,7 @@ class MeetingView extends Component {
     console.debug('date: ' + newDate);
     newDate.setHours(time.getHours());
     newDate.setMinutes(time.getMinutes());
-    this.setState({endtime: time, endDate:newDate});
+    this.setState({endTime: time, endDate:newDate});
   };
 
   static checkDate(startHour, endHour, date) {
@@ -231,7 +231,7 @@ class MeetingView extends Component {
                   </div>
                 <div className="col-md-3">
                     <TimePicker label='End time' onChange={this.handleChangeEnd.bind(this)}
-                                theme={themeLabel} value={this.state.endtime}/>
+                                theme={themeLabel} value={this.state.endTime}/>
                   </div>
                 </div>
               </div>

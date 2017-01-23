@@ -10,7 +10,6 @@ import org.iteam.data.dto.UserDTO;
 import org.iteam.data.model.D3CollapseTreeModel;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
-import org.iteam.exceptions.MeetingInfoNotFoundException;
 import org.iteam.services.team.TeamService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,8 +36,8 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public boolean savedIdeas(IdeasDTO ideas) {
-        return meetingRepositoryImpl.saveIdeas(ideas);
+    public void savedIdeas(IdeasDTO ideas) {
+        meetingRepositoryImpl.saveIdeas(ideas);
     }
 
     @Override
@@ -59,14 +58,7 @@ public class MeetingServiceImpl implements MeetingService {
 
     @Override
     public String getMeetingInfo(String meetingId) {
-
-        String result = meetingRepositoryImpl.getMeetingInfo(meetingId);
-        if(result == null) {
-            LOGGER.error("Error when retrieving meeting info of meeting '{}'", meetingId);
-            throw new MeetingInfoNotFoundException("Error when retrieving meeting info");
-        }
-        return result;
-
+        return meetingRepositoryImpl.getMeetingInfo(meetingId);
     }
 
     @Override
@@ -77,6 +69,11 @@ public class MeetingServiceImpl implements MeetingService {
     @Override
     public void updateMeetingUsers(String meetingId, String users) {
         meetingRepositoryImpl.saveMeetingUsers(users, meetingId);
+    }
+
+    @Override
+    public List<Meeting> getMeetingByState(String username) {
+        return meetingRepositoryImpl.getMeetingsByState(username);
     }
 
     @Override

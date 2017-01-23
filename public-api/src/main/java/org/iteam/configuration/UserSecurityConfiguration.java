@@ -39,6 +39,7 @@ public class UserSecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests().antMatchers(HttpMethod.POST, "/user").permitAll()
                 .antMatchers(HttpMethod.GET, "/user/authenticated").permitAll()
+                .antMatchers(HttpMethod.GET, "/user/exists").permitAll()
                 .antMatchers(HttpMethod.GET, "/utilities/nationality/get").permitAll()
                 .antMatchers(HttpMethod.GET, "/utilities/professions").permitAll()
                 .antMatchers(HttpMethod.POST, "/utilities/nationality/insert").permitAll()

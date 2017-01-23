@@ -7,6 +7,7 @@ import avatarPeople from './account-multiple.png'
 import listItemGrey from './ListItemGrey.scss'
 import listFormat from './List.scss'
 import {TEAM} from '../../constants/HostConfiguration'
+import Spinner from '../Spinner/Spinner';
 
 
 const mapStateToProps = (state) => {
@@ -17,22 +18,16 @@ const mapStateToProps = (state) => {
   }
 };
 
-
 class MyTeamsForm extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
       active: false,
-      teams: {}
+      teams: {},
+      showSpinner: true
     }
   }
-
-
-  fillFields(teams) {
-    this.setState({teams: teams});
-  }
-
 
   componentDidMount() {
     axios.get(TEAM.TEAM_BY_OWNER
@@ -41,38 +36,47 @@ class MyTeamsForm extends Component {
     }.bind(this));
   }
 
+  fillFields(teams) {
+    this.setState({teams: teams, showSpinner: false});
+  }
 
   render() {
-    let teamMap = this.state.teams;
-    let members;
+    if(!this.state.showSpinner) {
+      let teamMap = this.state.teams;
+      let members;
 
-    return (
-      <div className={"container"} style={{marginTop:70}}>
-        <div className={classes.content}>
-          <div className={classes.label2}>
-            <label>MY TEAMS</label>
+      return (
+        <div className={"container"} style={{marginTop: 70}}>
+          <div className={classes.content}>
+            <div className={classes.label2}>
+              <label>MY TEAMS</label>
+            </div>
+            <List theme={listFormat} ripple>
+              <ListSubHeader />
+              {Object.keys(teamMap).map((key) => {
+                members = teamMap[key].team.members;
+                console.log('key: ' + teamMap[key].team.members);
+                return (
+                  <div key={key}>
+                    <ListItem
+                      theme={listItemGrey}
+                      avatar={avatarPeople}
+                      caption={teamMap[key].team.name}
+                      legend={members.join(", ")}>
+                    </ListItem>
+                    <ListDivider />
+                  </div>
+                );
+              })}
+            </List>
           </div>
-          <List theme={listFormat} ripple>
-            <ListSubHeader />
-            {Object.keys(teamMap).map((key) => {
-              members= teamMap[key].team.members;
-              console.log('key: ' + teamMap[key].team.members);
-              return (
-                <div key={key}>
-                  <ListItem
-                    theme={listItemGrey}
-                    avatar={avatarPeople}
-                    caption={teamMap[key].team.name}
-                    legend={members.join(", ")}>
-                  </ListItem>
-                  <ListDivider />
-                </div>
-              );
-            })}
-          </List>
         </div>
-      </div>
-    )
+      )
+    }else {
+      return (
+        <Spinner/>
+      )
+    }
   }
 }
 

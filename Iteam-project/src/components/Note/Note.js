@@ -9,7 +9,7 @@ import cardTitlescss from'./CardTitle.scss'
 import cardActionsscss from './CardActions.scss'
 import cardTextscss from './CardText.scss'
 import classes from './Note.scss'
-import imputSize from './InputSize.scss'
+import inputSize from './InputSize.scss'
 import Chipscss from './Chip.scss'
 import Input from 'react-toolbox/lib/input';
 import Dropdown from 'react-toolbox/lib/dropdown';
@@ -37,8 +37,8 @@ class Note extends Component {
     this.state = {
       view: 'normal',
       board: props.boardType,
-      title: "No title",
-      comments: null,
+      title: "",
+      comments: "",
       mapTag: [],
       tagValue: '',
       tagName: 'Miscellaneous'
@@ -66,8 +66,8 @@ class Note extends Component {
                 <Dropdown label="Select Tag" auto theme={themedrop} style={{color: '#900C3F'}}
                           onChange={this.comboTags.bind(this)} required
                           source={this.state.mapTag} value={this.state.tagValue}/>
-                <Input theme={imputSize} type='text' label='Title' value={this.state.title} required
-                       onChange={this.handleChange.bind(this, 'title')} maxLength={150} multiline={'True'}/>
+                <Input theme={inputSize} type='text' label='Title' value={this.state.title} required
+                       onChange={this.handleChange.bind(this, 'title')} maxLength={140} multiline={'True'}/>
                 <CardActions theme={cardActionsscss}>
                   <IconButton icon="save" onClick={this.save.bind(this)}/>
                   <IconButton icon="clear" onClick={this.cancelComment.bind(this)}/>
@@ -116,6 +116,7 @@ class Note extends Component {
                   <IconButton icon="add" onClick={this.comment.bind(this)}/>
                   <IconButton icon="delete_sweep" onClick={this.removeFromShared.bind(this)}/>
                   <IconButton icon="thumb_up" onClick={this.updateRanking.bind(this, 1)}/>
+                  <label>{this.props.ranking}</label>
                   <IconButton icon="thumb_down" onClick={this.updateRanking.bind(this, -1)}/>
                 </CardActions>
               </Card>
@@ -129,7 +130,7 @@ class Note extends Component {
                   theme={cardTitlescss}
                   title={this.props.title}
                 />
-                <Input theme={imputSize} type='text' label='Comments' value={this.state.comments}
+                <Input theme={inputSize} type='text' label='Comments' value={this.state.comments}
                        onChange={this.handleChange.bind(this, 'comments')} maxLength={60} multiline={'True'}/>
                 <CardActions theme={cardActionsscss}>
                   <IconButton icon="save" onClick={this.saveComment.bind(this)}/>
@@ -247,6 +248,7 @@ Note.propTypes = {
   comments: PropTypes.string,
   title: PropTypes.string,
   tag: PropTypes.string,
+  ranking:PropTypes.string,
   tagMap: PropTypes.any
 };
 

@@ -46,6 +46,11 @@ public class TeamServiceImpl implements TeamService {
         return teamRepository.getTeamUsersByMeeting(meetingId);
     }
 
+    @Override
+    public boolean checkTeamNameExistent(String teamName, String teamOwner) {
+        return teamRepository.checkTeamNameExistent(teamName, teamOwner);
+    }
+
     @Autowired
     private void setTeamRepository(TeamRepositoryImpl teamRepository) {
         this.teamRepository = teamRepository;

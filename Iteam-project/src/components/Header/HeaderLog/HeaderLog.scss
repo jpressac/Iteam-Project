@@ -2,8 +2,15 @@
   background-color: white;
   box-shadow: 0 2px 5px rgba(0, 0, 0, .26);
   padding:10px;
-  align-items: right;
+  align-items: left;
   display: inline-block;
   height: 7rem;
+}
 
+.appBar .fixed {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  text-align: -webkit-right;
 }

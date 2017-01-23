@@ -37,6 +37,7 @@ import org.springframework.util.ObjectUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 
 @Repository
 public class MeetingRepositoryImpl implements MeetingRepository {
@@ -47,6 +48,8 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
     private static final String IDEA_MEETING_ID_FIELD = "meetingId";
     private static final String MEETING_TEAM_NAME_FIELD = "teamName";
+    private static final String MEETING_STATE_NAME_FIELD = "ended";
+    private static final String MEETING_OWNER_NAME_FIELD = "ownerName";
     private static final String PROGRAMMED_DATE_FIELD = "programmedDate";
     private static final int MAX_RETRIES = 5;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -96,11 +99,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     }
 
     @Override
-    public boolean saveIdeas(IdeasDTO ideas) {
-
-        LOGGER.info("Inserting new ideas");
-
-        LOGGER.debug("Ideas: '{}'", ideas.toString());
+    public void saveIdeas(IdeasDTO ideas) {
 
         // TODO:check if it's necessary set the insertion date to each idea.
         List<String> dataToInsert = new ArrayList<>();
@@ -112,14 +111,17 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         // TODO: we need to make it async, so if the ideas cannot be save we
         // can't delete the index meetingInfo,
         // could we implement a retry politic.
-        elasticsearchClientImpl.insertData(dataToInsert, StringUtilities.INDEX_IDEAS, StringUtilities.INDEX_TYPE_IDEAS);
+        if (!dataToInsert.isEmpty()) {
+            elasticsearchClientImpl.insertData(dataToInsert, StringUtilities.INDEX_IDEAS,
+                    StringUtilities.INDEX_TYPE_IDEAS);
+            LOGGER.info("Inserting new ideas in meeting info");
+            LOGGER.debug("Ideas: '{}'", ideas.toString());
+            // TODO: maybe this is not the best way to get the meeting id, try
+            // meeting id by parameters.
+            elasticsearchClientImpl.delete(StringUtilities.INDEX_MEETING_INFO, StringUtilities.INDEX_TYPE_MEETING_INFO,
+                    ideas.getIdeas().get(0).getMeetingId());
+        }
 
-        // TODO: maybe this is not the best way to get the meeting id, try
-        // meeting id by parameters.
-        elasticsearchClientImpl.delete(StringUtilities.INDEX_MEETING_INFO, StringUtilities.INDEX_TYPE_MEETING_INFO,
-                ideas.getIdeas().get(0).getMeetingId());
-
-        return true;
     }
 
     @Override
@@ -187,6 +189,27 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     }
 
     @Override
+    public List<Meeting> getMeetingsByState(String username) {
+        LOGGER.info("Getting all ended meetings");
+        List<Meeting> meetings = new ArrayList<>();
+
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+        queryBuilder.must(QueryBuilders.termQuery(MEETING_OWNER_NAME_FIELD, username))
+                .must(QueryBuilders.existsQuery(MEETING_STATE_NAME_FIELD));
+
+        SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING, queryBuilder,
+                SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD).order(SortOrder.DESC));
+
+        if (response.getHits().getTotalHits() > 0) {
+
+            for (SearchHit hit : response.getHits()) {
+                meetings.add((Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class));
+            }
+        }
+        return meetings;
+    }
+
+    @Override
     public List<Meeting> getMeetingByTeamName(List<String> teamName) {
         List<Meeting> meetingList = new ArrayList<>();
         LOGGER.info("Getting meeting for teams: '{}'", teamName.toString());
@@ -222,8 +245,11 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
         if (response.isExists()) {
             return response.getSourceAsString();
+        } else {
+            LOGGER.warn("No notes were shared yet");
+            return null;
         }
-        return null;
+
     }
 
     @Override
@@ -393,7 +419,8 @@ public class MeetingRepositoryImpl implements MeetingRepository {
             for (Idea idea : ideasList) {
 
                 if (tag.equals(idea.getTag())) {
-                    treeModelTag.add(new D3CollapseTreeModel(idea.getTitle()));
+                    treeModelTag.add(new D3CollapseTreeModel(idea.getTitle(),
+                            Lists.newArrayList(new D3CollapseTreeModel(idea.getComments()))));
                 }
             }
 
@@ -413,7 +440,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
             for (Idea idea : ideasList) {
 
                 if (tag.equals(idea.getTag())) {
-                    treeModelTag.add(new D3CollapseTreeModel(idea.getTitle(), idea.getRanking(), "#FBBD16"));
+                    treeModelTag.add(new D3CollapseTreeModel(idea.getTitle(), idea.getRanking(), "#D6BA33"));
                 }
             }
 

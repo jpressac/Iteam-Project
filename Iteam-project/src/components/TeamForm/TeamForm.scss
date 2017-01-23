@@ -1,11 +1,8 @@
 .content{
-
   background-position-x: center;
   background-position-y: center;
   margin:50px;
   width:700px;
-
-
 }
 .form{
   width: 700px;
@@ -19,8 +16,6 @@
   align-items: center;
   font-size: 35px;
   margin:15px;
-
-
 }
 .tag {
   font-size: 14px;
@@ -57,4 +52,12 @@
 .tag a .glyphicon-white {
   color: #fff;
   margin-bottom: 2px;
+}
+
+.verticalbarright {
+  border-right: thick solid #ff0000;
+}
+
+.verticalbarleft {
+  border-left: thick solid #ff0000;
 }

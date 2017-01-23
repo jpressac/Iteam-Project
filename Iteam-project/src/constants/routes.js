@@ -22,7 +22,9 @@ export const PATHS = {
    MYMEETINGS: 'mymeeting',
    MEETCONFIG: 'meetingconfig',
    TEAMLIST: 'myteams',
-   REPORTS: 'reports'
+   REPORTS: 'reports',
+   CHAT: 'chat',
+   HISTORY: 'history'
  },
   PERSONALBOARD:{
     ROOT:'member/pboard',
@@ -51,6 +53,8 @@ export const PATHS = {
    TEAMLIST: 'application/member/myteams',
    REPORTS: 'application/member/reports',
    PERSONALBOARD: 'application/member/pboard/personal',
-   SHAREDBOARD: 'application/member/sboard/shared'
+   SHAREDBOARD: 'application/member/sboard/shared',
+   CHAT:'application/member/chat',
+   HISTORY: 'application/member/history'
  }
 };
