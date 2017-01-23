@@ -31,7 +31,8 @@ class D3Tree extends React.Component {
   renderTreeExpand(treeData, svgNode) {
     let margin = {top: 20, right: 90, bottom: 10, left: 120},
       width = window.innerWidth - margin.right, //TODO: this is hardcoded so it antoher screen it will not work
-      height = window.innerHeight + 600;// TODO: calculate with a amount of nodes
+      height = window.innerHeight + 300;// TODO: calculate with a amount of nodes
+      height = window.innerHeight + 500;// TODO: calculate with a amount of nodes
 
     i = 0;
     duration = 750;
@@ -39,7 +40,7 @@ class D3Tree extends React.Component {
 // declares a tree layout and assigns the size
     treemap = d3.tree()
       .size([width, height])
-      .nodeSize([60, 25]);
+      .nodeSize([50, 30]);
 
 
     // remove the last SVG Node, just to create a new one
@@ -53,11 +54,11 @@ class D3Tree extends React.Component {
 
     svg = d3.select(svgNode)
       .attr("width", width)
-      .attr("height", height)
+      .attr("height", height +500)
       .attr("align", "center")
       .append("g")
       .attr("transform", "translate("
-        + margin.left + "," + height*0.5 + ")");
+        + margin.left + "," + height*0.6 + ")");
 
     // var svg = d3.select(classes.container)
     //   .append("g")
@@ -170,7 +171,7 @@ class D3Tree extends React.Component {
       // Add labels for the nodes
       nodeEnter.append('text')
         .attr("dy", function (d) {
-          return d.children || d._children ? -7 : ".35em";
+          return d.children || d._children ? -7 : ".7em";
         })
         .attr("x", function (d) {
           return d.children || d._children ? 13 : 13;
@@ -181,7 +182,7 @@ class D3Tree extends React.Component {
         .text(function (d) {
           return d.data.name;
         })
-        .call(wrap, 200);
+        .call(wrap, 300);
 
 
       // UPDATE

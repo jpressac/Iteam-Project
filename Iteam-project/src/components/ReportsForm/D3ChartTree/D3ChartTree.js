@@ -24,8 +24,8 @@ class D3ChartTree extends React.Component {
   renderTree(treeData, svgDomNode) {
 
     let margin = {top: 20, right: 90, bottom: 30, left: 90},
-      width = 1000 - margin.left - margin.right, //TODO: this is hardcoded so it antoher screen it will not work
-      height = 700 - margin.top - margin.bottom;
+      width = window.innerWidth - 300, //TODO: this is hardcoded so it antoher screen it will not work
+      height = window.innerHeight + 300 ;
 
 
     //Remove all elements before render
@@ -33,8 +33,8 @@ class D3ChartTree extends React.Component {
 
     //Make the new SVG
     let svg = d3.select(svgDomNode)
-      .attr("width", width + margin.right + margin.left)
-      .attr("height", height + margin.top + margin.bottom)
+      .attr("width", width +300)
+      .attr("height", height)
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -44,18 +44,23 @@ class D3ChartTree extends React.Component {
       return experienceName[d % 6];
     };
 
+    var array = getRankingData =>{
+      return treeData.children.map((value) => (value.children.map((childrenValue) => (childrenValue.value))[0] ))
+
+    }
+
     let xScale = d3.scaleLinear()
-      .domain([0, 5]) //This depends on the max ranking number
-      .range([0, 600]);
+      .domain([0, 5]) //d3.max(array(), function(d) { return d })]) //This depends on the max ranking number
+      .range([0, 500]);
 
     let xAxis = d3.axisTop()
       .scale(xScale)
-      .ticks(5)
+      .ticks(10)
       .tickFormat(formatSkillPoints);
 
 // declares a tree layout and assigns the size
     let tree = d3.cluster()                 // This D3 API method setup the Dendrogram datum position.
-      .size([height, width - 460])    // Total width - bar chart width = Dendrogram chart width
+      .size([height,width - 600])    // Total width - bar chart width = Dendrogram chart width
       .separation(function separate(a, b) {
         return a.parent == b.parent            // 2 levels tree grouping for category
         || a.parent.parent == b.parent
@@ -68,14 +73,24 @@ class D3ChartTree extends React.Component {
 
     tree(root);
 
+
+    // add the tool tip
+    // var div = d3.select("body").append("div")
+    //   .style('position', 'absolute')
+    //   .style('padding', '0 10px')
+    //   .style('background', '#FFFEAB')
+    //   .style('opacity', 0);
+
+    var div =  d3.select("body").append("div").classed( classes.toolTip, "true");
+
     let link = svg.selectAll("." + classes.link)
       .data(root.descendants().slice(1))
       .enter().append("path")
       .classed(classes.link, true)
-      .attr("d", function (d) { console.log(d);
+      .attr("d", function (d) {
         return "M" + d.y + "," + d.x
-          + "C" + (d.parent.y + 100) + "," + d.x
-          + " " + (d.parent.y + 100) + "," + d.parent.x
+          + "C" + (d.parent.y +100) + "," + d.x
+          + " " + (d.parent.y +100) + "," + d.parent.x
           + " " + d.parent.y + "," + d.parent.x;
       });
 
@@ -83,7 +98,7 @@ class D3ChartTree extends React.Component {
     let node = svg.selectAll("." + classes.node)
       .data(root.descendants())
       .enter().append("g")
-      .attr("class", function (d) { console.log(d);
+      .attr("class", function (d) {
         return classes.node + (d.children ? " " + classes.a : " " + classes.j);
       })
       .attr("transform", function (d) {
@@ -102,7 +117,7 @@ class D3ChartTree extends React.Component {
 
     leafNodeG.append("rect")
       .attr("class", classes.shadow)
-      .style("fill", function (d) {console.log(d.data.color);
+      .style("fill", function (d) {
         return d.data.color;
       })
       .attr("width", 2)
@@ -111,17 +126,33 @@ class D3ChartTree extends React.Component {
       .attr("ry", 2)
       .transition()
       .duration(800)
-      .attr("width", function (d) { console.log(d.data.value);
+      .attr("width", function (d) {
         return xScale(d.data.value);
       });
+
+    leafNodeG
+      .on("mousemove", function(d){
+        div
+          .style("left", d3.event.pageX - 100 + "px")
+          .style("top", d3.event.pageY - 70 + "px")
+          .style("display", "inline-block")
+          .attr('position', 'absolute')
+            .attr("padding", '0 10px')
+          .style("width", "400px")
+          .style("font-size","smaller")
+          .text((d.data.name));
+      })
+      .on("mouseout", function(d){ div.style("display", "none");});;
+    leafNodeG
+      .on("mouseout", function(d){ div.style("display", "none");});
 
     leafNodeG.append("text")
       .attr("dy", 19.5)
       .attr("x", 8)
+      .attr("overflow",'hidden')
+      .attr("color",'black')
       .style("text-anchor", "start")
-      .text(function (d) {console.log(d.data.name);
-        return d.data.name;
-      });
+          ;
 
     // Write down text for every parent datum
     let internalNode = svg.selectAll("." + classes.a);
@@ -134,10 +165,10 @@ class D3ChartTree extends React.Component {
 
     // Attach axis on top of the first leaf datum.
     let firstEndNode = svg.select("." + classes.j);
-    firstEndNode.insert("g")
-      .attr("class",classes.b)
-      .attr("transform", "translate(7,14)")
-      .call(xAxis);
+    // firstEndNode.insert("g")
+    //   .attr("class",classes.b)
+    //   .attr("transform", "translate(7,14)")
+    //   .call(xAxis);
 
     // tick mark for x-axis
     firstEndNode.insert("g")
@@ -145,7 +176,7 @@ class D3ChartTree extends React.Component {
       .attr("transform", "translate(7," + (height - 15) + ")")
       .call(d3.axisBottom()
         .scale(xScale)
-        .ticks(5)
+        .ticks(10)
         .tickSize(-height, 0, 0)
         .tickFormat("")
       );
