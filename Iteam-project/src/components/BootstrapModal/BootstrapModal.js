@@ -29,11 +29,13 @@ export default class BootstrapModal extends React.Component {
           <h4>{this.props.message}</h4>
         </Modal.Body>
         <Modal.Footer>
+          <Button onClick={this.props.onOk}> Ok</Button>
           <Button onClick={this.closeModal.bind(this)}>Close</Button>
         </Modal.Footer>
       </Modal>);
   }
   }
   BootstrapModal.propTypes ={
-    message: React.PropTypes.string
+    message: React.PropTypes.string,
+    onOk: React.PropTypes.func
 }

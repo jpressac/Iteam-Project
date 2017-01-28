@@ -1,6 +1,6 @@
 text {
-  font-family: "Arial Black", Gadget, sans-serif;
-  font-size: 12px
+  font-family: "Arial ", Gadget, sans-serif;
+  font-size: 8px
 }
 
 .link {
@@ -60,4 +60,15 @@ text {
 .shadow {
   -webkit-filter: drop-shadow( -1.5px -1.5px 1.5px #000 );
   filter: drop-shadow( -1.5px -1.5px 1.5px #000 );
+  overflow: hidden;
+}
+.toolTip {
+  position: absolute;
+  display: none;
+  min-width: 80px;
+  height: auto;
+  background: none repeat scroll 0 0 #ffffff;
+  border: 1px solid #6F257F;
+  padding: 14px;
+  text-align: center;
 }

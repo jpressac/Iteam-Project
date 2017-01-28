@@ -1,7 +1,6 @@
 import React, { Component, PropTypes }  from 'react';
 import {Link} from 'react-router';
 import classes from './MenuItem.scss';
-import {PATHS} from '../../constants/routes.js'
 export class MenuItem extends React.Component {
 
 
@@ -10,7 +9,7 @@ export class MenuItem extends React.Component {
 
       return (
         <div className={classes.menuItem}>
-        <li className={"sidebar-brand", classes.bullet}>
+        <li className={"sidebar-brand"}>
           <Link to={'/' + nav} activeClassName="active" className={classes.menuItem}>
 
           {label}
@@ -25,6 +24,6 @@ export class MenuItem extends React.Component {
 MenuItem.propTypes = {
   label: PropTypes.string,
   nav: PropTypes.string
-  }
+  };
 
 export default MenuItem

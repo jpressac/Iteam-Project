@@ -25,16 +25,16 @@ public class Meeting {
         return ownerName;
     }
 
-    public Long getProgrammedDate() {
-        return programmedDate;
-    }
-
-    public Meeting() {
-    }
-
+    public Meeting(){}
+    
+    
     public Meeting(String id, boolean ended) {
         this.meetingId = id;
         this.ended = ended;
+    }
+
+    public Long getProgrammedDate() {
+        return programmedDate;
     }
 
     public Long getCreationDate() {
