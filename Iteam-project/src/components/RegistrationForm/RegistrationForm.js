@@ -16,21 +16,12 @@ import {PATHS} from "../../constants/routes";
 import {connect} from "react-redux";
 import {push} from "react-router-redux";
 import Spinner from "../Spinner/Spinner";
-import {saveProfessions} from '../../redux/reducers/User/ProfessionReducer';
-import {saveNationality} from '../../redux/reducers/User/NationalityReducer';
 
 const TooltipInput = Tooltip(Input);
 
 const mapDispatchToProps = (dispatch) => ({
   goToHome: () => dispatch(push('/' + PATHS.MENUNOTLOGGEDIN.HOME))
 });
-
-const mapStateToProps = (state) => {
-  return {
-    nationality: state.nationalityReducer,
-    profession: state.professionsReducer
-  }
-};
 
 class RegistrationForm extends React.Component {
 
@@ -39,12 +30,12 @@ class RegistrationForm extends React.Component {
     this.state = {
       firstName: '',
       lastName: '',
-      nationality: props.nationality,
+      nationality: '',
       dropDownSourceNationalities: [],
       date: new Date(),
       mail: '',
       genderValue: 'male',
-      profession: props.profession,
+      profession: '',
       dropDownSourceProfession: [],
       hobbies: '',
       username: '',
@@ -79,7 +70,7 @@ class RegistrationForm extends React.Component {
 
   saveUser() {
     this.setState({showSpinner: true});
-    submitUser(this.state, this.props.nationality, this.props.profession)
+    submitUser(this.state, this.state.nationality, this.state.profession)
       .then(() => {
         this.props.goToHome()
       })
@@ -99,13 +90,13 @@ class RegistrationForm extends React.Component {
     this.state.date.setDate(datetime.getDate());
   };
 
-  checkUsername(){
+  checkUsername() {
     userExistence(this.state.username)
-      .then( () => {
+      .then(() => {
         this.setState({userExists: 'This username already exists, please try another'})
       })
       .catch(() => {
-      this.setState({userExists: ''})
+        this.setState({userExists: ''})
       })
   }
 
@@ -168,11 +159,11 @@ class RegistrationForm extends React.Component {
                   <div className="row">
                     <div className="col-md-6">
                       <DropdownComponent source={this.state.dropDownSourceProfession} label="Select profession"
-                                         initialValue={this.state.profession} saveValue={saveProfessions}/>
+                                         initialValue='' onValueChange={this.handleChange.bind(this, 'profession')}/>
                     </div>
                     <div className="col-md-6 ">
                       <DropdownComponent source={this.state.dropDownSourceNationalities} label="Select nationality"
-                                         initialValue={this.state.nationality} saveValue={saveNationality}/>
+                                         initialValue='' onValueChange={this.handleChange.bind(this, 'nationality')}/>
                     </div>
                   </div>
                 </div>
@@ -235,9 +226,7 @@ class RegistrationForm extends React.Component {
 }
 
 RegistrationForm.propTypes = {
-  goToHome: PropTypes.func,
-  nationality: PropTypes.string,
-  profession: PropTypes.string
+  goToHome: PropTypes.func
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(RegistrationForm)
+export default connect(null, mapDispatchToProps)(RegistrationForm)

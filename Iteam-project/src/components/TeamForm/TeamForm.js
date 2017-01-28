@@ -1,28 +1,27 @@
 import React, {PropTypes} from "react";
 import BootstrapModal from "../BootstrapModal";
 import {connect} from "react-redux";
-import Dropdown from "react-toolbox/lib/dropdown";
 import {Button} from "react-toolbox/lib/button";
 import {push} from "react-router-redux";
 import {PATHS} from "../../constants/routes";
 import classes from "./TeamForm.scss";
-import themeLabel from "./label.scss";
 import chipTheme from "./chips.scss";
 import Tooltip from "react-toolbox/lib/tooltip";
 import Chip from "react-toolbox/lib/chip";
 import Spinner from "../Spinner/Spinner";
-import InputComponent from '../InputComponent/InputComponent'
+import InputComponent from '../InputComponent/InputComponent';
+import DropdownComponent from '../DropdownComponent/DropdownComponent';
 import {getProfessions, getNationalities} from '../../utils/actions/utilsActions';
 import {createTeam, teamNameExistence, selectTeam} from '../../utils/actions/teamActions';
 import {List, ListItem, ListSubHeader} from 'react-toolbox/lib/list';
 import generateUUID from "../../constants/utils/GetUUID";
-import listSubheader from './ListSubheader.css'
+import listSubheader from './ListSubheader.css';
 
 const mapStateToProps = (state) => {
   if (state.loginUser !== null) {
     return {
       user: state.loginUser.user.username,
-      fromMeeting: state.meetingForTeamReducer
+      fromMeeting: state.meetingForTeamReducer,
     }
   }
 };
@@ -44,30 +43,22 @@ const AGE = 'Age';
 const SCORING = 'Scoring';
 const HOBBIES = 'Hobbies';
 
-const filter = [
-  {value: 1, label: PROFESSION},
-  {value: 2, label: NATIONALITY},
-  {value: 3, label: AGE},
-  {value: 4, label: SCORING}
-  //{value: 5, label: 'Hobbies'}
-];
+const filterValues = [PROFESSION, NATIONALITY, AGE, SCORING, HOBBIES];
 
 const TooltipButton = Tooltip(Button);
 
-class TeamSuggestionForm extends React.Component {
+class TeamForm extends React.Component {
+
   constructor(props) {
     super(props);
+    console.log(props);
     this.state = {
       teamName: '',
       filters: {},
       users: [],
       selectedUsers: [],
       usernames: {},
-      values: [],
       message: '',
-      filterName: '',
-      filteredName: '',
-      filteredValue: 0,
       showSpinner: false,
       showErrorTeamName: false,
       errorTeamName: '',
@@ -76,19 +67,31 @@ class TeamSuggestionForm extends React.Component {
       usersSelected: [],
       rangeFrom: 0,
       rangeTo: 0,
+      valuesForFilter: {},
+      dropdownSource: [],
+      dropdownSourceP: [],
+      filterToShow: '',
+      filterToAddValue: ''
     }
   }
 
   addFilter() {
-    if ((this.state.filterName !== '') && (this.state.filteredName !== '')) {
+    if (this.state.filterToShow === PROFESSION || this.state.filterToShow === NATIONALITY) {
+      this.addComboFilter();
+    } else {
+      this.addRangeFilter();
+    }
+  }
 
-      console.log(this.state.filteredName);
-      console.log(this.state.filterName);
-
+  addComboFilter() {
+    if (this.state.filterToAddValue !== '') {
       let newFilters = this.state.filters;
 
-      newFilters[this.state.filteredName] = {
-        values: this.state.filteredName
+      console.log("adding combo filter");
+
+      newFilters[this.state.filterToAddValue] = {
+        values: this.state.filterToAddValue,
+        key: this.state.filterToShow
       };
 
       this.setState({
@@ -98,30 +101,63 @@ class TeamSuggestionForm extends React.Component {
   }
 
   addRangeFilter() {
-    let rangeFilterName = '';
-    if (this.state.rangeFrom != 0) {
-      rangeFilterName.concat("from:", this.state.rangeFrom.toString());
+    let rangeFilterName = this.state.filterToShow;
+
+    //TODO: don't like this variable
+    let update = false;
+
+
+    if (0 != this.state.rangeFrom) {
+      update = true;
+      rangeFilterName = rangeFilterName.concat(" from:", this.state.rangeFrom.toString());
     }
 
-    if (this.state.rangeTo != 0) {
-      rangeFilterName.concat("to:", this.state.rangeTo.toString());
+    if (0 != this.state.rangeTo) {
+      update = true;
+      rangeFilterName = rangeFilterName.concat(" to:", this.state.rangeTo.toString());
     }
 
-    this.setState({filters: this.state.filters[this.state.filterName] = {values: rangeFilterName}})
+    let newFilters = this.state.filters;
+
+    if (update) {
+      newFilters[this.state.filterToShow] = {
+        values: rangeFilterName,
+        from: this.state.rangeFrom,
+        key: this.state.filterToShow,
+        to: this.state.rangeTo
+      };
+
+      this.setState({filters: newFilters})
+    }
   }
 
-  //TODO: use a set<string> for filling the table with columns that details the filter applied
-
   searchUsers() {
-    if (this.state.filters.length >= 0) {
-      selectTeam(JSON.stringify(this.state.filters))
-        .then(function (response) {
-          this.setState({userInformation: response.data});
-        }.bind(this))
-        .catch(function (response) {
-          //TODO: handle errors
-        });
-    }
+    selectTeam(JSON.stringify(this.processFilters()))
+      .then(function (response) {
+        this.setState({userInformation: response.data});
+      }.bind(this))
+      .catch(function (response) {
+        //TODO: handle errors
+      });
+  }
+
+  processFilters() {
+    return Object.values(this.state.filters).map((filter) => {
+
+      let obj = {};
+      obj.field = filter.key;
+
+      //Here will crate the filters for Profession and Nationality
+      if (filter.key === PROFESSION || filter.key === NATIONALITY) {
+        obj.values = [filter.values];
+      } else {
+        //Here will create the filters for Age and Scoring
+        if (filter.key === AGE || filter.key === SCORING) {
+          obj.values = [filter.from, filter.to];
+        }
+      }
+      return obj;
+    });
   }
 
   create() {
@@ -165,77 +201,10 @@ class TeamSuggestionForm extends React.Component {
     this.searchUsers.bind(this);
   }
 
-  fillFilterValues(value) {
-
-    let filtered = filter.filter(teamFilter => teamFilter["value"] === value);
-
-    let filterLabelName = filtered[0]["label"];
-
-    switch (filterLabelName) {
-      case PROFESSION:
-        getProfessions().then(function (response) {
-          this.setValuesOptions(response.data);
-        }.bind(this));
-        break;
-      case NATIONALITY:
-        getNationalities().then(function (response) {
-          this.setValuesOptions(response.data["nationalities"]);
-        }.bind(this));
-        break;
-    }
-    this.setState({value: value});
-    this.setState({filterName: filterLabelName});
-  }
-
-  setValuesOptions(data) {
-
-    let opt = data.map(function (option, index) {
-      let rObj = {};
-      rObj["value"] = index;
-      rObj["label"] = option;
-
-      return rObj;
-    });
-
-    this.setState({values: opt});
-  }
-
-  setFilteredValue(value) {
-
-    let filteredLabelObject = this.state.values.filter(filter => filter["value"] == value);
-    this.setState({filteredValue: value, filteredName: filteredLabelObject[0]["label"]})
-  }
-
-  handleChange = (teamName, value) => {
-    this.setState({[teamName]: value});
+  handleChange = (key, value) => {
+    console.log(key);
+    this.setState({[key]: value});
   };
-
-  dropdownObjectForFilter() {
-    return (
-      <Dropdown label="Select filter" theme={themeLabel} onChange={this.fillFilterValues.bind(this)} source={filter}
-                value={this.state.value}/>
-    );
-  };
-
-  dropdownObjectFilteredValues() {
-    return (
-      <Dropdown label="Select filter" auto onChange={this.setFilteredValue.bind(this)} source={this.state.values}
-                value={this.state.filteredValue}>
-      </Dropdown>
-    );
-  };
-
-  filterLabels() {
-
-    console.log(this.state.filters);
-    return Object.keys(this.state.filters).map((key) => {
-      return (
-        <Chip key={generateUUID()} deletable onDeleteClick={this.deleteFilter.bind(this, key)} theme={chipTheme}>
-          {this.state.filters[key].values}
-        </Chip>
-      )
-    });
-  }
 
   checkName() {
     teamNameExistence(this.state.teamName, this.props.user)
@@ -277,6 +246,84 @@ class TeamSuggestionForm extends React.Component {
     })
   }
 
+  selectFilter(filterName) {
+
+    console.log(filterName);
+
+    this.setState({filterToShow: filterName})
+
+
+    switch (filterName) {
+      case PROFESSION:
+        getProfessions().then(function (response) {
+          this.setState({
+            dropdownSourceP: response.data,
+          });
+        }.bind(this));
+        break;
+      case NATIONALITY:
+        getNationalities().then(function (response) {
+          this.setState({
+            dropdownSource: response.data["nationalities"],
+          });
+        }.bind(this));
+        break;
+    }
+  }
+
+  //TODO: this should be another component.
+  filters() {
+    console.log(this.state.filterToShow);
+
+    switch (this.state.filterToShow) {
+
+      case PROFESSION:
+        if (this.state.dropdownSourceP.length > 0) {
+          return this.dropdownObjectFilteredValues(this.state.dropdownSourceP);
+        }
+        break;
+
+      case AGE:
+        return this.rangeFilter();
+        break;
+
+      case NATIONALITY:
+        if (this.state.dropdownSource.length > 0) {
+          return this.dropdownObjectFilteredValues(this.state.dropdownSource);
+        }
+        break;
+
+      case SCORING:
+        return this.rangeFilter();
+
+      case HOBBIES:
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  dropdownObjectFilteredValues(sourceData) {
+    console.log("i'm here bitch");
+    console.log(sourceData);
+    return (
+      <DropdownComponent label="Select Filter" source={sourceData}
+                         initialValue="" onValueChange={this.handleChange.bind(this, 'filterToAddValue')}/>
+    );
+  };
+
+  filterLabels() {
+    return Object.keys(this.state.filters).map((key) => {
+      return (
+        <Chip key={generateUUID()} deletable onDeleteClick={this.deleteFilter.bind(this, key)} theme={chipTheme}>
+          {this.state.filters[key].values}
+        </Chip>
+      )
+    });
+  }
+
+
   renderUsers() {
     return this.state.userInformation.map((user) => {
       return (
@@ -303,41 +350,17 @@ class TeamSuggestionForm extends React.Component {
     })
   }
 
-  handleAgeChange(key, value) {
-    this.setState({[key]: value})
-  }
-
   rangeFilter() {
     return (
       <div className="row">
-        <InputComponent label="From" type="number" value={this.state.rangeFrom}
-                        onValueChange={this.handleAgeChange.bind(this, "rangeFrom")} className="col-md-6"/>
-        <InputComponent label="To" type="number" value={this.state.rangeTo}
-                        onValueChange={this.handleAgeChange.bind(this, "rangeTo")} className="col-md-6"/>
+        <InputComponent label="From" type="number" value={this.state.rangeFrom.toString()}
+                        onValueChange={this.handleChange.bind(this, "rangeFrom")} className="col-md-6"/>
+        <InputComponent label="To" type="number" value={this.state.rangeTo.toString()}
+                        onValueChange={this.handleChange.bind(this, "rangeTo")} className="col-md-6"/>
       </div>
     )
   }
 
-  //TODO: this should be another component.
-  filters(filter) {
-
-    switch (filter) {
-      case PROFESSION:
-        return this.dropdownObjectFilteredValues();
-        break;
-      case AGE:
-        return this.rangeFilter();
-      case NATIONALITY:
-        return this.dropdownObjectFilteredValues();
-        break;
-      case SCORING:
-        return this.rangeFilter();
-      case HOBBIES:
-        break;
-      default:
-        break;
-    }
-  }
 
   render() {
     if (!this.state.showSpinner) {
@@ -357,25 +380,24 @@ class TeamSuggestionForm extends React.Component {
                 </div>
               </div>
               <div className="form-group">
-                <div className="col-md-12">
-                  <div className="row">
-                    <div className="col-md-4">
-                      {this.dropdownObjectForFilter()}
-                    </div>
-                    <div className="col-md-4">
-                      <TooltipButton icon='add' tooltip='Add filter'
-                                     style={{background: '#900C3F', color: 'white', marginTop: 10}} floating mini
-                                     onClick={this.addFilter.bind(this)}/>
-                    </div>
-                    <div className="col-md-4">
-                      <TooltipButton icon='search' tooltip='Search members'
-                                     style={{background: '#900C3F', color: 'white'}}
-                                     floating onClick={this.searchUsers.bind(this)}/>
-                    </div>
+                <div className="row">
+                  <div className="col-md-4">
+                    <DropdownComponent label="Select Filter" source={filterValues}
+                                       initialValue="" onValueChange={this.selectFilter.bind(this)}/>
                   </div>
-                  <div className="row col-md-12">
-                    {this.filters(this.state.filterName)}
+                  <div className="col-md-4">
+                    <TooltipButton icon='add' tooltip='Add filter'
+                                   style={{background: '#900C3F', color: 'white', marginTop: 10}} floating mini
+                                   onClick={this.addFilter.bind(this)}/>
                   </div>
+                  <div className="col-md-4">
+                    <TooltipButton icon='search' tooltip='Search members'
+                                   style={{background: '#900C3F', color: 'white'}}
+                                   floating onClick={this.searchUsers.bind(this)}/>
+                  </div>
+                </div>
+                <div className="row col-md-12">
+                  {this.filters()}
                 </div>
               </div>
               <div className="form-group">
@@ -421,11 +443,11 @@ class TeamSuggestionForm extends React.Component {
   }
 }
 
-TeamSuggestionForm.propTypes = {
+TeamForm.propTypes = {
   user: PropTypes.any,
   fromMeeting: PropTypes.bool,
   meeting: PropTypes.func,
   normal: PropTypes.func
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(TeamSuggestionForm);
+export default connect(mapStateToProps, mapDispatchToProps)(TeamForm);

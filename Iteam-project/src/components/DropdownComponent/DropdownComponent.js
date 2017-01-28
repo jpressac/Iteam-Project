@@ -1,11 +1,6 @@
 import React, {PropTypes} from 'react'
 import Dropdown from 'react-toolbox/lib/dropdown';
 import dropdownLabel from './dropdownLabel.scss';
-import {connect} from 'react-redux'
-
-const mapDispatchToProps = (dispatch) => ({
-  saveToReducer: (func,value) => dispatch(func(value))
-});
 
 class DropdownComponent extends React.Component {
   constructor(props) {
@@ -13,8 +8,7 @@ class DropdownComponent extends React.Component {
     this.state = {
       label: '',
       value: '',
-      source: [],
-      initialValue: ''
+      source: []
     }
   }
 
@@ -26,7 +20,6 @@ class DropdownComponent extends React.Component {
     let filteredLabelObject = opt.filter(filter => filter["label"] == this.props.initialValue);
 
     if (filteredLabelObject.length > 0) {
-      this.props.saveToReducer(this.props.saveValue, filteredLabelObject[0]["label"]);
       this.setState({value: filteredLabelObject[0]["value"], label: filteredLabelObject[0]["label"]})
     }
   }
@@ -34,7 +27,7 @@ class DropdownComponent extends React.Component {
   changeValueCombo(value) {
     let filteredLabelObject = this.state.source.filter(filter => filter["value"] == value);
 
-    this.props.saveToReducer(this.props.saveValue, filteredLabelObject[0]["label"]);
+    this.props.onValueChange(filteredLabelObject[0]["label"]);
 
     this.setState({value: value, label: filteredLabelObject[0]["label"]});
   }
@@ -69,8 +62,7 @@ DropdownComponent.propTypes = {
   label: PropTypes.string,
   source: PropTypes.any,
   initialValue: PropTypes.string,
-  saveValue: PropTypes.func,
-  saveToReducer: PropTypes.func
+  onValueChange: PropTypes.func
 };
 
-export default connect(null, mapDispatchToProps)(DropdownComponent)
+export default DropdownComponent
