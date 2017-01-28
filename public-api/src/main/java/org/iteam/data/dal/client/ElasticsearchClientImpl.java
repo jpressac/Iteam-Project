@@ -104,33 +104,25 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
 
         search.setIndices(index);
 
-        if(!ObjectUtils.isEmpty(queryBuilder)) {
+        if (!ObjectUtils.isEmpty(queryBuilder)) {
             search.setQuery(queryBuilder);
         }
 
-        if(!ObjectUtils.isEmpty(aggregationBuilder)) {
+        if (!ObjectUtils.isEmpty(aggregationBuilder)) {
             search.addAggregation(aggregationBuilder);
         }
 
-        if(!ObjectUtils.isEmpty(size)) {
+        if (!ObjectUtils.isEmpty(size)) {
             search.setSize(size);
         }
 
-        if(!ObjectUtils.isEmpty(sort)) {
+        if (!ObjectUtils.isEmpty(sort)) {
             search.addSort(sort);
         }
 
         return search.execute().actionGet();
     }
 
-    /*
-     * curl -XHEAD --dump-header - localhost:9200/index/type/doc(non-Javadoc)
-     * This request doesn't return a document body, just 200 or 404
-     * 
-     * @see
-     * org.iteam.data.dal.client.ElasticsearchClient#checkUser(java.lang.String,
-     * java.lang.String)
-     */
     @Override
     public GetResponse getDocument(String index, String type, String id) {
         return client.prepareGet(index, type, id).execute().actionGet();
@@ -155,7 +147,7 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
         IndexRequestBuilder indexRequest = client.prepareIndex();
         indexRequest.setIndex(index).setType(type);
 
-        if(!ObjectUtils.isEmpty(id)) {
+        if (!ObjectUtils.isEmpty(id)) {
             indexRequest.setId(id);
         }
 
