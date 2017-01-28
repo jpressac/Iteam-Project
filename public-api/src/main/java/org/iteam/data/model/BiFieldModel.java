@@ -5,20 +5,20 @@ package org.iteam.data.model;
  */
 public class BiFieldModel {
 
-    private String field;
+    private String key;
     private String value;
 
     public BiFieldModel(String field, String value) {
-        this.field = field;
+        this.key = field;
         this.value = value;
     }
 
-    public String getField() {
-        return field;
+    public String getKey() {
+        return key;
     }
 
-    public void setField(String field) {
-        this.field = field;
+    public void setKey(String key) {
+        this.key = key;
     }
 
     public String getValue() {

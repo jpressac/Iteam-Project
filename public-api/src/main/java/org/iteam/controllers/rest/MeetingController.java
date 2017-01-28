@@ -66,7 +66,7 @@ public class MeetingController {
     public ResponseEntity<Void> saveIdeas(@RequestBody @Valid IdeasDTO ideas) {
 
         meetingServiceImpl.savedIdeas(ideas);
-
+        meetingServiceImpl.generateScore(ideas);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

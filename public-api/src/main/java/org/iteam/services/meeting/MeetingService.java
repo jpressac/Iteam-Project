@@ -171,4 +171,6 @@ public interface MeetingService {
     public void removeIdeasFromCacheSharedBoard(String meetingId, String info);
 
     public List<Meeting> getMeetingByState(String string);
+
+    public void generateScore(IdeasDTO ideas);
 }

@@ -1,6 +1,7 @@
 package org.iteam.data.dal.user;
 
 import org.iteam.data.dto.UserDTO;
+import org.iteam.data.model.IdeasDTO;
 
 /**
  * This class controls all the request for getting and setting information about
@@ -66,4 +67,6 @@ public interface UserRepsoitory {
      * @return true if the password was valid, false otherwise
      */
     public boolean validatePassword(String username, String password);
+
+    public void generateScore(IdeasDTO ideas);
 }

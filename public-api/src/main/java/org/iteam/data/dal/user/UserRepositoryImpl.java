@@ -1,5 +1,10 @@
 package org.iteam.data.dal.user;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
@@ -7,7 +12,10 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.iteam.configuration.StringUtilities;
 import org.iteam.data.dal.client.ElasticsearchClient;
+import org.iteam.data.dto.ScoreDTO;
 import org.iteam.data.dto.UserDTO;
+import org.iteam.data.model.BiFieldModel;
+import org.iteam.data.model.IdeasDTO;
 import org.iteam.exceptions.JsonParsingException;
 import org.iteam.services.utils.JSONUtils;
 import org.joda.time.DateTime;
@@ -124,5 +132,56 @@ public class UserRepositoryImpl implements UserRepsoitory {
     @Autowired
     private void setElasticsearchClient(ElasticsearchClient elasticsearchClient) {
         this.elasticsearchClient = elasticsearchClient;
+    }
+
+    // TODO ver con juan
+    @Override
+    public void generateScore(IdeasDTO ideas) {
+        Map<String, ScoreDTO> mapScores = new HashMap<String, ScoreDTO>();
+        ideas.getIdeas().forEach((idea) -> {
+            List<String> tags = new ArrayList<String>();
+
+            if (mapScores.get(idea.getUsername()) != null) {
+                ScoreDTO score = mapScores.get(idea.getUsername());
+                score.setAmountNotes(score.getAmountNotes() + 1);
+                score.setAmountVotes(score.getAmountVotes() + idea.getRanking());
+                if (!score.getTags().contains(idea.getTag())) {
+                    tags.addAll(score.getTags());
+                    tags.add(idea.getTag());
+                    score.setTags(tags);
+                }
+                mapScores.put(idea.getUsername(), score);
+            } else {
+                ScoreDTO score = new ScoreDTO();
+                score.setAmountNotes(1);
+                score.setAmountVotes(idea.getRanking());
+                tags.add(idea.getTag());
+                score.setTags(tags);
+                mapScores.put(idea.getUsername(), score);
+            }
+        });
+        calculateScore(mapScores);
+
+    }
+
+    public void calculateScore(Map<String, ScoreDTO> map) {
+        List<BiFieldModel> dataToUpdate = new ArrayList<BiFieldModel>();
+
+        for (Map.Entry<String, ScoreDTO> entry : map.entrySet()) {
+            ScoreDTO score = entry.getValue();
+
+            Double notes = score.getAmountNotes() * 0.1;
+            Double votes = score.getAmountVotes() * 0.7;
+            Double tags = score.getTags().size() * 0.2;
+            Long finalScore = (long) Math.floor((notes + votes + tags) * 10);
+
+            BiFieldModel userToUpdate = new BiFieldModel(entry.getKey(), finalScore.toString());
+            dataToUpdate.add(userToUpdate);
+        }
+
+        elasticsearchClient.updateScore(dataToUpdate, StringUtilities.INDEX_USER, StringUtilities.INDEX_TYPE_USER);
+        LOGGER.info("Updating user score");
+        LOGGER.debug("User scores: '{}'", dataToUpdate.toString());
+
     }
 }

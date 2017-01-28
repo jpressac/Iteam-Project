@@ -28,6 +28,8 @@ public class UserDTO {
     private boolean logicalDelete = false;
     private Long insertionDate;
     private String mail;
+    @JsonInclude(Include.NON_NULL)
+    private Long score;
 
     public UserDTO(boolean logicalDelete) {
         this.logicalDelete = logicalDelete;
@@ -155,6 +157,14 @@ public class UserDTO {
 
     public void setGender(String gender) {
         this.gender = gender;
+    }
+
+    public Long getScore() {
+        return score;
+    }
+
+    public void setScore(Long score) {
+        this.score = score;
     }
 
     @Override

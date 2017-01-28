@@ -11,6 +11,7 @@ import org.iteam.data.model.D3CollapseTreeModel;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
 import org.iteam.services.team.TeamService;
+import org.iteam.services.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ public class MeetingServiceImpl implements MeetingService {
 
     private MeetingRepository meetingRepositoryImpl;
     private TeamService teamServiceImpl;
+    private UserService userServiceImpl;
 
     @Override
     public boolean createMeeting(Meeting meeting) {
@@ -130,5 +132,15 @@ public class MeetingServiceImpl implements MeetingService {
     @Autowired
     private void setTeamServiceImpl(TeamService teamServiceImpl) {
         this.teamServiceImpl = teamServiceImpl;
+    }
+
+    @Autowired
+    private void setUserServiceImpl(UserService userServiceImpl) {
+        this.userServiceImpl = userServiceImpl;
+    }
+
+    @Override
+    public void generateScore(IdeasDTO ideas) {
+        userServiceImpl.generateScore(ideas);
     }
 }
