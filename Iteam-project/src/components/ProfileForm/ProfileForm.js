@@ -163,7 +163,7 @@ class ProfileForm extends React.Component {
                   <div className="row">
                     <div className="col-md-6">
                       <DropdownComponent source={this.state.dropDownSource} label="Select profession"
-                                         initialValue=''
+                                         initialValue={this.state.profession}
                                          onValueChange={this.handleChangeState.bind(this, 'profession')}/>
                     </div>
                     <div className="col-md-6 ">
