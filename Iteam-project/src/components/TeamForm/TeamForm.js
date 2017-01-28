@@ -51,7 +51,6 @@ class TeamForm extends React.Component {
 
   constructor(props) {
     super(props);
-    console.log(props);
     this.state = {
       teamName: '',
       filters: {},
@@ -86,8 +85,6 @@ class TeamForm extends React.Component {
   addComboFilter() {
     if (this.state.filterToAddValue !== '') {
       let newFilters = this.state.filters;
-
-      console.log("adding combo filter");
 
       newFilters[this.state.filterToAddValue] = {
         values: this.state.filterToAddValue,
@@ -202,7 +199,6 @@ class TeamForm extends React.Component {
   }
 
   handleChange = (key, value) => {
-    console.log(key);
     this.setState({[key]: value});
   };
 
@@ -248,10 +244,7 @@ class TeamForm extends React.Component {
 
   selectFilter(filterName) {
 
-    console.log(filterName);
-
     this.setState({filterToShow: filterName})
-
 
     switch (filterName) {
       case PROFESSION:
@@ -273,8 +266,6 @@ class TeamForm extends React.Component {
 
   //TODO: this should be another component.
   filters() {
-    console.log(this.state.filterToShow);
-
     switch (this.state.filterToShow) {
 
       case PROFESSION:
@@ -305,8 +296,6 @@ class TeamForm extends React.Component {
   }
 
   dropdownObjectFilteredValues(sourceData) {
-    console.log("i'm here bitch");
-    console.log(sourceData);
     return (
       <DropdownComponent label="Select Filter" source={sourceData}
                          initialValue="" onValueChange={this.handleChange.bind(this, 'filterToAddValue')}/>

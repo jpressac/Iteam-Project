@@ -34,8 +34,6 @@ class DropdownComponent extends React.Component {
 
 
   setValueOptions(data) {
-    console.log("set value options");
-    console.log(data);
     let opt = data.map(function (option, index) {
       let rObj = {};
       rObj["value"] = index;

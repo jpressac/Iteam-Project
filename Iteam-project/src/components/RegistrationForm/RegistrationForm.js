@@ -53,7 +53,6 @@ class RegistrationForm extends React.Component {
       .then((response) => {
         getNationalities()
           .then((response) => {
-            console.log(response.data["nationalities"]);
             this.setState({showSpinner: false, dropDownSourceNationalities: response.data["nationalities"]});
           });
         this.setState({dropDownSourceProfession: response.data});
