@@ -139,14 +139,6 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
         return search.execute().actionGet();
     }
 
-    /*
-     * curl -XHEAD --dump-header - localhost:9200/index/type/doc(non-Javadoc)
-     * This request doesn't return a document body, just 200 or 404
-     * 
-     * @see
-     * org.iteam.data.dal.client.ElasticsearchClient#checkUser(java.lang.String,
-     * java.lang.String)
-     */
     @Override
     public GetResponse getDocument(String index, String type, String id) {
         return client.prepareGet(index, type, id).execute().actionGet();
