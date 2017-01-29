@@ -73,7 +73,8 @@ class SharedBoard extends Component {
       tagValue: '',
       tagName: 'All',
       userValue: '',
-      userName: 'All'
+      userName: 'All',
+      usersNames: []
     }
   }
 
@@ -158,7 +159,7 @@ class SharedBoard extends Component {
     console.log(filteredNotes)
 
     //Finally get the notes that have the combination of both filters selected
-    return filteredNotes.map((note)=>{
+    return filteredNotes.map((note)=> {
       return this.notes(note);
     })
 
@@ -188,7 +189,10 @@ class SharedBoard extends Component {
         meetingId: meetingId
       }
     }).then(function (response) {
-      this.setState({teamName: response.data["teamId"]});
+      this.setState({
+        teamName: response.data["teamId"],
+        usersNames: response.data["teamUsers"]
+      });
       this.getTeamParticipants(response.data["teamUsers"]);
 
     }.bind(this));
@@ -212,7 +216,8 @@ class SharedBoard extends Component {
     });
     console.log('Users' + JSON.stringify(usersForCombo));
     this.setState(
-      { participants: participantInfo,
+      {
+        participants: participantInfo,
         users: this.state.users.concat(usersForCombo)
       });
     console.log('UsersAll' + JSON.stringify(usersForCombo));
@@ -231,13 +236,20 @@ class SharedBoard extends Component {
       }
       );
     });
-
+    var userList = this.state.usersNames;
+    var newList = [];
+    Object.keys(userList).map((key) => {
+        newList[key] = userList[key].username;
+      }
+    );
     if (ideas.length !== 0) {
       //TODO: remove axios from here
-      axios.post(MEETING.MEETING_IDEAS_SAVE, {
-        ideas
+      axios({
+        url: MEETING.MEETING_IDEAS_SAVE,
+        method: 'post',
+        params: {team: newList.toString()},
+        data: {ideas}
       }).then(function (response) {
-
       }.bind(this)).catch(function (response) {
 
       });

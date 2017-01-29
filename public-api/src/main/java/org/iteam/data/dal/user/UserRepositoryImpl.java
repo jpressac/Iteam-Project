@@ -1,9 +1,7 @@
 package org.iteam.data.dal.user;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
@@ -12,7 +10,6 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.iteam.configuration.StringUtilities;
 import org.iteam.data.dal.client.ElasticsearchClient;
-import org.iteam.data.dto.ScoreDTO;
 import org.iteam.data.dto.UserDTO;
 import org.iteam.data.model.BiFieldModel;
 import org.iteam.data.model.IdeasDTO;
@@ -38,6 +35,9 @@ public class UserRepositoryImpl implements UserRepsoitory {
 
     private static final String USER_GENDER_MALE = "male";
     private static final String USER_GENDER_FEMALE = "female";
+
+    private Long partialScore;
+    private String user;
 
     private ElasticsearchClient elasticsearchClient;
 
@@ -134,54 +134,32 @@ public class UserRepositoryImpl implements UserRepsoitory {
         this.elasticsearchClient = elasticsearchClient;
     }
 
-    // TODO ver con juan
     @Override
-    public void generateScore(IdeasDTO ideas) {
-        Map<String, ScoreDTO> mapScores = new HashMap<String, ScoreDTO>();
-        ideas.getIdeas().forEach((idea) -> {
-            List<String> tags = new ArrayList<String>();
+    public void generateScore(IdeasDTO ideas, List<String> userList) {
+        List<BiFieldModel> dataToUpdate = new ArrayList<>();
+        List<String> tags = new ArrayList<>();
 
-            if (mapScores.get(idea.getUsername()) != null) {
-                ScoreDTO score = mapScores.get(idea.getUsername());
-                score.setAmountNotes(score.getAmountNotes() + 1);
-                score.setAmountVotes(score.getAmountVotes() + idea.getRanking());
-                if (!score.getTags().contains(idea.getTag())) {
-                    tags.addAll(score.getTags());
-                    tags.add(idea.getTag());
-                    score.setTags(tags);
+        userList.forEach((userName) -> {
+            partialScore = (long) 0;
+            tags.clear();
+            ideas.getIdeas().forEach((idea) -> {
+                if (idea.getUsername().equals(userName)) {
+                    partialScore += (long) Math.floor((0.1 + (idea.getRanking() * 0.7)) * 10);
+                    if (!tags.contains(idea.getTag())) {
+                        tags.add(idea.getTag());
+                    }
                 }
-                mapScores.put(idea.getUsername(), score);
-            } else {
-                ScoreDTO score = new ScoreDTO();
-                score.setAmountNotes(1);
-                score.setAmountVotes(idea.getRanking());
-                tags.add(idea.getTag());
-                score.setTags(tags);
-                mapScores.put(idea.getUsername(), score);
-            }
-        });
-        calculateScore(mapScores);
+            });
 
-    }
+            Long totalTags = (long) (tags.size() * 0.2 * 10);
+            Long finalScore = partialScore + totalTags;
 
-    public void calculateScore(Map<String, ScoreDTO> map) {
-        List<BiFieldModel> dataToUpdate = new ArrayList<BiFieldModel>();
-
-        for (Map.Entry<String, ScoreDTO> entry : map.entrySet()) {
-            ScoreDTO score = entry.getValue();
-
-            Double notes = score.getAmountNotes() * 0.1;
-            Double votes = score.getAmountVotes() * 0.7;
-            Double tags = score.getTags().size() * 0.2;
-            Long finalScore = (long) Math.floor((notes + votes + tags) * 10);
-
-            BiFieldModel userToUpdate = new BiFieldModel(entry.getKey(), finalScore.toString());
+            BiFieldModel userToUpdate = new BiFieldModel(userName, finalScore.toString());
             dataToUpdate.add(userToUpdate);
-        }
+        });
 
         elasticsearchClient.updateScore(dataToUpdate, StringUtilities.INDEX_USER, StringUtilities.INDEX_TYPE_USER);
         LOGGER.info("Updating user score");
         LOGGER.debug("User scores: '{}'", dataToUpdate.toString());
-
     }
 }

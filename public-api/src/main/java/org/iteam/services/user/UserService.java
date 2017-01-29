@@ -1,5 +1,7 @@
 package org.iteam.services.user;
 
+import java.util.List;
+
 import org.iteam.data.dto.UserDTO;
 import org.iteam.data.model.IdeasDTO;
 
@@ -69,6 +71,7 @@ public interface UserService {
      * @param ideas,
      *            list of ideas to get info.
      */
-    public void generateScore(IdeasDTO ideas);
+
+    public void generateScore(IdeasDTO ideas, List<String> userList);
 
 }

@@ -140,7 +140,7 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public void generateScore(IdeasDTO ideas) {
-        userServiceImpl.generateScore(ideas);
+    public void generateScore(IdeasDTO ideas, List<String> usersList) {
+        userServiceImpl.generateScore(ideas, usersList);
     }
 }

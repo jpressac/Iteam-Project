@@ -1,5 +1,7 @@
 package org.iteam.data.dal.user;
 
+import java.util.List;
+
 import org.iteam.data.dto.UserDTO;
 import org.iteam.data.model.IdeasDTO;
 
@@ -68,5 +70,6 @@ public interface UserRepsoitory {
      */
     public boolean validatePassword(String username, String password);
 
-    public void generateScore(IdeasDTO ideas);
+    public void generateScore(IdeasDTO ideas, List<String> userList);
+
 }

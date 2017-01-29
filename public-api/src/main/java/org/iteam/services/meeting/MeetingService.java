@@ -172,5 +172,5 @@ public interface MeetingService {
 
     public List<Meeting> getMeetingByState(String string);
 
-    public void generateScore(IdeasDTO ideas);
+    public void generateScore(IdeasDTO ideas, List<String> userList);
 }

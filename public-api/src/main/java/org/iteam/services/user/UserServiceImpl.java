@@ -1,5 +1,7 @@
 package org.iteam.services.user;
 
+import java.util.List;
+
 import org.iteam.data.dal.user.UserRepositoryImpl;
 import org.iteam.data.dto.UserDTO;
 import org.iteam.data.model.IdeasDTO;
@@ -50,7 +52,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void generateScore(IdeasDTO ideas) {
-        this.userRepository.generateScore(ideas);
+    public void generateScore(IdeasDTO ideas, List<String> userList) {
+        this.userRepository.generateScore(ideas, userList);
     }
+
 }
