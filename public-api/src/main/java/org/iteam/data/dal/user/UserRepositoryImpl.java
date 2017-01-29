@@ -140,7 +140,7 @@ public class UserRepositoryImpl implements UserRepsoitory {
         List<String> tags = new ArrayList<>();
 
         userList.forEach((userName) -> {
-            partialScore = (long) 0;
+            partialScore = 0L;
             tags.clear();
             ideas.getIdeas().forEach((idea) -> {
                 if (idea.getUsername().equals(userName)) {
