@@ -1,6 +1,7 @@
 package org.iteam.controllers.rest;
 
 import java.util.Date;
+import java.util.List;
 
 import org.iteam.data.dto.Idea;
 import org.iteam.data.dto.Meeting;
@@ -33,6 +34,7 @@ public class MeetingControllerTest {
     private ResponseEntity<Void> response;
 
     private IdeasDTO ideas;
+    private List<String> userList;
 
     @Before
     public void init() {
@@ -73,7 +75,7 @@ public class MeetingControllerTest {
     }
 
     private void whenSaveIdeasIsCalled() {
-        response = underTest.saveIdeas(ideas);
+        response = underTest.saveIdeas(ideas, userList);
     }
 
     private void givenIdeas() {

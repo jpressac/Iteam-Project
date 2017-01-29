@@ -44,7 +44,8 @@ class RegistrationForm extends React.Component {
       errors: {},
       showSpinner: true,
       messageModal: '',
-      userExists: ''
+      userExists: '',
+      score: 0
     };
   }
 

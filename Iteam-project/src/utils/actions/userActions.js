@@ -15,7 +15,8 @@ export function submitUser(data, nationality, profession) {
     hobbies: hobbiesList,
     profession: profession,
     name: data.firstName,
-    lastName: data.lastName
+    lastName: data.lastName,
+    score: data.score
   })
 }
 

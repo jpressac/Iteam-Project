@@ -552,4 +552,5 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     private void setElasticsearchClientImpl(ElasticsearchClientImpl elasticsearchClientImpl) {
         this.elasticsearchClientImpl = elasticsearchClientImpl;
     }
+
 }

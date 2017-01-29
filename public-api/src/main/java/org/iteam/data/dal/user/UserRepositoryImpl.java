@@ -1,5 +1,8 @@
 package org.iteam.data.dal.user;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
@@ -8,6 +11,8 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.iteam.configuration.StringUtilities;
 import org.iteam.data.dal.client.ElasticsearchClient;
 import org.iteam.data.dto.UserDTO;
+import org.iteam.data.model.BiFieldModel;
+import org.iteam.data.model.IdeasDTO;
 import org.iteam.exceptions.JsonParsingException;
 import org.iteam.services.utils.JSONUtils;
 import org.joda.time.DateTime;
@@ -30,6 +35,9 @@ public class UserRepositoryImpl implements UserRepsoitory {
 
     private static final String USER_GENDER_MALE = "male";
     private static final String USER_GENDER_FEMALE = "female";
+
+    private Long partialScore;
+    private String user;
 
     private ElasticsearchClient elasticsearchClient;
 
@@ -124,5 +132,34 @@ public class UserRepositoryImpl implements UserRepsoitory {
     @Autowired
     private void setElasticsearchClient(ElasticsearchClient elasticsearchClient) {
         this.elasticsearchClient = elasticsearchClient;
+    }
+
+    @Override
+    public void generateScore(IdeasDTO ideas, List<String> userList) {
+        List<BiFieldModel> dataToUpdate = new ArrayList<>();
+        List<String> tags = new ArrayList<>();
+
+        userList.forEach((userName) -> {
+            partialScore = 0L;
+            tags.clear();
+            ideas.getIdeas().forEach((idea) -> {
+                if (idea.getUsername().equals(userName)) {
+                    partialScore += (long) Math.floor((0.1 + (idea.getRanking() * 0.7)) * 10);
+                    if (!tags.contains(idea.getTag())) {
+                        tags.add(idea.getTag());
+                    }
+                }
+            });
+
+            Long totalTags = (long) (tags.size() * 0.2 * 10);
+            Long finalScore = partialScore + totalTags;
+
+            BiFieldModel userToUpdate = new BiFieldModel(userName, finalScore.toString());
+            dataToUpdate.add(userToUpdate);
+        });
+
+        elasticsearchClient.updateScore(dataToUpdate, StringUtilities.INDEX_USER, StringUtilities.INDEX_TYPE_USER);
+        LOGGER.info("Updating user score");
+        LOGGER.debug("User scores: '{}'", dataToUpdate.toString());
     }
 }
