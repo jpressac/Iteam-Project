@@ -183,6 +183,32 @@ public class MeetingController {
         return new ResponseEntity<List<Meeting>>(meetings, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "meeting/search/history", method = RequestMethod.GET)
+    public ResponseEntity<List<Meeting>> getEndedMeetingsByToken(
+            @RequestParam(value = "token", required = true) String token) {
+        List<Meeting> meetings = meetingServiceImpl
+                .getEndedMeetingsByToken(SecurityContextHolder.getContext().getAuthentication().getName(), token);
+        return new ResponseEntity<List<Meeting>>(meetings, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "meeting/search/programmed", method = RequestMethod.GET)
+    public ResponseEntity<List<Meeting>> getProgrammedMeetingsByToken(
+            @RequestParam(value = "token", required = true) String token) {
+        List<Meeting> meetings = meetingServiceImpl
+                .getProgrammedMeetingsByToken(SecurityContextHolder.getContext().getAuthentication().getName(), token);
+        return new ResponseEntity<List<Meeting>>(meetings, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "meeting/paginated", method = RequestMethod.GET)
+    public ResponseEntity<List<Meeting>> getPaginatedMeetings(
+            @RequestParam(value = "offset", required = true) int offset,
+            @RequestParam(value = "limit", required = true) int limit) {
+        List<Meeting> meetings = meetingServiceImpl
+                .getPaginatedMeetings(SecurityContextHolder.getContext().getAuthentication().getName(), offset, limit);
+        return new ResponseEntity<List<Meeting>>(meetings, HttpStatus.OK);
+
+    }
+
     @Autowired
     private void setMeetingServiceImpl(MeetingServiceImpl meetingServiceImpl) {
         this.meetingServiceImpl = meetingServiceImpl;

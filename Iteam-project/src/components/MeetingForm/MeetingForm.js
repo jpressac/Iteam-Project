@@ -14,6 +14,7 @@ import themeDropdown from './dropdown.scss'
 import Avatar from 'react-toolbox/lib/avatar';
 import {Button, IconButton} from 'react-toolbox/lib/button';
 import {TEAM, MEETING} from '../../constants/HostConfiguration'
+import {PATHS} from '../../constants/routes'
 
 
 const mapDispatchToProps = dispatch => ({

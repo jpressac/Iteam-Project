@@ -24,6 +24,7 @@ import Chip from 'react-toolbox/lib/chip';
 import {saveConfig} from '../../redux/reducers/Meeting/MeetingConfigReducer';
 import Spinner from '../Spinner/Spinner';
 import {validateDate, validateStart, validateHour, changeEndDate} from '../../utils/DateUtils'
+import ButtonComponent from '../ButtonComponent/'
 
 var programDate = new Date();
 var endDate = new Date();
@@ -34,6 +35,7 @@ const technics = [{value: 0, label: 'Brainstorming'}, {value: 1, label: 'SCAMPER
   value: 2,
   label: 'morphological analysis'
 }];
+
 
 const mapStateToProps = (state) => {
   if (state.loginUser !== null) {
@@ -68,14 +70,13 @@ class MymeetForm extends Component {
       teamName: {},
       tag: '',
       showSpinner: true,
-      endTime: new Date()
+      endTime: new Date(),
+      searchField: ''
     }
   }
 
   componentDidMount() {
-    axios.get(MEETING.MEETING_PROGRAMMED).then(function (response) {
-      this.fillFields(response.data)
-    }.bind(this));
+    this.getAllProgrammedMeetings();
   }
 
   adminActionsEdit = [
@@ -477,6 +478,28 @@ let meetingInfo = {};
     )
   }
 
+  searchByToken(){
+    if ( this.state.searchField.length != 0 ) {
+      axios.get(MEETING.MEETING_SEARCH_PROGRAMMED, {
+        params: {
+          token: this.state.searchField
+        }
+      }).then(function (response) {
+        this.fillFields(response.data)
+      }.bind(this))
+    }
+    else {
+      this.getAllProgrammedMeetings();
+    }
+  }
+
+  getAllProgrammedMeetings(){
+    axios.get(MEETING.MEETING_PROGRAMMED)
+      .then(function (response) {
+      this.fillFields(response.data.meta.total_)
+    }.bind(this))
+  }
+
   render() {
     if(!this.state.showSpinner) {
       let meets = this.state.meetings;
@@ -492,18 +515,19 @@ let meetingInfo = {};
             <div className={classes.label2}>
               <label>MY MEETINGS</label>
             </div>
+            <div>
+              <Input type='text' label="Meeting topic"  name="searchField" value={this.state.searchField} onChange={this.handleChange.bind(this,'searchField')}/>
+              <ButtonComponent  onClick={this.searchByToken.bind(this)} value="Search"/>
+            </div>
             <BootstrapModal ref="mymeetingModal" message={this.state.message}/>
             <List theme={listFormat} selectable ripple>
               <ListSubHeader />
               {Object.keys(meetMap).map((key) => {
                   meetingTime = meetMap[key].programmedDate;
                   let renderDateTime = this.renderDate(meetingTime);
-                  let future_date = validateDate(meetingTime);
-                  let color = future_date ? ListItem2 : ListItem1;
                   return (
                     <div key={key}>
                       <ListItem
-                        theme={color}
                         caption={meetMap[key].topic}
                         legend={renderDateTime}
                         leftIcon='send'

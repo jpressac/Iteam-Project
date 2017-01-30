@@ -173,4 +173,10 @@ public interface MeetingService {
     public List<Meeting> getEndedMeetings(String string);
 
     public List<Meeting> getProgrammedMeetings(String username);
+
+    public List<Meeting> getEndedMeetingsByToken(String username, String token);
+
+    public List<Meeting> getProgrammedMeetingsByToken(String name, String token);
+
+    public List<Meeting> getPaginatedMeetings(String username, int offset, int limit);
 }

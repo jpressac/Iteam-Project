@@ -127,6 +127,16 @@ public class MeetingServiceImpl implements MeetingService {
         return meetingRepositoryImpl.getProgrammedMeetings(username);
     }
 
+    @Override
+    public List<Meeting> getEndedMeetingsByToken(String username, String token) {
+        return this.meetingRepositoryImpl.getEndedMeetingByToken(username, token);
+    }
+
+    @Override
+    public List<Meeting> getProgrammedMeetingsByToken(String name, String token) {
+        return this.meetingRepositoryImpl.getProgrammedMeetingsByToken(name, token);
+    }
+
     @Autowired
     private void setMeetingRepositoryImpl(MeetingRepositoryImpl meetingRepositoryImpl) {
         this.meetingRepositoryImpl = meetingRepositoryImpl;
@@ -136,4 +146,10 @@ public class MeetingServiceImpl implements MeetingService {
     private void setTeamServiceImpl(TeamService teamServiceImpl) {
         this.teamServiceImpl = teamServiceImpl;
     }
+
+    @Override
+    public List<Meeting> getPaginatedMeetings(String username, int offset, int limit) {
+        return meetingRepositoryImpl.getPaginatedMeetings(username, offset, limit);
+    }
+
 }

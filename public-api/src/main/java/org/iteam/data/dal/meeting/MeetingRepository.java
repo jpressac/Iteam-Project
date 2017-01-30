@@ -186,4 +186,12 @@ public interface MeetingRepository {
 
     public List<Meeting> getProgrammedMeetings(String username);
 
+    public void updateEndedMeetings();
+
+    public List<Meeting> getEndedMeetingByToken(String username, String token);
+
+    public List<Meeting> getProgrammedMeetingsByToken(String name, String token);
+
+    public List<Meeting> getPaginatedMeetings(String username, int offset, int limit);
+
 }
