@@ -1,6 +1,6 @@
 import React from 'react';
 import RegistrationForm from '../../components/RegistrationForm/';
-import classes from './RegistrationView'
+import classes from './RegistrationView.scss'
 
 export class RegistrationView extends React.Component {
 

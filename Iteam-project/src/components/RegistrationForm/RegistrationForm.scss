@@ -1,19 +1,32 @@
-.form{
-  height: 100%;
-  width: 100%;
+.registration {
+  width: 80%;
+  margin-top: 10%;
+}
+
+.form {
   background: #eee;
   padding-left: 50px;
   padding-right: 50px;
-  margin-top: 20px;
+  margin-top: 2%;
 }
 
-.label2
-{
+.label {
   color: #900C3F;
   font-family:monospace;
-  align-items: center;
   font-size: 35px;
   width: 100%;
-  margin-left: 50%;
-  margin-right: 50%;
+  text-align: -webkit-center;
+}
+
+.buttonCreate {
+  margin: 2%;
+  text-align: -webkit-center;
+}
+
+.radioButton {
+  display: inline-flex;
+}
+
+.paddingZero {
+  padding: 0;
 }

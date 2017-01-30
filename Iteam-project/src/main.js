@@ -6,12 +6,11 @@ import { syncHistoryWithStore } from 'react-router-redux'
 import makeRoutes from './routes'
 import Root from './containers/Root'
 import configureStore from './redux/configureStore'
-import { PATHS } from './constants/routes'
 import  {USER} from './constants/HostConfiguration'
 import { userExists , fetchUser} from './redux/modules/UserAuthenticated'
 import {push} from 'react-router-redux'
 import axios from 'axios'
-import {user, logoutUser} from './redux/reducers/Login/LoginUser'
+import {user} from './redux/reducers/Login/LoginUser'
 
 // Configure history for react-router
 const browserHistory = useRouterHistory(createBrowserHistory)({

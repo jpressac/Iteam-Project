@@ -1,15 +1,13 @@
 import React, {PropTypes} from 'react'
 import HeaderNotLog from '../../components/Header/HeaderNotLog'
+import notLoggedInTheme from './notLoggedIn.scss'
 
-export const NotLoggedIn = ({ children }) => (
+export const NotLoggedIn = ({children}) => (
 
-  <div>
+  <div className={notLoggedInTheme.loggedIn}>
     <HeaderNotLog />
-    <div>
-      {children}
-    </div>
+    {children}
   </div>
-
 )
 
 NotLoggedIn.propTypes = {
