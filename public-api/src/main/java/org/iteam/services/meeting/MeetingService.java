@@ -174,9 +174,8 @@ public interface MeetingService {
 
     public void generateScore(IdeasDTO ideas, List<String> userList);
 
-public List<Meeting> getCustomReportByMeeting(String ownerName, String topicToken);
+    public List<Meeting> getCustomReportByMeeting(String ownerName, String topicToken);
 
     public D3CollapseTreeModel generateCustomReportByMeeting(List<String> meetingId);
 
-}
 }

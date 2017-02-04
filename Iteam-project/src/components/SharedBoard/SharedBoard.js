@@ -23,6 +23,7 @@ import Dropdown from "react-toolbox/lib/dropdown";
 import {MenuItem, MenuDivider} from "react-toolbox/lib/menu";
 import Chat from '../Chat/Chat';
 import Modal from '../BootstrapModal/BootstrapModal';
+import panelTheme from '../SharedBoard/panel.scss'
 
 
 const NoteTarget = {
@@ -110,6 +111,71 @@ class SharedBoard extends Component {
   componentWillUnmount() {
     //End socket connection
     disconnect();
+  }
+  renderTechnic(technic) {
+    console.log(technic);
+    switch (technic) {
+      case 0:
+        console.log('braisntorming');
+        break;
+      case 1:
+        console.log('scamper');
+        return this.renderScamper();
+    }
+  }
+
+  renderScamper() {
+    return (
+      <div >
+        <div className="row">
+          <div className={classes.square}>
+            <div className={classes.content}>
+              <label className={classes.letter}>S </label>
+              <label>(subtitute)</label>
+            </div>
+          </div>
+          <div className={classes.square}>
+            <div className={classes.content}>
+              <label className={classes.letter}>C</label>
+              <label>(combine)</label>
+            </div>
+          </div>
+        </div>
+        <div className="row">
+          <div className={classes.squareMiddle}>
+            <div className={classes.content}>
+              <label className={classes.letter}>A </label>
+              <label>(adapt)</label>
+            </div>
+          </div>
+          <div className={classes.squareMiddle}>
+            <div className={classes.content}>
+              <label className={classes.letter}>M </label>
+              <label>(modify)</label>
+            </div>
+          </div>
+          <div className={classes.squareMiddle}>
+            <div className={classes.content}>
+              <label className={classes.letter}>P </label>
+              <label>(put to other use)</label>
+            </div>
+          </div>
+        </div>
+        <div className="row">
+          <div className={classes.square}>
+            <div className={classes.content}>
+              <label className={classes.letter}>E </label>
+              <label>(eliminate)</label>
+            </div>
+          </div>
+          <div className={classes.square}>
+            <div className={classes.content}>
+              <label className={classes.letter}>R </label>
+              <label>(rearrange)</label>
+            </div>
+          </div>
+        </div>
+      </div>)
   }
 
   notes(note) {
@@ -500,7 +566,9 @@ class SharedBoard extends Component {
               {this.renderEndMeetingButton(this.props.user)}
             </div>
           </NavDrawer>
-          <Panel>
+          <Panel scrollY theme={panelTheme}>
+            {this.renderTechnic(this.props.meetingConfiguration.technic)}
+
             <div name="Notes container" className={classes.notes}>
               {this.renderNotes(this.state.notes, this.state.tagName, this.state.userName)}
             </div>
