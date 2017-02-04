@@ -21,6 +21,8 @@ import Dropdown from "react-toolbox/lib/dropdown";
 import {MenuItem, MenuDivider} from "react-toolbox/lib/menu";
 import Chat from '../Chat/Chat';
 import Modal from '../BootstrapModal/BootstrapModal';
+import panelTheme from './panel.scss'
+import scamperRender from './scamper/scamperRender'
 
 
 const TooltipButton = Tooltip(Button);
@@ -108,7 +110,7 @@ class PersonalBoard extends Component {
     disconnect();
   }
 
-  receiveMessage(payload){
+  receiveMessage(payload) {
     let jsonPayload = JSON.parse(payload);
 
     switch (jsonPayload.action) {
@@ -117,7 +119,7 @@ class PersonalBoard extends Component {
     }
   }
 
-  informMeetingEnding(){
+  informMeetingEnding() {
     this.setState({modalMessage: 'This meeting has been ended by the owner. ¡Thank you for participating!'});
     this.refs.mymodal.openModal();
   }
@@ -129,6 +131,75 @@ class PersonalBoard extends Component {
     this.setState({tagValue: value, tagName: filteredLabelObject[0]["label"]})
   }
 
+  renderTechnic(technic) {
+    console.log(technic);
+    switch (technic) {
+      case 0:
+        console.log('braisntorming');
+        break;
+      case 1:
+        console.log('scamper');
+        return this.renderScamper();
+
+
+
+    }
+
+  }
+
+  renderScamper() {
+    return (
+      <div >
+        <div className="row">
+          <div className={classes.square}>
+            <div className={classes.content}>
+              <label className={classes.letter}>S </label>
+              <label>(subtitute)</label>
+            </div>
+          </div>
+          <div className={classes.square}>
+            <div className={classes.content}>
+              <label className={classes.letter}>C</label>
+              <label>(combine)</label>
+            </div>
+          </div>
+        </div>
+        <div className="row">
+          <div className={classes.squareMiddle}>
+            <div className={classes.content}>
+              <label className={classes.letter}>A </label>
+              <label>(adapt)</label>
+            </div>
+          </div>
+          <div className={classes.squareMiddle}>
+            <div className={classes.content}>
+              <label className={classes.letter}>M </label>
+              <label>(modify)</label>
+            </div>
+          </div>
+          <div className={classes.squareMiddle}>
+            <div className={classes.content}>
+              <label className={classes.letter}>P </label>
+              <label>(put to other use)</label>
+            </div>
+          </div>
+        </div>
+        <div className="row">
+          <div className={classes.square}>
+            <div className={classes.content}>
+              <label className={classes.letter}>E </label>
+              <label>(eliminate)</label>
+            </div>
+          </div>
+          <div className={classes.square}>
+            <div className={classes.content}>
+              <label className={classes.letter}>R </label>
+              <label>(rearrange)</label>
+            </div>
+          </div>
+        </div>
+      </div>)
+  }
 
   setValuesOptionsTags(data) {
     let opt = data.map(function (option, index) {
@@ -141,20 +212,20 @@ class PersonalBoard extends Component {
     this.setState({mapTag: opt});
   }
 
-  notes(noteMap,key) {
-      return (
-        <Note key={key}
-              id={key}
-              onChange={this.update.bind(this)}
-              onRemove={this.remove.bind(this)}
-              onSend={this.send.bind(this)}
-              left={noteMap[key].left}
-              top={noteMap[key].top}
-              boardType={noteMap[key].boardType}
-              title={noteMap[key].title}
-              tag={noteMap[key].tag}
-              tagMap={this.props.meetingConfiguration.tags}
-        />
+  notes(noteMap, key) {
+    return (
+      <Note key={key}
+            id={key}
+            onChange={this.update.bind(this)}
+            onRemove={this.remove.bind(this)}
+            onSend={this.send.bind(this)}
+            left={noteMap[key].left}
+            top={noteMap[key].top}
+            boardType={noteMap[key].boardType}
+            title={noteMap[key].title}
+            tag={noteMap[key].tag}
+            tagMap={this.props.meetingConfiguration.tags}
+      />
     );
   }
 
@@ -174,18 +245,18 @@ class PersonalBoard extends Component {
     let map = this.state.notes;
     let id = generateUUID();
     map[id] =
-      {
-        id: id,
-        left: generateRandomNumber(),
-        top: generateRandomNumber(),
-        username: this.props.user,
-        title: text,
-        comments: "",
-        tag: this.state.mapTag[0].label,
-        ranking: 0,
-        meetingId: this.props.meetingId,
-        boardType: "personal"
-      };
+    {
+      id: id,
+      left: generateRandomNumber(),
+      top: generateRandomNumber(),
+      username: this.props.user,
+      title: text,
+      comments: "",
+      tag: this.state.mapTag[0].label,
+      ranking: 0,
+      meetingId: this.props.meetingId,
+      boardType: "personal"
+    };
     this.updateNotesCacheByUser(map);
 
     this.setState({notes: map});
@@ -234,10 +305,11 @@ class PersonalBoard extends Component {
     sendMessage("insertSharedBoard", this.props.meetingId, JSON.stringify(map));
     this.deleteAll();
     //Clean the personal board
-    this.setState({notes:{}});
+    this.setState({notes: {}});
 
   }
-  deleteAll(){
+
+  deleteAll() {
     sendMessage("insertCache", this.props.meetingId, JSON.stringify(
       {
         "username": this.props.user,
@@ -257,7 +329,7 @@ class PersonalBoard extends Component {
   render() {
     return this.props.connectDropTarget(
       <div name="Personal Board Component" className={classes.board}>
-        <Layout>
+        <Layout >
           <NavDrawer active={true}
                      pinned={true} permanentAt='sm' theme={navTheme}>
             <div style={{background: 'white', width: '100%'}}><img src={logo} style={{
@@ -284,12 +356,14 @@ class PersonalBoard extends Component {
                       source={this.state.mapTag} value={this.state.tagValue}/>
             <MenuDivider/>
           </NavDrawer>
-          <Panel>
+          <Panel scrollY theme={panelTheme}>
+            {this.renderTechnic(this.props.meetingConfiguration.technic)}
             <div name="Notes container" className={classes.noteContainer}>
               {this.renderNotes(this.state.notes, this.state.tagName)}
             </div>
+
           </Panel>
-          <Modal ref="mymodal"  onOk={this.props.home} message={this.state.modalMessage}/>
+          <Modal ref="mymodal" onOk={this.props.home} message={this.state.modalMessage}/>
         </Layout>
         <Chat/>
       </div>

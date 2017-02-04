@@ -33,6 +33,7 @@ const technics = [{value: 0, label: 'Brainstorming'}, {value: 1, label: 'SCAMPER
   value: 2,
   label: 'morphological analysis'
 }];
+const scamperTags =['Sustitute','Combine','Adapt','Modify','Put to others use', 'Eliminate', 'Rearrange'];
 
 
 class MeetingConfigForm extends Component {
@@ -44,6 +45,8 @@ class MeetingConfigForm extends Component {
       tag: '',
       tags: [],
       technic: 'Brainstorming',
+      deletable: true,
+      disabled: false,
       technicValue: 0,
       pbtime: 0,
       sbtime: 0,
@@ -55,10 +58,25 @@ class MeetingConfigForm extends Component {
   }
 
   handleChangeCombo = (value) => {
-    let filteredLabelObject = technics.filter(filter => filter["value"] == value);
-    this.setState({technicValue: value, technic: filteredLabelObject[0]["label"]})
-  };
 
+
+    let filteredLabelObject = technics.filter(filter => filter["value"] == value);
+    this.setState({technicValue: value, technic: filteredLabelObject[0]["label"]});
+    console.log(this.state.technic);
+
+   this.handleChangeTechnic(filteredLabelObject[0]["label"]);
+
+  };
+handleChangeTechnic=(technic)=>{
+  if(technic==='SCAMPER'){
+
+    this.setState({tags:scamperTags, deletable:false, disabled: true});
+
+  }
+  else{
+    this.setState({tags:[], deletable:true, disabled: false});
+  }
+};
 
   dropdownTechnic() {
     return (
@@ -99,7 +117,7 @@ class MeetingConfigForm extends Component {
   tagLabels() {
     return this.state.tags.map(function (tag, index) {
       return (
-        <Chip key={index} deletable onDeleteClick={this.deleteTag.bind(this, index)} theme={chipTheme}>
+        <Chip key={index} deletable={this.state.deletable}  onDeleteClick={this.deleteTag.bind(this, index)} theme={chipTheme}>
           {tag}
         </Chip>
       );
@@ -175,11 +193,11 @@ class MeetingConfigForm extends Component {
               <div className="form-group">
                 <div className="row" style={{color: '#900C3F'}}>
                   <div className="col-md-6">
-                    <Input type='text' label='Tag' value={this.state.tag}
+                    <Input type='text' label='Tag' value={this.state.tag} disabled={this.state.disabled}
                            onChange={this.handleChange.bind(this, 'tag')} maxLength={30} theme={themeLabel}/>
                   </div>
                   <div className="col-md-4">
-                    <TooltipButton icon='add' tooltip='Add tag'
+                    <TooltipButton icon='add' tooltip='Add tag' disabled={this.state.disabled}
                                    style={{background: '#900C3F', color: 'white', marginTop: 10}} floating mini
                                    onClick={this.handleAddTag.bind(this)}/>
                   </div>

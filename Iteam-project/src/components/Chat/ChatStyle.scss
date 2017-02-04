@@ -12,6 +12,7 @@
   height: 300px;
   display: flex;
   flex-direction: column;
+  background: white;
 }
 
 .messageList{
@@ -22,6 +23,7 @@
 
 .chatContainerMin {
   bottom: 0;
+  background: white;
   width: 25%;
   position: fixed;
   z-index: 300;

@@ -184,4 +184,8 @@ public interface MeetingRepository {
 
     public List<Meeting> getMeetingsByState(String username);
 
+    public List<Meeting> getCustomReportByMeeting(String ownerName, String topicToken);
+
+    public D3CollapseTreeModel generateCustomReportByMeeting(List<String> meetingId);
+
 }

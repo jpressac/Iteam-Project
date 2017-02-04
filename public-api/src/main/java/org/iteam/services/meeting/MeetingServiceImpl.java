@@ -143,4 +143,15 @@ public class MeetingServiceImpl implements MeetingService {
     public void generateScore(IdeasDTO ideas, List<String> usersList) {
         userServiceImpl.generateScore(ideas, usersList);
     }
+
+ @Override
+    public List<Meeting> getCustomReportByMeeting(String ownerName, String topicToken) {
+
+        return meetingRepositoryImpl.getCustomReportByMeeting(ownerName, topicToken);
+    }
+
+    public D3CollapseTreeModel generateCustomReportByMeeting(List<String> meetingId) {
+
+        return meetingRepositoryImpl.generateCustomReportByMeeting(meetingId);
+    }
 }

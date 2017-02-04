@@ -553,4 +553,40 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         this.elasticsearchClientImpl = elasticsearchClientImpl;
     }
 
+    @Override
+    public List<Meeting> getCustomReportByMeeting(String ownerName, String topicToken) {
+
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+
+        queryBuilder.must(QueryBuilders.termQuery("ownerName", ownerName));
+        queryBuilder.must(QueryBuilders.termQuery("topic", topicToken.toLowerCase()));
+
+        SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING, queryBuilder);
+
+        List<Meeting> meetingList = new ArrayList<>();
+
+        if (response.getHits().getTotalHits() > 0) {
+
+            for (SearchHit hit : response.getHits().getHits()) {
+
+                meetingList.add((Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class));
+
+            }
+
+        }
+
+        return meetingList;
+    }
+
+    @Override
+    public D3CollapseTreeModel generateCustomReportByMeeting(List<String> meetingId) {
+
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+
+        queryBuilder.must(QueryBuilders.termsQuery(IDEA_MEETING_ID_FIELD, meetingId));
+
+        SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_IDEAS, queryBuilder);
+
+        return null;
+    }
 }

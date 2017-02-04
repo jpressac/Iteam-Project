@@ -176,6 +176,13 @@ public class MeetingController {
         return new ResponseEntity<List<Meeting>>(meetings, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/report/custom/bymeeting", method = RequestMethod.GET)
+    public ResponseEntity<List<Meeting>> customReportByMeeting(@RequestParam(value = "tokenTopic") String tokenTopic) {
+        List<Meeting> meetings = meetingServiceImpl
+                .getCustomReportByMeeting(SecurityContextHolder.getContext().getAuthentication().getName(), tokenTopic);
+        return new ResponseEntity<List<Meeting>>(meetings, HttpStatus.OK);
+    }
+
     @Autowired
     private void setMeetingServiceImpl(MeetingServiceImpl meetingServiceImpl) {
         this.meetingServiceImpl = meetingServiceImpl;

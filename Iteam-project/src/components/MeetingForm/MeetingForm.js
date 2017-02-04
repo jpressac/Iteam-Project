@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from "react";
 import classes from './MeetingForm.scss'
 import axios from 'axios'
+import {PATHS} from './../../constants/routes'
 import TimePicker from 'react-toolbox/lib/time_picker'
 import {connect} from 'react-redux'
 import DatePicker from 'react-toolbox/lib/date_picker';
