@@ -4,7 +4,7 @@ import notLoggedInTheme from './notLoggedIn.scss'
 
 export const NotLoggedIn = ({children}) => (
 
-  <div className={notLoggedInTheme.loggedIn}>
+  <div className={notLoggedInTheme.notLoggedIn}>
     <HeaderNotLog />
     {children}
   </div>

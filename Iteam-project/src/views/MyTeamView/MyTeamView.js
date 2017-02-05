@@ -1,6 +1,6 @@
 import React from 'react'
 import MyTeamsForm from '../../components/MyTeamsForm/MyTeamsForm'
-import classes from './MyTeamView.scss'
+import classes from '../../views/ViewContainerCSS/ViewContainer.scss'
 
 class MyTeamView extends React.Component {
 

@@ -1,5 +1,5 @@
-import {Button} from 'react-toolbox/lib/button';
 import React, {PropTypes} from 'react';
+import {Button} from 'react-toolbox/lib/button';
 import {connect} from 'react-redux';
 import {logout} from '../../../redux/reducers/Login/LoginUser'
 import {classes} from './LogoutButton.scss'
@@ -14,13 +14,10 @@ class LogoutButton extends React.Component {
   }
 
   render() {
-    const {onClick} =this.props;
     return (
-      <div  >
       <form method="POST" action="/application/member/logout">
-        <Button type="submit"  >Logout</Button>
+        <Button type="submit">Logout</Button>
       </form>
-        </div>
     );
   }
 }

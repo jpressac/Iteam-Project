@@ -42,15 +42,6 @@ class HomeForm extends React.Component {
     this.setState({[key]: value});
   };
 
-  getStarted = () => {
-    if (this.props.user != null) {
-      this.props.meeting()
-    }
-    else {
-      this.props.register()
-    }
-  }
-
   renderDialog() {
     return (
       <Dialog
@@ -73,17 +64,36 @@ class HomeForm extends React.Component {
     )
   }
 
+  renderGetStarted(onClickFunction, className){
+    return(
+      <ButtonComponent className={className} iconButton='bookmark' value='GET STARTED'
+                       onClick={onClickFunction}/>
+    )
+  }
+
+  renderHome() {
+    if (this.props.user == null) {
+      return (
+        <div className="row">
+          {this.renderGetStarted(this.props.register, "col-md-6")}
+          <ButtonComponent className="col-md-6" iconButton='person' value='LOGIN'
+                           onClick={this.handleChange.bind(this, 'active', !this.state.active)}/>
+        </div>)
+    }
+    else{
+      return (
+        <div className="row">
+          {this.renderGetStarted(this.props.meeting, "col-md-12")}
+        </div>)
+    }
+  }
+
   render() {
     return (
       <div className={classes.background}>
         <label className={classes.label}> MAKE REMOTE MEETINGS</label>
         <p className={classes.p}> Online brainstorming, synthesis and collaboration</p>
-        <div className="row">
-          <ButtonComponent className="col-md-6" iconButton='bookmark' value='GET STARTED'
-                           onClick={this.getStarted}/>
-          <ButtonComponent className="col-md-6" iconButton='person' value='LOGIN'
-                           onClick={this.handleChange.bind(this, 'active', !this.state.active)}/>
-        </div>
+        {this.renderHome()}
         {this.renderDialog()}
       </div>
     )

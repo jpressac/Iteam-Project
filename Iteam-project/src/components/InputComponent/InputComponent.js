@@ -17,7 +17,7 @@ class InputComponent extends React.Component {
           <Input type={this.props.type} label={this.props.label} theme={themeLabel}
                  name={this.props.name} required={this.props.required}
                  value={this.props.value} onChange={this.props.onValueChange} error={this.props.onValueError}
-                 onBlur={this.props.onBlur}/>
+                 onBlur={this.props.onBlur} maxLength={this.props.maxLength} min={this.props.minValue}/>
         </div>
       )
     } else {
@@ -26,7 +26,7 @@ class InputComponent extends React.Component {
           <Input type={this.props.type} label={this.props.label} disabled theme={themeLabel} name={this.props.name}
                  required={this.props.required}
                  value={this.props.value} onChange={this.props.onValueChange} error={this.props.onValueError}
-                 onBlur={this.props.onBlur}/>
+                 onBlur={this.props.onBlur} maxLength={this.props.maxLength}/>
         </div>
       )
     }
@@ -49,7 +49,9 @@ InputComponent.propTypes = {
   onValueChange: PropTypes.func,
   onValueError: PropTypes.string,
   onBlur: PropTypes.func,
-  required: PropTypes.bool
+  required: PropTypes.bool,
+  maxLength: PropTypes.number,
+  minValue: PropTypes.string
 };
 
 export default InputComponent

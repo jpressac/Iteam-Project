@@ -108,15 +108,13 @@ class RegistrationForm extends React.Component {
             <label>CREATE YOUR ACCOUNT</label>
           </div>
           <div className={classes.form}>
-            <div className="row col-md-12">
-              <div className="row">
+              <div className={"row col-md-12 "  + classes.paddingZero}>
                 <img src={user}/>
                 <label>
-                  <span style={{fontWeight: 'bold'}}> Add a photo </span>
-                  <p>to help your teammates identify you</p>
+                  <span className={classes.labelInfoUser}> Add a photo </span>
+                  <p className={classes.paragraphImageFooter}>to help your teammates identify you</p>
                 </label>
               </div>
-            </div>
             <div className={"row col-md-12 " + classes.paddingZero}>
               <InputComponent className="col-md-6" type='text' label='First Name' name='firstName'
                               value={this.state.firstName} required
@@ -158,7 +156,12 @@ class RegistrationForm extends React.Component {
                             required onChange={this.handleChange.bind(this, 'hobbies')} maxLength={200}
                             tooltip='Write hobbies separate by commas'/>
             </div>
-            <div className="row">
+            <div className={"row " + classes.labelLeftAlign}>
+              <label>
+                <span className={classes.labelInfoUser}>User Information</span>
+              </label>
+            </div>
+            <div className={"row col-md-12 " + classes.paddingZero}>
               <InputComponent className="col-md-6" type='email' label='Email address' icon='email'
                               value={this.state.mail} onValueChange={this.handleChange.bind(this, 'mail')}
                               required/>

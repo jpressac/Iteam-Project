@@ -1,9 +1,6 @@
-/**
- * Created by Randanne on 15/10/2016.
- */
 import React from 'react'
 import ReportsForm from '../../components/ReportsForm/ReportForm'
-import classes from './ReportsView.scss'
+import classes from '../ViewContainerCSS/ViewContainer.scss'
 
 export class ReportsView extends React.Component {
   render() {
