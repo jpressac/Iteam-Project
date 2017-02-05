@@ -10,6 +10,9 @@ import {MEETING} from "../../constants/HostConfiguration";
 import D3Tree from "../ReportsForm/D3tree/D3Tree";
 import D3ChartTree from "../ReportsForm/D3ChartTree/D3ChartTree";
 import Spinner from "../Spinner/Spinner";
+import {PATHS} from './../../constants/routes';
+import ButtonComponent from '../ButtonComponent/ButtonComponent';
+import {push} from 'react-router-redux';
 
 
 const mapStateToProps = (state) => {
@@ -22,6 +25,9 @@ const mapStateToProps = (state) => {
     }
   }
 };
+const mapDispatchToProps = dispatch => ({
+  report: () => dispatch(push('/' + PATHS.MENULOGGEDIN.REPORTS))
+});
 class ReportsPageForm extends Component {
   constructor(props) {
     super(props);
@@ -84,7 +90,7 @@ class ReportsPageForm extends Component {
       //TODO: what we do here????
     })
   };
-  
+
   generateRankingReport = () => {
     axios.get(MEETING.MEETING_REPORT, {
       params: {
@@ -117,6 +123,8 @@ class ReportsPageForm extends Component {
       <div className="container" style={{marginTop: 80}}>
         {this.renderTrees()}
         {this.generateReport(this.props.reportType)}
+        <ButtonComponent className="col-md-6" value='BACK TO REPORT'
+                         onClick={this.props.report} iconButton='backspace'/>
       </div>
 
     );
@@ -130,8 +138,9 @@ ReportsPageForm.propTypes = {
   reportType: PropTypes.string,
   user: PropTypes.any,
   meetingId: PropTypes.string,
-  meetingConfiguration: PropTypes.any
+  meetingConfiguration: PropTypes.any,
+  report: PropTypes.func
 
 };
 
-export default connect(mapStateToProps, null)(ReportsPageForm)
+export default connect(mapStateToProps, mapDispatchToProps)(ReportsPageForm)

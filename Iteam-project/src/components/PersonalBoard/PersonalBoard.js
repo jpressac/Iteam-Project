@@ -144,7 +144,7 @@ class PersonalBoard extends Component {
 
   }
 
-  
+
   setValuesOptionsTags(data) {
     let opt = data.map(function (option, index) {
       let rObj = {};
@@ -300,8 +300,8 @@ class PersonalBoard extends Component {
                       source={this.state.mapTag} value={this.state.tagValue}/>
             <MenuDivider/>
           </NavDrawer>
-          <Panel scrollY theme={panelTheme}>
-            {this.renderTechnic(this.props.meetingConfiguration.technic)}
+          <Panel >
+            
             <div name="Notes container" className={classes.noteContainer}>
               {this.renderNotes(this.state.notes, this.state.tagName)}
             </div>

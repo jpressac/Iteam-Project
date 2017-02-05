@@ -116,14 +116,51 @@ class SharedBoard extends Component {
     console.log(technic);
     switch (technic) {
       case 0:
-        console.log('braisntorming');
+        console.log('brainstorming');
+        return(
+          <div name="Notes container" className={classes.notes}>
+            {this.renderNotes(this.state.notes, this.state.tagName, this.state.userName)}
+          </div>
+        );
         break;
       case 1:
         console.log('scamper');
         return this.renderScamper();
     }
   }
+  filterNoteByScamper(tag, noteMap){
+   let notes= Object.values(noteMap).filter((note) => tag === note.tag);
+ console.log(notes);
+    return notes;
+  }
 
+renderNoteByTag(tag,noteMap){
+
+  switch(tag){
+    case'Sustitute':
+      return this.renderNotes(noteMap,tag,'All');
+          break;
+    case'Combine':
+      return this.renderNotes(noteMap,tag,'All');
+      break;
+    case'Adapt':
+      return this.renderNotes(noteMap,tag,'All');
+      break;
+    case'Modify':
+      return this.renderNotes(noteMap,tag,'All');
+      break;
+    case'Put to others use':
+      return this.renderNotes(noteMap,tag,'All');
+      break;
+    case'Eliminate':
+      return this.renderNotes(noteMap,tag,'All');
+      break;
+    case'Rearrange':
+      return this.renderNotes(noteMap,tag,'All');
+      break;
+
+  }
+}
   renderScamper() {
     return (
       <div >
@@ -132,12 +169,14 @@ class SharedBoard extends Component {
             <div className={classes.content}>
               <label className={classes.letter}>S </label>
               <label>(subtitute)</label>
+              {this.renderNoteByTag('Sustitute', this.state.notes)}
             </div>
           </div>
           <div className={classes.square}>
             <div className={classes.content}>
               <label className={classes.letter}>C</label>
               <label>(combine)</label>
+              {this.renderNoteByTag('Combine', this.state.notes)}
             </div>
           </div>
         </div>
@@ -146,18 +185,21 @@ class SharedBoard extends Component {
             <div className={classes.content}>
               <label className={classes.letter}>A </label>
               <label>(adapt)</label>
+              {this.renderNoteByTag('Adapt', this.state.notes)}
             </div>
           </div>
           <div className={classes.squareMiddle}>
             <div className={classes.content}>
               <label className={classes.letter}>M </label>
               <label>(modify)</label>
+              {this.renderNoteByTag('Modify', this.state.notes)}
             </div>
           </div>
           <div className={classes.squareMiddle}>
             <div className={classes.content}>
               <label className={classes.letter}>P </label>
               <label>(put to other use)</label>
+              {this.renderNoteByTag('Put to others use', this.state.notes)}
             </div>
           </div>
         </div>
@@ -166,12 +208,14 @@ class SharedBoard extends Component {
             <div className={classes.content}>
               <label className={classes.letter}>E </label>
               <label>(eliminate)</label>
+              {this.renderNoteByTag('Eliminate', this.state.notes)}
             </div>
           </div>
           <div className={classes.square}>
             <div className={classes.content}>
               <label className={classes.letter}>R </label>
               <label>(rearrange)</label>
+              {this.renderNoteByTag('Rearrange', this.state.notes)}
             </div>
           </div>
         </div>
@@ -569,9 +613,7 @@ class SharedBoard extends Component {
           <Panel scrollY theme={panelTheme}>
             {this.renderTechnic(this.props.meetingConfiguration.technic)}
 
-            <div name="Notes container" className={classes.notes}>
-              {this.renderNotes(this.state.notes, this.state.tagName, this.state.userName)}
-            </div>
+
           </Panel>
           <Drawer active={this.state.active} theme={classes}
                   type="right"
