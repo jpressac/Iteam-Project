@@ -31,7 +31,6 @@ class D3Tree extends React.Component {
   renderTreeExpand(treeData, svgNode) {
     let margin = {top: 20, right: 90, bottom: 10, left: 120},
       width = window.innerWidth - margin.right, //TODO: this is hardcoded so it antoher screen it will not work
-      height = window.innerHeight + 300;// TODO: calculate with a amount of nodes
       height = window.innerHeight + 500;// TODO: calculate with a amount of nodes
 
     i = 0;

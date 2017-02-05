@@ -398,7 +398,7 @@ class TeamForm extends React.Component {
                 {this.renderUserSelected()}
               </List>
             </div>
-            <ButtonComponent className={"col-md-6"} value="Create" raisedValue onClick={this.create.bind(this)}/>
+            <ButtonComponent className={"col-md-12"} value="Create" raisedValue onClick={this.create.bind(this)}/>
             <BootstrapModal ref="mymodal" message={this.state.message}/>
           </div>
         </div>

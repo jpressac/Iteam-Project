@@ -18,10 +18,15 @@ const mapDispatchToProps = dispatch => ({
 
 });
 
+const iteamLogo= () => (
+  <img className={themeAppBar.logo} src={logo}/>
+)
+
 class HeaderNotLog extends React.Component {
+
   render() {
     return (
-      <AppBar fixed flat theme={themeAppBar} leftIcon={logo}>
+      <AppBar fixed flat theme={themeAppBar} leftIcon={iteamLogo()}>
           <Navigation type='horizontal' theme={themeNav}>
             <Button icon='contact_phone' label='CONTACT' onClick={this.props.contact} theme={themeButton}/>
             <Button icon='create' label='REGISTER' onClick={this.props.register} theme={themeButton}/>
