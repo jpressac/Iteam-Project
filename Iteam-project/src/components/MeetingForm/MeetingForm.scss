@@ -1,28 +1,23 @@
-
-.content{
-
-  background-position-x: center;
-  background-position-y: center;
-  margin:50px;
-
-
-
+.meetingForm {
+  width: 80%;
+  margin-top: 10%;
 }
-.form{
 
-  background: #eee;
+.form {
+  width: 100%;
+  background: #EEEEEE;
   padding-left: 50px;
+  padding-right: 50px;
+  margin-top: 2%;
 }
-.label2
-{
+
+.label {
   color: #900C3F;
-  font-family:monospace;
+  font-family: monospace;
   align-items: center;
   font-size: 35px;
-
-
-
 }
+
 .btnTeam {
   border: none;
   color: white;
@@ -50,4 +45,8 @@
 .btn:focus, .btn:active:focus, .btn.active:focus {
   outline: 0 none;
 }
+.paddingZero {
+  padding: 0;
+}
+
 

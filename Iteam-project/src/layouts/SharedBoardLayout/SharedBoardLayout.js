@@ -1,15 +1,11 @@
-/**
- * Created by Randanne on 10/12/2016.
- */
 import React from 'react'
-import HeaderShared from '../../components/Header/HeaderBoards/HeaderShared'
+import classes from '../PersonalBoardLayout/board.scss'
 
 export const SharedBoard = ({children}) => (
 
-  <div name="Shared Board Layout">
+  <div name="Shared Board Layout" className={classes.board}>
     {children}
   </div>
-
 );
 
 SharedBoard.propTypes = {

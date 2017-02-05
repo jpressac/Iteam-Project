@@ -1,6 +1,6 @@
 import React from 'react'
 import Mymeeting from '../../components/MymeetForm/'
-import classes from './MymeetView.scss'
+import classes from '../../views/ViewContainerCSS/ViewContainer.scss'
 
 class MymeetView extends React.Component {
   render(){

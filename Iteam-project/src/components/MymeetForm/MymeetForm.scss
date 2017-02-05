@@ -1,27 +1,50 @@
-.label
-{
-  color:#900C3F;
-  font-family:monospace;
-    align-items: center;
-    font-size: 35px;
+.myMeetingForm {
+  width: 80%;
+  margin-top: 10%;
 }
-.label2
-{
+
+.form {
+  background: #eee;
+  padding-left: 50px;
+  padding-right: 50px;
+  margin-top: 2%;
+  margin-bottom: 2%;
+}
+
+.label {
   color: #900C3F;
   font-family:monospace;
-  align-items: center;
   font-size: 35px;
-
-
+  width: 100%;
+  text-align: -webkit-center;
 }
-.content{
 
-  background-position-x: center;
-  background-position-y: center;
-  margin:50px;
-
-
+.buttonCreate {
+  margin: 2%;
+  text-align: -webkit-center;
 }
-.listSH{
-  width:600px;
+
+.radioButton {
+  display: inline-flex;
+}
+
+.paddingZero {
+  padding: 0;
+}
+
+.labelLeftAlign {
+  padding: 0;
+  margin-top: 2%;
+  margin-bottom: 2%;
+  float: left;
+}
+
+.labelInfoUser {
+  font-weight: bold;
+  font-size: 20px;
+  padding: 0;
+}
+
+.paragraphImageFooter {
+  font-size: 15px;
 }
