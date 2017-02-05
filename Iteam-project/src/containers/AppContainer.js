@@ -15,7 +15,7 @@ class AppContainer extends React.Component {
 
     return (
       <Provider store={store}>
-        <div style={{ height: '100%' }}>
+        <div>
           <Router history={history} children={routes} key={routerKey} />
         </div>
       </Provider>

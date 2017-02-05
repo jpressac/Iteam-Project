@@ -7,11 +7,12 @@ import LogoutButton from './LogoutButton'
 import {Button} from 'react-toolbox/lib/button';
 import {connect} from 'react-redux'
 import {push} from 'react-router-redux'
-import themeAppBar from './HeaderLog.scss'
-import themeNav from './nav.scss'
+import themeAppBar from '../header.scss'
+import themeNav from '../nav.scss'
 import classes from './theme.scss'
 import {fromMeetingOrTeam} from '../../../redux/reducers/Meeting/MeetingForTeamReducer'
 import themeButton from './button.scss'
+import Inbox from '../../Inbox/Inbox'
 
 const mapDispatchToProps = dispatch => ({
   home: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HOME)),
@@ -21,15 +22,15 @@ const mapDispatchToProps = dispatch => ({
   teamList: () => dispatch(push('/' + PATHS.MENULOGGEDIN.TEAMLIST)),
   team: () => dispatch(push('/' + PATHS.MENULOGGEDIN.NEWTEAM)),
   newMeeting: () => dispatch(fromMeetingOrTeam()),
-  meetingHistory: () =>dispatch(push('/'+ PATHS.MENULOGGEDIN.HISTORY))
+  meetingHistory: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HISTORY))
 });
 
 const mapStateToProps = (state) => {
-  if(state.loginUser != null) {
+  if (state.loginUser != null) {
     return {
       user: state.loginUser.user.username
     }
-  }else{
+  } else {
     return ({})
   }
 };
@@ -50,38 +51,36 @@ class HeaderLog extends Component {
     this.props.team();
   }
 
-  goToHistory(){
+  goToHistory() {
     this.props.meetingHistory();
   }
 
   render() {
     return (
-
       <header >
         <AppBar fixed flat theme={themeAppBar}>
-          <div >
-            <img src={logo} style={{height: 50, width: 100, marginRight: '30%'}}/>
+            <img src={logo}/>
             <Navigation type="horizontal" theme={themeNav}>
               <ul className={classes.ul}>
-                <li><Button label='HOME' className={themeButton.button} style={{color: '#900C3F'}}
+                <li><Button label='HOME' theme={themeButton}
                             onClick={this.props.home}/></li>
-                <li><Button label='PROFILE' theme={themeButton} style={{color: '#900C3F'}}
+                <li><Button label='PROFILE' theme={themeButton}
                             onClick={this.props.profile}/></li>
-                <li><Button label='MY MEETINGS' theme={themeButton} style={{color: '#900C3F'}}
+                <li><Button label='MY MEETINGS' theme={themeButton}
                             onClick={this.props.myMeeting}/></li>
-                <li><Button label='NEW MEETING' theme={themeButton} style={{color: '#900C3F'}}
+                <li><Button label='NEW MEETING' theme={themeButton}
                             onClick={this.goToNewMeeting.bind(this)}/></li>
-                <li><Button label='HISTORY' theme={themeButton} style={{color: '#900C3F'}}
+                <li><Button label='HISTORY' theme={themeButton}
                             onClick={this.goToHistory.bind(this)}/></li>
-                <li><Button label='NEW TEAM' theme={themeButton} style={{color: '#900C3F'}}
+                <li><Button label='NEW TEAM' theme={themeButton}
                             onClick={this.goToNewTeam.bind(this)}/></li>
-                <li><Button label='MY TEAMS' theme={themeButton} style={{color: '#900C3F'}}
+                <li><Button label='MY TEAMS' theme={themeButton}
                             onClick={this.props.teamList}/></li>
                 <li><span className={classes.span}><label> {this.props.user}</label></span ></li>
-                <li><LogoutButton style={{color: '#900C3F'}}/>></li>
+                <li><LogoutButton/></li>
               </ul>
             </Navigation>
-          </div>
+          <Inbox/>
         </AppBar>
       </header>
     );
@@ -97,7 +96,7 @@ HeaderLog.propTypes = {
   team: PropTypes.func,
   newMeeting: PropTypes.func,
   teamList: PropTypes.func,
-  meetingHistory:PropTypes.func
+  meetingHistory: PropTypes.func
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(HeaderLog)

@@ -1,20 +1,24 @@
-.form{
-  width: 100%;
-  background: #eee;
-  padding-left: 50px;
-  padding-right: 50px;
-  margin-top: 20px;
+.profile {
+  width: 80%;
+  margin-top: 10%;
 }
 
-.label2
+.form{
+  width: 100%;
+  background: #EEEEEE;
+  padding-left: 50px;
+  padding-right: 50px;
+  margin-top: 2%;
+}
+
+.labelTitle
 {
   color: #900C3F;
   font-family:monospace;
   align-items: center;
   font-size: 35px;
-
-
 }
+
 .labelInfo{
   display: table-cell;
   color: #900C3F;
@@ -37,4 +41,22 @@
   font-family:monospace;
   align-items: center;
   font-size: 20px;
+  margin-top: 2%;
+  margin-bottom: 2%;
 }
+
+.labelWelcome {
+  margin-top: 2%;
+  margin-bottom: 2%;
+  font-size: 25px;
+}
+
+.paddingZero {
+  padding: 0;
+}
+
+.buttons {
+  margin-bottom: 2%;
+  margin-top: 2%;
+}
+

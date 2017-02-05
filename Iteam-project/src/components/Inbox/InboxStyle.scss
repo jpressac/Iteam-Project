@@ -1,0 +1,130 @@
+.chatContainerMax {
+  width: 25%;
+  position: fixed;
+  right: 1%;
+  border-top-right-radius: 3px;
+  border-top-left-radius: 3px;
+  font-family: monospace;
+  font-size: 12px;
+  border: 1px solid lightgray;
+  display: flex;
+  flex-direction: column;
+}
+
+.messageList{
+  overflow: auto;
+  position: relative;
+  height: 220px;
+}
+
+.chatContainerMin {
+  width: 3%;
+  position: fixed;
+  right: 1%;
+  border-top-right-radius: 3px;
+  border-top-left-radius: 3px;
+  font-family: monospace;
+  font-size: 12px;
+  border: 1px solid lightgray;
+  display: flex;
+  flex-direction: column;
+}
+
+/* message box header styles*/
+
+.msgWgtHeaderMin {
+  background-color: #900C3F;
+  border: 1px solid #900C3F ;
+  border-top-right-radius: 3px;
+  border-top-left-radius: 3px;
+  color: white;
+  text-align: center;
+  height: 40px;
+  font-size: medium;
+  display: inline-block;
+}
+
+.msgWgtHeaderMax {
+  background-color: #cbcbcb;
+  border: 1px solid #cbcbcb ;
+  border-top-right-radius: 3px;
+  border-top-left-radius: 3px;
+  color: black;
+  text-align: center;
+  height: 40px;
+}
+
+.msgWgtHeader a {
+  text-decoration: none;
+  font-weight: bold;
+  color: white;
+  vertical-align: middle;
+}
+
+/* message box body styles*/
+
+.msgRowContainer {
+  border-bottom: 1px solid lightgray;
+  height: auto;
+}
+
+.msgRow {
+  width: 100%;
+  display: inline-block;
+}
+
+.message {
+  margin-left: 40px;
+}
+
+/* Message box footer styles*/
+
+.msg-wgt-footer {
+  height: 42px;
+}
+
+.msg-wgt-footer textarea {
+  width: 95%;
+  font-family: monospace;
+  font-size: 13px;
+  padding: 5px;
+}
+
+.userLabel {
+  font-size: 11px;
+}
+
+.chatUsername {
+  color: #900C3F;
+  font-size: large;
+}
+
+.msgTime {
+  font-size: medium;
+  float: right;
+  color: black;
+}
+
+.avatar {
+  width: 30px;
+  height: 30px;
+  float: left;
+  border: 1px solid lightgray;
+}
+
+.input {
+  bottom: 0;
+  position: fixed;
+  resize: inherit;
+  overflow: initial;
+  width: 25%;
+  z-index: 300;
+  right: 1%;
+  border-top-right-radius: 3px;
+  border-top-left-radius: 3px;
+}
+
+.p{
+  text-align: left;
+  margin: 0 0 0 0;
+}
