@@ -114,10 +114,19 @@ class MeetingView extends Component {
   }
 
   fillTeam(data) {
-    let opt = data.map(function (option) {
-      return option["team"]["name"];
+    let opt = data.map((team) => {
+      return team["team"]["name"];
     });
-    this.setState({teamsObj: opt, showSpinner: false})
+
+    let teamInfo = data.map((team) => {
+      let rObj = {};
+      rObj["teamName"] = team["team"]["name"];
+      rObj["teamId"] = team["teamId"];
+
+      return rObj;
+    });
+
+    this.setState({teamsObj: opt, showSpinner: false, teamList: teamInfo})
   }
 
   configureMeeting() {
@@ -142,9 +151,7 @@ class MeetingView extends Component {
   }
 
   searchTeamIdGivenTeamName(teamNameCombo) {
-    let data = this.state.teamList;
-
-    let filtered = data.filter(team => team["team"]["name"] === teamNameCombo);
+    let filtered = this.state.teamList.filter(team => team.teamName === teamNameCombo);
 
     return filtered[0]["teamId"]
   }

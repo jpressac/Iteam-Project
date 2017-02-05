@@ -1,57 +1,29 @@
-.content{
-  background-position-x: center;
-  background-position-y: center;
-  margin:50px;
-  width:700px;
+.teamContainer {
+  width: 80%;
+  margin-top: 10%;
 }
-.form{
-  width: 700px;
-  background: #eee;
+
+.form {
+  width: 100%;
+  background: #EEEEEE;
   padding-left: 50px;
+  padding-right: 50px;
+  margin-top: 2%;
 }
-.label2
-{
+
+.label {
   color: #900C3F;
-  font-family:monospace;
+  font-family: monospace;
   align-items: center;
   font-size: 35px;
-  margin:15px;
 }
-.tag {
-  font-size: 14px;
-  padding: .3em .4em .4em;
-  margin: 0 .1em;
-  color: #bbb;
-  margin-top: 10px;
-}
-.title{
-  align-items: center;
-  margin-top: 5px;
-  margin-right: 400px;
+
+.paddingZero {
+  padding: 0;
 }
 .filter{
   align-items: center;
   margin-top: 20px;
-
-}
-.tag a {
-  color: #bbb;
-  cursor: pointer;
-  opacity: 0.6;
-}
-.tag a:hover {
-  opacity: 1.0
-}
-.tag .remove {
-  vertical-align: bottom;
-  top: 0;
-}
-.tag a {
-  margin: 0 0 0 .3em;
-}
-.tag a .glyphicon-white {
-  color: #fff;
-  margin-bottom: 2px;
 }
 
 .verticalbarright {
