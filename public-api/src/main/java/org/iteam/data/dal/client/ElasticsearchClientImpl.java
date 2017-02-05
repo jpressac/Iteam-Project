@@ -208,7 +208,7 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
         data.forEach((dataToUpdate) -> {
 
             UpdateRequest updateRequest = new UpdateRequest(index, type, dataToUpdate.getKey());
-            updateRequest.script(getScript(Double.parseDouble(dataToUpdate.getValue())));
+            updateRequest.script(getScript(Double.parseDouble((String) dataToUpdate.getValue())));
             updateList.add(updateRequest);
         });
 

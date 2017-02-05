@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.iteam.data.dto.Meeting;
+import org.iteam.data.dto.ViewedMeeting;
 import org.iteam.data.model.D3CollapseTreeModel;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
@@ -39,8 +40,8 @@ public class MeetingController {
     @RequestMapping(value = "/meeting/create", method = RequestMethod.POST)
     public ResponseEntity<Void> createMeeting(@RequestBody Meeting meeting) {
 
-        return checkResult(meetingServiceImpl.createMeeting(meeting));
-
+        checkResult(meetingServiceImpl.createMeeting(meeting));
+        return checkResult(meetingServiceImpl.createMeetingViewed(meeting));
     }
 
     /**
@@ -179,5 +180,19 @@ public class MeetingController {
     @Autowired
     private void setMeetingServiceImpl(MeetingServiceImpl meetingServiceImpl) {
         this.meetingServiceImpl = meetingServiceImpl;
+    }
+
+    @RequestMapping(value = "meeting/notViewed", method = RequestMethod.GET)
+    public ResponseEntity<List<ViewedMeeting>> getMeetingsNotViewed(
+            @RequestParam(value = "username", required = true) String username) {
+        List<ViewedMeeting> meetings = meetingServiceImpl.getMeetingsNotViewed(username);
+        return new ResponseEntity<List<ViewedMeeting>>(meetings, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/meeting/viewed", method = RequestMethod.POST)
+    public ResponseEntity<Void> updateMeetingViewed(@RequestBody @Valid List<ViewedMeeting> meetingsViewedByUser,
+            @RequestParam(value = "username", required = true) String username) {
+        meetingServiceImpl.updateMeetingViewedByUser(meetingsViewedByUser, username);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

@@ -34,7 +34,9 @@ export const MEETING = {
   MEETING_INFO_PERSONAL_BOARD : URL + '/meeting/meetinginfo/byuser',
   MEETING_USERS : URL + '/meeting/meetingusers',
   MEETING_USER_CONNECTION : URL + '/meeting/usersconnection',
-  MEETING_BYSTATE : URL + '/meeting/bystate'
+  MEETING_BYSTATE : URL + '/meeting/bystate',
+  MEETING_NOT_VIEWED: URL + '/meeting/notViewed',
+  MEETING_VIEWED: URL + '/meeting/viewed'
 };
 
 export const UTILITIES = {

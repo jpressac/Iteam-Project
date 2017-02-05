@@ -3,6 +3,7 @@ package org.iteam.services.meeting;
 import java.util.List;
 
 import org.iteam.data.dto.Meeting;
+import org.iteam.data.dto.ViewedMeeting;
 import org.iteam.data.model.D3CollapseTreeModel;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
@@ -173,4 +174,10 @@ public interface MeetingService {
     public List<Meeting> getMeetingByState(String string);
 
     public void generateScore(IdeasDTO ideas, List<String> userList);
+
+    public boolean createMeetingViewed(Meeting meeting);
+
+    public List<ViewedMeeting> getMeetingsNotViewed(String username);
+
+    public void updateMeetingViewedByUser(List<ViewedMeeting> meetingsViewedByUser, String username);
 }

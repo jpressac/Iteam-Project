@@ -21,11 +21,15 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.iteam.configuration.StringUtilities;
 import org.iteam.data.dal.client.ElasticsearchClient;
 import org.iteam.data.dal.client.ElasticsearchClientImpl;
+import org.iteam.data.dal.team.TeamRepository;
 import org.iteam.data.dto.Idea;
 import org.iteam.data.dto.Meeting;
+import org.iteam.data.dto.ViewedMeeting;
+import org.iteam.data.model.BiFieldModel;
 import org.iteam.data.model.D3CollapseTreeModel;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
+import org.iteam.data.model.TeamUserModel;
 import org.iteam.services.utils.JSONUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -45,12 +49,15 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     private static final Logger LOGGER = LoggerFactory.getLogger(MeetingRepositoryImpl.class);
 
     private ElasticsearchClient elasticsearchClientImpl;
+    private TeamRepository teamRepository;
 
     private static final String IDEA_MEETING_ID_FIELD = "meetingId";
     private static final String MEETING_TEAM_NAME_FIELD = "teamName";
     private static final String MEETING_STATE_NAME_FIELD = "ended";
     private static final String MEETING_OWNER_NAME_FIELD = "ownerName";
     private static final String PROGRAMMED_DATE_FIELD = "programmedDate";
+    private static final String MEETING_VIEWED_USERS = "viewedUsers";
+    private static final String MEETING_NOT_VIEWED_USERS = "users";
     private static final int MAX_RETRIES = 5;
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -551,6 +558,83 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     @Autowired
     private void setElasticsearchClientImpl(ElasticsearchClientImpl elasticsearchClientImpl) {
         this.elasticsearchClientImpl = elasticsearchClientImpl;
+    }
+
+    @Autowired
+    private void setTeamUserImpl(TeamRepository teamRepositoryImpl) {
+        this.teamRepository = teamRepositoryImpl;
+    }
+
+    @Override
+    public boolean createMeetingViewed(Meeting meeting) {
+        String id = meeting.getMeetingId();
+        TeamUserModel teamUserModel = teamRepository.getTeamUsersByMeeting(id);
+        List<String> userNames = new ArrayList<String>();
+
+        teamUserModel.getTeamUsers().forEach((user) -> {
+            userNames.add(user.getUsername());
+        });
+
+        LOGGER.info("Creating meeting viewed users");
+        LOGGER.debug("Users: '{}'", teamUserModel.toString());
+
+        ViewedMeeting viewedMeeting = new ViewedMeeting();
+        viewedMeeting.setUsers(userNames);
+        viewedMeeting.setMeetingTopic(meeting.getTopic());
+        String data = JSONUtils.ObjectToJSON(viewedMeeting);
+
+        IndexResponse response = elasticsearchClientImpl.insertData(data, StringUtilities.INDEX_MEETING_VIEWED_USERS,
+                StringUtilities.INDEX_TYPE_MEETING_VIEWED_USERS, meeting.getMeetingId());
+
+        if (!response.isCreated()) {
+            LOGGER.error("The meeting couldn't be created - Meeting: '{}'", meeting.toString());
+            return false;
+        }
+
+        return true;
+
+    }
+
+    @Override
+    public List<ViewedMeeting> getMeetingsNotViewed(String username) {
+        LOGGER.info("Get meeting not viewed by user");
+        LOGGER.debug("User: '{}'", username);
+        List<ViewedMeeting> meetingsName = new ArrayList<>();
+
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+        queryBuilder.must(QueryBuilders.termQuery(MEETING_NOT_VIEWED_USERS, username))
+                .mustNot(QueryBuilders.termQuery(MEETING_VIEWED_USERS, username));
+
+        SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING_VIEWED_USERS,
+                queryBuilder);
+
+        if (response.getHits().getTotalHits() > 0) {
+            for (SearchHit hit : response.getHits()) {
+                ViewedMeeting meeting = (ViewedMeeting) JSONUtils.JSONToObject(hit.getSourceAsString(),
+                        ViewedMeeting.class);
+                meeting.setMeetingId(hit.getId());
+                meetingsName.add(meeting);
+            }
+        }
+        return meetingsName;
+    }
+
+    @Override
+    public void updateMeetingViewedByUser(List<ViewedMeeting> meetingsViewedByUser, String username) {
+        List<BiFieldModel> dataToUpdate = new ArrayList<>();
+
+        meetingsViewedByUser.forEach((meeting) -> {
+            List<String> viewedUsers = meeting.getViewedUsers();
+            viewedUsers.add(username);
+
+            BiFieldModel<List<String>> meetingToUpdate = new BiFieldModel<List<String>>(meeting.getMeetingId(),
+                    viewedUsers);
+            dataToUpdate.add(meetingToUpdate);
+        });
+
+        elasticsearchClientImpl.updateNew(dataToUpdate, StringUtilities.INDEX_MEETING_VIEWED_USERS,
+                StringUtilities.INDEX_TYPE_MEETING_VIEWED_USERS);
+
     }
 
 }

@@ -7,6 +7,7 @@ import org.iteam.data.dal.meeting.MeetingRepository;
 import org.iteam.data.dal.meeting.MeetingRepositoryImpl;
 import org.iteam.data.dto.Meeting;
 import org.iteam.data.dto.UserDTO;
+import org.iteam.data.dto.ViewedMeeting;
 import org.iteam.data.model.D3CollapseTreeModel;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
@@ -142,5 +143,20 @@ public class MeetingServiceImpl implements MeetingService {
     @Override
     public void generateScore(IdeasDTO ideas, List<String> usersList) {
         userServiceImpl.generateScore(ideas, usersList);
+    }
+
+    @Override
+    public boolean createMeetingViewed(Meeting meeting) {
+        return this.meetingRepositoryImpl.createMeetingViewed(meeting);
+    }
+
+    @Override
+    public List<ViewedMeeting> getMeetingsNotViewed(String username) {
+        return this.meetingRepositoryImpl.getMeetingsNotViewed(username);
+    }
+
+    @Override
+    public void updateMeetingViewedByUser(List<ViewedMeeting> meetingsViewedByUser, String username) {
+        this.meetingRepositoryImpl.updateMeetingViewedByUser(meetingsViewedByUser, username);
     }
 }
