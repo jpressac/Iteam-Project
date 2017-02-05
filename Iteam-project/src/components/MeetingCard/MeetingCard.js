@@ -36,18 +36,17 @@ class MeetingCard extends Component {
     return (
       <div className={divCss.cardsdiv}>
         {Object.keys(meetings).map((key) => {
-          return (
-            <Card theme={card}>
-              <CardTitle title={'Name'+ ' ' + meetings[key].topic}/>
-              <CardTitle title={'Description' + ' ' + meetings[key].description}/>
-              <CardTitle title={'Organizer' + ' ' +  meetings[key].ownerName}/>
-              <CardTitle title={'Ending date' + ' ' + MeetingCard.renderDate(meetings[key].endDate)}/>
-              <CardActions>
-                <Button label="View reports" onClick={this.viewReports.bind(this, meetings[key].id)}/>
-                <Button label="Delete" onClick={this.deleteMeeting(meetings[key].id)} />
-              </CardActions>
-            </Card>
-          );
+        return (
+        <Card theme={card}>
+          <CardTitle className="col-md-3" title='Name' subtitle={meetings[key].topic}/>
+          <CardTitle className ="col-md-3" title='Organizer' subtitle={meetings[key].ownerName}/>
+          <CardTitle className ="col-md-3" title='Date' subtitle={MeetingCard.renderDate(meetings[key].endDate)}/>
+          <CardActions className="col-md-3">
+            <Button label="View reports" onClick={this.viewReports.bind(this, meetings[key].id)}/>
+          </CardActions>
+          <CardTitle className ="col-md-12" title='Description'  subtitle={meetings[key].description}/>
+        </Card>
+        );
         })
         }
       </div>);

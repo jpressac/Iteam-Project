@@ -10,8 +10,6 @@ import {PATHS} from '../../constants/routes';
 import classes from './MymeetForm.scss';
 import Input from 'react-toolbox/lib/input';
 import BootstrapModal from '../../components/BootstrapModal/BootstrapModal';
-import ListItem1 from './ListItem1.scss';
-import ListItem2 from './ListItem2.scss';
 import listFormat from './List.scss';
 import chipTheme from './chips.scss';
 import {updateMeetingId} from '../../redux/reducers/Meeting/MeetingReducer';
@@ -25,11 +23,15 @@ import {saveConfig} from '../../redux/reducers/Meeting/MeetingConfigReducer';
 import Spinner from '../Spinner/Spinner';
 import {validateDate, validateStart, validateHour, changeEndDate} from '../../utils/DateUtils'
 import ButtonComponent from '../ButtonComponent/'
+import ReactPagination from 'react-paginate'
+import pagination from './pagination.scss'
 
 var programDate = new Date();
 var endDate = new Date();
 
 const TooltipButton = Tooltip(Button);
+
+const ITEMS_PER_PAGE = 10;
 
 const technics = [{value: 0, label: 'Brainstorming'}, {value: 1, label: 'SCAMPER'}, {
   value: 2,
@@ -71,7 +73,10 @@ class MymeetForm extends Component {
       tag: '',
       showSpinner: true,
       endTime: new Date(),
-      searchField: ''
+      searchField: '',
+      offset: 0,
+      totalMeetings: 0,
+      totalPages: 0
     }
   }
 
@@ -190,8 +195,19 @@ let meetingInfo = {};
     return new Date(meetingTime).toLocaleDateString([], {hour: '2-digit', minute: '2-digit'});
   }
 
-  fillFields(meetings) {
-    this.setState({meetings: meetings, showSpinner: false});
+  fillFields(data) {
+    this.setState({
+      meetings: data.meetings,
+      totalMeetings:data.total,
+      showSpinner: false
+    }, () => {
+      this.calculateTotalPages();
+    })
+  }
+
+  calculateTotalPages(){
+    let total = Math.ceil(this.state.totalMeetings / ITEMS_PER_PAGE);
+    this.setState({totalPages: total});
   }
 
   setMeetingEnding(meetingId){
@@ -482,7 +498,9 @@ let meetingInfo = {};
     if ( this.state.searchField.length != 0 ) {
       axios.get(MEETING.MEETING_SEARCH_PROGRAMMED, {
         params: {
-          token: this.state.searchField
+          token: this.state.searchField,
+          offset: this.state.offset,
+          limit: ITEMS_PER_PAGE
         }
       }).then(function (response) {
         this.fillFields(response.data)
@@ -494,11 +512,23 @@ let meetingInfo = {};
   }
 
   getAllProgrammedMeetings(){
-    axios.get(MEETING.MEETING_PROGRAMMED)
-      .then(function (response) {
-      this.fillFields(response.data.meta.total_)
+    axios.get(MEETING.MEETING_PROGRAMMED, {
+        params: {
+          offset: this.state.offset,
+          limit: ITEMS_PER_PAGE
+        }}).then(function (response) {
+        this.fillFields(response.data)
     }.bind(this))
   }
+
+  handlePageClick =(data) =>{
+    let actualPageNumber = data.selected;
+    let offset = Math.ceil(actualPageNumber * ITEMS_PER_PAGE);
+
+    this.setState({offset:offset}, () => {
+      this.getAllProgrammedMeetings();
+    });
+  };
 
   render() {
     if(!this.state.showSpinner) {
@@ -541,6 +571,17 @@ let meetingInfo = {};
               )}
               {this.showDialog()}
             </List>
+            <ReactPagination previousLabel={"Previous"}
+                             nextLabel={"Next"}
+                             pageCount={this.state.totalPages}
+                             marginPagesDisplayed={2}
+                             pageRangeDisplayed={5}
+                             onPageChange={this.handlePageClick}
+                             initialPage ={1}
+                             disableInitialCallback={true}
+                             pageClassName={pagination.ul}
+                             pageLinkClassName={pagination}
+            />
           </div>
         </div>
       )

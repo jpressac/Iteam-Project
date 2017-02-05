@@ -28,6 +28,7 @@ import org.iteam.data.model.BiFieldModel;
 import org.iteam.data.model.D3CollapseTreeModel;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
+import org.iteam.data.model.PaginationModel;
 import org.iteam.services.utils.JSONUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -190,27 +191,6 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         LOGGER.debug("User '{}' list of meetings: '{}'", username, meetingList.toString());
 
         return meetingList;
-    }
-
-    @Override
-    public List<Meeting> getEndedMeetings(String username) {
-        LOGGER.info("Getting all ended meetings");
-        List<Meeting> meetings = new ArrayList<>();
-
-        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
-        queryBuilder.must(QueryBuilders.termQuery(MEETING_OWNER_NAME_FIELD, username))
-                .must(QueryBuilders.existsQuery(MEETING_STATE_NAME_FIELD));
-
-        SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING, queryBuilder,
-                SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD).order(SortOrder.DESC));
-
-        if (response.getHits().getTotalHits() > 0) {
-
-            for (SearchHit hit : response.getHits()) {
-                meetings.add((Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class));
-            }
-        }
-        return meetings;
     }
 
     @Override
@@ -554,7 +534,6 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
     public void updateEndedMeetings() {
         LOGGER.info("Updating ended meetings");
-        // List<Meeting> meetings = new ArrayList<>();
         List<BiFieldModel> meetingsToUpdate = new ArrayList<BiFieldModel>();
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
@@ -580,28 +559,29 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     }
 
     @Override
-    public List<Meeting> getProgrammedMeetings(String username) {
-        List<Meeting> meetings = new ArrayList<>();
+    public PaginationModel getProgrammedMeetings(String username, int from, int size) {
+        PaginationModel paginatedMeetings = null;
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
         queryBuilder.must(QueryBuilders.termQuery(MEETING_OWNER_NAME_FIELD, username))
                 .mustNot(QueryBuilders.existsQuery(MEETING_STATE_NAME_FIELD));
 
         SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING, queryBuilder,
-                SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD).order(SortOrder.DESC));
+                SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD).order(SortOrder.DESC), size, from);
 
         if (response.getHits().getTotalHits() > 0) {
-
+            List<Meeting> meetings = new ArrayList<>();
             for (SearchHit hit : response.getHits()) {
                 meetings.add((Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class));
             }
+            paginatedMeetings = new PaginationModel(response.getHits().getTotalHits(), meetings);
         }
-        return meetings;
+        return paginatedMeetings;
     }
 
     @Override
-    public List<Meeting> getEndedMeetingByToken(String username, String token) {
-        List<Meeting> meetings = new ArrayList<>();
+    public PaginationModel getEndedMeetingByToken(String username, String token, int from, int size) {
+        PaginationModel paginatedMeetings = null;
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
         queryBuilder.must(QueryBuilders.termQuery(MEETING_OWNER_NAME_FIELD, username))
@@ -610,30 +590,56 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
         SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING, queryBuilder);
         if (response.getHits().getTotalHits() > 0) {
-
+            List<Meeting> meetings = new ArrayList<>();
             for (SearchHit hit : response.getHits()) {
                 meetings.add((Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class));
             }
+            paginatedMeetings = new PaginationModel(response.getHits().getTotalHits(), meetings);
         }
-        return meetings;
+        return paginatedMeetings;
     }
 
-    public List<Meeting> getProgrammedMeetingsByToken(String username, String token) {
-        List<Meeting> meetings = new ArrayList<>();
+    public PaginationModel getProgrammedMeetingsByToken(String username, String token, int from, int size) {
+
+        PaginationModel paginatedMeetings = null;
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
         queryBuilder.must(QueryBuilders.termQuery(MEETING_OWNER_NAME_FIELD, username))
                 .mustNot(QueryBuilders.existsQuery(MEETING_STATE_NAME_FIELD))
                 .must(QueryBuilders.matchQuery(MEETING_TOPIC, token));
 
-        SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING, queryBuilder);
+        SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING, queryBuilder,
+                SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD).order(SortOrder.DESC), size, from);
         if (response.getHits().getTotalHits() > 0) {
-
+            List<Meeting> meetings = new ArrayList<>();
             for (SearchHit hit : response.getHits()) {
                 meetings.add((Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class));
             }
+            paginatedMeetings = new PaginationModel(response.getHits().getTotalHits(), meetings);
         }
-        return meetings;
+        return paginatedMeetings;
+    }
+
+    @Override
+    public PaginationModel getEndedMeetings(String username, int from, int size) {
+
+        PaginationModel paginationObject = null;
+
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+        queryBuilder.must(QueryBuilders.termQuery(MEETING_OWNER_NAME_FIELD, username))
+                .must(QueryBuilders.existsQuery(MEETING_STATE_NAME_FIELD));
+
+        SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING, queryBuilder,
+                SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD).order(SortOrder.DESC), size, from);
+
+        if (response.getHits().getTotalHits() > 0) {
+            List<Meeting> meetings = new ArrayList<Meeting>();
+            for (SearchHit hit : response.getHits()) {
+                meetings.add((Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class));
+            }
+            paginationObject = new PaginationModel(response.getHits().getTotalHits(), meetings);
+        }
+        return paginationObject;
     }
 
     @Autowired

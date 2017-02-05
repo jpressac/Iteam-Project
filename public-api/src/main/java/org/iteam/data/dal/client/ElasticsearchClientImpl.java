@@ -38,7 +38,7 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchClientImpl.class);
 
     private static final String ELASTICSEARCH_CLUSTER_NAME_PROP = "cluster.name";
-    private static final Integer SIZE_RESPONSE = 10000;
+    private static final Integer SIZE_RESPONSE = 9989;
 
     private Client client;
     private ExternalConfigurationProperties configuration;
@@ -83,24 +83,31 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
     }
 
     @Override
-    public SearchResponse search(String index, QueryBuilder queryBuilder, SortBuilder sort) {
-        return search(index, queryBuilder, null, SIZE_RESPONSE, sort);
+    public SearchResponse search(String index, QueryBuilder queryBuilder, SortBuilder sort, Integer size,
+            Integer from) {
+        return search(index, queryBuilder, null, size, from, sort);
     }
 
     @Override
     public SearchResponse search(String index, QueryBuilder queryBuilder) {
-        return search(index, queryBuilder, null, SIZE_RESPONSE, null);
+        return search(index, queryBuilder, null, null, null, null);
+    }
+
+    @Override
+    public SearchResponse search(String index, QueryBuilder queryBuilder, SortBuilder sort) {
+
+        return search(index, queryBuilder, null, null, SIZE_RESPONSE, null);
     }
 
     @Override
     public SearchResponse search(String index, QueryBuilder queryBuilder, AbstractAggregationBuilder aggregationBuilder,
             Integer size) {
-        return search(index, queryBuilder, aggregationBuilder, SIZE_RESPONSE, null);
+        return search(index, queryBuilder, aggregationBuilder, SIZE_RESPONSE, null, null);
     }
 
     @Override
     public SearchResponse search(String index, QueryBuilder queryBuilder, AbstractAggregationBuilder aggregationBuilder,
-            Integer size, SortBuilder sort) {
+            Integer size, Integer from, SortBuilder sort) {
 
         SearchRequestBuilder search = client.prepareSearch();
 
@@ -120,6 +127,10 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
 
         if (!ObjectUtils.isEmpty(sort)) {
             search.addSort(sort);
+        }
+
+        if (!ObjectUtils.isEmpty(from)) {
+            search.setFrom(from);
         }
 
         return search.execute().actionGet();
@@ -186,4 +197,5 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
 
         return updateRequest.setDoc(dataToUpdate);
     }
+
 }

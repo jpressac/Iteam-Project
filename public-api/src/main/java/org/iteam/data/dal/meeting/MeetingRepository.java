@@ -6,6 +6,7 @@ import org.iteam.data.dto.Meeting;
 import org.iteam.data.model.D3CollapseTreeModel;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
+import org.iteam.data.model.PaginationModel;
 
 /**
  * Handles all operations for the meeting.
@@ -182,16 +183,14 @@ public interface MeetingRepository {
      */
     public void removeIdeasFromCacheSharedBoard(String meetingId, String info);
 
-    public List<Meeting> getEndedMeetings(String username);
-
-    public List<Meeting> getProgrammedMeetings(String username);
+    public PaginationModel getProgrammedMeetings(String username, int offset, int limit);
 
     public void updateEndedMeetings();
 
-    public List<Meeting> getEndedMeetingByToken(String username, String token);
+    public PaginationModel getEndedMeetingByToken(String username, String token, int offset, int limit);
 
-    public List<Meeting> getProgrammedMeetingsByToken(String name, String token);
+    public PaginationModel getProgrammedMeetingsByToken(String name, String token, int offset, int limit);
 
-    public List<Meeting> getPaginatedMeetings(String username, int offset, int limit);
+    public PaginationModel getEndedMeetings(String username, int offset, int limit);
 
 }

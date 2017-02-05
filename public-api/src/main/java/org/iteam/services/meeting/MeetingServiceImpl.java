@@ -10,6 +10,7 @@ import org.iteam.data.dto.UserDTO;
 import org.iteam.data.model.D3CollapseTreeModel;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
+import org.iteam.data.model.PaginationModel;
 import org.iteam.services.team.TeamService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,11 +73,6 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public List<Meeting> getEndedMeetings(String username) {
-        return meetingRepositoryImpl.getEndedMeetings(username);
-    }
-
-    @Override
     public D3CollapseTreeModel generateReportByUser(String meetingId, List<String> tags) {
 
         List<String> users = teamServiceImpl.getTeamUserInformationByMeeting(meetingId).getTeamUsers().stream()
@@ -123,18 +119,18 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public List<Meeting> getProgrammedMeetings(String username) {
-        return meetingRepositoryImpl.getProgrammedMeetings(username);
+    public PaginationModel getProgrammedMeetings(String username, int offset, int limit) {
+        return meetingRepositoryImpl.getProgrammedMeetings(username, offset, limit);
     }
 
     @Override
-    public List<Meeting> getEndedMeetingsByToken(String username, String token) {
-        return this.meetingRepositoryImpl.getEndedMeetingByToken(username, token);
+    public PaginationModel getEndedMeetingsByToken(String username, String token, int offset, int limit) {
+        return this.meetingRepositoryImpl.getEndedMeetingByToken(username, token, offset, limit);
     }
 
     @Override
-    public List<Meeting> getProgrammedMeetingsByToken(String name, String token) {
-        return this.meetingRepositoryImpl.getProgrammedMeetingsByToken(name, token);
+    public PaginationModel getProgrammedMeetingsByToken(String name, String token, int offset, int limit) {
+        return this.meetingRepositoryImpl.getProgrammedMeetingsByToken(name, token, offset, limit);
     }
 
     @Autowired
@@ -148,8 +144,8 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public List<Meeting> getPaginatedMeetings(String username, int offset, int limit) {
-        return meetingRepositoryImpl.getPaginatedMeetings(username, offset, limit);
+    public PaginationModel getEndedMeetings(String username, int offset, int limit) {
+        return meetingRepositoryImpl.getEndedMeetings(username, offset, limit);
     }
 
 }
