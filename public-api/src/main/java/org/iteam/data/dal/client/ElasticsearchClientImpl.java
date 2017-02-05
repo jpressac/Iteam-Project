@@ -2,7 +2,10 @@ package org.iteam.data.dal.client;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
@@ -14,15 +17,19 @@ import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.script.Script;
+import org.elasticsearch.script.ScriptService.ScriptType;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.iteam.configuration.ExternalConfigurationProperties;
+import org.iteam.data.model.BiFieldModel;
 import org.iteam.exceptions.ElasticsearchClientException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +45,17 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
     private static final String ELASTICSEARCH_CLUSTER_NAME_PROP = "cluster.name";
     private static final Integer SIZE_RESPONSE = 10000;
 
+    private static final String P_SCORE = "p_score";
+
+    private static StringBuilder ES_SCRIPT_COMMANDS;
+
     private Client client;
     private ExternalConfigurationProperties configuration;
+
+    static {
+        ES_SCRIPT_COMMANDS = new StringBuilder();
+        ES_SCRIPT_COMMANDS.append("ctx._source.score += p_score");
+    }
 
     @PostConstruct
     private void init() {
@@ -158,4 +174,53 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
     private void setConfiguration(ExternalConfigurationProperties configuration) {
         this.configuration = configuration;
     }
+
+    private BulkResponse updateData(List<UpdateRequest> data) {
+        BulkRequestBuilder updateBulk = client.prepareBulk();
+
+        data.forEach((request) -> {
+            updateBulk.add(request);
+        });
+
+        return updateBulk.execute().actionGet();
+    }
+
+    @Override
+    public BulkResponse updateNew(List<BiFieldModel> data, String index, String type) {
+
+        List<UpdateRequest> updateList = new ArrayList<>();
+
+        data.forEach((dataToUpdate) -> {
+
+            UpdateRequest updateRequest = new UpdateRequest(index, type, dataToUpdate.getKey());
+            updateRequest.doc(dataToUpdate.getValue());
+            updateList.add(updateRequest);
+        });
+
+        return updateData(updateList);
+
+    }
+
+    @Override
+    public BulkResponse updateScore(List<BiFieldModel> data, String index, String type) {
+        List<UpdateRequest> updateList = new ArrayList<>();
+
+        data.forEach((dataToUpdate) -> {
+
+            UpdateRequest updateRequest = new UpdateRequest(index, type, dataToUpdate.getKey());
+            updateRequest.script(getScript(Double.parseDouble(dataToUpdate.getValue())));
+            updateList.add(updateRequest);
+        });
+
+        return updateData(updateList);
+
+    }
+
+    private Script getScript(Double score) {
+        Map<String, Object> scriptParams = new HashMap<>();
+        scriptParams.put(P_SCORE, score);
+
+        return new Script(ES_SCRIPT_COMMANDS.toString(), ScriptType.INLINE, "groovy", scriptParams);
+    }
+
 }

@@ -20,6 +20,23 @@
 }
 
 .labelInfo{
+  display: table-cell;
+  color: #900C3F;
+  font-family:monospace;
+  align-items: center;
+  font-size: 20px;
+}
+
+.span{
+  position: relative;
+  display: block;
+  font-family:monospace;
+  font-weight: bold;
+}
+
+.title{
+  display: grid;
+  padding-bottom: 5%;
   color: #900C3F;
   font-family:monospace;
   align-items: center;

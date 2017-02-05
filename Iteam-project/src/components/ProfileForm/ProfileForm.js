@@ -33,6 +33,7 @@ class ProfileForm extends React.Component {
       genderValue: 'male',
       hobbies: '',
       username: '',
+      score: '',
       oldPassword: '',
       password: '',
       errorOldPassword: '',
@@ -64,7 +65,8 @@ class ProfileForm extends React.Component {
           hobbies: response.data.hobbies.toString(),
           username: response.data.username,
           nationality: response.data.nationality,
-          profession: response.data.profession
+          profession: response.data.profession,
+          score: response.data.score.toString()
         })
       })
   }
@@ -124,6 +126,7 @@ class ProfileForm extends React.Component {
           <div className={classes.form}>
             <div className={"row col-md-12 " + classes.paddingZero}>
               <img src={user}/>
+              <span className={classes.span}>Score: {this.state.score}</span>
               <span className={classes.labelInfo}>
                 <label className={classes.labelWelcome}>Welcome {this.state.username}!</label>
               </span >

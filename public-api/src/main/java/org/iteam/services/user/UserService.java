@@ -1,6 +1,9 @@
 package org.iteam.services.user;
 
+import java.util.List;
+
 import org.iteam.data.dto.UserDTO;
+import org.iteam.data.model.IdeasDTO;
 
 public interface UserService {
 
@@ -61,5 +64,14 @@ public interface UserService {
      * @return true if the password was valid, false otherwise
      */
     public boolean validatePassord(String username, String password);
+
+    /**
+     * Modify user's score.
+     * 
+     * @param ideas,
+     *            list of ideas to get info.
+     */
+
+    public void generateScore(IdeasDTO ideas, List<String> userList);
 
 }
