@@ -186,7 +186,7 @@ class RegistrationForm extends React.Component {
               </div>
             </div>
             <div className="row">
-              <ButtonComponent className={"col-md-12 " + classes.buttonCreate} iconButton="save" value="Create"
+              <ButtonComponent className={"col-md-12 " + classes.buttonCreate} raisedValue iconButton="save" value="Create"
                                onClick={this.saveUser.bind(this)}/>
             </div>
           </div>

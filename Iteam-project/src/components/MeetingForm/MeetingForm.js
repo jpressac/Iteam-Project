@@ -1,18 +1,19 @@
-import React, {Component, PropTypes} from "react";
+import React, {Component, PropTypes} from "react"
 import classes from './MeetingForm.scss'
 import axios from 'axios'
 import TimePicker from 'react-toolbox/lib/time_picker'
 import {connect} from 'react-redux'
-import DatePicker from 'react-toolbox/lib/date_picker';
+import DatePicker from 'react-toolbox/lib/date_picker'
 import BootstrapModal from '../../components/BootstrapModal/BootstrapModal'
 import InputComponent from '../InputComponent/InputComponent'
 import DropdownComponent from '../DropdownComponent/DropdownComponent'
+import ButtonComponent from '../ButtonComponent/ButtonComponent'
+import Spinner from '../Spinner/Spinner'
 import {saveMeeting, meetingToMeetingConfig} from '../../redux/reducers/Meeting/MeetingReducer'
 import {meetingToNewTeam} from '../../redux/reducers/Meeting/MeetingForTeamReducer'
 import themeLabel from './label.scss'
-import Avatar from 'react-toolbox/lib/avatar';
+import Avatar from 'react-toolbox/lib/avatar'
 import avatarTheme from './avatarTheme.scss'
-import {Button} from 'react-toolbox/lib/button';
 import {TEAM} from '../../constants/HostConfiguration'
 
 
@@ -47,7 +48,8 @@ class MeetingView extends Component {
       teamName: '',
       teamsObj: [],
       teamSelectedName: '',
-      teamList: []
+      teamList: [],
+      showSpinner: true
     }
   };
 
@@ -66,7 +68,6 @@ class MeetingView extends Component {
   handleChangeEnd = (time) => {
     let beforeEndDate = this.state.programmedDate;
     let newDate = new Date(MeetingView.checkDate(this.state.time.getHours(), time.getHours(), beforeEndDate));
-    console.debug('date: ' + newDate);
     newDate.setHours(time.getHours());
     newDate.setMinutes(time.getMinutes());
     this.setState({endTime: time, endDate: newDate});
@@ -93,7 +94,7 @@ class MeetingView extends Component {
     this.state.programmedDate.setMinutes(this.state.time.getMinutes());
   };
 
-  componentDidMount() {
+  componentWillMount() {
 
     if (this.props.fromMeeting === true) {
       this.setState({
@@ -107,9 +108,16 @@ class MeetingView extends Component {
 
     axios.get(TEAM.TEAM_BY_OWNER
     ).then(function (response) {
-      this.setState({teamsObj: response.data});
+      this.fillTeam(response.data)
     }.bind(this));
 
+  }
+
+  fillTeam(data) {
+    let opt = data.map(function (option) {
+      return option["team"]["name"];
+    });
+    this.setState({teamsObj: opt, showSpinner: false})
   }
 
   configureMeeting() {
@@ -158,7 +166,6 @@ class MeetingView extends Component {
   }
 
   dropdownTeam() {
-    console.log(this.state.teamsObj)
     return (
       <DropdownComponent label="Select team" initialValue={this.state.teamSelectedName}
                          onValueChange={this.handleChange.bind(this, 'teamSelectedName')}
@@ -167,59 +174,62 @@ class MeetingView extends Component {
   }
 
   render() {
-    return (
 
-      <div className={"container " + classes.meetingForm}>
-        <div className={classes.label}>
-          <label value="CREATE MEETING"/>
-          <Avatar theme={avatarTheme} icon="supervisor_account"/>
+    if (!this.state.showSpinner) {
+      return ( <div className={"container " + classes.meetingForm}>
+          <div className={classes.label}>
+            <label>CREATE MEETING</label>
+            <Avatar theme={avatarTheme} icon="supervisor_account"/>
+          </div>
+          <BootstrapModal ref="meetingModal" message={this.state.message}/>
+          <div className={"row " + classes.form}>
+            <div className={"row col-md-12 " + classes.paddingZero}>
+              <InputComponent className={"col-md-12 " + classes.paddingZero} label="Topic" value={this.state.topic}
+                              onValueChange={this.handleChange.bind(this, 'topic')} maxLength={60}/>
+              <InputComponent className={"col-md-12 " + classes.paddingZero} label="Description" maxLength={400}
+                              onValueChange={this.handleChange.bind(this, 'description')}
+                              value={this.state.description}/>
+            </div>
+            <div className={"col-md-12 " + classes.paddingZero}>
+              <div className={"col-md-4"}>
+                <DatePicker label='Select date' sundayFirstDayOfWeek
+                            onChange={this.dateChange} minDate={new Date()} theme={themeLabel}
+                            value={this.state.programmedDate}/>
+              </div>
+              <div className={"col-md-4 "}>
+                <TimePicker label='Start time' onChange={this.handleChangeStart.bind(this)}
+                            theme={themeLabel} value={this.state.time}/>
+              </div>
+              <div className={"col-md-4 "}>
+                <TimePicker label='End time' onChange={this.handleChangeEnd.bind(this)}
+                            theme={themeLabel} value={this.state.endTime}/>
+              </div>
+            </div>
+            <div className={"col-md-8 " + classes.paddingZero + classes.team}>
+              {this.dropdownTeam()}
+            </div>
+            <ButtonComponent className={"col-md-4 " + classes.paddingZero} raisedValue
+                             onClick={this.createTeamAction.bind(this)} value="Create Team"/>
+
+            <div className={"col-md-12 " + classes.paddingZero}>
+              <ButtonComponent className="col-md-6" accentValue onClick={this.props.home} iconButton="navigate_before"
+                               value="Cancel"/>
+              <ButtonComponent className="col-md-6" accentValue
+                               onClick={this.configureMeeting.bind(this)} iconButton="navigate_next"
+                               value="Meeting Settings"/>
+            </div>
+          </div>
         </div>
-        <div className={classes.form}>
-          <div  className="row" >
-          <InputComponent className={"col-md-12 " + classes.paddingZero} label="Topic" value={this.state.topic}
-                          onValueChange={this.handleChange.bind(this, 'topic')} maxLength={60}/>
-          <InputComponent  className={"col-md-12 " + classes.paddingZero}label="Description" maxLength={400}
-                          onValueChange={this.handleChange.bind(this, 'description')} value={this.state.description}/>
-          </div>
-          <div className={"row col-md-12 " + classes.paddingZero}>
-            <div className="col-md-4">
-              <DatePicker label='Select date' sundayFirstDayOfWeek
-                          onChange={this.dateChange} minDate={new Date()} theme={themeLabel}
-                          value={this.state.programmedDate}/>
-            </div>
-            <div className="col-md-3">
-              <TimePicker label='Start time' onChange={this.handleChangeStart.bind(this)}
-                          theme={themeLabel} value={this.state.time}/>
-            </div>
-            <div className="col-md-3">
-              <TimePicker label='End time' onChange={this.handleChangeEnd.bind(this)}
-                          theme={themeLabel} value={this.state.endTime}/>
-            </div>
-          </div>
-          <div className={"row col-md-6 " + classes.paddingZero}>
-            {this.dropdownTeam()}
-          </div>
-          <div className={"row col-md-4 " + classes.paddingZero}>
-            <Button raised onClick={this.createTeamAction.bind(this)} label="Create Team"/>
-          </div>
-          <div className={"row col-md-12 " + classes.paddingZero}>
-            <div className="col-md-6">
-              <Button secondary flat
-                      onClick={this.props.home} icon='navigate_before' label="Cancel"/>
-            </div>
-            <div className="col-md-6">
-              <Button secondary flat
-                      onClick={this.configureMeeting.bind(this)} icon='navigate_next' label="Meeting Settings"/>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+      )
+    }
+    else {
+      return (
+        <Spinner />
+      )
+    }
   };
 }
 
-
-// <BootstrapModal ref="meetingModal" message={this.state.message}/>
 MeetingView.propTypes = {
   meetingToCreateNewTeam: PropTypes.func,
   saveMeetingInfo: PropTypes.func,

@@ -66,7 +66,7 @@ class HomeForm extends React.Component {
 
   renderGetStarted(onClickFunction, className){
     return(
-      <ButtonComponent className={className} iconButton='bookmark' value='GET STARTED'
+      <ButtonComponent className={className} raisedValue iconButton='bookmark' value='GET STARTED'
                        onClick={onClickFunction}/>
     )
   }
@@ -76,7 +76,7 @@ class HomeForm extends React.Component {
       return (
         <div className="row">
           {this.renderGetStarted(this.props.register, "col-md-6")}
-          <ButtonComponent className="col-md-6" iconButton='person' value='LOGIN'
+          <ButtonComponent className="col-md-6" iconButton='person' raisedValue value='LOGIN'
                            onClick={this.handleChange.bind(this, 'active', !this.state.active)}/>
         </div>)
     }
