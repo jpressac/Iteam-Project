@@ -31,7 +31,7 @@ const mapStateToProps = (state) => {
 const TooltipButton = Tooltip(Button);
 const technics = [{value: 0, label: 'Brainstorming'}, {value: 1, label: 'SCAMPER'}, {
   value: 2,
-  label: 'morphological analysis'
+  label: 'Decide on Perspectives'
 }];
 const scamperTags =['Sustitute','Combine','Adapt','Modify','Put to others use', 'Eliminate', 'Rearrange'];
 
@@ -53,7 +53,8 @@ class MeetingConfigForm extends Component {
       template: 0,
       templateValue: 0,
       notesFunctions: [],
-      showSpinner: false
+      showSpinner: false,
+      message:''
     };
   }
 
@@ -77,6 +78,17 @@ handleChangeTechnic=(technic)=>{
     this.setState({tags:[], deletable:true, disabled: false});
   }
 };
+  limitTags=(technic)=>{
+    if(technic==='Decide on Perspectives'){
+
+     if(this.state.tags.length >4)
+     {
+       this.setState({message: '¡You have to complete the form!'});
+       this.refs.meetingModal.openModal();
+     }
+
+    }
+  };
 
   dropdownTechnic() {
     return (

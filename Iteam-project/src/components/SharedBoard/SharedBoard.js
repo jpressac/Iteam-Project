@@ -126,6 +126,10 @@ class SharedBoard extends Component {
       case 1:
         console.log('scamper');
         return this.renderScamper();
+      case 2:
+        console.log('Perspective');
+        return this.renderPerspective();
+
     }
   }
   filterNoteByScamper(tag, noteMap){
@@ -161,6 +165,41 @@ renderNoteByTag(tag,noteMap){
 
   }
 }
+
+  renderPerspective(){
+    return(
+    <div >
+      <div className="row">
+        <div className={classes.square}>
+          <div className={classes.content}>
+            <label className={classes.letter}> </label>
+
+          </div>
+        </div>
+        <div className={classes.square}>
+          <div className={classes.content}>
+            <label className={classes.letter}></label>
+
+          </div>
+        </div>
+      </div>
+      <div className="row">
+        <div className={classes.square}>
+          <div className={classes.content}>
+            <label className={classes.letter}></label>
+
+          </div>
+        </div>
+        <div className={classes.square}>
+          <div className={classes.content}>
+            <label className={classes.letter}> </label>
+
+          </div>
+        </div>
+      </div>
+      </div>
+    )
+  }
   renderScamper() {
     return (
       <div >
@@ -245,23 +284,23 @@ renderNoteByTag(tag,noteMap){
     //First get notes that have the selected tag
     let filteredNotes = Object.values(noteMap).filter((note) => {
         if (valueForTagFilter === this.state.mapTag[0].label) {
-          console.log('Miscellaneuos')
+
           return note;
         } else {
           if (note.tag === valueForTagFilter) {
-            console.log('Other tags')
+
             return note;
           }
         }
       }
     ).filter((note) => {
       if (valueForUserFilter === this.state.users[0].label) {
-        console.log('All users')
+
         return note;
       }
       else {
         if (note.username === valueForUserFilter) {
-          console.log('otros tags')
+
           return note;
         }
       }
@@ -324,13 +363,13 @@ renderNoteByTag(tag,noteMap){
       rObj["label"] = user["username"];
       return rObj;
     });
-    console.log('Users' + JSON.stringify(usersForCombo));
+
     this.setState(
       {
         participants: participantInfo,
         users: this.state.users.concat(usersForCombo)
       });
-    console.log('UsersAll' + JSON.stringify(usersForCombo));
+
   };
 
   saveNotes() {
