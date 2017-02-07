@@ -42,7 +42,6 @@ class DropdownComponent extends React.Component {
     });
 
     this.initialCombo(opt);
-
     this.setState({source: opt});
   }
 

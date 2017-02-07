@@ -118,19 +118,20 @@ class ProfileForm extends React.Component {
       return (
         <div className={"container " + classes.profile}>
           <BootstrapModal ref="profileModal" message={this.state.messageModal}/>
-          <div className={classes.label2}>
+          <div className={classes.labelTitle}>
             <label>MY PROFILE</label>
           </div>
           <div className={classes.form}>
             <div className={"row col-md-12 " + classes.paddingZero}>
               <img src={user}/>
+              <span className={classes.span}>Score: {this.state.score}</span>
               <span className={classes.labelInfo}>
                 <label className={classes.labelWelcome}>Welcome {this.state.username}!</label>
               </span >
             </div>
             <div className={"col-md-12 " + classes.paddingZero}>
               <div className={classes.labelInfo}>
-                <label>Personal information</label>
+                <label>Personal Information</label>
               </div>
               <div className={"row col-md-12 " + classes.paddingZero}>
                 <InputComponent className="col-md-6" type='text' label='First Name' name='firstName' disable
@@ -160,8 +161,8 @@ class ProfileForm extends React.Component {
                               tooltip='Write hobbies separate by commas'/>
               </div>
             </div>
-            <div className={"row " + classes.labelInfo}>
-              <label>Account information</label>
+            <div className="row">
+              <label className={classes.labelInfo}>Acount Information</label>
             </div>
             <div className="row">
               <InputComponent className="col-md-8" type='email' label='Email address' icon='email'
@@ -185,10 +186,10 @@ class ProfileForm extends React.Component {
                               onValueChange={this.handleChangeState.bind(this, 'repeatPassword')}
                               onValueError={this.validatePassword()}/>
             </div>
-            <div className="row col-md-12">
+            <div className={"row " + classes.buttons}>
               <ButtonComponent className="col-md-6" value='SAVE CHANGES'
-                               onClick={this.saveUser.bind(this)} iconButton='save'/>
-              <ButtonComponent className="col-md-6" iconButton='backspace' onClick={this.props.home}
+                               onClick={this.saveUser.bind(this)} raisedValue iconButton='save'/>
+              <ButtonComponent className="col-md-6" raisedValue iconButton='backspace' onClick={this.props.home}
                                value='BACK'/>
             </div>
           </div>

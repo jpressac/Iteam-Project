@@ -40,7 +40,7 @@ class ContactForm extends React.Component {
                           onValueChange={this.handleChange.bind(this, 'message')} label="Message"
                           value={this.state.message} maxLength={200}/>
           <div className="row">
-            <ButtonComponent className={"col-md-12 " + classes.buttonCreate} iconButton="send" value="Send"
+            <ButtonComponent className={"col-md-12 " + classes.buttonCreate} raisedValue iconButton="send" value="Send"
                              onClick={this.sendMessage.bind(this)}/>
           </div>
         </div>

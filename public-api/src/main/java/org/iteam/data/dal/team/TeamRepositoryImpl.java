@@ -144,7 +144,8 @@ public class TeamRepositoryImpl implements TeamRepository {
             }
 
             if (filter.getField().equals("Profession") || filter.getField().equals("Nationality")) {
-                queryBuilder.should(QueryBuilders.termsQuery(filter.getField(), filter.getValues().get(0)));
+                queryBuilder
+                        .should(QueryBuilders.termsQuery(filter.getField().toLowerCase(), filter.getValues().get(0)));
             }
         }
 
