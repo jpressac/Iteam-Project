@@ -1,7 +1,10 @@
 package org.iteam.services.user;
 
+import java.util.List;
+
 import org.iteam.data.dal.user.UserRepositoryImpl;
 import org.iteam.data.dto.UserDTO;
+import org.iteam.data.model.IdeasDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,4 +50,10 @@ public class UserServiceImpl implements UserService {
     private void setUserRepository(UserRepositoryImpl userRepository) {
         this.userRepository = userRepository;
     }
+
+    @Override
+    public void generateScore(IdeasDTO ideas, List<String> userList) {
+        this.userRepository.generateScore(ideas, userList);
+    }
+
 }

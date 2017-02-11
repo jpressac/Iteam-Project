@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import axios from 'axios';
 import {connect} from 'react-redux';
 import {List, ListItem, ListDivider, ListSubHeader} from 'react-toolbox/lib/list';
+import InputComponent from '../InputComponent/InputComponent'
 import Dialog from 'react-toolbox/lib/dialog';
 import TimePicker from 'react-toolbox/lib/time_picker';
 import DatePicker from 'react-toolbox/lib/date_picker';
@@ -15,6 +16,7 @@ import chipTheme from './chips.scss';
 import {updateMeetingId} from '../../redux/reducers/Meeting/MeetingReducer';
 import {MEETING} from '../../constants/HostConfiguration';
 import themeLabel from './label.scss';
+import datesInpunt from './dateInput.scss'
 import Dropdown from 'react-toolbox/lib/dropdown';
 import Tooltip from 'react-toolbox/lib/tooltip';
 import {Button} from 'react-toolbox/lib/button';
@@ -25,6 +27,7 @@ import {validateDate, validateStart, validateHour, changeEndDate} from '../../ut
 import ButtonComponent from '../ButtonComponent/'
 import ReactPagination from 'react-paginate'
 import pagination from './pagination.scss'
+import dialogTheme from './dialog.scss'
 
 var programDate = new Date();
 var endDate = new Date();
@@ -92,20 +95,20 @@ class MymeetForm extends Component {
 ];
 
   userActionsJoin = [
-  {label: "Cancel", onClick: this.handleToggleDialog},
-  {label: "Join", onClick: this.startMeeting.bind(this)}
-];
+    {label: "Cancel", onClick: this.handleToggleDialog},
+    {label: "Join", onClick: this.startMeeting.bind(this)}
+  ];
 
   userActionsView = [
-  {label: "OK", onClick: this.handleToggleDialog}
-];
+    {label: "OK", onClick: this.handleToggleDialog}
+  ];
 
 
   goToReports() {
 
-let meetingInfo = {};
+    let meetingInfo = {};
     meetingInfo.topic = this.state.meetEdit.topic;
-    meetingInfo.owner= this.state.owner;
+    meetingInfo.owner = this.state.owner;
     meetingInfo.config = this.state.config;
     //Reducer containing toolbar info
     this.props.saveMeetingConfig(meetingInfo);
@@ -118,9 +121,8 @@ let meetingInfo = {};
     //Object that contains meeting info for reducer for Toolbar
     let meetingInfo = {};
     meetingInfo.topic = this.state.meetEdit.topic;
-    meetingInfo.owner= this.state.owner;
+    meetingInfo.owner = this.state.owner;
     meetingInfo.config = this.state.config;
-    console.log(JSON.stringify(meetingInfo));
 
     //Reducer containing toolbar info
     this.props.saveMeetingConfig(meetingInfo);
@@ -229,7 +231,7 @@ let meetingInfo = {};
       }
     ).catch(function (response) {
       //TODO: implement something here
-      });
+    });
 
     this.setState({active: !this.state.active});
   }
@@ -388,22 +390,21 @@ let meetingInfo = {};
   showDialogForUser() {
     return (
       <Dialog
+        theme={dialogTheme}
         actions={this.showActions(this.state.meetEdit.ownerName, this.state.meetEdit.programmedDate)}
         active={this.state.active}
         onEscKeyDown={this.handleToggleDialog}
         onOverlayClick={this.handleToggleDialog}>
-        <Input type='text' label='Topic' value={this.state.meetEdit.topic} maxLength={30}
-               onChange={this.onChangeTopic.bind(this)} disabled={this.state.editable}
-               theme={themeLabel}/>
-        <Input type='text' label='Description' value={this.state.meetEdit.description} maxLength={144}
-               onChange={this.onChangeDescription.bind(this)} disabled={this.state.editable}
-               theme={themeLabel}/>
+        <InputComponent className="col-md-8" label="Topic" value={this.state.meetEdit.topic} disable={false}/>
+        <InputComponent className="col-md-8" label="Description" value={this.state.meetEdit.description}
+                        disable={false}/>
         <DatePicker label='Date' sundayFirstDayOfWeek value={new Date(this.state.datetime)}
                     readonly={this.state.editable} onChange={this.onChangeProgrammedDate.bind(this)}
-                    minDate={new Date()}/>
+                    minDate={new Date()} theme={datesInpunt}/>
         <TimePicker label='Time'
                     value={isNaN(new Date(this.state.time)) ? 0 : new Date(this.state.time)}
-                    readonly={this.state.editable} onChange={this.onChangeProgrammedTime.bind(this)}/>
+                    readonly={this.state.editable} onChange={this.onChangeProgrammedTime.bind(this)}
+                    theme={datesInpunt}/>
         <TimePicker label='End Time'
                     value={isNaN(new Date(this.state.endTime)) ? 0 : new Date(this.state.endTime)}
                     readonly={this.state.editable} onChange={this.onChangeEndTime.bind(this)}
@@ -414,79 +415,60 @@ let meetingInfo = {};
 
   showDialogForAdmin() {
     return (
-      <Dialog
+      <Dialog theme={dialogTheme}
         actions={this.showActions(this.state.meetEdit.ownerName, this.state.meetEdit.programmedDate)}
         active={this.state.active}
         onEscKeyDown={this.handleToggleDialog}
         onOverlayClick={this.handleToggleDialog}>
-        <Input type='text' label='Topic' value={this.state.meetEdit.topic} maxLength={30}
-               onChange={this.onChangeTopic.bind(this)} disabled={this.state.editable}
-               theme={themeLabel}/>
-        <Input type='text' label='Description' value={this.state.meetEdit.description} maxLength={144}
-               onChange={this.onChangeDescription.bind(this)} disabled={this.state.editable}
-               theme={themeLabel}/>
-        <div className="form-group">
-          <div className="row" style={{color: '#900C3F'}}>
-            <div className="col-md-4">
-              <DatePicker label='Date' sundayFirstDayOfWeek value={new Date(this.state.datetime)}
-                          readonly={this.state.editable} onChange={this.onChangeProgrammedDate.bind(this)}
-                          minDate={new Date()}
-                          theme={themeLabel}/>
-            </div>
-            <div className="col-md-3">
-              <TimePicker label='Start Time'
-                          value={isNaN(new Date(this.state.time)) ? 0 : new Date(this.state.time)}
-                          readonly={this.state.editable} onChange={this.onChangeProgrammedTime.bind(this)}
-                          theme={themeLabel}/>
-            </div>
-            <div className="col-md-3">
-              <TimePicker label='End Time'
-                          value={isNaN(new Date(this.state.endTime)) ? 0 : new Date(this.state.endTime)}
-                          readonly={this.state.editable} onChange={this.onChangeEndTime.bind(this)}
-                          theme={themeLabel}/>
-            </div>
+
+        <InputComponent label="Topic" value={this.state.meetEdit.topic} maxLength={30}
+                        onValueChange={this.onChangeTopic.bind(this)}
+                        disable={this.state.editable}/>
+
+        <InputComponent label="Description" value={this.state.meetEdit.description} maxLength={144}
+                        onValueChange={this.onChangeDescription.bind(this)} disable={this.state.editable}/>
+
+        <div className="row col-md-12">
+          <div className="col-md-4">
+            <DatePicker label='Date' sundayFirstDayOfWeek value={new Date(this.state.datetime)}
+                        readonly={this.state.editable} onChange={this.onChangeProgrammedDate.bind(this)}
+                        minDate={new Date()}
+                        theme={datesInpunt}/>
+          </div>
+          <div className="col-md-3">
+            <TimePicker label='Start Time'
+                        value={isNaN(new Date(this.state.time)) ? 0 : new Date(this.state.time)}
+                        readonly={this.state.editable} onChange={this.onChangeProgrammedTime.bind(this)}
+                        ttheme={datesInpunt}/>
+          </div>
+          <div className="col-md-3">
+            <TimePicker label='End Time'
+                        value={isNaN(new Date(this.state.endTime)) ? 0 : new Date(this.state.endTime)}
+                        readonly={this.state.editable} onChange={this.onChangeEndTime.bind(this)}
+                        theme={datesInpunt}/>
           </div>
         </div>
-        <div className="form-group">
-          <div className="row" style={{color: '#900C3F'}}>
-            <div className="col-md-3">
-              <Input label="Votes" value={this.state.config.votes}
-                     onChange={this.onChangeVotes.bind(this)} disabled={this.state.editable} type='number'
-                     theme={themeLabel} min="0"/>
-            </div>
-            <div className="col-md-4">
-              <Input label="Minutes in personal board"
-                     value={this.state.config.personalBoardTime} onChange={this.onChangePersonalBoardTime.bind(this)}
-                     disabled={this.state.editable} type='number'
-                     theme={themeLabel} min="0"/>
-            </div>
-            <div className="col-md-4">
-              <Input label="Minutes in shared board"
-                     value={this.state.config.sharedBoardTime} onChange={this.onChangeSharedBoardTime.bind(this)}
-                     disabled={this.state.editable} type='number'
-                     theme={themeLabel} min="0"/>
-            </div>
-          </div>
+        <div className="row col-md-12">
+          <InputComponent className="col-md-3" value={this.state.config.votes} disable={this.state.editable}
+                          type="number" onValueChange={this.onChangeVotes.bind(this)} minValue={0} label="Votes"/>
+          <InputComponent className="col-md-4" label="Minutes in personal board"
+                          value={this.state.config.personalBoardTime}
+                          onValueChange={this.onChangePersonalBoardTime.bind(this)} disable={this.state.editable}
+                          minValue={0}/>
+          <InputComponent className="col-md-4" label="Minutes in shared board" value={this.state.config.sharedBoardTime}
+                          onValueChange={this.onChangeSharedBoardTime.bind(this)} minValue={0}/>
         </div>
-        <div className="row" style={{color: '#900C3F'}}>
-          <div className="col-md-5">
-            <Dropdown label="Technic" auto onChange={this.handleChangeCombo.bind(this)} style={{color: '#900C3F'}}
-                      source={technics} disabled={this.state.editable} value={this.state.config.technic}
-                      theme={themeLabel}/>
-          </div>
+        <div className="row col-md-12">
+          <Dropdown label="Technic" auto onChange={this.handleChangeCombo.bind(this)}
+                    source={technics} disabled={this.state.editable} value={this.state.config.technic}
+                    theme={themeLabel}/>
         </div>
-        <div className="form-group">
-          <div className="row" style={{color: '#900C3F'}}>
-            <div className="col-md-4">
-              <Input type='text' label='Tag' value={this.state.tag} disabled={this.state.editable}
-                     onChange={this.handleChange.bind(this, 'tag')} maxLength={30}
-                     theme={themeLabel}/>
-            </div>
-            <div className="col-md-4">
-              <TooltipButton icon='add' tooltip='Add tag' floating mini
-                             style={{background: '#900C3F', color: 'white', marginTop: 10}}
-                             disabled={this.state.editable} onClick={this.handleAddTag.bind(this)}/>
-            </div>
+        <div className="row col-md-12">
+          <InputComponent className="col-md-8" label="Tag" value={this.state.tag} disable={this.state.editable}
+                          onValueChange={this.handleChange.bind(this)} maxLength={30}/>
+          <div className="col-md-4">
+            <TooltipButton icon='add' tooltip='Add tag' floating mini
+                           disabled={this.state.editable} onClick={this.handleAddTag.bind(this)}/>
           </div>
         </div>
         {this.tagLabels()}
@@ -531,7 +513,7 @@ let meetingInfo = {};
   };
 
   render() {
-    if(!this.state.showSpinner) {
+    if (!this.state.showSpinner) {
       let meets = this.state.meetings;
       let meetingTime = new Date;
 
@@ -540,7 +522,7 @@ let meetingInfo = {};
       });
 
       return (
-        <div className={"container"} style={{marginTop: 70}}>
+        <div className={"container " + classes.myMeetingForm}>
           <div className={classes.content}>
             <div className={classes.label2}>
               <label>MY MEETINGS</label>
@@ -585,7 +567,7 @@ let meetingInfo = {};
           </div>
         </div>
       )
-    }else{
+    } else {
       return (
         <Spinner/>
       )

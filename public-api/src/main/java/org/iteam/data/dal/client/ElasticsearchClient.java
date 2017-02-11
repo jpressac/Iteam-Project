@@ -167,8 +167,8 @@ public interface ElasticsearchClient {
 
     public DeleteResponse delete(String index, String type, String id);
 
-    public BulkResponse updateData(List<BiFieldModel> data, String index, String type);
+    public BulkResponse updateNew(List<BiFieldModel> data, String index, String type);
 
-    public SearchResponse search(String index, QueryBuilder queryBuilder, SortBuilder sort);
-
+    public BulkResponse updateScore(List<BiFieldModel> data, String index, String type);
+public SearchResponse search(String index, QueryBuilder queryBuilder, SortBuilder sort);
 }

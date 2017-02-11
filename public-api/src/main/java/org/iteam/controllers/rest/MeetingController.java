@@ -64,10 +64,10 @@ public class MeetingController {
      * @return 200 OK if it was successful.
      */
     @RequestMapping(value = "/meeting/ideas/save", method = RequestMethod.POST)
-    public ResponseEntity<Void> saveIdeas(@RequestBody @Valid IdeasDTO ideas) {
-
+    public ResponseEntity<Void> saveIdeas(@RequestBody @Valid IdeasDTO ideas,
+            @RequestParam(value = "team", required = true) List<String> team) {
+        meetingServiceImpl.generateScore(ideas, team);
         meetingServiceImpl.savedIdeas(ideas);
-
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 

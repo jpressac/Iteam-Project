@@ -14,14 +14,6 @@ import DropdownComponent from '../DropdownComponent/DropdownComponent';
 import Input from 'react-toolbox/lib/input';
 import tooltopLabel from './tooltipLabel.css';
 import BootstrapModal from "../BootstrapModal";
-import {saveProfessions} from '../../redux/reducers/User/ProfessionReducer';
-
-const mapStateToProps = (state) => {
-  return {
-    profession: state.professionsReducer
-  }
-};
-
 
 const mapDispatchToProps = dispatch => ({
   home: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HOME))
@@ -41,6 +33,7 @@ class ProfileForm extends React.Component {
       genderValue: 'male',
       hobbies: '',
       username: '',
+      score: '',
       oldPassword: '',
       password: '',
       errorOldPassword: '',
@@ -48,7 +41,8 @@ class ProfileForm extends React.Component {
       showSpinner: true,
       canSave: true,
       messageModal: '',
-      dropDownSource: {}
+      dropDownSource: {},
+      profession: ''
     }
   }
 
@@ -71,7 +65,8 @@ class ProfileForm extends React.Component {
           hobbies: response.data.hobbies.toString(),
           username: response.data.username,
           nationality: response.data.nationality,
-          profession: response.data.profession
+          profession: response.data.profession,
+          score: response.data.score.toString()
         })
       })
   }
@@ -79,7 +74,7 @@ class ProfileForm extends React.Component {
 
   saveUser() {
     if (this.state.canSave) {
-      updateUser(this.state, this.props.profession)
+      updateUser(this.state, this.state.profession)
         .then(() => {
           this.setState({messageModal: 'Profile information successfully updated'});
           this.refs.profileModal.openModal();
@@ -123,103 +118,81 @@ class ProfileForm extends React.Component {
   render() {
     if (!this.state.showSpinner) {
       return (
-        <div className={"container"} style={{marginTop: 80, width: 800}}>
+        <div className={"container " + classes.profile}>
           <BootstrapModal ref="profileModal" message={this.state.messageModal}/>
-          <div className={classes.label2}>
+          <div className={classes.labelTitle}>
             <label>MY PROFILE</label>
           </div>
           <div className={classes.form}>
-            <div className={"form-horizontal"}>
-              <div className="form-group">
-                <div className="col-md-12">
-                  <div className="row">
-                    <img src={user} style={{width: 100}}/>
-                    <span className={classes.labelInfo}><label>Welcome {this.state.username}!</label></span >
-                  </div>
-                </div>
+            <div className={"row col-md-12 " + classes.paddingZero}>
+              <img src={user}/>
+              <span className={classes.span}>Score: {this.state.score}</span>
+              <span className={classes.labelInfo}>
+                <label className={classes.labelWelcome}>Welcome {this.state.username}!</label>
+              </span >
+            </div>
+            <div className={"col-md-12 " + classes.paddingZero}>
+              <div className={classes.labelInfo}>
+                <label>Personal Information</label>
               </div>
-              <div className="form-group">
-                <div className="col-md-12">
-                  <div className={classes.labelInfo}>
-                    <label style={{margin: 15}}>Personal information</label>
-                  </div>
-                  <div className="row">
-                    <InputComponent className="col-md-6" type='text' label='First Name' name='firstName' disable
-                                    value={this.state.firstName}/>
+              <div className={"row col-md-12 " + classes.paddingZero}>
+                <InputComponent className="col-md-6" type='text' label='First Name' name='firstName' disable
+                                value={this.state.firstName}/>
 
-                    <InputComponent className="col-md-6" type='text' label='Last Name'
-                                    name='lastName' value={this.state.lastName} disable/>
-                  </div>
-                </div>
+                <InputComponent className="col-md-6" type='text' label='Last Name'
+                                name='lastName' value={this.state.lastName} disable/>
               </div>
-              <div className="form-group">
-                <div className="col-md-12">
-                  <div className="row">
-                    <InputComponent className="col-md-6" type='text' label="Born Date" name='bornDate'
-                                    value={this.state.bornDate.toLocaleDateString()} disable/>
-                    <div className="row">
-                      <InputComponent className="col-md-6" type='text' label='Nationality' disable
-                                      name='nationality'
-                                      value={this.state.nationality}/>
-                    </div>
-                  </div>
-                </div>
+            </div>
+            <div className={"row col-md-12 " + classes.paddingZero}>
+              <InputComponent className="col-md-6" type='text' label="Born Date" name='bornDate'
+                              value={this.state.bornDate.toLocaleDateString()} disable/>
+              <InputComponent className="col-md-6" type='text' label='Nationality' disable
+                              name='nationality'
+                              value={this.state.nationality}/>
+            </div>
+            <div className={"row col-md-12 " + classes.paddingZero}>
+              <div className="col-md-6">
+                <DropdownComponent source={this.state.dropDownSource} label="Select profession"
+                                   initialValue={this.state.profession}
+                                   onValueChange={this.handleChangeState.bind(this, 'profession')}/>
               </div>
-              <div className="form-group">
-                <div className="col-md-12">
-                  <div className="row">
-                    <div className="col-md-6">
-                      <DropdownComponent source={this.state.dropDownSource} label="Select profession"
-                                         initialValue={this.state.profession} saveValue={saveProfessions}/>
-                    </div>
-                    <div className="col-md-6 ">
-                      <TooltipInput type='text' label='Hobbies' theme={tooltopLabel} name='hobbies'
-                                    value={this.state.hobbies}
-                                    required onChange={this.handleChangeState.bind(this, 'hobbies')} maxLength={200}
-                                    tooltip='Write hobbies separate by commas'/>
-                    </div>
-                  </div>
-                </div>
+              <div className="col-md-6 ">
+                <TooltipInput type='text' label='Hobbies' theme={tooltopLabel} name='hobbies'
+                              value={this.state.hobbies}
+                              required onChange={this.handleChangeState.bind(this, 'hobbies')} maxLength={200}
+                              tooltip='Write hobbies separate by commas'/>
               </div>
-              <div className="form-group">
-                <div className={classes.labelInfo}>
-                  <label>Account information</label>
-                </div>
-                <div className="row">
-                  <InputComponent className="col-md-8" type='email' label='Email address' icon='email'
-                                  value={this.state.mail} disable/>
-                </div>
-              </div>
-              <div className="form-group">
-                <div className="row">
-                  <InputComponent className="col-md-6" type='password' label='Old Password' required
-                                  value={this.state.oldPassword}
-                                  onValueChange={this.handleChangeState.bind(this, 'oldPassword')}
-                                  onBlur={this.validateOldPassword.bind(this)}
-                                  onValueError={this.state.errorOldPassword}/>
-                </div>
-                <div className="row">
-                  <InputComponent className="col-md-6" type='password' label='New Password' value={this.state.password}
-                                  onValueChange={this.handleChangeState.bind(this, 'password')}
-                                  onValueError={this.validatePassword()}/>
-                </div>
-                <div className="row">
-                  <InputComponent className="col-md-6" type='password' label='Repeat Password'
-                                  value={this.state.repeatPassword}
-                                  onValueChange={this.handleChangeState.bind(this, 'repeatPassword')}
-                                  onValueError={this.validatePassword()}/>
-                </div>
-              </div>
-              <div className="form-group">
-                <div className="col-md-12">
-                  <div className="row">
-                    <ButtonComponent className="col-md-6" value='SAVE CHANGES'
-                                     onClick={this.saveUser.bind(this)} iconButton='save'/>
-                    <ButtonComponent className="col-md-6" iconButton='backspace' onClick={this.props.home}
-                                     value='BACK'/>
-                  </div>
-                </div>
-              </div>
+            </div>
+            <div className="row">
+              <label className={classes.labelInfo}>Acount Information</label>
+            </div>
+            <div className="row">
+              <InputComponent className="col-md-8" type='email' label='Email address' icon='email'
+                              value={this.state.mail} disable/>
+            </div>
+            <div className="row">
+              <InputComponent className="col-md-6" type='password' label='Old Password' required
+                              value={this.state.oldPassword}
+                              onValueChange={this.handleChangeState.bind(this, 'oldPassword')}
+                              onBlur={this.validateOldPassword.bind(this)}
+                              onValueError={this.state.errorOldPassword}/>
+            </div>
+            <div className="row">
+              <InputComponent className="col-md-6" type='password' label='New Password' value={this.state.password}
+                              onValueChange={this.handleChangeState.bind(this, 'password')}
+                              onValueError={this.validatePassword()}/>
+            </div>
+            <div className="row">
+              <InputComponent className="col-md-6" type='password' label='Repeat Password'
+                              value={this.state.repeatPassword}
+                              onValueChange={this.handleChangeState.bind(this, 'repeatPassword')}
+                              onValueError={this.validatePassword()}/>
+            </div>
+            <div className={"row " + classes.buttons}>
+              <ButtonComponent className="col-md-6" value='SAVE CHANGES'
+                               onClick={this.saveUser.bind(this)} raisedValue iconButton='save'/>
+              <ButtonComponent className="col-md-6" raisedValue iconButton='backspace' onClick={this.props.home}
+                               value='BACK'/>
             </div>
           </div>
         </div>
@@ -232,8 +205,7 @@ class ProfileForm extends React.Component {
   };
 }
 ProfileForm.propTypes = {
-  home: PropTypes.func,
-  profession: PropTypes.string
+  home: PropTypes.func
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ProfileForm)
+export default connect(null, mapDispatchToProps)(ProfileForm)

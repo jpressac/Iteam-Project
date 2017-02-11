@@ -38,6 +38,8 @@ public class TeamRepositoryImpl implements TeamRepository {
     private static final String TEAM_NAME_FIELD = "name";
     private static final String TEAM_MEMBERS_FIELD = "members";
     private static final String USER_USERNAME_FIELD = "username";
+    private static final String BORN_DATE_FIELD = "bornDate";
+    private static final String SCORING_FIELD = "score";
 
     private ElasticsearchClientImpl elasticsearchClient;
 
@@ -124,7 +126,27 @@ public class TeamRepositoryImpl implements TeamRepository {
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
 
         for (Filter filter : filterList.getFilters()) {
-            queryBuilder.should(QueryBuilders.termsQuery(filter.getField(), filter.getValues()));
+
+            if (filter.getField().equals("Age")) {
+
+                Long from = new DateTime().minusYears(Integer.parseInt((filter.getValues().get(0)))).getMillis();
+                Long to = new DateTime().minusYears(Integer.parseInt((filter.getValues().get(1)))).getMillis();
+
+                queryBuilder.should(QueryBuilders.rangeQuery(BORN_DATE_FIELD).to(from).from(to));
+            }
+
+            if (filter.getField().equals("Scoring")) {
+
+                Long from = new DateTime().minusYears(Integer.parseInt((filter.getValues().get(0)))).getMillis();
+                Long to = new DateTime().minusYears(Integer.parseInt((filter.getValues().get(1)))).getMillis();
+
+                queryBuilder.should(QueryBuilders.rangeQuery(SCORING_FIELD).to(to).from(from));
+            }
+
+            if (filter.getField().equals("Profession") || filter.getField().equals("Nationality")) {
+                queryBuilder
+                        .should(QueryBuilders.termsQuery(filter.getField().toLowerCase(), filter.getValues().get(0)));
+            }
         }
 
         queryBuilder.must(QueryBuilders.termQuery(LOGICAL_DELETE_FIELD, false));

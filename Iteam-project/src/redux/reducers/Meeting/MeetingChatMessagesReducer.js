@@ -1,6 +1,3 @@
-/**
- * Created by Usuario on 08/01/2017.
- */
 import {createAction} from 'redux-actions';
 
 

@@ -16,21 +16,12 @@ import {PATHS} from "../../constants/routes";
 import {connect} from "react-redux";
 import {push} from "react-router-redux";
 import Spinner from "../Spinner/Spinner";
-import {saveProfessions} from '../../redux/reducers/User/ProfessionReducer';
-import {saveNationality} from '../../redux/reducers/User/NationalityReducer';
 
 const TooltipInput = Tooltip(Input);
 
 const mapDispatchToProps = (dispatch) => ({
   goToHome: () => dispatch(push('/' + PATHS.MENUNOTLOGGEDIN.HOME))
 });
-
-const mapStateToProps = (state) => {
-  return {
-    nationality: state.nationalityReducer,
-    profession: state.professionsReducer
-  }
-};
 
 class RegistrationForm extends React.Component {
 
@@ -39,12 +30,12 @@ class RegistrationForm extends React.Component {
     this.state = {
       firstName: '',
       lastName: '',
-      nationality: props.nationality,
+      nationality: '',
       dropDownSourceNationalities: [],
       date: new Date(),
       mail: '',
       genderValue: 'male',
-      profession: props.profession,
+      profession: '',
       dropDownSourceProfession: [],
       hobbies: '',
       username: '',
@@ -53,7 +44,8 @@ class RegistrationForm extends React.Component {
       errors: {},
       showSpinner: true,
       messageModal: '',
-      userExists: ''
+      userExists: '',
+      score: 0
     };
   }
 
@@ -62,7 +54,6 @@ class RegistrationForm extends React.Component {
       .then((response) => {
         getNationalities()
           .then((response) => {
-            console.log(response.data["nationalities"]);
             this.setState({showSpinner: false, dropDownSourceNationalities: response.data["nationalities"]});
           });
         this.setState({dropDownSourceProfession: response.data});
@@ -79,7 +70,7 @@ class RegistrationForm extends React.Component {
 
   saveUser() {
     this.setState({showSpinner: true});
-    submitUser(this.state, this.props.nationality, this.props.profession)
+    submitUser(this.state, this.state.nationality, this.state.profession)
       .then(() => {
         this.props.goToHome()
       })
@@ -99,128 +90,105 @@ class RegistrationForm extends React.Component {
     this.state.date.setDate(datetime.getDate());
   };
 
-  checkUsername(){
+  checkUsername() {
     userExistence(this.state.username)
-      .then( () => {
+      .then(() => {
         this.setState({userExists: 'This username already exists, please try another'})
       })
       .catch(() => {
-      this.setState({userExists: ''})
+        this.setState({userExists: ''})
       })
   }
 
   render() {
     if (!this.state.showSpinner) {
       return (
-        <div className="container" style={{marginTop: 80, width: 800}}>
+        <div className={"container " + classes.registration}>
           <BootstrapModal ref="registrationModal" message={this.state.messageModal}/>
-          <div className={classes.label2}>
+          <div className={classes.label}>
             <label>CREATE YOUR ACCOUNT</label>
           </div>
           <div className={classes.form}>
-            <div className={"form-horizontal"}>
-              <div className="form-group">
-                <div className="col-md-12">
-                  <div className="row">
-                    <img src={user} style={{width: 100}}/>
-                    <label>
-                      <span style={{fontWeight: 'bold'}}> Add a photo </span>
-                      <p>to help your teammates identify you</p>
-                    </label>
-                  </div>
+              <div className={"row col-md-12 "  + classes.paddingZero}>
+                <img src={user}/>
+                <label>
+                  <span className={classes.labelInfoUser}> Add a photo </span>
+                  <p className={classes.paragraphImageFooter}>to help your teammates identify you</p>
+                </label>
+              </div>
+            <div className={"row col-md-12 " + classes.paddingZero}>
+              <InputComponent className="col-md-6" type='text' label='First Name' name='firstName'
+                              value={this.state.firstName} required
+                              onValueChange={this.handleChange.bind(this, 'firstName')}/>
+              <InputComponent className="col-md-6" type='text' label='Last Name'
+                              name='lastName'
+                              value={this.state.lastName} required
+                              onValueChange={this.handleChange.bind(this, 'lastName')}/>
+            </div>
+            <div className={"row col-md-12 " + classes.paddingZero}>
+              <div className="col-md-6">
+                <DatePicker label='Date of birth' sundayFirstDayOfWeek
+                            required onChange={this.dateChange} theme={themeLabel} value={this.state.date}
+                            maxDate={Date.now()}/>
+              </div>
+              <div className="col-md-6">
+                <RadioGroup name='gender' value={this.state.genderValue}
+                            onChange={this.handleChange.bind(this, 'genderValue')} className={classes.radioButton}>
+                  <RadioButton label='Female' value='female' theme={themeLabel}/>
+                  <RadioButton label='Male' value='male' theme={themeLabel}/>
+                </RadioGroup>
+              </div>
+            </div>
+            <div className="row col-md-12">
+              <div className="row">
+                <div className="col-md-6">
+                  <DropdownComponent source={this.state.dropDownSourceProfession} label="Select profession"
+                                     initialValue='' onValueChange={this.handleChange.bind(this, 'profession')}/>
+                </div>
+                <div className="col-md-6">
+                  <DropdownComponent source={this.state.dropDownSourceNationalities} label="Select nationality"
+                                     initialValue='' onValueChange={this.handleChange.bind(this, 'nationality')}/>
                 </div>
               </div>
-              <div className="form-group">
-                <div className="col-md-12">
-                  <div className="row">
-                    <InputComponent className="col-md-6" type='text' label='First Name' name='firstName'
-                                    value={this.state.firstName} required
-                                    onValueChange={this.handleChange.bind(this, 'firstName')}/>
-                    <InputComponent className="col-md-6" type='text' label='Last Name'
-                                    name='lastName'
-                                    value={this.state.lastName} required
-                                    onValueChange={this.handleChange.bind(this, 'lastName')}/>
-                  </div>
-                </div>
+            </div>
+            <div className={"col-md-12 " + classes.paddingZero}>
+              <TooltipInput type='text' label='Hobbies' theme={themeLabel} name='hobbies'
+                            value={this.state.hobbies}
+                            required onChange={this.handleChange.bind(this, 'hobbies')} maxLength={200}
+                            tooltip='Write hobbies separate by commas'/>
+            </div>
+            <div className={"row " + classes.labelLeftAlign}>
+              <label>
+                <span className={classes.labelInfoUser}>User Information</span>
+              </label>
+            </div>
+            <div className={"row col-md-12 " + classes.paddingZero}>
+              <InputComponent className="col-md-6" type='email' label='Email address' icon='email'
+                              value={this.state.mail} onValueChange={this.handleChange.bind(this, 'mail')}
+                              required/>
+              <InputComponent className="col-md-6" label='Username'
+                              value={this.state.username}
+                              onValueChange={this.handleChange.bind(this, 'username')} required
+                              onBlur={this.checkUsername.bind(this)}
+                              onValueError={this.state.userExists}/>
+            </div>
+            <div className="row col-md-12">
+              <div className="row">
+                <InputComponent className="col-md-6" type='password' label='Password'
+                                value={this.state.password}
+                                onValueChange={this.handleChange.bind(this, 'password')}
+                                onValueError={this.validatePassword()}/>
               </div>
-              <div className="form-group">
-                <div className="col-md-12">
-                  <div className="row">
-                    <div className="col-md-6">
-                      <DatePicker label='Date of birth' sundayFirstDayOfWeek
-                                  required onChange={this.dateChange} theme={themeLabel} value={this.state.date}
-                                  maxDate={Date.now()}/>
-                    </div>
-                    <div className="row">
-                      <div className="col-md-6">
-                        <RadioGroup name='gender' value={this.state.genderValue}
-                                    onChange={this.handleChange.bind(this, 'genderValue')}>
-                          <RadioButton label='Female' value='female' theme={themeLabel}/>
-                          <RadioButton label='Male' value='male' theme={themeLabel}/>
-                        </RadioGroup>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <div className="row">
+                <InputComponent className="col-md-6" type='password' label='Repeat Password'
+                                value={this.state.repeatPassword}
+                                onValueChange={this.handleChange.bind(this, 'repeatPassword')}
+                                onValueError={this.validatePassword()}/>
               </div>
-              <div className="form-group">
-                <div className="col-md-12">
-                  <div className="row">
-                    <div className="col-md-6">
-                      <DropdownComponent source={this.state.dropDownSourceProfession} label="Select profession"
-                                         initialValue={this.state.profession} saveValue={saveProfessions}/>
-                    </div>
-                    <div className="col-md-6 ">
-                      <DropdownComponent source={this.state.dropDownSourceNationalities} label="Select nationality"
-                                         initialValue={this.state.nationality} saveValue={saveNationality}/>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="form-group">
-                <div className="col-md-8">
-                  <div className="row">
-                    <TooltipInput type='text' label='Hobbies' theme={themeLabel} name='hobbies'
-                                  value={this.state.hobbies}
-                                  required onChange={this.handleChange.bind(this, 'hobbies')} maxLength={200}
-                                  tooltip='Write hobbies separate by commas'/>
-                  </div>
-                </div>
-              </div>
-              <div className="form-group">
-                <div className="row">
-                  <InputComponent className="col-md-6" type='email' label='Email address' icon='email'
-                                  value={this.state.mail} onValueChange={this.handleChange.bind(this, 'mail')}
-                                  required/>
-                  <InputComponent className="col-md-6" label='Username'
-                                  value={this.state.username}
-                                  onValueChange={this.handleChange.bind(this, 'username')} required
-                                  onBlur={this.checkUsername.bind(this)}
-                                  onValueError={this.state.userExists}/>
-                </div>
-              </div>
-              <div className="form-group">
-                <div className="col-md-12">
-                  <div className="row">
-                    <InputComponent className="col-md-6" type='password' label='Password'
-                                    value={this.state.password}
-                                    onValueChange={this.handleChange.bind(this, 'password')}
-                                    onValueError={this.validatePassword()}/>
-                  </div>
-                  <div className="row">
-                    <InputComponent className="col-md-6" type='password' label='Repeat Password'
-                                    value={this.state.repeatPassword}
-                                    onValueChange={this.handleChange.bind(this, 'repeatPassword')}
-                                    onValueError={this.validatePassword()}/>
-                  </div>
-                </div>
-              </div>
-              <div className="form-group">
-                <div className="row">
-                  <ButtonComponent className="col-md-6" iconButton="save" value="Create"
-                                   onClick={this.saveUser.bind(this)}/>
-                </div>
-              </div>
+            </div>
+            <div className="row">
+              <ButtonComponent className={"col-md-12 " + classes.buttonCreate} raisedValue iconButton="save" value="Create"
+                               onClick={this.saveUser.bind(this)}/>
             </div>
           </div>
         </div>
@@ -235,9 +203,7 @@ class RegistrationForm extends React.Component {
 }
 
 RegistrationForm.propTypes = {
-  goToHome: PropTypes.func,
-  nationality: PropTypes.string,
-  profession: PropTypes.string
+  goToHome: PropTypes.func
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(RegistrationForm)
+export default connect(null, mapDispatchToProps)(RegistrationForm)

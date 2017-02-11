@@ -178,5 +178,8 @@ public interface MeetingService {
     public PaginationModel getEndedMeetingsByToken(String username, String token, int offset, int limit);
 
     public PaginationModel getProgrammedMeetingsByToken(String name, String token, int offset, int limit);
+    
+public void generateScore(IdeasDTO ideas, List<String> userList);
+
 
 }
