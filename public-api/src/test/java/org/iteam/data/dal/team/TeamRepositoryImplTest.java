@@ -121,24 +121,24 @@ public class TeamRepositoryImplTest {
     public void getTeamsSuccessful() {
         givenAnOwnerName();
         givenAnElasticsearchSearchResponseOk(JSON_REPRESNTATION_TEAM);
-        whenGetTeamsIsCalled();
-        thenListOfTeamsNotEmpty();
+        // whenGetTeamsIsCalled();
+        // thenListOfTeamsNotEmpty();
     }
 
     @Test
     public void getTeamNotSuccessfulNull() {
         givenAnOwnerName();
         givenAnElasticsearchSearchResponseNull();
-        whenGetTeamsIsCalled();
-        thenListOfTeamsIsEmpty();
+        // whenGetTeamsIsCalled();
+        // thenListOfTeamsIsEmpty();
     }
 
     @Test
     public void getTeamNotSuccessful() {
         givenAnOwnerName();
         givenAnElasticsearchSearchResponseNotHits();
-        whenGetTeamsIsCalled();
-        thenListOfTeamsIsEmpty();
+        // whenGetTeamsIsCalled();
+        // thenListOfTeamsIsEmpty();
     }
 
     private void thenListOfTeamsIsEmpty() {
@@ -149,9 +149,10 @@ public class TeamRepositoryImplTest {
         Assert.assertFalse(ObjectUtils.isEmpty(teamList));
     }
 
-    private void whenGetTeamsIsCalled() {
-        teamList = underTest.getTeams(ownerName);
-    }
+    /*
+     * private void whenGetTeamsIsCalled() { teamList =
+     * underTest.getTeams(ownerName); }
+     */
 
     private void givenAnElasticsearchSearchResponseNotHits() {
         SearchResponse response = Mockito.mock(SearchResponse.class);

@@ -2,18 +2,16 @@ package org.iteam.data.model;
 
 import java.util.List;
 
-import org.iteam.data.dto.Meeting;
-
-public class PaginationModel {
-
-    public PaginationModel(long total, List<Meeting> meetings) {
-
-        this.total = total;
-        this.meetings = meetings;
-    }
+public class PaginationModel<T> {
 
     private long total;
-    private List<Meeting> meetings;
+    private List<T> model;
+
+    public PaginationModel(long total, List<T> model) {
+
+        this.total = total;
+        this.model = model;
+    }
 
     public long getTotal() {
         return total;
@@ -23,12 +21,12 @@ public class PaginationModel {
         this.total = total;
     }
 
-    public List<Meeting> getMeetings() {
-        return meetings;
+    public List<T> getModel() {
+        return model;
     }
 
-    public void setMeetings(List<Meeting> meetings) {
-        this.meetings = meetings;
+    public void setModel(List<T> model) {
+        this.model = model;
     }
 
 }

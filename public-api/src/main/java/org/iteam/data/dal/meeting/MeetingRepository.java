@@ -183,14 +183,14 @@ public interface MeetingRepository {
      */
     public void removeIdeasFromCacheSharedBoard(String meetingId, String info);
 
-    public PaginationModel getProgrammedMeetings(String username, int offset, int limit);
+    public PaginationModel<Meeting> getProgrammedMeetings(String username, int offset, int limit);
 
     public void updateEndedMeetings();
 
-    public PaginationModel getEndedMeetingByToken(String username, String token, int offset, int limit);
+    public PaginationModel<Meeting> getEndedMeetingByToken(String username, String token, int offset, int limit);
 
-    public PaginationModel getProgrammedMeetingsByToken(String name, String token, int offset, int limit);
+    public PaginationModel<Meeting> getProgrammedMeetingsByToken(String name, String token, int offset, int limit);
 
-    public PaginationModel getEndedMeetings(String username, int offset, int limit);
+    public PaginationModel<Meeting> getEndedMeetings(String username, int offset, int limit);
 
 }

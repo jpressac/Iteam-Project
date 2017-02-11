@@ -118,7 +118,7 @@ public interface MeetingService {
      *            a list with all team names.
      * @return a list of meetings.
      */
-    public List<Meeting> getMeetingByTeamName(String username);
+    public List<Meeting> getMeetingByTeamName(String username, int size, int from);
 
     /**
      * Save temporally the ideas, by user, in the personal board.
@@ -171,15 +171,14 @@ public interface MeetingService {
      */
     public void removeIdeasFromCacheSharedBoard(String meetingId, String info);
 
-    public PaginationModel getEndedMeetings(String string, int offset, int limit);
+    public PaginationModel<Meeting> getEndedMeetings(String string, int offset, int limit);
 
-    public PaginationModel getProgrammedMeetings(String username, int offset, int limit);
+    public PaginationModel<Meeting> getProgrammedMeetings(String username, int offset, int limit);
 
-    public PaginationModel getEndedMeetingsByToken(String username, String token, int offset, int limit);
+    public PaginationModel<Meeting> getEndedMeetingsByToken(String username, String token, int offset, int limit);
 
-    public PaginationModel getProgrammedMeetingsByToken(String name, String token, int offset, int limit);
-    
-public void generateScore(IdeasDTO ideas, List<String> userList);
+    public PaginationModel<Meeting> getProgrammedMeetingsByToken(String name, String token, int offset, int limit);
 
+    public void generateScore(IdeasDTO ideas, List<String> userList);
 
 }

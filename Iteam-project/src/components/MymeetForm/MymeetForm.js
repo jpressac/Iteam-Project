@@ -199,7 +199,7 @@ class MymeetForm extends Component {
 
   fillFields(data) {
     this.setState({
-      meetings: data.meetings,
+      meetings: data.model,
       totalMeetings:data.total,
       showSpinner: false
     }, () => {
@@ -339,7 +339,7 @@ class MymeetForm extends Component {
 
 
   handleChange = (name, value) => {
-    this.setState({...this.state, [name]: value});
+    this.setState({[name]: value});
   };
 
   deleteTag(pos) {
@@ -476,6 +476,13 @@ class MymeetForm extends Component {
     )
   }
 
+  handleSubmit(e) {
+    if (e.which == 13) {
+      e.preventDefault();
+      this.searchByToken();
+    }
+  }
+
   searchByToken(){
     if ( this.state.searchField.length != 0 ) {
       axios.get(MEETING.MEETING_SEARCH_PROGRAMMED, {
@@ -528,7 +535,7 @@ class MymeetForm extends Component {
               <label>MY MEETINGS</label>
             </div>
             <div>
-              <Input type='text' label="Meeting topic"  name="searchField" value={this.state.searchField} onChange={this.handleChange.bind(this,'searchField')}/>
+              <InputComponent label="Meeting topic"  name="searchField" value={this.state.searchField} onKeyPress={this.handleSubmit.bind(this)} onValueChange={this.handleChange.bind(this,'searchField')}/>
               <ButtonComponent  onClick={this.searchByToken.bind(this)} value="Search"/>
             </div>
             <BootstrapModal ref="mymeetingModal" message={this.state.message}/>

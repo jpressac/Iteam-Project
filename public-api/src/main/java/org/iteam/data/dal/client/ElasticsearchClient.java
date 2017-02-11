@@ -127,7 +127,7 @@ public interface ElasticsearchClient {
      * @return a search response with the information of all the documents that
      *         match the search.
      */
-    public SearchResponse search(String index, QueryBuilder queryBuilder);
+    public SearchResponse search(String index, QueryBuilder queryBuilder, Integer size, Integer from);
 
     /**
      * Search for documents, given an index, a type, a query and an aggregation.
@@ -170,5 +170,8 @@ public interface ElasticsearchClient {
     public BulkResponse updateNew(List<BiFieldModel> data, String index, String type);
 
     public BulkResponse updateScore(List<BiFieldModel> data, String index, String type);
-public SearchResponse search(String index, QueryBuilder queryBuilder, SortBuilder sort);
+
+    public SearchResponse search(String index, QueryBuilder queryBuilder, SortBuilder sort);
+
+    public SearchResponse search(String index, QueryBuilder queryBuilder);
 }

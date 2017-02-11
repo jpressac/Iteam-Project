@@ -54,8 +54,8 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public List<Meeting> getMeetingByTeamName(String username) {
-        List<String> teamName = teamServiceImpl.getTeamByUser(username);
+    public List<Meeting> getMeetingByTeamName(String username, int size, int from) {
+        List<String> teamName = teamServiceImpl.getTeamByUser(username, size, from);
         return meetingRepositoryImpl.getMeetingByTeamName(teamName);
     }
 
@@ -121,17 +121,17 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public PaginationModel getProgrammedMeetings(String username, int offset, int limit) {
+    public PaginationModel<Meeting> getProgrammedMeetings(String username, int offset, int limit) {
         return meetingRepositoryImpl.getProgrammedMeetings(username, offset, limit);
     }
 
     @Override
-    public PaginationModel getEndedMeetingsByToken(String username, String token, int offset, int limit) {
+    public PaginationModel<Meeting> getEndedMeetingsByToken(String username, String token, int offset, int limit) {
         return this.meetingRepositoryImpl.getEndedMeetingByToken(username, token, offset, limit);
     }
 
     @Override
-    public PaginationModel getProgrammedMeetingsByToken(String name, String token, int offset, int limit) {
+    public PaginationModel<Meeting> getProgrammedMeetingsByToken(String name, String token, int offset, int limit) {
         return this.meetingRepositoryImpl.getProgrammedMeetingsByToken(name, token, offset, limit);
     }
 
@@ -154,8 +154,10 @@ public class MeetingServiceImpl implements MeetingService {
     public void generateScore(IdeasDTO ideas, List<String> usersList) {
         userServiceImpl.generateScore(ideas, usersList);
     }
-}
-@Override
-    public PaginationModel getEndedMeetings(String username, int offset, int limit) {
+
+    @Override
+    public PaginationModel<Meeting> getEndedMeetings(String username, int offset, int limit) {
         return meetingRepositoryImpl.getEndedMeetings(username, offset, limit);
     }
+
+}

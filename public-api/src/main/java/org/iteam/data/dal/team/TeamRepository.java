@@ -5,6 +5,7 @@ import java.util.List;
 import org.iteam.data.dto.Team;
 import org.iteam.data.dto.UserDTO;
 import org.iteam.data.model.FilterList;
+import org.iteam.data.model.PaginationModel;
 import org.iteam.data.model.TeamModel;
 import org.iteam.data.model.TeamUserModel;
 
@@ -50,7 +51,7 @@ public interface TeamRepository {
      *            the owner of the teams.
      * @return a list of teams.
      */
-    public List<TeamModel> getTeams(String ownerName);
+    public PaginationModel<TeamModel> getTeams(String ownerName, int size, int from);
 
     /**
      * Retrieved the list of teams where a user is part of.
@@ -59,7 +60,7 @@ public interface TeamRepository {
      *            the username.
      * @return the list of team names.
      */
-    public List<String> getTeamByUser(String username);
+    public List<String> getTeamByUser(String username, int size, int from);
 
     /**
      * Retrieve team and user information given a meetingId.
@@ -80,4 +81,6 @@ public interface TeamRepository {
      * @return true if the team name already exists and false otherwise.
      */
     public boolean checkTeamNameExistent(String teamName, String teamOwner);
+
+    public PaginationModel<TeamModel> getTeamsByToken(String ownerName, String token, int size, int from);
 }

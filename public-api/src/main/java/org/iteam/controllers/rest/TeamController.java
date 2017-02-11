@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import org.iteam.data.dto.Team;
 import org.iteam.data.dto.UserDTO;
 import org.iteam.data.model.FilterList;
+import org.iteam.data.model.PaginationModel;
 import org.iteam.data.model.TeamModel;
 import org.iteam.data.model.TeamUserModel;
 import org.iteam.services.team.TeamServiceImpl;
@@ -73,8 +74,22 @@ public class TeamController {
      * @return a list of teams.
      */
     @RequestMapping(value = "team/byowner", method = RequestMethod.GET)
-    public List<TeamModel> getTeamByOwner() {
-        return teamService.getTeams(SecurityContextHolder.getContext().getAuthentication().getName());
+    public ResponseEntity<PaginationModel<TeamModel>> getTeamByOwner(
+            @RequestParam(value = "offset", required = true) int from,
+            @RequestParam(value = "limit", required = true) int size) {
+        PaginationModel<TeamModel> teams = teamService
+                .getTeams(SecurityContextHolder.getContext().getAuthentication().getName(), size, from);
+        return new ResponseEntity<PaginationModel<TeamModel>>(teams, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "team/byowner/search", method = RequestMethod.GET)
+    public ResponseEntity<PaginationModel<TeamModel>> getTeamByToken(
+            @RequestParam(value = "token", required = true) String token,
+            @RequestParam(value = "offset", required = true) int from,
+            @RequestParam(value = "limit", required = true) int size) {
+        PaginationModel<TeamModel> teams = teamService
+                .getTeamByToken(SecurityContextHolder.getContext().getAuthentication().getName(), token, size, from);
+        return new ResponseEntity<PaginationModel<TeamModel>>(teams, HttpStatus.OK);
     }
 
     /**

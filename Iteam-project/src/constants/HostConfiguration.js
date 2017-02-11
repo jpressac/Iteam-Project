@@ -19,7 +19,8 @@ export const TEAM = {
   TEAM_BY_OWNER : URL + '/team/byowner',
   TEAM_SELECT : URL + '/team/select',
   TEAM_USER_BY_MEETING : URL + '/team/users/bymeeting',
-  TEAM_NAME_EXISTENT: URL + '/team/name/existent'
+  TEAM_NAME_EXISTENT: URL + '/team/name/existent',
+  TEAM_BY_OWNER_SEARCH : URL + '/team/byowner/search'
 };
 
 export const MEETING = {

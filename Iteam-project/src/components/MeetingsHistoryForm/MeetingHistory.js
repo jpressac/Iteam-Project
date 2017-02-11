@@ -36,7 +36,7 @@ class MeetingHistory extends Component {
 
   fillMeetings(data){
     this.setState({
-      meetings: data.meetings,
+      meetings: data.model,
       totalMeetings:data.total
     }, () => {
       this.calculateTotalPages();
@@ -84,11 +84,18 @@ class MeetingHistory extends Component {
     }.bind(this))
   }
 
+  handleSubmit(e) {
+    if (e.which == 13) {
+      e.preventDefault();
+      this.searchByToken();
+    }
+  }
+
   render(){
     return(
       <div className="container">
           <div>
-            <InputComponent className="col-md-8" label='Meeting name' value={this.state.searchField} onValueChange={this.handleChange.bind(this)}/>
+            <InputComponent className="col-md-8" label='Meeting name' value={this.state.searchField} onKeyPress={this.handleSubmit.bind(this)} onValueChange={this.handleChange.bind(this)}/>
             <ButtonComponent  className="col-md-4"onClick={this.searchByToken.bind(this)} value="Search"/>
           </div>
           <div className="col-md-12">
