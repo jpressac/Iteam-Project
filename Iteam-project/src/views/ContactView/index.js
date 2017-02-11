@@ -1,3 +1,3 @@
-import ContactView from './components/ContactView'
+import ContactView from './ContactView'
 
 export default ContactView

@@ -1,27 +1,25 @@
-.label
-{
-  color:#900C3F;
-  font-family:monospace;
-    align-items: center;
-    font-size: 35px;
+.buttonCreate {
+  margin: 2%;
+  text-align: -webkit-center;
 }
-.label2
-{
-  color: #900C3F;
-  font-family:monospace;
-  align-items: center;
-  font-size: 35px;
 
-
+.radioButton {
+  display: inline-flex;
 }
-.content{
 
-  background-position-x: center;
-  background-position-y: center;
-  margin:50px;
-
-
+.labelLeftAlign {
+  padding: 0;
+  margin-top: 2%;
+  margin-bottom: 2%;
+  float: left;
 }
-.listSH{
-  width:600px;
+
+.labelInfoUser {
+  font-weight: bold;
+  font-size: 20px;
+  padding: 0;
+}
+
+.paragraphImageFooter {
+  font-size: 15px;
 }

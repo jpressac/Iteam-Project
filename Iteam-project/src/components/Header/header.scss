@@ -1,9 +1,6 @@
 .appBar {
   background-color: white;
   box-shadow: 0 2px 5px rgba(0, 0, 0, .26);
-  padding:10px;
-  align-items: left;
-  display: inline-block;
   height: 7rem;
 }
 
@@ -13,4 +10,8 @@
   right: 0;
   left: 0;
   text-align: -webkit-right;
+}
+
+.logo {
+  width: 85px;
 }

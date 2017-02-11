@@ -1,19 +1,13 @@
-/**
- * Created by Randanne on 10/12/2016.
- */
 import React from 'react'
-import HeaderShared from '../../components/Header/HeaderBoards/HeaderShared'
+import classes from '../../components/ComponentCSSForms/componentCSS.scss'
 
 export const SharedBoard = ({children}) => (
 
-  <div name="Shared Board Layout">
+  <div name="Shared Board Layout" className={classes.containerBoard}>
     {children}
   </div>
-
 );
 
 SharedBoard.propTypes = {
   children: React.PropTypes.element.isRequired
 };
-
-export default SharedBoard

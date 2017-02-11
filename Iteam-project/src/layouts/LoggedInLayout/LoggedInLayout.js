@@ -1,13 +1,11 @@
 import React, {PropTypes} from 'react'
 import HeaderLog from '../../components/Header/HeaderLog'
-
+import loggedInTheme from './loggedIn.scss'
 
 export const LoggedInLayout = ({ children }) => (
-  <div>
+  <div className={loggedInTheme.loggedIn}>
     <HeaderLog />
-    <div>
       {children}
-    </div>
   </div>
 );
 

@@ -1,19 +1,19 @@
-.form{
-  height: 100%;
-  width: 100%;
-  background: #eee;
-  padding-left: 50px;
-  padding-right: 50px;
-  margin-top: 20px;
+.buttonCreate {
+  margin: 2%;
+  text-align: -webkit-center;
 }
 
-.label2
-{
-  color: #900C3F;
-  font-family:monospace;
-  align-items: center;
-  font-size: 35px;
-  width: 100%;
-  margin-left: 50%;
-  margin-right: 50%;
+.radioButton {
+  display: inline-flex;
+}
+
+.labelLeftAlign {
+  padding: 0;
+  margin-top: 2%;
+  margin-bottom: 2%;
+  float: left;
+}
+
+.paragraphImageFooter {
+  font-size: 15px;
 }
