@@ -18,7 +18,5 @@ export function updateMeetingsViewed(user, meetingsViewed) {
 export function meetingsNotViewed(user){
   return axios.get(MEETING.MEETING_NOT_VIEWED,{
     params:{username:user}
-  }).then((response)=>{
-    
   })
 }

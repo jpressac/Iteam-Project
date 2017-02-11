@@ -13,81 +13,25 @@ import {connect} from "react-redux";
 import {IconButton, Button} from 'react-toolbox/lib/button';
 
 
-const mapStateToProps = (state) => {
-  if (state.loginUser !== null) {
-    return {
-      user: state.loginUser.user.username
-    }
-  }
-};
-
 class Inbox extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-      meetingsNotViewed: '',
-      showMeetingList: false,
-      count: 0
-    }
   }
-
-  componentWillMount() {
-    new TaskSchedulerCreator(60000, this.meetingsNotViewed.bind(this));
+  
+  componentWillUnmount(){
+    updateMeetingsViewed(this.props.user, this.prop.meetings);
   }
+  
 
-  meetingsNotViewed() {
-    axios.get(MEETING.MEETING_NOT_VIEWED, {
-      params: {username: this.props.user}
-    }).then((response)=> {
-      this.setState({
-        meetingsNotViewed: response.data,
-        count: response.data.length
-      })
-    })
-  }
-
-  onChangeSize() {
-    if (this.state.showMeetingList) {
-      updateMeetingsViewed(this.props.user, this.state.meetingsNotViewed);
-    }
-
-    this.setState({
-      showMeetingList: !this.state.showMeetingList,
-      count: 0
-    })
-  }
-
-  renderMeetingList() {
+  render() {
     return (
-      <div className={classes.chatContainerMax} onClick={this.onChangeSize.bind(this)}>
+      <div>
         <InboxList
-          meetings={this.state.meetingsNotViewed}>
+          meetings={this.state.meetings}>
         </InboxList>
       </div>
     )
-  }
-
-  renderNotification() {
-    return (
-      <div className={classes.chatContainerMin}>
-        <div className={classes.msgWgtHeaderMin} onClick={this.onChangeSize.bind(this)}>Inbox
-          <IconButton icon={this.state.expandButton} style={{float: 'right'}} onClick={this.onChangeSize.bind(this)}/>
-          <Button label={this.state.count.toString()} style={{background:'yellow', color:'black', float:'left'}} mini
-                  floating disabled/>
-        </div>
-      </div>
-    )
-
-  }
-
-  render() {
-    if (this.state.showMeetingList) {
-      return this.renderMeetingList();
-    }
-    else {
-      return this.renderNotification();
-    }
   }
 }
 
@@ -97,4 +41,4 @@ Inbox.propTypes = {
 
 };
 
-export default connect(mapStateToProps)(Inbox)
+export default Inbox

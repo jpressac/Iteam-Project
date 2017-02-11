@@ -1,4 +1,4 @@
-.chatContainerMax {
+.InboxButton {
   width: 25%;
   position: fixed;
   right: 1%;
@@ -15,19 +15,6 @@
   overflow: auto;
   position: relative;
   height: 220px;
-}
-
-.chatContainerMin {
-  width: 3%;
-  position: fixed;
-  right: 1%;
-  border-top-right-radius: 3px;
-  border-top-left-radius: 3px;
-  font-family: monospace;
-  font-size: 12px;
-  border: 1px solid lightgray;
-  display: flex;
-  flex-direction: column;
 }
 
 /* message box header styles*/

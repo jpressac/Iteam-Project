@@ -13,6 +13,8 @@ import classes from './theme.scss'
 import {fromMeetingOrTeam} from '../../../redux/reducers/Meeting/MeetingForTeamReducer'
 import themeButton from './button.scss'
 import Inbox from '../../Inbox/Inbox'
+import TaskSchedulerCreator from '../../../utils/TaskSchedulerCreator'
+import {MEETING} from '../../../constants/HostConfiguration'
 
 const mapDispatchToProps = dispatch => ({
   home: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HOME)),
@@ -39,6 +41,14 @@ class HeaderLog extends Component {
 
   constructor(props) {
     super(props);
+    this.state={
+      count:'',
+      meetingsNotViewed:''
+    }
+  }
+
+  componentWillMount() {
+    new TaskSchedulerCreator(60, this.meetingsNotViewedByUser.bind(this));
   }
 
   goToNewMeeting() {
@@ -53,6 +63,29 @@ class HeaderLog extends Component {
 
   goToHistory() {
     this.props.meetingHistory();
+  }
+
+  meetingsNotViewedByUser() {
+    console.debug('task scheduler entra');
+    axios.get(MEETING.MEETING_NOT_VIEWED, {
+      params: {username: this.props.user}
+    }).then((response)=> {
+      this.setState({
+        meetingsNotViewed: response.data,
+        count: response.data.length
+      })
+    })
+  }
+
+  renderInbox(){
+    console.debug('hasta aca llega');
+    this.setState({count:''});
+    return(
+      <Inbox
+        user={this.props.user}
+        meetings={this.state.meetingsNotViewed}
+      />
+    )
   }
 
   render() {
@@ -76,11 +109,12 @@ class HeaderLog extends Component {
                             onClick={this.goToNewTeam.bind(this)}/></li>
                 <li><Button label='MY TEAMS' theme={themeButton}
                             onClick={this.props.teamList}/></li>
+                <li><Button label='INBOX' theme={themeButton}
+                            onClick={this.renderInbox.bind(this)}/>{this.state.count.toString()}</li>
                 <li><span className={classes.span}><label> {this.props.user}</label></span ></li>
                 <li><LogoutButton/></li>
               </ul>
             </Navigation>
-          <Inbox/>
         </AppBar>
       </header>
     );
