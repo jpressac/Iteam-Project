@@ -1,19 +1,20 @@
-import React, {Component, PropTypes} from "react";
-import classes from "./MeetingConfigView.scss";
-import {connect} from "react-redux";
-import Input from "react-toolbox/lib/input";
-import themeLabel from "./label.scss";
-import chipTheme from "./chips.scss";
-import {Button} from "react-toolbox/lib/button";
-import Tooltip from "react-toolbox/lib/tooltip";
-import {push} from "react-router-redux";
-import {PATHS} from "../../constants/routes";
-import {MEETING} from "../../constants/HostConfiguration";
-import axios from "axios";
-import Dropdown from "react-toolbox/lib/dropdown";
-import Chip from "react-toolbox/lib/chip";
-import Spinner from "../Spinner/Spinner";
-import Avatar from "react-toolbox/lib/avatar";
+import React, {Component, PropTypes} from 'react'
+import cssClasses from '../ComponentCSSForms/componentCSS.scss'
+import {connect} from 'react-redux'
+import chipTheme from './chips.scss'
+import {Button} from 'react-toolbox/lib/button'
+import Tooltip from 'react-toolbox/lib/tooltip'
+import {push} from 'react-router-redux'
+import {PATHS} from '../../constants/routes'
+import {MEETING} from '../../constants/HostConfiguration'
+import axios from 'axios'
+import Chip from 'react-toolbox/lib/chip'
+import Spinner from '../Spinner/Spinner'
+import Avatar from 'react-toolbox/lib/avatar'
+import avatarTheme from '../MeetingForm/avatarTheme.scss'
+import InputComponent from '../InputComponent/InputComponent'
+import ButtonComponent from '../ButtonComponent/ButtonComponent'
+import DropdownComponent from '../DropdownComponent/DropdownComponent'
 
 const mapDispatchToProps = dispatch => ({
   goToMyMeetings: () => dispatch(push('/' + PATHS.MENULOGGEDIN.MYMEETINGS))
@@ -29,11 +30,7 @@ const mapStateToProps = (state) => {
 };
 
 const TooltipButton = Tooltip(Button);
-const technics = [{value: 0, label: 'Brainstorming'}, {value: 1, label: 'SCAMPER'}, {
-  value: 2,
-  label: 'morphological analysis'
-}];
-
+const technics = ['Brainstorming', 'SCAMPER', 'morphological analysis']
 
 class MeetingConfigForm extends Component {
 
@@ -54,24 +51,8 @@ class MeetingConfigForm extends Component {
     };
   }
 
-  handleChangeCombo = (value) => {
-    let filteredLabelObject = technics.filter(filter => filter["value"] == value);
-    this.setState({technicValue: value, technic: filteredLabelObject[0]["label"]})
-  };
-
-
-  dropdownTechnic() {
-    return (
-      <Dropdown label="Select technic" auto theme={themeLabel} style={{color: '#900C3F'}}
-                onChange={this.handleChangeCombo.bind(this)}
-                source={technics}
-                value={this.state.technicValue}/>
-    );
-  }
-
-
-  handleChange = (name, value) => {
-    this.setState({...this.state, [name]: value});
+  handleChange = (key, value) => {
+    this.setState({[key]: value});
   };
 
   handleAddTag() {
@@ -140,63 +121,42 @@ class MeetingConfigForm extends Component {
   render() {
     if (!this.state.showSpinner) {
       return (
-        <div className={"container"} style={{marginTop: '7%', width: '50%'}}>
-          <div className={classes.label2}>
-            <label style={{padding: '3%'}}>MEETING SETTINGS</label>
-            <Avatar style={{backgroundColor: '#900C3F'}} icon="settings"/>
+        <div className={"container " + cssClasses.containerForm}>
+          <div className={cssClasses.labelMainTitle}>
+            <label>MEETING SETTINGS</label>
+            <Avatar theme={avatarTheme} icon="settings"/>
           </div>
-          <div className={classes.form}>
-            <div className={"form-horizontal"}>
-              <div className="form-group">
-                <div className="col-md-5">
-                  <div className="row" style={{color: '#900C3F', margin: '2%'}}>
-                    {this.dropdownTechnic()}
-                  </div>
-                </div>
-              </div>
-              <div className="form-group">
-                <div className="row" style={{color: '#900C3F'}}>
-                  <div className="col-md-3">
-                    <Input theme={themeLabel} label="Select amount of votes" value={this.state.votes}
-                           onChange={this.handleChange.bind(this, 'votes')} type='number' min="0"/>
-                  </div>
-                  <div className="col-md-4">
-                    <Input theme={themeLabel} label="Select amount minutes in personal board"
-                           value={this.state.pbtime} onChange={this.handleChange.bind(this, 'pbtime')}
-                           type='number' min="0"/>
-                  </div>
-                  <div className="col-md-4">
-                    <Input theme={themeLabel} label="Select amount minutes in shared board"
-                           value={this.state.sbtime} onChange={this.handleChange.bind(this, 'sbtime')}
-                           type='number' min="0"/>
-                  </div>
-                </div>
-              </div>
-              <div className="form-group">
-                <div className="row" style={{color: '#900C3F'}}>
-                  <div className="col-md-6">
-                    <Input type='text' label='Tag' value={this.state.tag}
-                           onChange={this.handleChange.bind(this, 'tag')} maxLength={30} theme={themeLabel}/>
-                  </div>
-                  <div className="col-md-4">
-                    <TooltipButton icon='add' tooltip='Add tag'
-                                   style={{background: '#900C3F', color: 'white', marginTop: 10}} floating mini
-                                   onClick={this.handleAddTag.bind(this)}/>
-                  </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="row" style={{color: '#900C3F'}}>
-                  {this.tagLabels()}
-                </div>
-              </div>
-              <div className="row">
-                <Button style={{margin: 15, color: 'white', background: '#900C3F'}} target='_blank' raised
-                        onClick={this.saveMeeting.bind(this)}> Create Meeting
-                </Button>
-              </div>
-
+          <div className={"row " + cssClasses.form}>
+            <div className="col-md-9">
+              <DropdownComponent label="Select technic" onValueChange={this.handleChange.bind(this, "technic")}
+                                 source={technics} initialValue={this.state.technic}/>
             </div>
+            <InputComponent className={"col-md-4"}
+                            onValueChange={this.handleChange.bind(this, "votes")} value={this.state.votes}
+                            label="Select amount of votes" type="number" minValue={"0"}/>
+
+            <InputComponent className={"col-md-4"}
+                            label="Select amount minutes in personal board"
+                            onValueChange={this.handleChange.bind(this, 'pbtime')} type="number" minValue={"0"}
+                            value={this.state.pbtime}/>
+            <InputComponent className={"col-md-4"}
+                            label="Select amount minutes in shared board"
+                            onValueChange={this.handleChange.bind(this, 'sbtime')} value={this.state.sbtime}
+                            type="number" minValue={"0"}/>
+
+            <div className="row">
+              <InputComponent className={"col-md-6"} label="Tag" value={this.state.tag}
+                              maxLength={30} onValueChange={this.handleChange.bind(this, "tag")}/>
+              <div className={"col-md-4 " + cssClasses.paddingInnerElements}>
+                <TooltipButton icon='add' tooltip='Add tag' floating mini
+                               onClick={this.handleAddTag.bind(this)}/>
+              </div>
+            </div>
+            <div className="col-md-12">
+              {this.tagLabels()}
+            </div>
+            <ButtonComponent className="row col-md-6" raisedValue onClick={this.saveMeeting.bind(this)}
+                             value="Create Meeting"/>
           </div>
         </div>
       );

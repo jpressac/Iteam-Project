@@ -36,6 +36,10 @@ const mapStateToProps = (state) => {
   }
 };
 
+const iteamLogo= () => (
+  <img className={themeAppBar.logo} src={logo}/>
+)
+
 class HeaderLog extends Component {
 
   constructor(props) {
@@ -82,8 +86,7 @@ class HeaderLog extends Component {
   render() {
     return (
       <header >
-        <AppBar fixed flat theme={themeAppBar}>
-            <img src={logo}/>
+        <AppBar fixed flat theme={themeAppBar} leftIcon={iteamLogo()}>
             <Navigation type="horizontal" theme={themeNav}>
               <ul className={classes.ul}>
                 <li><Button label='HOME' theme={themeButton}

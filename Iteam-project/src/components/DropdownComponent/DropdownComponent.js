@@ -34,7 +34,6 @@ class DropdownComponent extends React.Component {
 
 
   setValueOptions(data) {
-    console.log(data)
     let opt = data.map(function (option, index) {
       let rObj = {};
       rObj["value"] = index;
@@ -43,7 +42,6 @@ class DropdownComponent extends React.Component {
     });
 
     this.initialCombo(opt);
-
     this.setState({source: opt});
   }
 

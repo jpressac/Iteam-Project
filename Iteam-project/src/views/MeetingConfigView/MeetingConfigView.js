@@ -1,6 +1,6 @@
 import React from 'react'
 import MeetingConfig from '../../components/MeetingConfigForm'
-import classes from './MeetingConfigView.scss'
+import classes from '../ViewContainerCSS/ViewContainer.scss'
 
 class MeetingConfigView extends React.Component {
 

@@ -1,21 +1,23 @@
-import React, {PropTypes} from "react";
-import BootstrapModal from "../BootstrapModal";
-import {connect} from "react-redux";
-import {Button} from "react-toolbox/lib/button";
-import {push} from "react-router-redux";
-import {PATHS} from "../../constants/routes";
-import classes from "./TeamForm.scss";
-import chipTheme from "./chips.scss";
-import Tooltip from "react-toolbox/lib/tooltip";
-import Chip from "react-toolbox/lib/chip";
-import Spinner from "../Spinner/Spinner";
-import InputComponent from '../InputComponent/InputComponent';
-import DropdownComponent from '../DropdownComponent/DropdownComponent';
-import {getProfessions, getNationalities} from '../../utils/actions/utilsActions';
-import {createTeam, teamNameExistence, selectTeam} from '../../utils/actions/teamActions';
-import {List, ListItem, ListSubHeader} from 'react-toolbox/lib/list';
-import generateUUID from "../../constants/utils/GetUUID";
-import listSubheader from './ListSubheader.css';
+import React, {PropTypes} from 'react'
+import BootstrapModal from '../BootstrapModal'
+import {connect} from 'react-redux'
+import {Button} from 'react-toolbox/lib/button'
+import {push} from 'react-router-redux'
+import {PATHS} from '../../constants/routes'
+import classes from './TeamForm.scss'
+import cssClasses from '../ComponentCSSForms/componentCSS.scss'
+import chipTheme from './chips.scss'
+import Tooltip from 'react-toolbox/lib/tooltip'
+import Chip from 'react-toolbox/lib/chip'
+import Spinner from '../Spinner/Spinner'
+import InputComponent from '../InputComponent/InputComponent'
+import DropdownComponent from '../DropdownComponent/DropdownComponent'
+import ButtonComponent from '../ButtonComponent/ButtonComponent'
+import {getProfessions, getNationalities} from '../../utils/actions/utilsActions'
+import {createTeam, teamNameExistence, selectTeam} from '../../utils/actions/teamActions'
+import {List, ListItem, ListSubHeader} from 'react-toolbox/lib/list'
+import generateUUID from '../../constants/utils/GetUUID'
+import listSubheader from './ListSubheader.css'
 
 const mapStateToProps = (state) => {
   if (state.loginUser !== null) {
@@ -354,72 +356,51 @@ class TeamForm extends React.Component {
   render() {
     if (!this.state.showSpinner) {
       return (
-        <div className="container" style={{marginTop: 70, width: 700}}>
-          <div className={classes.label2}>
+        <div className={"container " + cssClasses.containerForm}>
+          <div className={cssClasses.labelMainTitle}>
             <label>CREATE TEAM</label>
           </div>
-          <div className={classes.form}>
-            <div className="form-horizontal">
-              <div className="form-group">
-                <div className="row">
-                  <InputComponent className="col-md-8" label='Team name' type='type' required
-                                  value={this.state.teamName}
-                                  onValueChange={this.handleChange.bind(this, 'teamName')}
-                                  onBlur={this.checkName.bind(this)} onValueError={this.state.errorTeamName}/>
-                </div>
-              </div>
-              <div className="form-group">
-                <div className="row">
-                  <div className="col-md-4">
-                    <DropdownComponent label="Select Filter" source={filterValues}
-                                       initialValue="" onValueChange={this.selectFilter.bind(this)}/>
-                  </div>
-                  <div className="col-md-4">
-                    <TooltipButton icon='add' tooltip='Add filter'
-                                   style={{background: '#900C3F', color: 'white', marginTop: 10}} floating mini
-                                   onClick={this.addFilter.bind(this)}/>
-                  </div>
-                  <div className="col-md-4">
-                    <TooltipButton icon='search' tooltip='Search members'
-                                   style={{background: '#900C3F', color: 'white'}}
-                                   floating onClick={this.searchUsers.bind(this)}/>
-                  </div>
-                </div>
-                <div className="row col-md-12">
-                  {this.filters()}
-                </div>
-              </div>
-              <div className="form-group">
-                <div className="row">
-                  <div className="col-md-12" style={{marginTop: 20}}>
-                    {this.filterLabels()}
-                  </div>
-                </div>
-              </div>
-              <div className="form-group">
-                <div className="row">
-                  <div className="col-md-6">
-                    <List selectable ripple className={classes.verticalbarright}>
-                      <ListSubHeader caption='Select Users' theme={listSubheader}/>
-                      {this.renderUsers()}
-                    </List>
-                  </div>
-                  <div className="col-md-6">
-                    <List selectable ripple className={classes.verticalbarleft}>
-                      <ListSubHeader caption='Users Selected' theme={listSubheader}/>
-                      {this.renderUserSelected()}
-                    </List>
-                  </div>
-                </div>
-                <div className="row">
-                  <Button style={{margin: 15, color: 'white', background: '#900C3F'}} target='_blank' raised
-                          onClick={this.create.bind(this)}>
-                    Create
-                  </Button>
-                </div>
-              </div>
-              <BootstrapModal ref="mymodal" message={this.state.message}/>
+          <div className={"row " + cssClasses.form}>
+            <InputComponent className={"row col-md-12 " + cssClasses.paddingInnerElements} label='Team name' type='type' required
+                            value={this.state.teamName}
+                            onValueChange={this.handleChange.bind(this, 'teamName')}
+                            onBlur={this.checkName.bind(this)} onValueError={this.state.errorTeamName}/>
+            <div className="col-md-4">
+              <DropdownComponent label="Select Filter" source={filterValues}
+                                 initialValue="" onValueChange={this.selectFilter.bind(this)}/>
             </div>
+            <div className="col-md-4">
+              <TooltipButton icon='add' tooltip='Add filter'
+                             style={{background: '#900C3F', color: 'white', marginTop: 10}} floating mini
+                             onClick={this.addFilter.bind(this)}/>
+            </div>
+            <div className="col-md-4">
+              <TooltipButton icon='search' tooltip='Search members'
+                             style={{background: '#900C3F', color: 'white'}}
+                             floating onClick={this.searchUsers.bind(this)}/>
+            </div>
+            <div className="row col-md-12">
+              {this.filters()}
+            </div>
+            <div className="row">
+              <div className="col-md-12" style={{marginTop: 20}}>
+                {this.filterLabels()}
+              </div>
+            </div>
+            <div className="col-md-6">
+              <List selectable ripple className={classes.verticalbarright}>
+                <ListSubHeader caption='Select Users' theme={listSubheader}/>
+                {this.renderUsers()}
+              </List>
+            </div>
+            <div className="col-md-6">
+              <List selectable ripple className={classes.verticalbarleft}>
+                <ListSubHeader caption='Users Selected' theme={listSubheader}/>
+                {this.renderUserSelected()}
+              </List>
+            </div>
+            <ButtonComponent className={"col-md-12"} value="Create" raisedValue onClick={this.create.bind(this)}/>
+            <BootstrapModal ref="mymodal" message={this.state.message}/>
           </div>
         </div>
       );

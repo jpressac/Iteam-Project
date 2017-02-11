@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from "react"
-import classes from './MeetingForm.scss'
+import cssClasses from '../ComponentCSSForms/componentCSS.scss'
 import axios from 'axios'
 import TimePicker from 'react-toolbox/lib/time_picker'
 import {connect} from 'react-redux'
@@ -114,10 +114,19 @@ class MeetingView extends Component {
   }
 
   fillTeam(data) {
-    let opt = data.map(function (option) {
-      return option["team"]["name"];
+    let opt = data.map((team) => {
+      return team["team"]["name"];
     });
-    this.setState({teamsObj: opt, showSpinner: false})
+
+    let teamInfo = data.map((team) => {
+      let rObj = {};
+      rObj["teamName"] = team["team"]["name"];
+      rObj["teamId"] = team["teamId"];
+
+      return rObj;
+    });
+
+    this.setState({teamsObj: opt, showSpinner: false, teamList: teamInfo})
   }
 
   configureMeeting() {
@@ -142,9 +151,7 @@ class MeetingView extends Component {
   }
 
   searchTeamIdGivenTeamName(teamNameCombo) {
-    let data = this.state.teamList;
-
-    let filtered = data.filter(team => team["team"]["name"] === teamNameCombo);
+    let filtered = this.state.teamList.filter(team => team.teamName === teamNameCombo);
 
     return filtered[0]["teamId"]
   }
@@ -176,21 +183,24 @@ class MeetingView extends Component {
   render() {
 
     if (!this.state.showSpinner) {
-      return ( <div className={"container " + classes.meetingForm}>
-          <div className={classes.label}>
+      return (
+        <div className={"container " + cssClasses.containerForm}>
+          <div className={cssClasses.labelMainTitle}>
             <label>CREATE MEETING</label>
             <Avatar theme={avatarTheme} icon="supervisor_account"/>
           </div>
           <BootstrapModal ref="meetingModal" message={this.state.message}/>
-          <div className={"row " + classes.form}>
-            <div className={"row col-md-12 " + classes.paddingZero}>
-              <InputComponent className={"col-md-12 " + classes.paddingZero} label="Topic" value={this.state.topic}
+          <div className={"row " + cssClasses.form}>
+            <div className={"row col-md-12 " + cssClasses.paddingInnerElements}>
+              <InputComponent className={"col-md-12 " + cssClasses.paddingInnerElements} label="Topic"
+                              value={this.state.topic}
                               onValueChange={this.handleChange.bind(this, 'topic')} maxLength={60}/>
-              <InputComponent className={"col-md-12 " + classes.paddingZero} label="Description" maxLength={400}
+              <InputComponent className={"col-md-12 " + cssClasses.paddingInnerElements} label="Description"
+                              maxLength={400}
                               onValueChange={this.handleChange.bind(this, 'description')}
                               value={this.state.description}/>
             </div>
-            <div className={"col-md-12 " + classes.paddingZero}>
+            <div className={"col-md-12 " + cssClasses.paddingInnerElements}>
               <div className={"col-md-4"}>
                 <DatePicker label='Select date' sundayFirstDayOfWeek
                             onChange={this.dateChange} minDate={new Date()} theme={themeLabel}
@@ -205,16 +215,16 @@ class MeetingView extends Component {
                             theme={themeLabel} value={this.state.endTime}/>
               </div>
             </div>
-            <div className={"col-md-8 " + classes.paddingZero + classes.team}>
+            <div className={"col-md-8 " + cssClasses.paddingInnerElements}>
               {this.dropdownTeam()}
             </div>
-            <ButtonComponent className={"col-md-4 " + classes.paddingZero} raisedValue
+            <ButtonComponent className={"col-md-4 " + cssClasses.paddingInnerElements} raisedValue
                              onClick={this.createTeamAction.bind(this)} value="Create Team"/>
 
-            <div className={"col-md-12 " + classes.paddingZero}>
-              <ButtonComponent className="col-md-6" accentValue onClick={this.props.home} iconButton="navigate_before"
+            <div className={"col-md-12 " + cssClasses.paddingInnerElements}>
+              <ButtonComponent className="col-md-6" onClick={this.props.home} iconButton="navigate_before"
                                value="Cancel"/>
-              <ButtonComponent className="col-md-6" accentValue
+              <ButtonComponent className="col-md-6"
                                onClick={this.configureMeeting.bind(this)} iconButton="navigate_next"
                                value="Meeting Settings"/>
             </div>

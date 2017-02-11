@@ -1,9 +1,9 @@
 import React from 'react'
-import classes from '../PersonalBoardLayout/board.scss'
+import classes from '../../components/ComponentCSSForms/componentCSS.scss'
 
 export const SharedBoard = ({children}) => (
 
-  <div name="Shared Board Layout" className={classes.board}>
+  <div name="Shared Board Layout" className={classes.containerBoard}>
     {children}
   </div>
 );
@@ -11,5 +11,3 @@ export const SharedBoard = ({children}) => (
 SharedBoard.propTypes = {
   children: React.PropTypes.element.isRequired
 };
-
-export default SharedBoard
