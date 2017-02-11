@@ -183,16 +183,16 @@ public class MeetingController {
     }
 
     @RequestMapping(value = "meeting/notViewed", method = RequestMethod.GET)
-    public ResponseEntity<List<ViewedMeeting>> getMeetingsNotViewed(
-            @RequestParam(value = "username", required = true) String username) {
-        List<ViewedMeeting> meetings = meetingServiceImpl.getMeetingsNotViewed(username);
+    public ResponseEntity<List<ViewedMeeting>> getMeetingsNotViewed() {
+        List<ViewedMeeting> meetings = meetingServiceImpl
+                .getMeetingsNotViewed(SecurityContextHolder.getContext().getAuthentication().getName());
         return new ResponseEntity<List<ViewedMeeting>>(meetings, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/meeting/viewed", method = RequestMethod.POST)
-    public ResponseEntity<Void> updateMeetingViewed(@RequestBody @Valid List<ViewedMeeting> meetingsViewedByUser,
-            @RequestParam(value = "username", required = true) String username) {
-        meetingServiceImpl.updateMeetingViewedByUser(meetingsViewedByUser, username);
+    public ResponseEntity<Void> updateMeetingViewed(@RequestBody @Valid List<ViewedMeeting> meetingsViewedByUser) {
+        meetingServiceImpl.updateMeetingViewedByUser(meetingsViewedByUser,
+                SecurityContextHolder.getContext().getAuthentication().getName());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

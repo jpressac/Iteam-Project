@@ -13,8 +13,7 @@ import classes from './theme.scss'
 import {fromMeetingOrTeam} from '../../../redux/reducers/Meeting/MeetingForTeamReducer'
 import themeButton from './button.scss'
 import Inbox from '../../Inbox/Inbox'
-import TaskSchedulerCreator from '../../../utils/TaskSchedulerCreator'
-import {MEETING} from '../../../constants/HostConfiguration'
+import meetingScheduler, {meetingsNotViewedByUser} from '../../../utils/actions/getMeetingTask'
 
 const mapDispatchToProps = dispatch => ({
   home: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HOME)),
@@ -48,7 +47,11 @@ class HeaderLog extends Component {
   }
 
   componentWillMount() {
-    new TaskSchedulerCreator(60, this.meetingsNotViewedByUser.bind(this));
+      meetingScheduler.executeNow()
+  }
+  
+  componentDidUnmount(){
+    meetingScheduler.stop()
   }
 
   goToNewMeeting() {
@@ -63,18 +66,6 @@ class HeaderLog extends Component {
 
   goToHistory() {
     this.props.meetingHistory();
-  }
-
-  meetingsNotViewedByUser() {
-    console.debug('task scheduler entra');
-    axios.get(MEETING.MEETING_NOT_VIEWED, {
-      params: {username: this.props.user}
-    }).then((response)=> {
-      this.setState({
-        meetingsNotViewed: response.data,
-        count: response.data.length
-      })
-    })
   }
 
   renderInbox(){
