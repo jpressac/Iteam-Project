@@ -1,31 +1,25 @@
-import React, {Component, PropTypes} from "react";
-import {DropTarget} from "react-dnd";
-import classes from "./PersonalBoard.scss";
-import Note from "../Note/Note";
-import {ItemTypes} from "../Constants/Constants";
-import Button from "react-toolbox/lib/button";
-import Tooltip from "react-toolbox/lib/tooltip";
-import flow from "lodash/flow";
-import {connectAndSubscribe, initWebSocket, sendMessage, disconnect} from "../../websocket/websocket";
-import {connect} from "react-redux";
-import axios from "axios";
-import {MEETING} from "../../constants/HostConfiguration";
-import generateUUID from "../../constants/utils/GetUUID";
-import {userConnection} from "../../redux/reducers/Meeting/MeetingUserConnected";
-import {Layout, NavDrawer, Panel, Sidebar} from "react-toolbox";
-import logo from "../Header/image/iteamLogo.jpg";
-import {PATHS} from "../../constants/routes";
-import {push} from "react-router-redux";
-import navTheme from "./NavDrawer.scss";
-import Dropdown from "react-toolbox/lib/dropdown";
-import {MenuItem, MenuDivider} from "react-toolbox/lib/menu";
+import React, {Component, PropTypes} from 'react';
+import {DropTarget} from 'react-dnd';
+import classes from './PersonalBoard.scss';
+import cssClasses from '../ComponentCSSForms/componentCSS.scss'
+import Note from '../Note/Note';
+import {ItemTypes} from '../Constants/Constants';
+import flow from 'lodash/flow';
+import {connectAndSubscribe, initWebSocket, sendMessage, disconnect} from '../../websocket/websocket';
+import {connect} from 'react-redux';
+import axios from 'axios';
+import {MEETING} from '../../constants/HostConfiguration';
+import generateUUID from '../../constants/utils/GetUUID';
+import {userConnection} from '../../redux/reducers/Meeting/MeetingUserConnected';
+import {Layout, NavDrawer, Panel, Sidebar} from 'react-toolbox';
+import logo from '../Header/image/iteamLogo.jpg';
+import {PATHS} from '../../constants/routes';
+import {push} from 'react-router-redux';
+import navTheme from './NavDrawer.scss';
+import Dropdown from 'react-toolbox/lib/dropdown';
+import {MenuItem, MenuDivider} from 'react-toolbox/lib/menu';
 import Chat from '../Chat/Chat';
 import Modal from '../BootstrapModal/BootstrapModal';
-
-
-
-
-const TooltipButton = Tooltip(Button);
 
 const NoteTarget = {
   drop(props, monitor, component) {
@@ -53,7 +47,6 @@ const mapStateToProps = (state) => {
     meetingConfiguration: state.meetingConfigurationReducer.meeting.config
   }
 };
-
 
 const generateRandomNumber = () => {
   return Math.floor(Math.random() * 500) + 1;
@@ -131,19 +124,6 @@ class PersonalBoard extends Component {
     this.setState({tagValue: value, tagName: filteredLabelObject[0]["label"]})
   }
 
-  renderTechnic(technic) {
-    console.log(technic);
-    switch (technic) {
-      case 0:
-        console.log('braisntorming');
-        break;
-      case 1:
-        console.log('scamper');
-        return this.renderScamper();
-    }
-
-  }
-
 
   setValuesOptionsTags(data) {
     let opt = data.map(function (option, index) {
@@ -189,18 +169,18 @@ class PersonalBoard extends Component {
     let map = this.state.notes;
     let id = generateUUID();
     map[id] =
-    {
-      id: id,
-      left: generateRandomNumber(),
-      top: generateRandomNumber(),
-      username: this.props.user,
-      title: text,
-      comments: "",
-      tag: this.state.mapTag[0].label,
-      ranking: 0,
-      meetingId: this.props.meetingId,
-      boardType: "personal"
-    };
+      {
+        id: id,
+        left: generateRandomNumber(),
+        top: generateRandomNumber(),
+        username: this.props.user,
+        title: text,
+        comments: "",
+        tag: this.state.mapTag[0].label,
+        ranking: 0,
+        meetingId: this.props.meetingId,
+        boardType: "personal"
+      };
     this.updateNotesCacheByUser(map);
 
     this.setState({notes: map});
@@ -272,40 +252,36 @@ class PersonalBoard extends Component {
 
   render() {
     return this.props.connectDropTarget(
-      <div name="Personal Board Component" className={classes.board}>
-        <Layout >
+      <div name="Personal Board Component" className={cssClasses.containerBoard}>
+        <Layout>
           <NavDrawer active={true}
                      pinned={true} permanentAt='sm' theme={navTheme}>
-            <div style={{background: 'white', width: '100%'}}><img src={logo} style={{
-              height: '10%',
-              width: '50%',
-              marginLeft: '20%'
-            }} onClick={this.props.home}/>
+            <div>
+              <img className={cssClasses.imageAvatar} src={logo} onClick={this.props.home}/>
             </div>
-            <label className={classes.label1}>PERSONAL BOARD</label>
-            <MenuItem value='sharedBoard' icon='people' style={{color: '#900C3F'}}
+
+            <label className={cssClasses.labelBoards}>PERSONAL BOARD</label>
+            <MenuItem value='sharedBoard' icon='people'
                       caption='Shared Board' onClick={this.props.sharedBoard}/>
             <MenuDivider/>
-            <MenuItem value='addnote' icon='note' style={{color: '#900C3F'}}
+            <MenuItem value='addnote' icon='note'
                       caption='Add note' onClick={this.add.bind(this, "New note")}/>
-            <MenuItem value='sharenotes' icon='share' style={{color: '#900C3F'}}
+            <MenuItem value='sharenotes' icon='share'
                       caption='Share all' onClick={this.sendAll.bind(this)}/>
             <MenuDivider/>
-            <MenuItem value='votes' icon='star_half' style={{color: '#900C3F'}}
+            <MenuItem value='votes' icon='star_half'
                       caption='Available votes:'>{this.props.meetingConfiguration.votes}</MenuItem>
-            <MenuItem value='votes' icon='access_time' style={{color: '#900C3F'}}
+            <MenuItem value='votes' icon='access_time'
                       caption='Time:'>{this.props.meetingConfiguration.votes}</MenuItem>
-            <Dropdown label="Tag filter" auto style={{color: '#900C3F'}}
+            <Dropdown label="Tag filter" auto
                       onChange={this.filterTags.bind(this)} required
                       source={this.state.mapTag} value={this.state.tagValue}/>
             <MenuDivider/>
           </NavDrawer>
-          <Panel >
-            
+          <Panel>
             <div name="Notes container" className={classes.noteContainer}>
               {this.renderNotes(this.state.notes, this.state.tagName)}
             </div>
-
           </Panel>
           <Modal ref="mymodal" onOk={this.props.home} message={this.state.modalMessage}/>
         </Layout>
@@ -314,7 +290,6 @@ class PersonalBoard extends Component {
     );
   }
 }
-
 
 PersonalBoard.propTypes = {
   connectDropTarget: PropTypes.func.isRequired,
@@ -331,6 +306,6 @@ export default flow(
   DropTarget(ItemTypes.NOTE, NoteTarget,
     connection =>
       ( {
-        connectDropTarget: connection.dropTarget()
-      }
+          connectDropTarget: connection.dropTarget()
+        }
       )), connect(mapStateToProps, mapDispatchToProps))(PersonalBoard);

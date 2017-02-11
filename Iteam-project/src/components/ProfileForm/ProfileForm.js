@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {updateUser, validatePasswordUser, getUserInformation} from '../../utils/actions/userActions.js';
 import {getProfessions} from '../../utils/actions/utilsActions'
 import classes from './ProfileForm.scss';
+import cssClasses from '../ComponentCSSForms/componentCSS.scss'
 import {PATHS} from './../../constants/routes';
 import user from './user.png';
 import {connect} from 'react-redux';
@@ -33,6 +34,7 @@ class ProfileForm extends React.Component {
       genderValue: 'male',
       hobbies: '',
       username: '',
+      score: '',
       oldPassword: '',
       password: '',
       errorOldPassword: '',
@@ -64,7 +66,8 @@ class ProfileForm extends React.Component {
           hobbies: response.data.hobbies.toString(),
           username: response.data.username,
           nationality: response.data.nationality,
-          profession: response.data.profession
+          profession: response.data.profession,
+          score: 0 //response.data.score.toString()
         })
       })
   }
@@ -116,24 +119,24 @@ class ProfileForm extends React.Component {
   render() {
     if (!this.state.showSpinner) {
       return (
-        <div className={"container " + classes.profile}>
+        <div className={"container " + cssClasses.containerForm}>
           <BootstrapModal ref="profileModal" message={this.state.messageModal}/>
-          <div className={classes.labelTitle}>
+          <div className={cssClasses.labelMainTitle}>
             <label>MY PROFILE</label>
           </div>
-          <div className={classes.form}>
-            <div className={"row col-md-12 " + classes.paddingZero}>
-              <img src={user}/>
+          <div className={cssClasses.form}>
+            <div className={"row col-md-12 " + cssClasses.paddingInnerElements}>
+              <img className={cssClasses.imageAvatar} src={user}/>
               <span className={classes.span}>Score: {this.state.score}</span>
-              <span className={classes.labelInfo}>
+              <span className={cssClasses.labelInfo}>
                 <label className={classes.labelWelcome}>Welcome {this.state.username}!</label>
               </span >
             </div>
-            <div className={"col-md-12 " + classes.paddingZero}>
-              <div className={classes.labelInfo}>
+            <div className={"col-md-12 " + cssClasses.paddingInnerElements}>
+              <div className={cssClasses.labelInfo}>
                 <label>Personal Information</label>
               </div>
-              <div className={"row col-md-12 " + classes.paddingZero}>
+              <div className={"row col-md-12 " + cssClasses.paddingInnerElements}>
                 <InputComponent className="col-md-6" type='text' label='First Name' name='firstName' disable
                                 value={this.state.firstName}/>
 
@@ -141,14 +144,14 @@ class ProfileForm extends React.Component {
                                 name='lastName' value={this.state.lastName} disable/>
               </div>
             </div>
-            <div className={"row col-md-12 " + classes.paddingZero}>
+            <div className={"row col-md-12 " + cssClasses.paddingInnerElements}>
               <InputComponent className="col-md-6" type='text' label="Born Date" name='bornDate'
                               value={this.state.bornDate.toLocaleDateString()} disable/>
               <InputComponent className="col-md-6" type='text' label='Nationality' disable
                               name='nationality'
                               value={this.state.nationality}/>
             </div>
-            <div className={"row col-md-12 " + classes.paddingZero}>
+            <div className={"row col-md-12 " + cssClasses.paddingInnerElements}>
               <div className="col-md-6">
                 <DropdownComponent source={this.state.dropDownSource} label="Select profession"
                                    initialValue={this.state.profession}
@@ -162,7 +165,7 @@ class ProfileForm extends React.Component {
               </div>
             </div>
             <div className="row">
-              <label className={classes.labelInfo}>Acount Information</label>
+              <label className={cssClasses.labelInfo}>Acount Information</label>
             </div>
             <div className="row">
               <InputComponent className="col-md-8" type='email' label='Email address' icon='email'

@@ -5,6 +5,7 @@ import {Button} from 'react-toolbox/lib/button'
 import {push} from 'react-router-redux'
 import {PATHS} from '../../constants/routes'
 import classes from './TeamForm.scss'
+import cssClasses from '../ComponentCSSForms/componentCSS.scss'
 import chipTheme from './chips.scss'
 import Tooltip from 'react-toolbox/lib/tooltip'
 import Chip from 'react-toolbox/lib/chip'
@@ -355,12 +356,12 @@ class TeamForm extends React.Component {
   render() {
     if (!this.state.showSpinner) {
       return (
-        <div className={"container " + classes.teamContainer}>
-          <div className={classes.label}>
+        <div className={"container " + cssClasses.containerForm}>
+          <div className={cssClasses.labelMainTitle}>
             <label>CREATE TEAM</label>
           </div>
-          <div className={"row " + classes.form}>
-            <InputComponent className={"row col-md-12 " + classes.paddingZero} label='Team name' type='type' required
+          <div className={"row " + cssClasses.form}>
+            <InputComponent className={"row col-md-12 " + cssClasses.paddingInnerElements} label='Team name' type='type' required
                             value={this.state.teamName}
                             onValueChange={this.handleChange.bind(this, 'teamName')}
                             onBlur={this.checkName.bind(this)} onValueError={this.state.errorTeamName}/>
