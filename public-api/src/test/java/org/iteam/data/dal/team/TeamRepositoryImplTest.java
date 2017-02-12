@@ -130,7 +130,7 @@ public class TeamRepositoryImplTest {
         givenAnOwnerName();
         givenAnElasticsearchSearchResponseNull();
         // whenGetTeamsIsCalled();
-        // thenListOfTeamsIsEmpty();
+        thenListOfTeamsIsEmpty();
     }
 
     @Test
@@ -138,7 +138,7 @@ public class TeamRepositoryImplTest {
         givenAnOwnerName();
         givenAnElasticsearchSearchResponseNotHits();
         // whenGetTeamsIsCalled();
-        // thenListOfTeamsIsEmpty();
+        thenListOfTeamsIsEmpty();
     }
 
     private void thenListOfTeamsIsEmpty() {

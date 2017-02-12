@@ -119,7 +119,6 @@ class MyTeamsForm extends Component {
               <ListSubHeader />
               {Object.keys(teamMap).map((key) => {
                 members = teamMap[key].team.members;
-                console.log('key: ' + teamMap[key].team.members);
                 return (
                   <div key={key}>
                     <ListItem
