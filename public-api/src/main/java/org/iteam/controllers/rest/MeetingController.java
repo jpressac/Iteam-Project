@@ -8,6 +8,7 @@ import org.iteam.data.dto.Meeting;
 import org.iteam.data.model.D3CollapseTreeModel;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
+import org.iteam.data.model.PaginationModel;
 import org.iteam.services.meeting.MeetingService;
 import org.iteam.services.meeting.MeetingServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -144,7 +145,7 @@ public class MeetingController {
 
     @RequestMapping(value = "/meeting/meetingbyuser")
     public List<Meeting> getUserMeetings(@RequestParam(value = "username", required = true) String username) {
-        return meetingServiceImpl.getMeetingByTeamName(username);
+        return meetingServiceImpl.getMeetingByUser(username);
     }
 
     @RequestMapping(value = "/meeting/meetingusers", method = RequestMethod.GET)
@@ -169,18 +170,43 @@ public class MeetingController {
         meetingServiceImpl.updateMeetingUsers(meetingId, username);
     }
 
-    @RequestMapping(value = "meeting/bystate", method = RequestMethod.GET)
-    public ResponseEntity<List<Meeting>> getMeetingsByState() {
-        List<Meeting> meetings = meetingServiceImpl
-                .getMeetingByState(SecurityContextHolder.getContext().getAuthentication().getName());
-        return new ResponseEntity<List<Meeting>>(meetings, HttpStatus.OK);
+    @RequestMapping(value = "meeting/programmed", method = RequestMethod.GET)
+    public ResponseEntity<PaginationModel<Meeting>> getProgrammedMeetings(
+            @RequestParam(value = "offset", required = true) int offset,
+            @RequestParam(value = "limit", required = true) int limit) {
+        PaginationModel<Meeting> meetings = meetingServiceImpl
+                .getProgrammedMeetings(SecurityContextHolder.getContext().getAuthentication().getName(), offset, limit);
+        return new ResponseEntity<PaginationModel<Meeting>>(meetings, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/report/custom/bymeeting", method = RequestMethod.GET)
-    public ResponseEntity<List<Meeting>> customReportByMeeting(@RequestParam(value = "tokenTopic") String tokenTopic) {
-        List<Meeting> meetings = meetingServiceImpl
-                .getCustomReportByMeeting(SecurityContextHolder.getContext().getAuthentication().getName(), tokenTopic);
-        return new ResponseEntity<List<Meeting>>(meetings, HttpStatus.OK);
+    @RequestMapping(value = "meeting/search/history", method = RequestMethod.GET)
+    public ResponseEntity<PaginationModel<Meeting>> getEndedMeetingsByToken(
+            @RequestParam(value = "token", required = true) String token,
+            @RequestParam(value = "offset", required = true) int offset,
+            @RequestParam(value = "limit", required = true) int limit) {
+        PaginationModel<Meeting> meetings = meetingServiceImpl.getEndedMeetingsByToken(
+                SecurityContextHolder.getContext().getAuthentication().getName(), token, offset, limit);
+        return new ResponseEntity<PaginationModel<Meeting>>(meetings, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "meeting/search/programmed", method = RequestMethod.GET)
+    public ResponseEntity<PaginationModel<Meeting>> getProgrammedMeetingsByToken(
+            @RequestParam(value = "token", required = true) String token,
+            @RequestParam(value = "offset", required = true) int offset,
+            @RequestParam(value = "limit", required = true) int limit) {
+        PaginationModel<Meeting> meetings = meetingServiceImpl.getProgrammedMeetingsByToken(
+                SecurityContextHolder.getContext().getAuthentication().getName(), token, offset, limit);
+        return new ResponseEntity<PaginationModel<Meeting>>(meetings, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "meeting/paginated", method = RequestMethod.GET)
+    public ResponseEntity<PaginationModel<Meeting>> getPaginatedMeetings(
+            @RequestParam(value = "offset", required = true) int offset,
+            @RequestParam(value = "limit", required = true) int limit) {
+        PaginationModel<Meeting> meetings = meetingServiceImpl
+                .getEndedMeetings(SecurityContextHolder.getContext().getAuthentication().getName(), offset, limit);
+        return new ResponseEntity<PaginationModel<Meeting>>(meetings, HttpStatus.OK);
+
     }
 
     @Autowired

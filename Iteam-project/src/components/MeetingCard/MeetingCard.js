@@ -6,6 +6,8 @@ import {connect} from "react-redux";
 import {Card, CardMedia, CardTitle, CardText, CardActions} from 'react-toolbox/lib/card';
 import {Button} from "react-toolbox/lib/button";
 import {updateMeetingId} from "../../redux/reducers/Meeting/MeetingReducer";
+import  card from './Card.scss'
+import divCss from '../MeetingsHistoryForm/formContainer.scss'
 
 const mapDispatchToProps = (dispatch) => ({
   updateMyMeetingId: (meetingId) => dispatch(updateMeetingId(meetingId))
@@ -32,20 +34,19 @@ class MeetingCard extends Component {
   render() {
     let meetings = this.props.endedMeetings;
     return (
-      <div>
+      <div className={divCss.cardsdiv}>
         {Object.keys(meetings).map((key) => {
-          return (
-            <Card>
-              <CardTitle title={'Name'+ meetings[key].topic}/>
-              <CardTitle title={'Description' + meetings[key].description}/>
-              <CardTitle title={'Organizer' + meetings[key].ownerName}/>
-              <CardTitle title={'Ending date' + MeetingCard.renderDate(meetings[key].endDate)}/>
-              <CardActions>
-                <Button label="View reports" onClick={this.viewReports.bind(this, meetings[key].id)}/>
-                <Button label="Delete" onClick={this.deleteMeeting(meetings[key].id)} />
-              </CardActions>
-            </Card>
-          );
+        return (
+        <Card theme={card}>
+          <CardTitle className="col-md-3" title='Name' subtitle={meetings[key].topic}/>
+          <CardTitle className ="col-md-3" title='Organizer' subtitle={meetings[key].ownerName}/>
+          <CardTitle className ="col-md-3" title='Date' subtitle={MeetingCard.renderDate(meetings[key].endDate)}/>
+          <CardActions className="col-md-3">
+            <Button label="View reports" onClick={this.viewReports.bind(this, meetings[key].id)}/>
+          </CardActions>
+          <CardTitle className ="col-md-12" title='Description'  subtitle={meetings[key].description}/>
+        </Card>
+        );
         })
         }
       </div>);

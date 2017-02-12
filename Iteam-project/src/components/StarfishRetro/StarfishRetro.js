@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, {Component, PropTypes} from "react";
 import classes from './StarfishRetro.scss'
 import ProgressBar from 'react-toolbox/lib/progress_bar';
 

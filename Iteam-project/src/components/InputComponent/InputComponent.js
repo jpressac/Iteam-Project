@@ -17,7 +17,7 @@ class InputComponent extends React.Component {
           <Input type={this.props.type} label={this.props.label} theme={themeLabel}
                  name={this.props.name} required={this.props.required}
                  value={this.props.value} onChange={this.props.onValueChange} error={this.props.onValueError}
-                 onBlur={this.props.onBlur} maxLength={this.props.maxLength} min={this.props.minValue}/>
+                 onBlur={this.props.onBlur} maxLength={this.props.maxLength} min={this.props.minValue} onKeyPress={this.props.onKeyPress}/>
         </div>
       )
     } else {
@@ -25,8 +25,12 @@ class InputComponent extends React.Component {
         <div className={this.props.className}>
           <Input type={this.props.type} label={this.props.label} disabled theme={themeLabel} name={this.props.name}
                  required={this.props.required}
-                 value={this.props.value} onChange={this.props.onValueChange} error={this.props.onValueError}
-                 onBlur={this.props.onBlur} maxLength={this.props.maxLength}/>
+                 value={this.props.value}
+                 onChange={this.props.onValueChange}
+                 error={this.props.onValueError}
+                 onBlur={this.props.onBlur}
+                 maxLength={this.props.maxLength}
+                 onKeyPress={this.props.onKeyPress}/>
         </div>
       )
     }
@@ -51,7 +55,8 @@ InputComponent.propTypes = {
   onBlur: PropTypes.func,
   required: PropTypes.bool,
   maxLength: PropTypes.number,
-  minValue: PropTypes.string
+  minValue: PropTypes.string,
+  onKeyPress: PropTypes.func
 };
 
 export default InputComponent

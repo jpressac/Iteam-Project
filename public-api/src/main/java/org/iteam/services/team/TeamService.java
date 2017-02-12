@@ -5,6 +5,7 @@ import java.util.List;
 import org.iteam.data.dto.Team;
 import org.iteam.data.dto.UserDTO;
 import org.iteam.data.model.FilterList;
+import org.iteam.data.model.PaginationModel;
 import org.iteam.data.model.TeamModel;
 import org.iteam.data.model.TeamUserModel;
 
@@ -48,7 +49,7 @@ public interface TeamService {
      *            the owner of the teams.
      * @return a list of teams.
      */
-    public List<TeamModel> getTeams(String ownerName);
+    public PaginationModel<TeamModel> getTeams(String ownerName, int size, int from);
 
     /**
      * Retrieve the the list of teams in that the user is part of.
@@ -57,7 +58,12 @@ public interface TeamService {
      *            the username.
      * @return the list of team names.
      */
-    public List<String> getTeamByUser(String username);
+
+    public PaginationModel<TeamModel> getTeamByToken(String ownerName, String token, int size, int from);
+
+    public List<TeamModel> getAllTeams(String ownerName);
+
+    public List<String> getTeamByUser(String username, int size, int from);
 
     /**
      * Retrieve team and user information given a meetingId.

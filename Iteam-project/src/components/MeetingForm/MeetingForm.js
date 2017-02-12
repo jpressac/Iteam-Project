@@ -16,6 +16,7 @@ import themeLabel from './label.scss'
 import Avatar from 'react-toolbox/lib/avatar'
 import avatarTheme from './avatarTheme.scss'
 import {TEAM} from '../../constants/HostConfiguration'
+import {push} from 'react-router-redux'
 
 
 const mapDispatchToProps = dispatch => ({
