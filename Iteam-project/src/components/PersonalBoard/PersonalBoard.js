@@ -60,7 +60,7 @@ class PersonalBoard extends Component {
       notes: {},
       mapTag: [],
       tagValue: '',
-      tagName: 'Miscellaneous'
+      tagName: 'All'
     }
 
   };

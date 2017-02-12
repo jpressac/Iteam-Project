@@ -24,6 +24,9 @@ import {MenuItem, MenuDivider} from "react-toolbox/lib/menu";
 import Chat from '../Chat/Chat';
 import Modal from '../BootstrapModal/BootstrapModal';
 import panelTheme from '../SharedBoard/panel.scss'
+import Scamper from '../Scamper/Scamper';
+import StarfishRetro from '../StarfishRetro/StarfishRetro';
+
 
 
 const NoteTarget = {
@@ -125,10 +128,20 @@ class SharedBoard extends Component {
         break;
       case 1:
         console.log('scamper');
-        return this.renderScamper();
+        console.log(this.state.notes)
+        //return this.renderScamper();
+          return(
+            <Scamper renderNotes={this.renderNotes.bind(this)} notes={this.state.notes} />
+            );
+        break;
+
       case 2:
-        console.log('Perspective');
-        return this.renderPerspective();
+        console.log('Retrospective');
+            return (
+              <StarfishRetro  renderNotes={this.renderNotes.bind(this)} notes={this.state.notes}/>
+            );
+       break;
+        //return this.renderRetrospective();
 
     }
   }
@@ -138,128 +151,10 @@ class SharedBoard extends Component {
     return notes;
   }
 
-renderNoteByTag(tag,noteMap){
 
-  switch(tag){
-    case'Sustitute':
-      return this.renderNotes(noteMap,tag,'All');
-          break;
-    case'Combine':
-      return this.renderNotes(noteMap,tag,'All');
-      break;
-    case'Adapt':
-      return this.renderNotes(noteMap,tag,'All');
-      break;
-    case'Modify':
-      return this.renderNotes(noteMap,tag,'All');
-      break;
-    case'Put to others use':
-      return this.renderNotes(noteMap,tag,'All');
-      break;
-    case'Eliminate':
-      return this.renderNotes(noteMap,tag,'All');
-      break;
-    case'Rearrange':
-      return this.renderNotes(noteMap,tag,'All');
-      break;
 
-  }
-}
 
-  renderPerspective(){
-    return(
-    <div >
-      <div className="row">
-        <div className={classes.square}>
-          <div className={classes.content}>
-            <label className={classes.letter}> </label>
 
-          </div>
-        </div>
-        <div className={classes.square}>
-          <div className={classes.content}>
-            <label className={classes.letter}></label>
-
-          </div>
-        </div>
-      </div>
-      <div className="row">
-        <div className={classes.square}>
-          <div className={classes.content}>
-            <label className={classes.letter}></label>
-
-          </div>
-        </div>
-        <div className={classes.square}>
-          <div className={classes.content}>
-            <label className={classes.letter}> </label>
-
-          </div>
-        </div>
-      </div>
-      </div>
-    )
-  }
-  renderScamper() {
-    return (
-      <div >
-        <div className="row">
-          <div className={classes.square}>
-            <div className={classes.content}>
-              <label className={classes.letter}>S </label>
-              <label>(subtitute)</label>
-              {this.renderNoteByTag('Sustitute', this.state.notes)}
-            </div>
-          </div>
-          <div className={classes.square}>
-            <div className={classes.content}>
-              <label className={classes.letter}>C</label>
-              <label>(combine)</label>
-              {this.renderNoteByTag('Combine', this.state.notes)}
-            </div>
-          </div>
-        </div>
-        <div className="row">
-          <div className={classes.squareMiddle}>
-            <div className={classes.content}>
-              <label className={classes.letter}>A </label>
-              <label>(adapt)</label>
-              {this.renderNoteByTag('Adapt', this.state.notes)}
-            </div>
-          </div>
-          <div className={classes.squareMiddle}>
-            <div className={classes.content}>
-              <label className={classes.letter}>M </label>
-              <label>(modify)</label>
-              {this.renderNoteByTag('Modify', this.state.notes)}
-            </div>
-          </div>
-          <div className={classes.squareMiddle}>
-            <div className={classes.content}>
-              <label className={classes.letter}>P </label>
-              <label>(put to other use)</label>
-              {this.renderNoteByTag('Put to others use', this.state.notes)}
-            </div>
-          </div>
-        </div>
-        <div className="row">
-          <div className={classes.square}>
-            <div className={classes.content}>
-              <label className={classes.letter}>E </label>
-              <label>(eliminate)</label>
-              {this.renderNoteByTag('Eliminate', this.state.notes)}
-            </div>
-          </div>
-          <div className={classes.square}>
-            <div className={classes.content}>
-              <label className={classes.letter}>R </label>
-              <label>(rearrange)</label>
-              {this.renderNoteByTag('Rearrange', this.state.notes)}
-            </div>
-          </div>
-        </div>
-      </div>)
-  }
 
   notes(note) {
     return (

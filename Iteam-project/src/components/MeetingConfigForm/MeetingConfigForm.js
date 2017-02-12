@@ -31,8 +31,9 @@ const mapStateToProps = (state) => {
 const TooltipButton = Tooltip(Button);
 const technics = [{value: 0, label: 'Brainstorming'}, {value: 1, label: 'SCAMPER'}, {
   value: 2,
-  label: 'Decide on Perspectives'
+  label: 'Starfish Retrospective'
 }];
+const retroTags = ['Start', 'Stop', 'Keep','More', 'Less'];
 const scamperTags =['Sustitute','Combine','Adapt','Modify','Put to others use', 'Eliminate', 'Rearrange'];
 
 
@@ -74,21 +75,18 @@ handleChangeTechnic=(technic)=>{
     this.setState({tags:scamperTags, deletable:false, disabled: true});
 
   }
-  else{
-    this.setState({tags:[], deletable:true, disabled: false});
-  }
-};
-  limitTags=(technic)=>{
-    if(technic==='Decide on Perspectives'){
-
-     if(this.state.tags.length >4)
-     {
-       this.setState({message: '¡You have to complete the form!'});
-       this.refs.meetingModal.openModal();
-     }
+  else
+    if(technic==='Starfish Retrospective')
+    {
+      this.setState({tags:retroTags, deletable:false, disabled: true});
 
     }
-  };
+    else {
+      this.setState({tags:[], deletable:true, disabled: false});
+
+    }
+};
+
 
   dropdownTechnic() {
     return (
@@ -137,13 +135,14 @@ handleChangeTechnic=(technic)=>{
   }
 
 
-  saveMeeting() {
+  saveMeeting(value) {
     this.setState({showSpinner: true});
-
+   
     let tags = this.state.tags;
-    tags.push("Miscellaneous");
-    tags.reverse();
-
+    
+      tags.push("Miscellaneous");
+      tags.reverse();
+    
     axios.post(MEETING.MEETING_CREATE, {
       topic: this.props.meetingInfo.topic,
       ownerName: this.props.user,
@@ -222,7 +221,7 @@ handleChangeTechnic=(technic)=>{
               </div>
               <div className="row">
                 <Button style={{margin: 15, color: 'white', background: '#900C3F'}} target='_blank' raised
-                        onClick={this.saveMeeting.bind(this)}> Create Meeting
+                        onClick={this.saveMeeting.bind(this, this.state.technicValue)}> Create Meeting
                 </Button>
               </div>
 
