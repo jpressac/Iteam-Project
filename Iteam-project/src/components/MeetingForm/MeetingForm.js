@@ -1,6 +1,7 @@
 import React, {Component, PropTypes} from "react"
 import cssClasses from '../ComponentCSSForms/componentCSS.scss'
 import axios from 'axios'
+import {PATHS} from './../../constants/routes'
 import TimePicker from 'react-toolbox/lib/time_picker'
 import {connect} from 'react-redux'
 import DatePicker from 'react-toolbox/lib/date_picker'
@@ -15,7 +16,6 @@ import themeLabel from './label.scss'
 import Avatar from 'react-toolbox/lib/avatar'
 import avatarTheme from './avatarTheme.scss'
 import {TEAM} from '../../constants/HostConfiguration'
-import {PATHS} from "../../constants/routes";
 import {push} from 'react-router-redux'
 
 

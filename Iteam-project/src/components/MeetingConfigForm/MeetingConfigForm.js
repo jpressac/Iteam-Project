@@ -30,7 +30,12 @@ const mapStateToProps = (state) => {
 };
 
 const TooltipButton = Tooltip(Button);
-const technics = ['Brainstorming', 'SCAMPER', 'morphological analysis']
+const technics = ['Brainstorming', 'SCAMPER', 'Starfish Retrospective']
+
+
+const retroTags = ['Start', 'Stop', 'Keep', 'More', 'Less'];
+const scamperTags = ['Sustitute', 'Combine', 'Adapt', 'Modify', 'Put to others use', 'Eliminate', 'Rearrange'];
+
 
 class MeetingConfigForm extends Component {
 
@@ -41,19 +46,50 @@ class MeetingConfigForm extends Component {
       tag: '',
       tags: [],
       technic: 'Brainstorming',
+      deletable: true,
+      disabled: false,
       technicValue: 0,
       pbtime: 0,
       sbtime: 0,
       template: 0,
       templateValue: 0,
       notesFunctions: [],
-      showSpinner: false
+      showSpinner: false,
+      message: ''
     };
   }
 
-  handleChange = (key, value) => {
-    this.setState({[key]: value});
+
+  handleChangeTechnic = (technic)=> {
+    if (technic === 'SCAMPER') {
+
+      this.setState({tags: scamperTags, deletable: false, disabled: true});
+
+    }
+    else if (technic === 'Starfish Retrospective') {
+      this.setState({tags: retroTags, deletable: false, disabled: true});
+
+    }
+    else {
+      this.setState({tags: [], deletable: true, disabled: false});
+
+    }
   };
+
+
+  handleChange = (key, value) => {
+
+    this.setState({[key]: value}, () => {
+
+      if (value == 'Brainstorming' | value == 'SCAMPER' | value == 'Starfish Retrospective') {
+        this.handleChangeTechnic(this.state.technic)
+      }
+    });
+
+
+  };
+
+
 
   handleAddTag() {
     if (this.state.tag !== '') {
@@ -80,7 +116,8 @@ class MeetingConfigForm extends Component {
   tagLabels() {
     return this.state.tags.map(function (tag, index) {
       return (
-        <Chip key={index} deletable onDeleteClick={this.deleteTag.bind(this, index)} theme={chipTheme}>
+        <Chip key={index} deletable={this.state.deletable} onDeleteClick={this.deleteTag.bind(this, index)}
+              theme={chipTheme}>
           {tag}
         </Chip>
       );
@@ -92,6 +129,7 @@ class MeetingConfigForm extends Component {
     this.setState({showSpinner: true});
 
     let tags = this.state.tags;
+
     tags.push("Miscellaneous");
     tags.reverse();
 
@@ -107,7 +145,7 @@ class MeetingConfigForm extends Component {
         tags: tags,
         pbtime: this.state.pbtime,
         sbtime: this.state.sbtime,
-        technic: this.state.technicValue,
+        technic: this.state.technic,
         template: this.state.template
       }
     }).then(function () {
@@ -145,10 +183,10 @@ class MeetingConfigForm extends Component {
                             type="number" minValue={"0"}/>
 
             <div className="row">
-              <InputComponent className={"col-md-6"} label="Tag" value={this.state.tag}
+              <InputComponent className={"col-md-6"} label="Tag" value={this.state.tag} disable={this.state.disabled}
                               maxLength={30} onValueChange={this.handleChange.bind(this, "tag")}/>
               <div className={"col-md-4 " + cssClasses.paddingInnerElements}>
-                <TooltipButton icon='add' tooltip='Add tag' floating mini
+                <TooltipButton icon='add' tooltip='Add tag' floating mini disabled={this.state.disabled}
                                onClick={this.handleAddTag.bind(this)}/>
               </div>
             </div>

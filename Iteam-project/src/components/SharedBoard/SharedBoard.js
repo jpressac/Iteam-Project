@@ -23,6 +23,10 @@ import Dropdown from "react-toolbox/lib/dropdown";
 import {MenuItem, MenuDivider} from "react-toolbox/lib/menu";
 import Chat from '../Chat/Chat';
 import Modal from '../BootstrapModal/BootstrapModal';
+import panelTheme from '../SharedBoard/panel.scss'
+import Scamper from '../Scamper/Scamper';
+import StarfishRetro from '../StarfishRetro/StarfishRetro';
+
 
 
 const NoteTarget = {
@@ -111,6 +115,46 @@ class SharedBoard extends Component {
     //End socket connection
     disconnect();
   }
+  renderTechnic(technic) {
+    console.log(technic);
+    switch (technic) {
+      case 0:
+        console.log('brainstorming');
+        return(
+          <div name="Notes container" className={classes.notes}>
+            {this.renderNotes(this.state.notes, this.state.tagName, this.state.userName)}
+          </div>
+        );
+        break;
+      case 1:
+        console.log('scamper');
+        console.log(this.state.notes)
+        //return this.renderScamper();
+          return(
+            <Scamper renderNotes={this.renderNotes.bind(this)} notes={this.state.notes} />
+            );
+        break;
+
+      case 2:
+        console.log('Retrospective');
+            return (
+              <StarfishRetro  renderNotes={this.renderNotes.bind(this)} notes={this.state.notes}/>
+            );
+       break;
+        //return this.renderRetrospective();
+
+    }
+  }
+  filterNoteByScamper(tag, noteMap){
+   let notes= Object.values(noteMap).filter((note) => tag === note.tag);
+ console.log(notes);
+    return notes;
+  }
+
+
+
+
+
 
   notes(note) {
     return (
@@ -135,23 +179,23 @@ class SharedBoard extends Component {
     //First get notes that have the selected tag
     let filteredNotes = Object.values(noteMap).filter((note) => {
         if (valueForTagFilter === this.state.mapTag[0].label) {
-          console.log('Miscellaneuos')
+
           return note;
         } else {
           if (note.tag === valueForTagFilter) {
-            console.log('Other tags')
+
             return note;
           }
         }
       }
     ).filter((note) => {
       if (valueForUserFilter === this.state.users[0].label) {
-        console.log('All users')
+
         return note;
       }
       else {
         if (note.username === valueForUserFilter) {
-          console.log('otros tags')
+
           return note;
         }
       }
@@ -214,13 +258,13 @@ class SharedBoard extends Component {
       rObj["label"] = user["username"];
       return rObj;
     });
-    console.log('Users' + JSON.stringify(usersForCombo));
+
     this.setState(
       {
         participants: participantInfo,
         users: this.state.users.concat(usersForCombo)
       });
-    console.log('UsersAll' + JSON.stringify(usersForCombo));
+
   };
 
   saveNotes() {
@@ -500,10 +544,10 @@ class SharedBoard extends Component {
               {this.renderEndMeetingButton(this.props.user)}
             </div>
           </NavDrawer>
-          <Panel>
-            <div name="Notes container" className={classes.notes}>
-              {this.renderNotes(this.state.notes, this.state.tagName, this.state.userName)}
-            </div>
+          <Panel scrollY theme={panelTheme}>
+            {this.renderTechnic(this.props.meetingConfiguration.technic)}
+
+
           </Panel>
           <Drawer active={this.state.active} theme={classes}
                   type="right"

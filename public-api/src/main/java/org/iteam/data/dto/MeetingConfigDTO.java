@@ -17,7 +17,7 @@ public class MeetingConfigDTO {
     private int PBtime;
     private int SBtime;
     private int template;
-    private int technic;
+    private String technic;
 
     /**
      * @return the votes
@@ -97,7 +97,7 @@ public class MeetingConfigDTO {
     /**
      * @return the technic
      */
-    public int getTechnic() {
+    public String getTechnic() {
         return technic;
     }
 
@@ -105,7 +105,7 @@ public class MeetingConfigDTO {
      * @param technic
      *            the technic to set
      */
-    public void setTechnic(int technic) {
+    public void setTechnic(String technic) {
         this.technic = technic;
     }
 
