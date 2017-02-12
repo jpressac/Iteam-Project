@@ -570,6 +570,8 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         String id = meeting.getMeetingId();
         TeamUserModel teamUserModel = teamRepository.getTeamUsersByMeeting(id);
         List<String> userNames = new ArrayList<String>();
+        List<String> viewedUsers = new ArrayList<>();
+        viewedUsers.add(meeting.getOwnerName());
 
         teamUserModel.getTeamUsers().forEach((user) -> {
             userNames.add(user.getUsername());
@@ -581,6 +583,8 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         ViewedMeeting viewedMeeting = new ViewedMeeting();
         viewedMeeting.setUsers(userNames);
         viewedMeeting.setMeetingTopic(meeting.getTopic());
+        viewedMeeting.setTime(meeting.getProgrammedDate());
+        viewedMeeting.setViewedUsers(viewedUsers);
         String data = JSONUtils.ObjectToJSON(viewedMeeting);
 
         IndexResponse response = elasticsearchClientImpl.insertData(data, StringUtilities.INDEX_MEETING_VIEWED_USERS,
@@ -624,11 +628,13 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         List<BiFieldModel> dataToUpdate = new ArrayList<>();
 
         meetingsViewedByUser.forEach((meeting) -> {
-            List<String> viewedUsers = meeting.getViewedUsers();
+            List<String> viewedUsers = new ArrayList<>();
+            viewedUsers = meeting.getViewedUsers();
             viewedUsers.add(username);
 
-            BiFieldModel<List<String>> meetingToUpdate = new BiFieldModel<List<String>>(meeting.getMeetingId(),
-                    viewedUsers);
+            meeting.setViewedUsers(viewedUsers);
+            BiFieldModel<String> meetingToUpdate = new BiFieldModel<String>(meeting.getMeetingId(),
+                    JSONUtils.ObjectToJSON(meeting));
             dataToUpdate.add(meetingToUpdate);
         });
 

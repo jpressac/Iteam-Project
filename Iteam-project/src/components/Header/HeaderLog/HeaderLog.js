@@ -14,6 +14,7 @@ import {fromMeetingOrTeam} from '../../../redux/reducers/Meeting/MeetingForTeamR
 import {meetingsNotViewed} from '../../../redux/reducers/Meeting/MeetingNotViewedReducer'
 import themeButton from './button.scss'
 import Inbox from '../../Inbox/Inbox'
+import InboxList from '../../Inbox/InboxList';
 import meetingScheduler from '../../../utils/actions/getMeetingTask'
 
 const mapDispatchToProps = dispatch => ({
@@ -49,13 +50,12 @@ class HeaderLog extends Component {
     super(props);
     this.state = {
       count: '',
-      meetingsNotViewed: []
+      meetingsNotViewed: [],
+      showList:false
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    console.debug(this.props.meetings);
-    console.debug(nextProps.meetings);
     if (this.props.meetings != undefined) {
       if (this.props.meetings.length != nextProps.meetings.length) {
         this.setState({
@@ -71,32 +71,38 @@ class HeaderLog extends Component {
   }
 
   componentDidUnmount() {
+    this.onClickShowList();
     meetingScheduler.stop()
   }
 
   goToNewMeeting() {
+    this.onClickShowList();
     this.props.newMeeting();
     this.props.meeting();
   }
 
   goToNewTeam() {
+    this.onClickShowList();
     this.props.newMeeting();
     this.props.team();
   }
 
   goToHistory() {
+    this.onClickShowList();
     this.props.meetingHistory();
   }
 
+  onClickShowList(){
+    this.setState({showList: !this.state.showList})
+  }
+
   renderInbox() {
-    console.debug('hasta aca llega, count: ' + this.state.count);
-    console.debug('meetings: ' + this.state.meetingsNotViewed);
-    this.setState({count: ''});
+  if(this.state.showList){
     return (
-      <Inbox
-        meetings={this.state.meetingsNotViewed}
-      />
-    )
+      <InboxList
+        meetings={this.state.meetingsNotViewed}>
+      </InboxList>
+    )}
   }
 
   render() {
@@ -119,13 +125,16 @@ class HeaderLog extends Component {
                           onClick={this.goToNewTeam.bind(this)}/></li>
               <li><Button label='MY TEAMS' theme={themeButton}
                           onClick={this.props.teamList}/></li>
-              <li><Button label='INBOX' theme={themeButton}
-                          onClick={this.renderInbox.bind(this)}/>{this.state.count.toString()}</li>
-              <li><span className={classes.span}><label> {this.props.user}</label></span ></li>
+              <li><Button label='INBOX ' theme={themeButton}
+                          onClick={this.onClickShowList.bind(this)}>
+                <spam>{this.state.count}</spam>
+              </Button></li>
+              <li><span className={classes.span}><label>{this.props.user}</label></span ></li>
               <li><LogoutButton/></li>
             </ul>
           </Navigation>
         </AppBar>
+        {this.renderInbox()}
       </header>
     );
   };

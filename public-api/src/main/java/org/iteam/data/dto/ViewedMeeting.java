@@ -15,7 +15,8 @@ public class ViewedMeeting {
     private List<String> users;
     @JsonInclude(Include.NON_NULL)
     private String meetingId;
-
+    private Long time;
+    @JsonInclude(Include.NON_ABSENT)
     private List<String> viewedUsers;
     private String meetingTopic;
 
@@ -49,6 +50,14 @@ public class ViewedMeeting {
 
     public void setMeetingId(String meetingId) {
         this.meetingId = meetingId;
+    }
+
+    public Long getTime() {
+        return time;
+    }
+
+    public void setTime(Long time) {
+        this.time = time;
     }
 
     @Override

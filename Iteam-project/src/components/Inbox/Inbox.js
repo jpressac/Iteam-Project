@@ -1,7 +1,3 @@
-/**
- * Created by Usuario on 05/02/2017.
- */
-
 import React, {Component, PropTypes} from 'react';
 import InboxList from './InboxList';
 import classes from './InboxStyle.scss';
@@ -13,16 +9,18 @@ class Inbox extends Component {
     super(props);
   }
 
-  componentWillUnmount(){
+  componentWillUnmount() {
     updateMeetingsViewed(this.prop.meetings);
   }
 
 
   render() {
+    console.debug('Entra a Inbox');
+    console.debug(this.props.meetings);
     return (
-      <div className={classes.InboxButton}>
+      <div>
         <InboxList
-          meetings={this.state.meetings}>
+          meetings={this.props.meetings}>
         </InboxList>
       </div>
     )

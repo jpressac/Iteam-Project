@@ -13,8 +13,13 @@
 
 .messageList{
   overflow: auto;
-  position: relative;
-  height: 220px;
+  height: 50%;
+  width: 25%;
+  position: fixed;
+  right: 1%;
+  margin-top: 5.1%;
+  background: white;
+  color: #900C3F;
 }
 
 /* message box header styles*/
@@ -58,6 +63,8 @@
 .msgRow {
   width: 100%;
   display: inline-block;
+  margin-bottom: 2px;
+  background: whitesmoke;
 }
 
 .message {
@@ -112,6 +119,6 @@
 }
 
 .p{
-  text-align: left;
+  text-align: right;
   margin: 0 0 0 0;
 }

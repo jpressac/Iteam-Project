@@ -189,7 +189,7 @@ public class MeetingController {
         return new ResponseEntity<List<ViewedMeeting>>(meetings, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/meeting/viewed", method = RequestMethod.POST)
+    @RequestMapping(value = "/meeting/viewed", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
     public ResponseEntity<Void> updateMeetingViewed(@RequestBody @Valid List<ViewedMeeting> meetingsViewedByUser) {
         meetingServiceImpl.updateMeetingViewedByUser(meetingsViewedByUser,
                 SecurityContextHolder.getContext().getAuthentication().getName());
