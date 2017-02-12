@@ -83,4 +83,6 @@ public interface TeamRepository {
     public boolean checkTeamNameExistent(String teamName, String teamOwner);
 
     public PaginationModel<TeamModel> getTeamsByToken(String ownerName, String token, int size, int from);
+
+    public List<TeamModel> getAllTeams(String ownerName);
 }

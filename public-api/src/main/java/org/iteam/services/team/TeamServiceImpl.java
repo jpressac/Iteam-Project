@@ -61,4 +61,9 @@ public class TeamServiceImpl implements TeamService {
     public PaginationModel<TeamModel> getTeamByToken(String ownerName, String token, int size, int from) {
         return teamRepository.getTeamsByToken(ownerName, token, size, from);
     }
+
+    @Override
+    public List<TeamModel> getAllTeams(String ownerName) {
+        return teamRepository.getAllTeams(ownerName);
+    }
 }

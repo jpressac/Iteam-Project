@@ -74,6 +74,13 @@ public class TeamController {
      * @return a list of teams.
      */
     @RequestMapping(value = "team/byowner", method = RequestMethod.GET)
+    public ResponseEntity<List<TeamModel>> getTeams() {
+        List<TeamModel> teams = teamService
+                .getAllTeams(SecurityContextHolder.getContext().getAuthentication().getName());
+        return new ResponseEntity<List<TeamModel>>(teams, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "team/byowner/paginated", method = RequestMethod.GET)
     public ResponseEntity<PaginationModel<TeamModel>> getTeamByOwner(
             @RequestParam(value = "offset", required = true) int from,
             @RequestParam(value = "limit", required = true) int size) {

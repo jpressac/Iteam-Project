@@ -17,6 +17,7 @@ export const TEAM = {
   TEAM_CREATE : URL + '/team/create',
   TEAM_DELETE : URL + '/team/delete',
   TEAM_BY_OWNER : URL + '/team/byowner',
+  TEAM_BY_OWNER_PAGINATED : URL + '/team/byowner/paginated',
   TEAM_SELECT : URL + '/team/select',
   TEAM_USER_BY_MEETING : URL + '/team/users/bymeeting',
   TEAM_NAME_EXISTENT: URL + '/team/name/existent',

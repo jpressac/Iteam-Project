@@ -139,10 +139,24 @@ public class TeamRepositoryImpl implements TeamRepository {
                 teamList.add(
                         new TeamModel(hit.getId(), (Team) JSONUtils.JSONToObject(hit.getSourceAsString(), Team.class)));
             }
-
         }
         return new PaginationModel<TeamModel>(response.getHits().getTotalHits(), teamList);
+    }
 
+    @Override
+    public List<TeamModel> getAllTeams(String ownerName) {
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+        queryBuilder.must(QueryBuilders.termQuery(OWNER_NAME_FIELD, ownerName));
+
+        SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_TEAM, queryBuilder);
+        List<TeamModel> teamList = new ArrayList<>();
+        if (response.getHits().getTotalHits() > 0) {
+            for (SearchHit hit : response.getHits()) {
+                teamList.add(
+                        new TeamModel(hit.getId(), (Team) JSONUtils.JSONToObject(hit.getSourceAsString(), Team.class)));
+            }
+        }
+        return teamList;
     }
 
     private QueryBuilder applyFiltersToQuery(FilterList filterList) {

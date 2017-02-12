@@ -41,7 +41,7 @@ class MyTeamsForm extends Component {
   }
 
   getAllTeams() {
-    axios.get(TEAM.TEAM_BY_OWNER, {
+    axios.get(TEAM.TEAM_BY_OWNER_PAGINATED, {
       params: {
         offset: this.state.offset,
         limit: ITEMS_PER_PAGE

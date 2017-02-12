@@ -8,7 +8,6 @@ import TimePicker from 'react-toolbox/lib/time_picker';
 import DatePicker from 'react-toolbox/lib/date_picker';
 import {push} from 'react-router-redux';
 import {PATHS} from '../../constants/routes';
-import classes from './MymeetForm.scss';
 import cssClasses from '../ComponentCSSForms/componentCSS.scss'
 import BootstrapModal from '../../components/BootstrapModal/BootstrapModal';
 import listFormat from './List.scss';
@@ -571,7 +570,6 @@ class MymeetForm extends Component {
                              pageLinkClassName={pagination}
             />
           </div>
-        </div>
       )
     } else {
       return (

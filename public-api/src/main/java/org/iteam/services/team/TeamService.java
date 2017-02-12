@@ -61,6 +61,8 @@ public interface TeamService {
 
     public PaginationModel<TeamModel> getTeamByToken(String ownerName, String token, int size, int from);
 
+    public List<TeamModel> getAllTeams(String ownerName);
+
     public List<String> getTeamByUser(String username, int size, int from);
 
     /**
