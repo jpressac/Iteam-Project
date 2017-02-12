@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react'
-import classes from './MeetingConfigView.scss'
+import cssClasses from '../ComponentCSSForms/componentCSS.scss'
 import {connect} from 'react-redux'
 import chipTheme from './chips.scss'
 import {Button} from 'react-toolbox/lib/button'
@@ -121,12 +121,12 @@ class MeetingConfigForm extends Component {
   render() {
     if (!this.state.showSpinner) {
       return (
-        <div className={"container " + classes.configMeetingForm}>
-          <div className={classes.label}>
+        <div className={"container " + cssClasses.containerForm}>
+          <div className={cssClasses.labelMainTitle}>
             <label>MEETING SETTINGS</label>
             <Avatar theme={avatarTheme} icon="settings"/>
           </div>
-          <div className={"row " + classes.form}>
+          <div className={"row " + cssClasses.form}>
             <div className="col-md-9">
               <DropdownComponent label="Select technic" onValueChange={this.handleChange.bind(this, "technic")}
                                  source={technics} initialValue={this.state.technic}/>
@@ -147,7 +147,7 @@ class MeetingConfigForm extends Component {
             <div className="row">
               <InputComponent className={"col-md-6"} label="Tag" value={this.state.tag}
                               maxLength={30} onValueChange={this.handleChange.bind(this, "tag")}/>
-              <div className={"col-md-4 " + classes.paddingZero}>
+              <div className={"col-md-4 " + cssClasses.paddingInnerElements}>
                 <TooltipButton icon='add' tooltip='Add tag' floating mini
                                onClick={this.handleAddTag.bind(this)}/>
               </div>

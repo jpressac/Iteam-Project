@@ -9,14 +9,14 @@ import DatePicker from 'react-toolbox/lib/date_picker';
 import {push} from 'react-router-redux';
 import {PATHS} from '../../constants/routes';
 import classes from './MymeetForm.scss';
-import Input from 'react-toolbox/lib/input';
+import cssClasses from '../ComponentCSSForms/componentCSS.scss'
 import BootstrapModal from '../../components/BootstrapModal/BootstrapModal';
 import listFormat from './List.scss';
 import chipTheme from './chips.scss';
 import {updateMeetingId} from '../../redux/reducers/Meeting/MeetingReducer';
 import {MEETING} from '../../constants/HostConfiguration';
 import themeLabel from './label.scss';
-import datesInpunt from './dateInput.scss'
+import datesInput from './dateInput.scss'
 import Dropdown from 'react-toolbox/lib/dropdown';
 import Tooltip from 'react-toolbox/lib/tooltip';
 import {Button} from 'react-toolbox/lib/button';
@@ -400,11 +400,11 @@ class MymeetForm extends Component {
                         disable={false}/>
         <DatePicker label='Date' sundayFirstDayOfWeek value={new Date(this.state.datetime)}
                     readonly={this.state.editable} onChange={this.onChangeProgrammedDate.bind(this)}
-                    minDate={new Date()} theme={datesInpunt}/>
+                    minDate={new Date()} theme={datesInput}/>
         <TimePicker label='Time'
                     value={isNaN(new Date(this.state.time)) ? 0 : new Date(this.state.time)}
                     readonly={this.state.editable} onChange={this.onChangeProgrammedTime.bind(this)}
-                    theme={datesInpunt}/>
+                    theme={datesInput}/>
         <TimePicker label='End Time'
                     value={isNaN(new Date(this.state.endTime)) ? 0 : new Date(this.state.endTime)}
                     readonly={this.state.editable} onChange={this.onChangeEndTime.bind(this)}
@@ -433,19 +433,19 @@ class MymeetForm extends Component {
             <DatePicker label='Date' sundayFirstDayOfWeek value={new Date(this.state.datetime)}
                         readonly={this.state.editable} onChange={this.onChangeProgrammedDate.bind(this)}
                         minDate={new Date()}
-                        theme={datesInpunt}/>
+                        theme={datesInput}/>
           </div>
           <div className="col-md-3">
             <TimePicker label='Start Time'
                         value={isNaN(new Date(this.state.time)) ? 0 : new Date(this.state.time)}
                         readonly={this.state.editable} onChange={this.onChangeProgrammedTime.bind(this)}
-                        ttheme={datesInpunt}/>
+                        ttheme={datesInput}/>
           </div>
           <div className="col-md-3">
             <TimePicker label='End Time'
                         value={isNaN(new Date(this.state.endTime)) ? 0 : new Date(this.state.endTime)}
                         readonly={this.state.editable} onChange={this.onChangeEndTime.bind(this)}
-                        theme={datesInpunt}/>
+                        theme={datesInput}/>
           </div>
         </div>
         <div className="row col-md-12">
@@ -529,11 +529,10 @@ class MymeetForm extends Component {
       });
 
       return (
-        <div className={"container " + classes.myMeetingForm}>
-          <div className={classes.content}>
-            <div className={classes.label2}>
-              <label>MY MEETINGS</label>
-            </div>
+         <div className={"container " + cssClasses.containerForm}>
+          <div className={cssClasses.labelMainTitle}>
+            <label>MY MEETINGS</label>
+          </div>
             <div>
               <InputComponent label="Meeting topic"  name="searchField" value={this.state.searchField} onKeyPress={this.handleSubmit.bind(this)} onValueChange={this.handleChange.bind(this,'searchField')}/>
               <ButtonComponent  onClick={this.searchByToken.bind(this)} value="Search"/>
@@ -581,7 +580,6 @@ class MymeetForm extends Component {
     }
   }
 }
-
 
 MymeetForm.propTypes = {
   onClick: PropTypes.func,
