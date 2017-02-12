@@ -8,11 +8,8 @@ import TimePicker from 'react-toolbox/lib/time_picker';
 import DatePicker from 'react-toolbox/lib/date_picker';
 import {push} from 'react-router-redux';
 import {PATHS} from '../../constants/routes';
-import classes from './MymeetForm.scss';
 import cssClasses from '../ComponentCSSForms/componentCSS.scss'
 import BootstrapModal from '../../components/BootstrapModal/BootstrapModal';
-import ListItem1 from './ListItem1.scss';
-import ListItem2 from './ListItem2.scss';
 import listFormat from './List.scss';
 import chipTheme from './chips.scss';
 import {updateMeetingId} from '../../redux/reducers/Meeting/MeetingReducer';
@@ -26,6 +23,9 @@ import Chip from 'react-toolbox/lib/chip';
 import {saveConfig} from '../../redux/reducers/Meeting/MeetingConfigReducer';
 import Spinner from '../Spinner/Spinner';
 import {validateDate, validateStart, validateHour, changeEndDate} from '../../utils/DateUtils'
+import ButtonComponent from '../ButtonComponent/'
+import ReactPagination from 'react-paginate'
+import pagination from './pagination.scss'
 import dialogTheme from './dialog.scss'
 
 var programDate = new Date();
@@ -33,10 +33,13 @@ var endDate = new Date();
 
 const TooltipButton = Tooltip(Button);
 
+const ITEMS_PER_PAGE = 10;
+
 const technics = [{value: 0, label: 'Brainstorming'}, {value: 1, label: 'SCAMPER'}, {
   value: 2,
   label: 'morphological analysis'
 }];
+
 
 const mapStateToProps = (state) => {
   if (state.loginUser !== null) {
@@ -71,32 +74,24 @@ class MymeetForm extends Component {
       teamName: {},
       tag: '',
       showSpinner: true,
-      endTime: new Date()
+      endTime: new Date(),
+      searchField: '',
+      offset: 0,
+      totalMeetings: 0,
+      totalPages: 0
     }
   }
 
   componentDidMount() {
-    axios.get(MEETING.MEETING_BY_USER, {params: {username: this.props.user}}).then(function (response) {
-      this.fillFields(response.data)
-    }.bind(this));
+    this.getAllProgrammedMeetings();
   }
 
-  adminActionsStart = [
-    //FIXME: cancel button cannot have the same behave as the onclick in the "card meeting"
-    {label: "Cancel", onClick: this.handleToggleDialog},
-    {label: "Start", onClick: this.startMeeting.bind(this)}
-  ];
-
   adminActionsEdit = [
-    {label: "Cancel", onClick: this.handleToggleDialog},
-    {label: "Delete MeetingConfig", onClick: this.handleToggleDialog},
-    {label: "Edit", onClick: this.edit.bind(this)},
-    {label: "Save", onClick: this.save.bind(this)}
-  ];
-  adminUserActionsFinish = [
-    {label: "Cancel", onClick: this.handleToggleDialog},
-    {label: "View Reports", onClick: this.goToReports.bind(this)}
-  ];
+  {label: "Cancel", onClick: this.handleToggleDialog},
+  {label: "Delete MeetingConfig", onClick: this.handleToggleDialog},
+  {label: "Edit", onClick: this.edit.bind(this)},
+  {label: "Save", onClick: this.save.bind(this)}
+];
 
   userActionsJoin = [
     {label: "Cancel", onClick: this.handleToggleDialog},
@@ -172,24 +167,19 @@ class MymeetForm extends Component {
   showActions(meetingOwner, meetingDate) {
     if (this.isAdmin(meetingOwner)) {
       //fecha ya paso, puede ver reportes
-      if (validateDate(meetingDate)) {
-        return this.adminUserActionsFinish;
-      }
-      else {
-        //rango de tiempo aceptable para comenzar reunion
+      if (!validateDate(meetingDate)) {
         if (validateStart(meetingDate)) {
-          return this.adminActionsStart;
+          return this.userActionsJoin;
         }
         //fecha mayor, puede editar
         return this.adminActionsEdit;
       }
+      //update meeting to ended
+
     }
     else {
       //fecha ya paso
-      if (validateDate(meetingDate)) {
-        return this.adminUserActionsFinish;
-      }
-      else {
+      if (!validateDate(meetingDate)) {
         //rango de tiempo aceptable para unirse reunion
         if (validateStart(meetingDate)) {
           return this.userActionsJoin;
@@ -197,6 +187,8 @@ class MymeetForm extends Component {
         // fecha mayor, puede poner ver
         return this.userActionsView;
       }
+      //update meeting to ended
+
     }
   }
 
@@ -204,8 +196,23 @@ class MymeetForm extends Component {
     return new Date(meetingTime).toLocaleDateString([], {hour: '2-digit', minute: '2-digit'});
   }
 
-  fillFields(meetings) {
-    this.setState({meetings: meetings, showSpinner: false});
+  fillFields(data) {
+    this.setState({
+      meetings: data.model,
+      totalMeetings:data.total,
+      showSpinner: false
+    }, () => {
+      this.calculateTotalPages();
+    })
+  }
+
+  calculateTotalPages(){
+    let total = Math.ceil(this.state.totalMeetings / ITEMS_PER_PAGE);
+    this.setState({totalPages: total});
+  }
+
+  setMeetingEnding(meetingId){
+    axios.post(MEETING.MEETING_MARK_ENDED, {})
   }
 
   edit() {
@@ -331,7 +338,7 @@ class MymeetForm extends Component {
 
 
   handleChange = (name, value) => {
-    this.setState({...this.state, [name]: value});
+    this.setState({[name]: value});
   };
 
   deleteTag(pos) {
@@ -468,6 +475,49 @@ class MymeetForm extends Component {
     )
   }
 
+  handleSubmit(e) {
+    if (e.which == 13) {
+      e.preventDefault();
+      this.searchByToken();
+    }
+  }
+
+  searchByToken(){
+    if ( this.state.searchField.length != 0 ) {
+      axios.get(MEETING.MEETING_SEARCH_PROGRAMMED, {
+        params: {
+          token: this.state.searchField,
+          offset: this.state.offset,
+          limit: ITEMS_PER_PAGE
+        }
+      }).then(function (response) {
+        this.fillFields(response.data)
+      }.bind(this))
+    }
+    else {
+      this.getAllProgrammedMeetings();
+    }
+  }
+
+  getAllProgrammedMeetings(){
+    axios.get(MEETING.MEETING_PROGRAMMED, {
+        params: {
+          offset: this.state.offset,
+          limit: ITEMS_PER_PAGE
+        }}).then(function (response) {
+        this.fillFields(response.data)
+    }.bind(this))
+  }
+
+  handlePageClick =(data) =>{
+    let actualPageNumber = data.selected;
+    let offset = Math.ceil(actualPageNumber * ITEMS_PER_PAGE);
+
+    this.setState({offset:offset}, () => {
+      this.getAllProgrammedMeetings();
+    });
+  };
+
   render() {
     if (!this.state.showSpinner) {
       let meets = this.state.meetings;
@@ -478,36 +528,48 @@ class MymeetForm extends Component {
       });
 
       return (
-        <div className={"container " + cssClasses.containerForm}>
+         <div className={"container " + cssClasses.containerForm}>
           <div className={cssClasses.labelMainTitle}>
             <label>MY MEETINGS</label>
           </div>
-          <BootstrapModal ref="mymeetingModal" message={this.state.message}/>
-          <List theme={listFormat} selectable ripple>
-            <ListSubHeader />
-            {Object.keys(meetMap).map((key) => {
-                meetingTime = meetMap[key].programmedDate;
-                let renderDateTime = this.renderDate(meetingTime);
-                let future_date = validateDate(meetingTime);
-                let color = future_date ? ListItem2 : ListItem1;
-                return (
-                  <div key={key}>
-                    <ListItem
-                      theme={color}
-                      caption={meetMap[key].topic}
-                      legend={renderDateTime}
-                      leftIcon='send'
-                      rightIcon='visibility'
-                      onClick={this.handleToggleDialog.bind(this, meetMap[key])}/>
-                    <ListDivider />
-                    <BootstrapModal ref="meetingModal" message={this.state.message}/>
-                  </div>
-                );
-              }
-            )}
-            {this.showDialog()}
-          </List>
-        </div>
+            <div>
+              <InputComponent label="Meeting topic"  name="searchField" value={this.state.searchField} onKeyPress={this.handleSubmit.bind(this)} onValueChange={this.handleChange.bind(this,'searchField')}/>
+              <ButtonComponent  onClick={this.searchByToken.bind(this)} value="Search"/>
+            </div>
+            <BootstrapModal ref="mymeetingModal" message={this.state.message}/>
+            <List theme={listFormat} selectable ripple>
+              <ListSubHeader />
+              {Object.keys(meetMap).map((key) => {
+                  meetingTime = meetMap[key].programmedDate;
+                  let renderDateTime = this.renderDate(meetingTime);
+                  return (
+                    <div key={key}>
+                      <ListItem
+                        caption={meetMap[key].topic}
+                        legend={renderDateTime}
+                        leftIcon='send'
+                        rightIcon='visibility'
+                        onClick={this.handleToggleDialog.bind(this, meetMap[key])}/>
+                      <ListDivider />
+                      <BootstrapModal ref="meetingModal" message={this.state.message}/>
+                    </div>
+                  );
+                }
+              )}
+              {this.showDialog()}
+            </List>
+            <ReactPagination previousLabel={"Previous"}
+                             nextLabel={"Next"}
+                             pageCount={this.state.totalPages}
+                             marginPagesDisplayed={2}
+                             pageRangeDisplayed={5}
+                             onPageChange={this.handlePageClick}
+                             initialPage ={1}
+                             disableInitialCallback={true}
+                             pageClassName={pagination.ul}
+                             pageLinkClassName={pagination}
+            />
+          </div>
       )
     } else {
       return (

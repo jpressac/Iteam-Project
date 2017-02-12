@@ -19,6 +19,7 @@ import org.iteam.data.dto.Meeting;
 import org.iteam.data.dto.Team;
 import org.iteam.data.dto.UserDTO;
 import org.iteam.data.model.FilterList;
+import org.iteam.data.model.PaginationModel;
 import org.iteam.data.model.TeamModel;
 import org.iteam.data.model.TeamUserModel;
 import org.iteam.services.utils.JSONUtils;
@@ -105,15 +106,51 @@ public class TeamRepositoryImpl implements TeamRepository {
     }
 
     @Override
-    public List<TeamModel> getTeams(String ownerName) {
+    public PaginationModel<TeamModel> getTeams(String ownerName, int size, int from) {
+        PaginationModel<TeamModel> paginationObject = null;
+
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+        queryBuilder.must(QueryBuilders.termQuery(OWNER_NAME_FIELD, ownerName));
+
+        SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_TEAM, queryBuilder, size, from);
+
+        if (response != null) {
+            List<TeamModel> teamList = new ArrayList<>();
+            for (SearchHit hit : response.getHits()) {
+                teamList.add(
+                        new TeamModel(hit.getId(), (Team) JSONUtils.JSONToObject(hit.getSourceAsString(), Team.class)));
+            }
+            paginationObject = new PaginationModel<TeamModel>(response.getHits().getTotalHits(), teamList);
+        }
+        return paginationObject;
+    }
+
+    @Override
+    public PaginationModel<TeamModel> getTeamsByToken(String ownerName, String token, int size, int from) {
+
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+        queryBuilder.must(QueryBuilders.termQuery(OWNER_NAME_FIELD, ownerName))
+                .must(QueryBuilders.matchQuery(TEAM_NAME_FIELD, token));
+
+        SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_TEAM, queryBuilder, size, from);
+        List<TeamModel> teamList = new ArrayList<>();
+        if (response.getHits().getTotalHits() > 0) {
+            for (SearchHit hit : response.getHits()) {
+                teamList.add(
+                        new TeamModel(hit.getId(), (Team) JSONUtils.JSONToObject(hit.getSourceAsString(), Team.class)));
+            }
+        }
+        return new PaginationModel<TeamModel>(response.getHits().getTotalHits(), teamList);
+    }
+
+    @Override
+    public List<TeamModel> getAllTeams(String ownerName) {
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
         queryBuilder.must(QueryBuilders.termQuery(OWNER_NAME_FIELD, ownerName));
 
         SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_TEAM, queryBuilder);
-
         List<TeamModel> teamList = new ArrayList<>();
-
-        if (response != null) {
+        if (response.getHits().getTotalHits() > 0) {
             for (SearchHit hit : response.getHits()) {
                 teamList.add(
                         new TeamModel(hit.getId(), (Team) JSONUtils.JSONToObject(hit.getSourceAsString(), Team.class)));
@@ -155,11 +192,11 @@ public class TeamRepositoryImpl implements TeamRepository {
     }
 
     @Override
-    public List<String> getTeamByUser(String username) {
+    public List<String> getTeamByUser(String username, int size, int from) {
         LOGGER.info("Getting teams by user: '{}'", username);
 
         SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_TEAM,
-                QueryBuilders.termQuery(TEAM_MEMBERS_FIELD, username));
+                QueryBuilders.termQuery(TEAM_MEMBERS_FIELD, username), size, from);
 
         List<String> teamList = new ArrayList<>();
 

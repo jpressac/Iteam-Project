@@ -6,6 +6,7 @@ import org.iteam.data.dal.team.TeamRepositoryImpl;
 import org.iteam.data.dto.Team;
 import org.iteam.data.dto.UserDTO;
 import org.iteam.data.model.FilterList;
+import org.iteam.data.model.PaginationModel;
 import org.iteam.data.model.TeamModel;
 import org.iteam.data.model.TeamUserModel;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,13 +33,13 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public List<TeamModel> getTeams(String ownerName) {
-        return teamRepository.getTeams(ownerName);
+    public PaginationModel<TeamModel> getTeams(String ownerName, int size, int from) {
+        return teamRepository.getTeams(ownerName, size, from);
     }
 
     @Override
-    public List<String> getTeamByUser(String username) {
-        return teamRepository.getTeamByUser(username);
+    public List<String> getTeamByUser(String username, int size, int from) {
+        return teamRepository.getTeamByUser(username, size, from);
     }
 
     @Override
@@ -54,5 +55,15 @@ public class TeamServiceImpl implements TeamService {
     @Autowired
     private void setTeamRepository(TeamRepositoryImpl teamRepository) {
         this.teamRepository = teamRepository;
+    }
+
+    @Override
+    public PaginationModel<TeamModel> getTeamByToken(String ownerName, String token, int size, int from) {
+        return teamRepository.getTeamsByToken(ownerName, token, size, from);
+    }
+
+    @Override
+    public List<TeamModel> getAllTeams(String ownerName) {
+        return teamRepository.getAllTeams(ownerName);
     }
 }

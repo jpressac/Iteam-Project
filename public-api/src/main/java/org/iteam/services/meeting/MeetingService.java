@@ -6,6 +6,7 @@ import org.iteam.data.dto.Meeting;
 import org.iteam.data.model.D3CollapseTreeModel;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
+import org.iteam.data.model.PaginationModel;
 
 /**
  * Handles all the request for the meeting.
@@ -117,7 +118,7 @@ public interface MeetingService {
      *            a list with all team names.
      * @return a list of meetings.
      */
-    public List<Meeting> getMeetingByTeamName(String username);
+    public List<Meeting> getMeetingByTeamName(String username, int size, int from);
 
     /**
      * Save temporally the ideas, by user, in the personal board.
@@ -170,7 +171,14 @@ public interface MeetingService {
      */
     public void removeIdeasFromCacheSharedBoard(String meetingId, String info);
 
-    public List<Meeting> getMeetingByState(String string);
+    public PaginationModel<Meeting> getEndedMeetings(String string, int offset, int limit);
+
+    public PaginationModel<Meeting> getProgrammedMeetings(String username, int offset, int limit);
+
+    public PaginationModel<Meeting> getEndedMeetingsByToken(String username, String token, int offset, int limit);
+
+    public PaginationModel<Meeting> getProgrammedMeetingsByToken(String name, String token, int offset, int limit);
 
     public void generateScore(IdeasDTO ideas, List<String> userList);
+
 }
