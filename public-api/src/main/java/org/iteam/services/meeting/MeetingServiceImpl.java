@@ -159,4 +159,9 @@ public class MeetingServiceImpl implements MeetingService {
     public void updateMeetingViewedByUser(List<ViewedMeeting> meetingsViewedByUser, String username) {
         this.meetingRepositoryImpl.updateMeetingViewedByUser(meetingsViewedByUser, username);
     }
+
+    @Override
+    public void updateMeetingViewed(Meeting updatedMeeting) {
+        this.meetingRepositoryImpl.updateMeetingViewed(updatedMeeting);
+    }
 }

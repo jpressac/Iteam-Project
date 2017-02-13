@@ -52,7 +52,9 @@ public class MeetingController {
     @RequestMapping(value = "/meeting/update", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
     public ResponseEntity<Void> updateMeeting(@RequestBody Meeting updatedMeeting) {
 
-        return checkResult(meetingServiceImpl.updateMeeting(updatedMeeting));
+        ResponseEntity<Void> result = checkResult(meetingServiceImpl.updateMeeting(updatedMeeting));
+        meetingServiceImpl.updateMeetingViewed(updatedMeeting);
+        return result;
 
     }
 

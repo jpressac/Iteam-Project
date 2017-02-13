@@ -57,39 +57,42 @@ class HeaderLog extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (this.props.meetings != undefined) {
-      if (this.props.meetings.length != nextProps.meetings.length) {
         this.setState({
           count: nextProps.meetings.length.toString(),
           meetingsNotViewed: nextProps.meetings
         })
-      }
     }
   }
 
   componentWillMount() {
+    this.notShowList();
     meetingScheduler.executeNow()
   }
 
   componentDidUnmount() {
-    this.onClickShowList();
+    this.notShowList();
     meetingScheduler.stop()
   }
 
   goToNewMeeting() {
-    this.onClickShowList();
+    this.notShowList();
     this.props.newMeeting();
     this.props.meeting();
   }
 
   goToNewTeam() {
-    this.onClickShowList();
+    this.notShowList();
     this.props.newMeeting();
     this.props.team();
   }
 
   goToHistory() {
-    this.onClickShowList();
+    this.notShowList();
     this.props.meetingHistory();
+  }
+
+  notShowList(){
+    this.setState({showList: false})
   }
 
   onClickShowList(){

@@ -19,11 +19,18 @@ class NewMeeting extends Component {
     });
   }
 
+  showText() {
+    return this.props.owner + " create/update the meeting " + this.props.topic
+  }
+
   render() {
     return (
-      <div className={classes.msgRow}>
-        <p className={classes.chatUsername}>{this.props.topic}</p>
-        <p className={classes.p}>{this.dateToString()}</p>
+      <div>
+        <div className={classes.msgRow}>
+          <div class="col-md-6"><p className={classes.chatUsername}>{this.props.topic}</p></div>
+          <div class="col-md-6"><p className={classes.p}>{this.dateToString()}</p></div>
+        </div>
+        <div><p>{this.showText()}</p></div>
       </div>
     );
   }
@@ -31,7 +38,8 @@ class NewMeeting extends Component {
 
 NewMeeting.propTypes = {
   topic: PropTypes.string,
-  time: PropTypes.string
+  time: PropTypes.string,
+  owner: PropTypes.string
 };
 
 export default NewMeeting

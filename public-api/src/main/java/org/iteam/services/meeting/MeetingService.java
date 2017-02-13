@@ -180,4 +180,7 @@ public interface MeetingService {
     public List<ViewedMeeting> getMeetingsNotViewed(String username);
 
     public void updateMeetingViewedByUser(List<ViewedMeeting> meetingsViewedByUser, String username);
+
+    public void updateMeetingViewed(Meeting updatedMeeting);
+
 }

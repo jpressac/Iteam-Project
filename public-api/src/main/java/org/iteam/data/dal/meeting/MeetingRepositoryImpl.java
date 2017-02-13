@@ -633,13 +633,27 @@ public class MeetingRepositoryImpl implements MeetingRepository {
             viewedUsers.add(username);
 
             meeting.setViewedUsers(viewedUsers);
-            BiFieldModel<String> meetingToUpdate = new BiFieldModel<String>(meeting.getMeetingId(),
-                    JSONUtils.ObjectToJSON(meeting));
+            BiFieldModel<ViewedMeeting> meetingToUpdate = new BiFieldModel<ViewedMeeting>(meeting.getMeetingId(),
+                    meeting);
             dataToUpdate.add(meetingToUpdate);
         });
 
         elasticsearchClientImpl.updateNew(dataToUpdate, StringUtilities.INDEX_MEETING_VIEWED_USERS,
                 StringUtilities.INDEX_TYPE_MEETING_VIEWED_USERS);
+
+    }
+
+    @Override
+    public void updateMeetingViewed(Meeting updatedMeeting) {
+        LOGGER.info("Updating meeting viewed");
+
+        ViewedMeeting data = new ViewedMeeting();
+        List<String> viewedUsers = new ArrayList<>();
+        viewedUsers.add(updatedMeeting.getOwnerName());
+        data.setViewedUsers(viewedUsers);
+
+        elasticsearchClientImpl.modifyData(JSONUtils.ObjectToJSON(data), StringUtilities.INDEX_MEETING_VIEWED_USERS,
+                StringUtilities.INDEX_TYPE_MEETING_VIEWED_USERS, updatedMeeting.getMeetingId());
 
     }
 
