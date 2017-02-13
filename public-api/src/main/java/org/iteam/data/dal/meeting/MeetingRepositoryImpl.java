@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.get.GetResponse;
@@ -23,7 +22,6 @@ import org.iteam.data.dal.client.ElasticsearchClient;
 import org.iteam.data.dal.client.ElasticsearchClientImpl;
 import org.iteam.data.dto.Idea;
 import org.iteam.data.dto.Meeting;
-import org.iteam.data.model.D3CollapseTreeModel;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
 import org.iteam.services.utils.JSONUtils;
@@ -37,7 +35,6 @@ import org.springframework.util.ObjectUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 
 @Repository
 public class MeetingRepositoryImpl implements MeetingRepository {
@@ -121,46 +118,6 @@ public class MeetingRepositoryImpl implements MeetingRepository {
             elasticsearchClientImpl.delete(StringUtilities.INDEX_MEETING_INFO, StringUtilities.INDEX_TYPE_MEETING_INFO,
                     ideas.getIdeas().get(0).getMeetingId());
         }
-
-    }
-
-    @Override
-    public D3CollapseTreeModel generateBasicReportByRanking(String meetingId, List<String> tags) {
-        LOGGER.debug("Generating report by tag and ranking for meeting: '{}'", meetingId);
-
-        String topic = getMeetingTopic(meetingId);
-
-        if (!ObjectUtils.isEmpty(topic)) {
-            return createRankingTree(tags, getIdeasGivenMeetingId(meetingId), new D3CollapseTreeModel(topic));
-        }
-        return null;
-    }
-
-    @Override
-    public D3CollapseTreeModel generateBasicReportByTag(String meetingId, List<String> tags) {
-
-        LOGGER.debug("Generating report by tag for meeting: '{}'", meetingId);
-
-        String topic = getMeetingTopic(meetingId);
-
-        if (!ObjectUtils.isEmpty(topic)) {
-            return createTagTree(tags, getIdeasGivenMeetingId(meetingId), new D3CollapseTreeModel(topic));
-        }
-        return null;
-    }
-
-    @Override
-    public D3CollapseTreeModel generateBasicReportByUser(String meetingId, List<String> users, List<String> tags) {
-
-        LOGGER.debug("Generating report by user for meeting: '{}'", meetingId);
-
-        String topic = getMeetingTopic(meetingId);
-
-        if (!ObjectUtils.isEmpty(topic)) {
-
-            return createUserTree(users, tags, getIdeasGivenMeetingId(meetingId), new D3CollapseTreeModel(topic));
-        }
-        return null;
 
     }
 
@@ -397,59 +354,6 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
     }
 
-    private D3CollapseTreeModel createUserTree(List<String> users, List<String> tags, List<Idea> ideasList,
-            D3CollapseTreeModel treeModel) {
-
-        for (String user : users) {
-            List<Idea> ideasByUser = ideasList.stream().filter(u -> user.equals(u.getUsername()))
-                    .collect(Collectors.toList());
-
-            treeModel.add(createTagTree(tags, ideasByUser, new D3CollapseTreeModel(user)));
-        }
-
-        return treeModel;
-    }
-
-    private D3CollapseTreeModel createTagTree(List<String> tags, List<Idea> ideasList, D3CollapseTreeModel treeModel) {
-
-        for (String tag : tags) {
-
-            List<D3CollapseTreeModel> treeModelTag = new ArrayList<>();
-
-            for (Idea idea : ideasList) {
-
-                if (tag.equals(idea.getTag())) {
-                    treeModelTag.add(new D3CollapseTreeModel(idea.getTitle(),
-                            Lists.newArrayList(new D3CollapseTreeModel(idea.getComments()))));
-                }
-            }
-
-            treeModel.add(new D3CollapseTreeModel(tag, treeModelTag));
-        }
-
-        return treeModel;
-    }
-
-    private D3CollapseTreeModel createRankingTree(List<String> tags, List<Idea> ideasList,
-            D3CollapseTreeModel treeModel) {
-
-        for (String tag : tags) {
-
-            List<D3CollapseTreeModel> treeModelTag = new ArrayList<>();
-
-            for (Idea idea : ideasList) {
-
-                if (tag.equals(idea.getTag())) {
-                    treeModelTag.add(new D3CollapseTreeModel(idea.getTitle(), idea.getRanking(), "#D6BA33"));
-                }
-            }
-
-            treeModel.add(new D3CollapseTreeModel(tag, treeModelTag));
-        }
-
-        return treeModel;
-    }
-
     private void saveUsersRetry(int count, String user, String meetingId) {
         MeetingUsers connectedUsers = getConnectedUsers(meetingId);
 
@@ -458,12 +362,16 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         } else {
             connectedUsers.getUsers().remove(user);
         }
+
         try {
             elasticsearchClientImpl.insertData(JSONUtils.ObjectToJSON(connectedUsers),
                     StringUtilities.INDEX_MEETING_INFO, StringUtilities.INDEX_TYPE_MEETING_INFO_USERS, meetingId);
+
             LOGGER.info("Meeting connected users updated - Meeting: '{}'", meetingId);
         } catch (ElasticsearchException e) {
+
             LOGGER.error("Failed to update meeting connected users - Retry '{}'", count);
+
             if (MAX_RETRIES > count) {
                 saveUsersRetry(count += 1, user, meetingId);
             }
@@ -508,16 +416,16 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         }
     }
 
-    private String getMeetingTopic(String meetingId) {
+    @Override
+    public String getMeetingTopic(String meetingId) {
         GetResponse meetingResponse = elasticsearchClientImpl.getDocument(StringUtilities.INDEX_MEETING,
                 StringUtilities.INDEX_TYPE_MEETING, meetingId);
 
         String topic = null;
 
         if (meetingResponse.isExists()) {
-            JsonNode meetingNode;
             try {
-                meetingNode = OBJECT_MAPPER.readTree(meetingResponse.getSourceAsString());
+                JsonNode meetingNode = OBJECT_MAPPER.readTree(meetingResponse.getSourceAsString());
 
                 topic = meetingNode.at("/topic").asText();
 
@@ -530,7 +438,8 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         return topic;
     }
 
-    private List<Idea> getIdeasGivenMeetingId(String meetingId) {
+    @Override
+    public List<Idea> getIdeasGivenMeetingId(String meetingId) {
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
         queryBuilder.must(QueryBuilders.termQuery(IDEA_MEETING_ID_FIELD, meetingId));

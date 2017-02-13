@@ -1,27 +1,19 @@
 package org.iteam.services.meeting;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.iteam.data.dal.meeting.MeetingRepository;
 import org.iteam.data.dal.meeting.MeetingRepositoryImpl;
 import org.iteam.data.dto.Meeting;
-import org.iteam.data.dto.UserDTO;
-import org.iteam.data.model.D3CollapseTreeModel;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
 import org.iteam.services.team.TeamService;
 import org.iteam.services.user.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MeetingServiceImpl implements MeetingService {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(MeetingServiceImpl.class);
-    private static final String RANKING_ID_FIELD = "ranking";
 
     private MeetingRepository meetingRepositoryImpl;
     private TeamService teamServiceImpl;
@@ -40,11 +32,6 @@ public class MeetingServiceImpl implements MeetingService {
     @Override
     public void savedIdeas(IdeasDTO ideas) {
         meetingRepositoryImpl.saveIdeas(ideas);
-    }
-
-    @Override
-    public D3CollapseTreeModel generateReportByRanking(String meetingId, List<String> tags) {
-        return meetingRepositoryImpl.generateBasicReportByRanking(meetingId, tags);
     }
 
     @Override
@@ -76,21 +63,6 @@ public class MeetingServiceImpl implements MeetingService {
     @Override
     public List<Meeting> getMeetingByState(String username) {
         return meetingRepositoryImpl.getMeetingsByState(username);
-    }
-
-    @Override
-    public D3CollapseTreeModel generateReportByUser(String meetingId, List<String> tags) {
-
-        List<String> users = teamServiceImpl.getTeamUserInformationByMeeting(meetingId).getTeamUsers().stream()
-                .map(UserDTO::getUsername).collect(Collectors.toList());
-
-        return meetingRepositoryImpl.generateBasicReportByUser(meetingId, users, tags);
-    }
-
-    // TODO: wrap the method into one generic
-    @Override
-    public D3CollapseTreeModel generateReportByTag(String meetingId, List<String> tags) {
-        return meetingRepositoryImpl.generateBasicReportByTag(meetingId, tags);
     }
 
     @Override

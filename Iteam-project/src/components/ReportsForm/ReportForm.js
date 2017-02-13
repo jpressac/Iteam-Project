@@ -1,28 +1,18 @@
-/**
- * Created by Randanne on 15/10/2016.
- */
-import React, {Component, PropTypes} from "react";
-import jsPDF from "jspdf";
-import {connect} from "react-redux";
-import axios from "axios";
-import Drawer from "react-toolbox/lib/drawer";
-import Button from "react-toolbox/lib/button";
-import classes from "./ReportForm.scss";
-import BootstrapModal from "../BootstrapModal/BootstrapModal";
-import buttonBasic from "./buttonBasic.scss";
-import buttonPdf from "./buttonPdf.scss";
-import {MEETING} from "../../constants/HostConfiguration";
-import D3Tree from "./D3tree/D3Tree";
-import D3ChartTree from "./D3ChartTree/D3ChartTree";
-import Spinner from "../Spinner/Spinner";
+import React, {Component, PropTypes} from 'react';
+import {connect} from 'react-redux';
+import axios from 'axios';
+import Drawer from 'react-toolbox/lib/drawer';
+import Button from 'react-toolbox/lib/button';
+import classes from './ReportForm.scss';
+import BootstrapModal from '../BootstrapModal/BootstrapModal';
+import buttonBasic from './buttonBasic.scss';
+import buttonPdf from './buttonPdf.scss';
+import {MEETING, REPORT} from '../../constants/HostConfiguration';
+import D3Tree from './D3tree/D3Tree';
+import D3ChartTree from './D3ChartTree/D3ChartTree';
+import Spinner from '../Spinner/Spinner';
+import {generateSharedReport} from '../../utils/actions/reportActions'
 
-const report = new jsPDF()
-
-var specialElementHandlers = {
-  '#editor': function (element, renderer) {
-    return true;
-  }
-};
 
 const mapStateToProps = (state) => {
   if (state.meetingReducer != null) {
@@ -44,7 +34,8 @@ class ReportForm extends Component {
       selectedReport: '',
       treeData: {},
       ranking: false,
-      showSpinner: false
+      showSpinner: false,
+      message: ''
     }
   }
 
@@ -74,7 +65,7 @@ class ReportForm extends Component {
   generateUserReport = () => {
     this.setState({showSpinner: true});
 
-    axios.get(MEETING.MEETING_REPORT_BY_USER, {
+    axios.get(REPORT.MEETING_REPORT_BY_USER, {
       params: {
         meetingId: this.props.meetingId,
         tags: this.props.meetingConfiguration.tags.toString().toLowerCase()
@@ -107,14 +98,6 @@ class ReportForm extends Component {
     })
   };
 
-  generatePDF = () => {
-    report.fromHTML(document.getElementById('reportHTML').innerHTML, 15, 15, {
-      'width': 190,
-      'elementHandlers': specialElementHandlers
-    });
-    report.save('report.pdf');
-  };
-
   renderTrees() {
 
     if (this.state.ranking) {
@@ -126,32 +109,44 @@ class ReportForm extends Component {
         <D3Tree treeData={this.state.treeData}/>
       )
     }
+  }
 
+  generateURLForSharedReport() {
+    generateSharedReport(["7f1cad80-9517-4279-aa67-1d340c193162", "cb0e9836-fc10-46d2-9b88-5e2299bc1049", "7b63f70e-2a42-427b-b496-5c9b74af2b6b"])
+      .then((response) => {
+      console.log('hola puto')
+        this.setState({message: 'Be Creative share the given report: ' + response.data});
+        this.refs.reportModal.openModal();
+      })
+      .catch((response) => {
+        console.log(response)
+      })
   }
 
   render() {
     if (!this.state.showSpinner) {
       return (
-        <div style={{marginTop: 70}}>
-          <BootstrapModal ref="mymodal" message={this.state.message}/>
+        <div>
+          <BootstrapModal ref="reportModal" message={this.state.message}/>
           <Button label='Reports bar' theme={buttonBasic} style={{color: 'white'}} onClick={this.handleToggle}/>
           <Drawer active={this.state.active}
                   type="left"
                   onOverlayClick={this.handleToggle}>
             <label className={classes.reportTitle}>Report options</label>
             <div>
-              < Button label="Ideas by ranking" icon='star' theme={buttonPdf} style={{color: 'white'}}
+              < Button label="Ideas by ranking" icon='star' theme={buttonPdf}
                        onClick={this.generateRankingReport} active/>
               < Button label="Ideas by user" icon='group' theme={buttonPdf} style={{color: 'white'}}
                        onClick={this.generateUserReport.bind(this)}/>
               < Button label="Ideas by tag" icon='lightbulb_outline' theme={buttonPdf} style={{color: 'white'}}
                        onClick={this.generateTagReport}/>
-              < Button label="Download PDF" icon='get_app' style={{color: 'white'}} theme={buttonPdf}
-                       onClick={this.generatePDF}/>
             </div>
           </Drawer>
           <div id="reportHTML">
             {this.renderTrees()}
+            <button onClick={this.generateURLForSharedReport.bind(this)}>
+              Shared Report
+            </button>
           </div>
         </div>
       );

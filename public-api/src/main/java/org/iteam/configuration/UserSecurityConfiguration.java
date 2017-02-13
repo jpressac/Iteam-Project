@@ -46,7 +46,8 @@ public class UserSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.OPTIONS, "/**/*").permitAll().anyRequest().authenticated().and().formLogin()
                 .loginPage("/application/nmember/home").defaultSuccessUrl("/application/member/home", true).permitAll()
                 .and().httpBasic().and().csrf().disable().logout().logoutSuccessUrl("/application/nmember/home")
-                .deleteCookies("JSESSIONID").and().sessionManagement();
+                .deleteCookies("JSESSIONID").and().sessionManagement().and().exceptionHandling()
+                .accessDeniedPage("/error");
     }
 
     @Bean

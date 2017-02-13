@@ -2,8 +2,8 @@ package org.iteam.data.dal.meeting;
 
 import java.util.List;
 
+import org.iteam.data.dto.Idea;
 import org.iteam.data.dto.Meeting;
-import org.iteam.data.model.D3CollapseTreeModel;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
 
@@ -30,41 +30,6 @@ public interface MeetingRepository {
      * @return true if it was successful, false otherwise.
      */
     public void saveIdeas(IdeasDTO ideas);
-
-    /**
-     * Generate the report aggregated by user
-     * 
-     * @param meetingId
-     *            the id of the meeting.
-     * @param users
-     *            the list of users to create the report.
-     * @param tags
-     *            the list of tag to create the report.
-     * @return the report information.
-     */
-    public D3CollapseTreeModel generateBasicReportByUser(String meetingId, List<String> users, List<String> tags);
-
-    /**
-     * Generate the report aggregated by tag
-     * 
-     * @param meetingId
-     *            the id of the meeting.
-     * @param tags
-     *            the list of tag to create the report.
-     * @return the report information.
-     */
-    public D3CollapseTreeModel generateBasicReportByTag(String meetingId, List<String> tags);
-
-    /**
-     * Generate the report aggregated by tag including the ranking of each idea.
-     * 
-     * @param meetingId
-     *            the id of the meeting.
-     * @param tags
-     *            the list of tag to create the report.
-     * @return the report information.
-     */
-    public D3CollapseTreeModel generateBasicReportByRanking(String meetingId, List<String> tags);
 
     /**
      * Retrieve the all the meetings in which a user is part of.
@@ -183,5 +148,9 @@ public interface MeetingRepository {
     public void removeIdeasFromCacheSharedBoard(String meetingId, String info);
 
     public List<Meeting> getMeetingsByState(String username);
+
+    public String getMeetingTopic(String meetingId);
+
+    public List<Idea> getIdeasGivenMeetingId(String meetingId);
 
 }

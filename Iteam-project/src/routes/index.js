@@ -20,7 +20,7 @@ import MeetingConfigView from '../views/MeetingConfigView'
 import ReportsView from '../views/ReportsView/ReportsView'
 import ChatView from '../views/ChatView/ChatView'
 import HistoryView from '../views/HistoryView/HistoryView'
-
+import SharedReportView from '../views/SharedReportView/SharedReportView'
 
 export const createRoutes = (store) => (
 
@@ -53,6 +53,7 @@ export const createRoutes = (store) => (
     <Route path={PATHS.SHAREDBOARD.ROOT} component={SharedBoardLayout}>
       <Route path={PATHS.SHAREDBOARD.SHARED} component={SharedBoardView}/>
     </Route>
+    <Route path={PATHS.LOGGEDIN.REPORT.SHARED} component={SharedReportView}/>
   </Route>
 );
 

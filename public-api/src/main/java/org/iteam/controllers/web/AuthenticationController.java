@@ -23,6 +23,11 @@ public class AuthenticationController {
         return "application";
     }
 
+    @RequestMapping("/application/member/home")
+    public String homeLogin() {
+        return "application";
+    }
+
     @RequestMapping(value = "/application/member/logout")
     public String logoutPage(HttpServletRequest request, HttpServletResponse response) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -32,13 +37,13 @@ public class AuthenticationController {
         return "redirect:/application";
     }
 
-    @RequestMapping("/application/**/*")
-    public String rootLogged(Model model) {
-        return "redirect:/application";
-    }
-
-    @RequestMapping("/")
-    public String rootNotLogged(Model model) {
-        return "redirect:/application";
-    }
+    // @RequestMapping("/application/**/*")
+    // public String rootLogged(Model model) {
+    // return "redirect:/application";
+    // }
+    //
+    // @RequestMapping("/")
+    // public String rootNotLogged(Model model) {
+    // return "redirect:/application";
+    // }
 }
