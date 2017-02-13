@@ -21,7 +21,8 @@ const mapDispatchToProps = dispatch => ({
   teamList: () => dispatch(push('/' + PATHS.MENULOGGEDIN.TEAMLIST)),
   team: () => dispatch(push('/' + PATHS.MENULOGGEDIN.NEWTEAM)),
   newMeeting: () => dispatch(fromMeetingOrTeam()),
-  meetingHistory: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HISTORY))
+  meetingHistory: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HISTORY)),
+  sharedReport: () => dispatch(push('/' + PATHS.SHARED_REPORT.REPORT_LOGGEDIN))
 });
 
 const mapStateToProps = (state) => {
@@ -78,6 +79,8 @@ class HeaderLog extends Component {
                             onClick={this.goToNewTeam.bind(this)}/></li>
                 <li><Button label='MY TEAMS' theme={themeButton}
                             onClick={this.props.teamList}/></li>
+                <li><Button label='SHARED REPORT' theme={themeButton}
+                            onClick={this.props.sharedReport}/></li>
                 <li><span className={classes.span}><label> {this.props.user}</label></span ></li>
                 <li><LogoutButton/></li>
               </ul>
@@ -97,7 +100,8 @@ HeaderLog.propTypes = {
   team: PropTypes.func,
   newMeeting: PropTypes.func,
   teamList: PropTypes.func,
-  meetingHistory: PropTypes.func
+  meetingHistory: PropTypes.func,
+  sharedReport: PropTypes.func,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(HeaderLog)

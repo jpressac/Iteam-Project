@@ -1,8 +1,10 @@
-export const ROOT = '/application';
-export const ERROR = ROOT + '/error';
+export const ROOT = '/'
+export const ROOT_APPLICATION = '/application';
+export const ERROR = ROOT_APPLICATION + '/error';
 
 export const PATHS = {
   ROOT,
+  ROOT_APPLICATION,
   ERROR,
   COMMON: {
     ROOT: 'nmember',
@@ -26,10 +28,6 @@ export const PATHS = {
     REPORTS: 'reports',
     CHAT: 'chat',
     HISTORY: 'history',
-    REPORT: {
-      ROOT: 'member/report',
-      SHARED: 'member/report/shared'
-    }
   },
   PERSONALBOARD: {
     ROOT: 'member/pboard',
@@ -37,7 +35,11 @@ export const PATHS = {
   },
   SHAREDBOARD: {
     ROOT: 'member/sboard',
-    SHARED: 'shared'
+    SHARED_REPORT: 'shared'
+  },
+  REPORT_NOT_LOGGEDIN: {
+    ROOT: 'report',
+    SHARED_REPORT: 'report/shared'
   },
   MENUNOTLOGGEDIN: {
     HOME: 'application/nmember/home',
@@ -61,5 +63,10 @@ export const PATHS = {
     SHAREDBOARD: 'application/member/sboard/shared',
     CHAT: 'application/member/chat',
     HISTORY: 'application/member/history'
+  },
+  SHARED_REPORT: {
+    REPORT_NOT_LOGGEDIN: 'application/nmember/report',
+    REPORT_LOGGEDIN: 'application/member/report',
+    SHARED: 'application/report/shared'
   }
 };

@@ -10,9 +10,8 @@ export function generateSharedReport(meetingList) {
   })
 }
 
-
 export function getSharedReport(token){
-  axios.get(REPORT.SHARED_REPORT, {
+  return axios.get(REPORT.SHARED_REPORT, {
     params: {
       token: token
     }
