@@ -45,6 +45,10 @@ dependencies {
 		exclude module: "guava-jdk5"
 	}
 	
+	compile("javax.websocket:javax.websocket-api:1.1")
+	compile("org.glassfish.tyrus.bundles:tyrus-standalone-client:1.13")
+	compile("com.github.seratch:jslack:1.0.8")
+	
 	compile("javax.mail:mail:${javaMailVersion}")
 	compile("org.springframework.boot:spring-boot-starter-security"){
 		exclude module: "logback-classic"

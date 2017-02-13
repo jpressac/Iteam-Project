@@ -60,9 +60,8 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     private static final String MEETING_HAS_ENDED = "{\"ended\": true }";
 
     @Override
-    public boolean createMeeting(Meeting meeting) {
+    public String createMeeting(Meeting meeting) {
         LOGGER.info("Creating new meeting");
-        LOGGER.debug("Meeting: '{}'", meeting.toString());
 
         meeting.setMeetingId(UUID.randomUUID().toString());
         meeting.setCreationDate(DateTime.now().getMillis());
@@ -72,14 +71,13 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
         IndexResponse response = elasticsearchClientImpl.insertData(data, StringUtilities.INDEX_MEETING,
                 StringUtilities.INDEX_TYPE_MEETING, meeting.getMeetingId());
+        LOGGER.debug("Meeting: '{}'", meeting.toString());
 
         if (!response.isCreated()) {
             LOGGER.error("The meeting couldn't be created - Meeting: '{}'", meeting.toString());
-            return false;
+
         }
-
-        return true;
-
+        return meeting.getMeetingId();
     }
 
     @Override
@@ -546,10 +544,10 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
         if (response.getHits().getTotalHits() > 0) {
             for (SearchHit hit : response.getHits()) {
-                BiFieldModel meetingToUpdate = new BiFieldModel(MEETING_HAS_ENDED, hit.getId());
+                BiFieldModel meetingToUpdate = new BiFieldModel(hit.getId(), MEETING_HAS_ENDED);
                 meetingsToUpdate.add(meetingToUpdate);
             }
-            BulkResponse bulkResponse = elasticsearchClientImpl.updateNew(meetingsToUpdate,
+            BulkResponse bulkResponse = elasticsearchClientImpl.updateEndedMeetings(meetingsToUpdate,
                     StringUtilities.INDEX_MEETING, StringUtilities.INDEX_TYPE_MEETING);
 
             if (bulkResponse.hasFailures()) {
@@ -561,7 +559,6 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
     @Override
     public PaginationModel<Meeting> getProgrammedMeetings(String username, int from, int size) {
-        PaginationModel<Meeting> paginatedMeetings = null;
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
         queryBuilder.must(QueryBuilders.termQuery(MEETING_OWNER_NAME_FIELD, username))
@@ -570,14 +567,15 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING, queryBuilder,
                 SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD).order(SortOrder.DESC), size, from);
 
+        List<Meeting> meetings = new ArrayList<>();
         if (response.getHits().getTotalHits() > 0) {
-            List<Meeting> meetings = new ArrayList<>();
+
             for (SearchHit hit : response.getHits()) {
                 meetings.add((Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class));
             }
-            paginatedMeetings = new PaginationModel<>(response.getHits().getTotalHits(), meetings);
+
         }
-        return paginatedMeetings;
+        return new PaginationModel<>(response.getHits().getTotalHits(), meetings);
     }
 
     @Override
@@ -623,8 +621,6 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     @Override
     public PaginationModel<Meeting> getEndedMeetings(String username, int from, int size) {
 
-        PaginationModel<Meeting> paginationObject = null;
-
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
         queryBuilder.must(QueryBuilders.termQuery(MEETING_OWNER_NAME_FIELD, username))
                 .must(QueryBuilders.existsQuery(MEETING_STATE_NAME_FIELD));
@@ -632,14 +628,15 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING, queryBuilder,
                 SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD).order(SortOrder.DESC), size, from);
 
+        List<Meeting> meetings = new ArrayList<Meeting>();
         if (response.getHits().getTotalHits() > 0) {
-            List<Meeting> meetings = new ArrayList<Meeting>();
+
             for (SearchHit hit : response.getHits()) {
                 meetings.add((Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class));
             }
-            paginationObject = new PaginationModel<>(response.getHits().getTotalHits(), meetings);
+
         }
-        return paginationObject;
+        return new PaginationModel<>(response.getHits().getTotalHits(), meetings);
     }
 
     @Autowired

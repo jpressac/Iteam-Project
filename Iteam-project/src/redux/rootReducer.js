@@ -6,6 +6,7 @@ import meetingForTeamReducer from './reducers/Meeting/MeetingForTeamReducer'
 import meetingUser from './reducers/Meeting/MeetingUserConnected'
 import meetingConfigurationReducer from './reducers/Meeting/MeetingConfigReducer'
 import meetingChatMessagesReducer from './reducers/Meeting/MeetingChatMessagesReducer'
+import viewReportReducer from './reducers/Report/ViewReportReducer'
 
 export default combineReducers({
   router,
@@ -15,4 +16,5 @@ export default combineReducers({
   meetingUser,
   meetingConfigurationReducer,
   meetingChatMessagesReducer,
+  viewReportReducer
 })

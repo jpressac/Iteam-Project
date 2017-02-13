@@ -15,6 +15,7 @@ import avatarTheme from '../MeetingForm/avatarTheme.scss'
 import InputComponent from '../InputComponent/InputComponent'
 import ButtonComponent from '../ButtonComponent/ButtonComponent'
 import DropdownComponent from '../DropdownComponent/DropdownComponent'
+import {createChannel} from '../../utils/actions/slackActions'
 
 const mapDispatchToProps = dispatch => ({
   goToMyMeetings: () => dispatch(push('/' + PATHS.MENULOGGEDIN.MYMEETINGS))
@@ -110,8 +111,8 @@ class MeetingConfigForm extends Component {
         technic: this.state.technicValue,
         template: this.state.template
       }
-    }).then(function () {
-
+    }).then(function (response) {
+      createChannel(this.props.meetingInfo.topic);
       this.props.goToMyMeetings()
 
     }.bind(this)).catch(function (response) {

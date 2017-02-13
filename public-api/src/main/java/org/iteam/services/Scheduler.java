@@ -13,7 +13,7 @@ public class Scheduler {
     private static final Logger LOGGER = LoggerFactory.getLogger(Scheduler.class);
     private MeetingRepository meetingRepositoryImpl;
 
-    @Scheduled(fixedDelay = 3600000)
+    @Scheduled(fixedDelay = 60000)
     public void checkNotPerformedMeetings() {
         LOGGER.info("executing endmeeting task");
         meetingRepositoryImpl.updateEndedMeetings();

@@ -174,4 +174,6 @@ public interface ElasticsearchClient {
     public SearchResponse search(String index, QueryBuilder queryBuilder, SortBuilder sort);
 
     public SearchResponse search(String index, QueryBuilder queryBuilder);
+
+    public BulkResponse updateEndedMeetings(List<BiFieldModel> data, String index, String type);
 }

@@ -21,7 +21,7 @@ public interface MeetingRepository {
      *            the meeting to create
      * @return true if it was successful, false otherwise
      */
-    public boolean createMeeting(Meeting meeting);
+    public String createMeeting(Meeting meeting);
 
     /**
      * Save the ideas generated during the meeting.

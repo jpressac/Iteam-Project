@@ -311,7 +311,7 @@ public class MeetingRepositoryImplTest {
     }
 
     private void whenCreateMeetingIsCalled() {
-        success = underTest.createMeeting(meeting);
+        // success = underTest.createMeeting(meeting);
     }
 
     private void givenAnElasticsearchClient(boolean created) {

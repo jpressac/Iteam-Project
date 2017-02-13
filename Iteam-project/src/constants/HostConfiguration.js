@@ -44,6 +44,11 @@ export const MEETING = {
   MEETING_PAGINATED : URL + '/meeting/paginated'
 };
 
+export const SLACK = {
+  SLACK_CREATE_CHANNEL : URL + '/slack/createchannel',
+  SLACK_MESSAGE : URL + '/slack/sendmessage'
+}
+
 export const UTILITIES = {
   PROFESSIONS : URL + '/utilities/professions',
   NATIONALITIES : URL + '/utilities/nationality/get'

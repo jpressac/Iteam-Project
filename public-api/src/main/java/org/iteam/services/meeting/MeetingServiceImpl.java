@@ -29,7 +29,7 @@ public class MeetingServiceImpl implements MeetingService {
     private UserService userServiceImpl;
 
     @Override
-    public boolean createMeeting(Meeting meeting) {
+    public String createMeeting(Meeting meeting) {
         return meetingRepositoryImpl.createMeeting(meeting);
     }
 

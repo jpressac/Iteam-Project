@@ -18,7 +18,6 @@ import {TEAM} from '../../constants/HostConfiguration'
 import {PATHS} from "../../constants/routes";
 import {push} from 'react-router-redux'
 
-
 const mapDispatchToProps = dispatch => ({
   saveMeetingInfo: (meeting) => dispatch(saveMeeting(meeting)),
   meetingToCreateNewTeam: () => dispatch(meetingToNewTeam()),

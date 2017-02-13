@@ -38,10 +38,9 @@ public class MeetingController {
      * @return 200 OK if it was successful.
      */
     @RequestMapping(value = "/meeting/create", method = RequestMethod.POST)
-    public ResponseEntity<Void> createMeeting(@RequestBody Meeting meeting) {
+    public ResponseEntity<String> createMeeting(@RequestBody Meeting meeting) {
 
-        return checkResult(meetingServiceImpl.createMeeting(meeting));
-
+        return new ResponseEntity<String>(meetingServiceImpl.createMeeting(meeting), HttpStatus.OK);
     }
 
     /**

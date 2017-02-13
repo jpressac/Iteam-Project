@@ -12,7 +12,7 @@ import cssClasses from '../ComponentCSSForms/componentCSS.scss'
 import BootstrapModal from '../../components/BootstrapModal/BootstrapModal';
 import listFormat from './List.scss';
 import chipTheme from './chips.scss';
-import {updateMeetingId} from '../../redux/reducers/Meeting/MeetingReducer';
+import {updateMeeting} from '../../redux/reducers/Meeting/MeetingReducer';
 import {MEETING} from '../../constants/HostConfiguration';
 import themeLabel from './label.scss';
 import datesInput from './dateInput.scss'
@@ -52,7 +52,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => ({
 
   onClick: () => dispatch(push('/' + PATHS.MENULOGGEDIN.PERSONALBOARD)),
-  updateMyMeetingId: (meetingId) => dispatch(updateMeetingId(meetingId)),
+  updateMyMeetingId: (meetingId) => dispatch(updateMeeting(meetingId)),
   saveMeetingConfig: (meeting) => dispatch(saveConfig(meeting))
 });
 
