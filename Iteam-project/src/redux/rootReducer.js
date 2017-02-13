@@ -6,6 +6,7 @@ import meetingForTeamReducer from './reducers/Meeting/MeetingForTeamReducer'
 import meetingUser from './reducers/Meeting/MeetingUserConnected'
 import meetingConfigurationReducer from './reducers/Meeting/MeetingConfigReducer'
 import meetingChatMessagesReducer from './reducers/Meeting/MeetingChatMessagesReducer'
+import reportReducer from './reducers/Reports/ReportsReducer'
 import meetingsNotViewed from './reducers/Meeting/MeetingNotViewedReducer'
 
 export default combineReducers({
@@ -16,5 +17,6 @@ export default combineReducers({
   meetingUser,
   meetingConfigurationReducer,
   meetingChatMessagesReducer,
-  meetingsNotViewed
+ reportReducer,
+meetingsNotViewed
 })

@@ -11,6 +11,7 @@ import org.iteam.data.dto.ViewedMeeting;
 import org.iteam.data.model.D3CollapseTreeModel;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
+import org.iteam.data.model.PaginationModel;
 import org.iteam.services.team.TeamService;
 import org.iteam.services.user.UserService;
 import org.slf4j.Logger;
@@ -54,8 +55,8 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public List<Meeting> getMeetingByTeamName(String username) {
-        List<String> teamName = teamServiceImpl.getTeamByUser(username);
+    public List<Meeting> getMeetingByTeamName(String username, int size, int from) {
+        List<String> teamName = teamServiceImpl.getTeamByUser(username, size, from);
         return meetingRepositoryImpl.getMeetingByTeamName(teamName);
     }
 
@@ -72,11 +73,6 @@ public class MeetingServiceImpl implements MeetingService {
     @Override
     public void updateMeetingUsers(String meetingId, String users) {
         meetingRepositoryImpl.saveMeetingUsers(users, meetingId);
-    }
-
-    @Override
-    public List<Meeting> getMeetingByState(String username) {
-        return meetingRepositoryImpl.getMeetingsByState(username);
     }
 
     @Override
@@ -125,6 +121,21 @@ public class MeetingServiceImpl implements MeetingService {
         meetingRepositoryImpl.removeIdeasFromCacheSharedBoard(meetingId, id);
     }
 
+    @Override
+    public PaginationModel<Meeting> getProgrammedMeetings(String username, int offset, int limit) {
+        return meetingRepositoryImpl.getProgrammedMeetings(username, offset, limit);
+    }
+
+    @Override
+    public PaginationModel<Meeting> getEndedMeetingsByToken(String username, String token, int offset, int limit) {
+        return this.meetingRepositoryImpl.getEndedMeetingByToken(username, token, offset, limit);
+    }
+
+    @Override
+    public PaginationModel<Meeting> getProgrammedMeetingsByToken(String name, String token, int offset, int limit) {
+        return this.meetingRepositoryImpl.getProgrammedMeetingsByToken(name, token, offset, limit);
+    }
+
     @Autowired
     private void setMeetingRepositoryImpl(MeetingRepositoryImpl meetingRepositoryImpl) {
         this.meetingRepositoryImpl = meetingRepositoryImpl;
@@ -146,6 +157,11 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
+    public PaginationModel<Meeting> getEndedMeetings(String username, int offset, int limit) {
+        return meetingRepositoryImpl.getEndedMeetings(username, offset, limit);
+    }
+
+    @Override
     public boolean createMeetingViewed(Meeting meeting) {
         return this.meetingRepositoryImpl.createMeetingViewed(meeting);
     }
@@ -164,4 +180,5 @@ public class MeetingServiceImpl implements MeetingService {
     public void updateMeetingViewed(Meeting updatedMeeting) {
         this.meetingRepositoryImpl.updateMeetingViewed(updatedMeeting);
     }
+
 }

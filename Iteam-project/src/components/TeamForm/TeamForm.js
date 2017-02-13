@@ -17,7 +17,7 @@ import {getProfessions, getNationalities} from '../../utils/actions/utilsActions
 import {createTeam, teamNameExistence, selectTeam} from '../../utils/actions/teamActions'
 import {List, ListItem, ListSubHeader} from 'react-toolbox/lib/list'
 import generateUUID from '../../constants/utils/GetUUID'
-import listSubheader from './ListSubheader.css'
+import listSubheader from './ListSubheader.scss'
 
 const mapStateToProps = (state) => {
   if (state.loginUser !== null) {

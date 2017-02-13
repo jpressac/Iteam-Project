@@ -1,4 +1,19 @@
 .card {
-  height: 250px;
-  width: 250px;
+  background: whitesmoke;
+  height: 25%;
+  width: 50%;
+  display:inline-block;
+  margin-left: 20%;
+  margin-bottom: 1%;
+}
+
+.cardTitle .large {
+  font-size: 2rem;
+  display: inline-block;
+  color: #900c3f;
+}
+
+.cardActions {
+  display:inline-block;
+  margin-left:65% ;
 }
