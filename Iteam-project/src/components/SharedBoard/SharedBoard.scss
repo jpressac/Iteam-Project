@@ -38,3 +38,40 @@
   background: #900c3f;
 
 }
+.square{
+  float:left;
+  position: relative;
+  width: 46%;
+  padding-bottom: 40%; /* = width for a 1:1 aspect ratio */
+  margin:0.5%;
+  overflow:hidden;
+
+}
+.squareMiddle {
+  float:left;
+  position: relative;
+  width: 31%;
+  padding-bottom: 40%; /* = width for a 1:1 aspect ratio */
+  margin:0.4%;
+  overflow:hidden;
+
+}
+
+.content {
+  position:absolute;
+  height:100%; /* = 100% - 2*10% padding */
+  width:100%; /* = 100% - 2*5% padding */
+  padding: 5% 2%;
+  background: rgba(168, 153, 161, 0.43);
+  font-size: 20px;
+  color:#FFFFFF;
+}
+
+.letter{
+  font-size: 120px;
+  align-items: center;
+}
+.letterRetro {
+  font-size: 40px;
+  align-items: center;
+}

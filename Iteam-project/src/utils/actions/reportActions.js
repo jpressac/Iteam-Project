@@ -1,5 +1,6 @@
 import axios from 'axios'
 import {REPORT} from '../../constants/HostConfiguration'
+import {MEETING} from '../../constants/HostConfiguration'
 
 export function generateSharedReport(meetingList) {
 
@@ -17,3 +18,12 @@ export function getSharedReport(token){
     }
   })
 }
+
+export function getMeetingsToGenerateReport(tokenTopic) {
+  return axios.get(MEETING.REPORT_BY_MEETING, {
+  params: {
+    tokenTopic: tokenTopic
+  }
+})
+}
+

@@ -1,14 +1,20 @@
 package org.iteam.services.meeting;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.iteam.data.dal.meeting.MeetingRepository;
 import org.iteam.data.dal.meeting.MeetingRepositoryImpl;
 import org.iteam.data.dto.Meeting;
+import org.iteam.data.dto.UserDTO;
+import org.iteam.data.model.D3CollapseTreeModel;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
+import org.iteam.data.model.PaginationModel;
 import org.iteam.services.team.TeamService;
 import org.iteam.services.user.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,8 +46,8 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public List<Meeting> getMeetingByTeamName(String username) {
-        List<String> teamName = teamServiceImpl.getTeamByUser(username);
+    public List<Meeting> getMeetingByTeamName(String username, int size, int from) {
+        List<String> teamName = teamServiceImpl.getTeamByUser(username, size, from);
         return meetingRepositoryImpl.getMeetingByTeamName(teamName);
     }
 
@@ -96,6 +102,21 @@ public class MeetingServiceImpl implements MeetingService {
         meetingRepositoryImpl.removeIdeasFromCacheSharedBoard(meetingId, id);
     }
 
+    @Override
+    public PaginationModel<Meeting> getProgrammedMeetings(String username, int offset, int limit) {
+        return meetingRepositoryImpl.getProgrammedMeetings(username, offset, limit);
+    }
+
+    @Override
+    public PaginationModel<Meeting> getEndedMeetingsByToken(String username, String token, int offset, int limit) {
+        return this.meetingRepositoryImpl.getEndedMeetingByToken(username, token, offset, limit);
+    }
+
+    @Override
+    public PaginationModel<Meeting> getProgrammedMeetingsByToken(String name, String token, int offset, int limit) {
+        return this.meetingRepositoryImpl.getProgrammedMeetingsByToken(name, token, offset, limit);
+    }
+
     @Autowired
     private void setMeetingRepositoryImpl(MeetingRepositoryImpl meetingRepositoryImpl) {
         this.meetingRepositoryImpl = meetingRepositoryImpl;
@@ -115,4 +136,10 @@ public class MeetingServiceImpl implements MeetingService {
     public void generateScore(IdeasDTO ideas, List<String> usersList) {
         userServiceImpl.generateScore(ideas, usersList);
     }
+
+    @Override
+    public PaginationModel<Meeting> getEndedMeetings(String username, int offset, int limit) {
+        return meetingRepositoryImpl.getEndedMeetings(username, offset, limit);
+    }
+
 }

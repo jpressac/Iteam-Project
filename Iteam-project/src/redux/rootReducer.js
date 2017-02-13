@@ -7,6 +7,7 @@ import meetingUser from './reducers/Meeting/MeetingUserConnected'
 import meetingConfigurationReducer from './reducers/Meeting/MeetingConfigReducer'
 import meetingChatMessagesReducer from './reducers/Meeting/MeetingChatMessagesReducer'
 import tokenReducer from './reducers/Report/TokenReducer'
+import reportReducer from './reducers/Reports/ReportsReducer'
 
 export default combineReducers({
   router,
@@ -16,5 +17,6 @@ export default combineReducers({
   meetingUser,
   meetingConfigurationReducer,
   meetingChatMessagesReducer,
-  tokenReducer
+  tokenReducer,
+reportReducer
 })
