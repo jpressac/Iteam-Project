@@ -479,8 +479,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         PaginationModel<Meeting> paginatedMeetings = null;
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
-        queryBuilder.must(QueryBuilders.termQuery(MEETING_OWNER_NAME_FIELD, username))
-                .mustNot(QueryBuilders.existsQuery(MEETING_STATE_NAME_FIELD));
+        queryBuilder.mustNot(QueryBuilders.existsQuery(MEETING_STATE_NAME_FIELD));
 
         SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING, queryBuilder,
                 SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD).order(SortOrder.DESC), size, from);
@@ -499,8 +498,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     public PaginationModel<Meeting> getEndedMeetingByToken(String username, String token, int from, int size) {
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
-        queryBuilder.must(QueryBuilders.termQuery(MEETING_OWNER_NAME_FIELD, username))
-                .must(QueryBuilders.existsQuery(MEETING_STATE_NAME_FIELD))
+        queryBuilder.must(QueryBuilders.existsQuery(MEETING_STATE_NAME_FIELD))
                 .must(QueryBuilders.matchQuery(MEETING_TOPIC, token));
 
         SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING, queryBuilder);
@@ -518,8 +516,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     public PaginationModel<Meeting> getProgrammedMeetingsByToken(String username, String token, int from, int size) {
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
-        queryBuilder.must(QueryBuilders.termQuery(MEETING_OWNER_NAME_FIELD, username))
-                .mustNot(QueryBuilders.existsQuery(MEETING_STATE_NAME_FIELD))
+        queryBuilder.mustNot(QueryBuilders.existsQuery(MEETING_STATE_NAME_FIELD))
                 .must(QueryBuilders.matchQuery(MEETING_TOPIC, token));
 
         SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING, queryBuilder,
@@ -541,8 +538,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         PaginationModel<Meeting> paginationObject = null;
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
-        queryBuilder.must(QueryBuilders.termQuery(MEETING_OWNER_NAME_FIELD, username))
-                .must(QueryBuilders.existsQuery(MEETING_STATE_NAME_FIELD));
+        queryBuilder.must(QueryBuilders.existsQuery(MEETING_STATE_NAME_FIELD));
 
         SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING, queryBuilder,
                 SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD).order(SortOrder.DESC), size, from);
@@ -660,7 +656,5 @@ public class MeetingRepositoryImpl implements MeetingRepository {
                 StringUtilities.INDEX_TYPE_MEETING_VIEWED_USERS, updatedMeeting.getMeetingId());
 
     }
-
-
 
 }

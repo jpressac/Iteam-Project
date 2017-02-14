@@ -92,24 +92,29 @@ class HeaderLog extends Component {
     this.props.meetingHistory();
   }
 
-  goHome(){
+  goHome() {
     this.notShowList();
     this.props.home();
   }
 
-  goProfile(){
+  goProfile() {
     this.notShowList();
     this.props.profile();
   }
 
-  goMyMeetings(){
+  goMyMeetings() {
     this.notShowList();
     this.props.myMeeting();
   }
 
-  goTeams(){
+  goTeams() {
     this.notShowList();
     this.props.teamList();
+  }
+
+  goSharedReports() {
+    this.notShowList();
+    this.props.sharedReport();
   }
 
   notShowList() {
@@ -150,10 +155,10 @@ class HeaderLog extends Component {
                           onClick={this.goToNewTeam.bind(this)}/></li>
               <li><Button label='MY TEAMS' theme={themeButton}
                           onClick={this.goTeams.bind(this)}/></li>
+              <li><Button label='SHARED REPORT' theme={themeButton}
+                          onClick={this.goSharedReports.bind(this)}/></li>
               <li><Button icon='inbox' label={this.state.count} theme={themeButton}
                           onClick={this.onClickShowList.bind(this)}/></li>
-<li><Button label='SHARED REPORT' theme={themeButton}
-                            onClick={this.props.sharedReport}/></li>
               <li><span className={classes.span}><label>{this.props.user}</label></span ></li>
               <li><LogoutButton/></li>
             </ul>
@@ -176,7 +181,7 @@ HeaderLog.propTypes = {
   teamList: PropTypes.func,
   meetingHistory: PropTypes.func,
   meetings: PropTypes.any,
-sharedReport: PropTypes.func,
+  sharedReport: PropTypes.func,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(HeaderLog)
