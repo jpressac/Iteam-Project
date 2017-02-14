@@ -464,11 +464,13 @@ public class MeetingRepositoryImpl implements MeetingRepository {
                 BiFieldModel meetingToUpdate = new BiFieldModel(MEETING_HAS_ENDED, hit.getId());
                 meetingsToUpdate.add(meetingToUpdate);
             }
-            BulkResponse bulkResponse = elasticsearchClientImpl.updateNew(meetingsToUpdate,
-                    StringUtilities.INDEX_MEETING, StringUtilities.INDEX_TYPE_MEETING);
+            if (!ObjectUtils.isEmpty(meetingsToUpdate)) {
+                BulkResponse bulkResponse = elasticsearchClientImpl.updateNew(meetingsToUpdate,
+                        StringUtilities.INDEX_MEETING, StringUtilities.INDEX_TYPE_MEETING);
 
-            if (bulkResponse.hasFailures()) {
-                LOGGER.error("Error while performing bulk - {}", bulkResponse.buildFailureMessage());
+                if (bulkResponse.hasFailures()) {
+                    LOGGER.error("Error while performing bulk - {}", bulkResponse.buildFailureMessage());
+                }
             }
         }
 
@@ -635,9 +637,10 @@ public class MeetingRepositoryImpl implements MeetingRepository {
                     meeting);
             dataToUpdate.add(meetingToUpdate);
         });
-
-        elasticsearchClientImpl.updateNew(dataToUpdate, StringUtilities.INDEX_MEETING_VIEWED_USERS,
-                StringUtilities.INDEX_TYPE_MEETING_VIEWED_USERS);
+        if (!ObjectUtils.isEmpty(dataToUpdate)) {
+            elasticsearchClientImpl.updateNew(dataToUpdate, StringUtilities.INDEX_MEETING_VIEWED_USERS,
+                    StringUtilities.INDEX_TYPE_MEETING_VIEWED_USERS);
+        }
 
     }
 
