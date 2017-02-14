@@ -21,7 +21,7 @@ import Spinner from "../Spinner/Spinner";
 import Tooltip from "react-toolbox/lib/tooltip";
 import {List, ListItem, ListSubHeader} from 'react-toolbox/lib/list';
 import {getMeetingsToGenerateReport} from '../../utils/actions/reportActions'
-import {reportsToReportsView} from '../../redux/reducers/Reports/ReportsReducer'
+import {reportsToReportsView} from '../../redux/reducers/Report/ReportsReducer'
 
 
 const mapDispatchToProps = dispatch => ({
@@ -237,7 +237,7 @@ class ReportForm extends Component {
 }
 
 ReportForm.propTypes = {
-  
+
   goToReportsView: PropTypes.func,
   meetingId: PropTypes.string,
   meetingConfiguration: PropTypes.any

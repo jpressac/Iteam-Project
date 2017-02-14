@@ -14,8 +14,8 @@ const mapDispatchToProps = dispatch => ({
   home: () => dispatch(push('/' + PATHS.MENUNOTLOGGEDIN.HOME)),
   about: () => dispatch(push('/' + PATHS.MENUNOTLOGGEDIN.ABOUT)),
   contact: () => dispatch(push('/' + PATHS.MENUNOTLOGGEDIN.CONTACT)),
-  register: () => dispatch(push('/' + PATHS.MENUNOTLOGGEDIN.REGISTER))
-
+  register: () => dispatch(push('/' + PATHS.MENUNOTLOGGEDIN.REGISTER)),
+  sharedReports: () => dispatch(push('/' + PATHS.SHARED_REPORT.REPORT_NOT_LOGGEDIN))
 });
 
 const iteamLogo= () => (
@@ -29,6 +29,7 @@ class HeaderNotLog extends React.Component {
       <AppBar fixed flat theme={themeAppBar} leftIcon={iteamLogo()}>
           <Navigation type='horizontal' theme={themeNav}>
             <Button icon='contact_phone' label='CONTACT' onClick={this.props.contact} theme={themeButton}/>
+            <Button icon='share' label='SHARED REPORT' onClick={this.props.sharedReports} theme={themeButton}/>
             <Button icon='create' label='REGISTER' onClick={this.props.register} theme={themeButton}/>
             <Button icon='bookmark' label='ABOUT' onClick={this.props.about} theme={themeButton}/>
             <Button icon='home' label='HOME' onClick={this.props.home} theme={themeButton}/>
@@ -43,7 +44,8 @@ HeaderNotLog.propTypes = {
   register: PropTypes.func,
   about: PropTypes.func,
   contact: PropTypes.func,
-  login: PropTypes.func
+  login: PropTypes.func,
+  sharedReports: PropTypes.func
 }
 
 export default connect(null, mapDispatchToProps)(HeaderNotLog)

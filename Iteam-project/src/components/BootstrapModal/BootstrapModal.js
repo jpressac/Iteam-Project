@@ -1,5 +1,6 @@
 import React from 'react';
 import { Modal, Button} from 'react-bootstrap';
+import classes from './ModalCSS.scss'
 
 export default class BootstrapModal extends React.Component {
 
@@ -26,7 +27,7 @@ export default class BootstrapModal extends React.Component {
           <Modal.Title id="contained-modal-title-lg">Information</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <h4>{this.props.message}</h4>
+          <h4 className={classes.overflowAuto}>{this.props.message}</h4>
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={this.props.onOk}> Ok</Button>
