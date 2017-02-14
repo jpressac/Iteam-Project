@@ -25,7 +25,8 @@ const mapDispatchToProps = dispatch => ({
   saveMeetingInfo: (meeting) => dispatch(saveMeeting(meeting)),
   meetingToCreateNewTeam: () => dispatch(meetingToNewTeam()),
   goToMeetingConfig: (meeting) => dispatch(meetingToMeetingConfig(meeting)),
-  home: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HOME))
+  home: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HOME)),
+  myMeetings: () => dispatch(push('/' + PATHS.MENULOGGEDIN.MYMEETINGS))
 });
 
 const mapStateToProps = (state) => {
@@ -170,8 +171,8 @@ class MeetingView extends Component {
           technic: this.state.technic
         }
       };
-      console.debug(meetingInfo);
       createMeeting(meetingInfo);
+      this.props.myMeetings();
 
 
       //REDUCER
@@ -213,7 +214,6 @@ class MeetingView extends Component {
   }
 
   handleConfigChange = (key, value)=> {
-    console.debug(key + ' : ' + value);
     this.setState({[key]: value})
   };
 
@@ -257,8 +257,9 @@ class MeetingView extends Component {
             </div>
             <ButtonComponent className={"col-md-4 " + cssClasses.paddingInnerElements} raisedValue
                              onClick={this.createTeamAction.bind(this)} value="Create Team"/>
-
-            <MeetingConfigForm onSetConfig={this.handleConfigChange.bind(this)}/>
+            <div className={"col-md-12 " + cssClasses.paddingInnerElements}>
+              <MeetingConfigForm onSetConfig={this.handleConfigChange.bind(this)}/>
+            </div>
 
             <div className={"col-md-12 " + cssClasses.paddingInnerElements}>
               <ButtonComponent className="col-md-6" onClick={this.props.home} iconButton="navigate_before"
@@ -286,7 +287,8 @@ MeetingView.propTypes = {
   user: PropTypes.any,
   meetingInfoSave: PropTypes.any,
   fromMeeting: PropTypes.bool,
-  home: PropTypes.func
+  home: PropTypes.func,
+  myMeetings: PropTypes.func
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(MeetingView)
