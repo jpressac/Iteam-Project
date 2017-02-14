@@ -51,16 +51,16 @@ class HeaderLog extends Component {
     this.state = {
       count: '',
       meetingsNotViewed: [],
-      showList:false
+      showList: false
     }
   }
 
   componentWillReceiveProps(nextProps) {
     if (this.props.meetings != undefined) {
-        this.setState({
-          count: nextProps.meetings.length.toString(),
-          meetingsNotViewed: nextProps.meetings
-        })
+      this.setState({
+        count: nextProps.meetings.length.toString(),
+        meetingsNotViewed: nextProps.meetings
+      })
     }
   }
 
@@ -91,21 +91,22 @@ class HeaderLog extends Component {
     this.props.meetingHistory();
   }
 
-  notShowList(){
+  notShowList() {
     this.setState({showList: false})
   }
 
-  onClickShowList(){
+  onClickShowList() {
     this.setState({showList: !this.state.showList})
   }
 
   renderInbox() {
-  if(this.state.showList){
-    return (
-      <InboxList
-        meetings={this.state.meetingsNotViewed}>
-      </InboxList>
-    )}
+    if (this.state.showList) {
+      return (
+        <InboxList
+          meetings={this.state.meetingsNotViewed}>
+        </InboxList>
+      )
+    }
   }
 
   render() {
@@ -128,10 +129,8 @@ class HeaderLog extends Component {
                           onClick={this.goToNewTeam.bind(this)}/></li>
               <li><Button label='MY TEAMS' theme={themeButton}
                           onClick={this.props.teamList}/></li>
-              <li><Button label='INBOX ' theme={themeButton}
-                          onClick={this.onClickShowList.bind(this)}>
-                <spam>{this.state.count}</spam>
-              </Button></li>
+              <li><Button icon='inbox' label={this.state.count} theme={themeButton}
+                          onClick={this.onClickShowList.bind(this)}/></li>
               <li><span className={classes.span}><label>{this.props.user}</label></span ></li>
               <li><LogoutButton/></li>
             </ul>

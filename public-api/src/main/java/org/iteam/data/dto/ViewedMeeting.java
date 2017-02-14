@@ -8,17 +8,17 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
+@JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ViewedMeeting {
 
-    @JsonInclude(Include.NON_NULL)
     private List<String> users;
-    @JsonInclude(Include.NON_NULL)
     private String meetingId;
     private Long time;
+    private String meetingTopic;
+
     @JsonInclude(Include.NON_ABSENT)
     private List<String> viewedUsers;
-    private String meetingTopic;
 
     public List<String> getUsers() {
         return users;

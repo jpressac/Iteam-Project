@@ -744,6 +744,8 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         List<String> viewedUsers = new ArrayList<>();
         viewedUsers.add(updatedMeeting.getOwnerName());
         data.setViewedUsers(viewedUsers);
+        data.setMeetingTopic(updatedMeeting.getTopic());
+        data.setTime(updatedMeeting.getProgrammedDate());
 
         elasticsearchClientImpl.modifyData(JSONUtils.ObjectToJSON(data), StringUtilities.INDEX_MEETING_VIEWED_USERS,
                 StringUtilities.INDEX_TYPE_MEETING_VIEWED_USERS, updatedMeeting.getMeetingId());

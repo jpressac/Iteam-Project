@@ -41,9 +41,9 @@ export const MEETING = {
   MEETING_MARK_ENDED: URL + '/meeting/markended',
   MEETING_SEARCH_HISTORY: URL + '/meeting/search/history',
   MEETING_SEARCH_PROGRAMMED: URL + '/meeting/search/programmed',
-  MEETING_PAGINATED : URL + '/meeting/paginated'
-MEETING_NOT_VIEWED: URL + '/meeting/notViewed',
-MEETING_VIEWED: URL + '/meeting/viewed'
+  MEETING_PAGINATED : URL + '/meeting/paginated',
+  MEETING_NOT_VIEWED: URL + '/meeting/notViewed',
+  MEETING_VIEWED: URL + '/meeting/viewed'
 };
 
 export const UTILITIES = {

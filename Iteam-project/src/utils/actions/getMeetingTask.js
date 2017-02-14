@@ -4,7 +4,6 @@ import {meetingsNotViewedReducer} from '../../redux/reducers/Meeting/MeetingNotV
 import {store} from '../../main'
 
 export const meetingsNotViewedByUser = (done) => {
-  console.debug('task scheduler entra');
   meetingsNotViewed().then((response)=> {
     store.dispatch(meetingsNotViewedReducer(response.data));
     done()

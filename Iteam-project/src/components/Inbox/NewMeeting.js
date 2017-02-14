@@ -25,12 +25,14 @@ class NewMeeting extends Component {
 
   render() {
     return (
-      <div>
-        <div className={classes.msgRow}>
-          <div class="col-md-6"><p className={classes.chatUsername}>{this.props.topic}</p></div>
-          <div class="col-md-6"><p className={classes.p}>{this.dateToString()}</p></div>
+      <div className={classes.inboxConteiner}>
+        <div className="row classes.msgRow">
+          <div className={"col-md-6 classes.chatUsername"}>{this.props.topic}</div>
+          <div className={"col-md-6 classes.msgTime"}>{this.dateToString()}</div>
         </div>
-        <div><p>{this.showText()}</p></div>
+        <div className="row">
+          <div className="col-md-12"><p>{this.showText()}</p></div>
+        </div>
       </div>
     );
   }

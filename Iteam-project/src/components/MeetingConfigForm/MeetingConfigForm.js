@@ -30,9 +30,7 @@ const mapStateToProps = (state) => {
 };
 
 const TooltipButton = Tooltip(Button);
-const technics = ['Brainstorming', 'SCAMPER', 'Starfish Retrospective']
-
-
+const technics = ['Brainstorming', 'SCAMPER', 'Starfish Retrospective'];
 const retroTags = ['Start', 'Stop', 'Keep', 'More', 'Less'];
 const scamperTags = ['Sustitute', 'Combine', 'Adapt', 'Modify', 'Put to others use', 'Eliminate', 'Rearrange'];
 
@@ -49,8 +47,6 @@ class MeetingConfigForm extends Component {
       deletable: true,
       disabled: false,
       technicValue: 0,
-      pbtime: 0,
-      sbtime: 0,
       template: 0,
       templateValue: 0,
       notesFunctions: [],
@@ -62,38 +58,27 @@ class MeetingConfigForm extends Component {
 
   handleChangeTechnic = (technic)=> {
     if (technic === 'SCAMPER') {
-
       this.setState({tags: scamperTags, deletable: false, disabled: true});
-
     }
     else if (technic === 'Starfish Retrospective') {
       this.setState({tags: retroTags, deletable: false, disabled: true});
-
     }
     else {
       this.setState({tags: [], deletable: true, disabled: false});
-
     }
   };
 
 
   handleChange = (key, value) => {
-
     this.setState({[key]: value}, () => {
-
       if (value == 'Brainstorming' | value == 'SCAMPER' | value == 'Starfish Retrospective') {
         this.handleChangeTechnic(this.state.technic)
       }
     });
-
-
   };
-
-
 
   handleAddTag() {
     if (this.state.tag !== '') {
-
       let newTags = this.state.tags;
       newTags.push((this.state.tag));
 
@@ -103,13 +88,11 @@ class MeetingConfigForm extends Component {
 
   deleteTag(pos) {
     let newTags = this.state.tags;
-
     newTags.map(function (filter, index) {
       if (pos === index) {
         newTags.splice(index, 1);
       }
     });
-
     this.setState({tags: newTags});
   }
 
@@ -127,9 +110,7 @@ class MeetingConfigForm extends Component {
 
   saveMeeting() {
     this.setState({showSpinner: true});
-
     let tags = this.state.tags;
-
     tags.push("Miscellaneous");
     tags.reverse();
 
@@ -143,15 +124,11 @@ class MeetingConfigForm extends Component {
       meetingConfig: {
         votes: this.state.votes,
         tags: tags,
-        pbtime: this.state.pbtime,
-        sbtime: this.state.sbtime,
         technic: this.state.technic,
         template: this.state.template
       }
     }).then(function () {
-
       this.props.goToMyMeetings()
-
     }.bind(this)).catch(function (response) {
     });
   }
@@ -172,15 +149,6 @@ class MeetingConfigForm extends Component {
             <InputComponent className={"col-md-4"}
                             onValueChange={this.handleChange.bind(this, "votes")} value={this.state.votes}
                             label="Select amount of votes" type="number" minValue={"0"}/>
-
-            <InputComponent className={"col-md-4"}
-                            label="Select amount minutes in personal board"
-                            onValueChange={this.handleChange.bind(this, 'pbtime')} type="number" minValue={"0"}
-                            value={this.state.pbtime}/>
-            <InputComponent className={"col-md-4"}
-                            label="Select amount minutes in shared board"
-                            onValueChange={this.handleChange.bind(this, 'sbtime')} value={this.state.sbtime}
-                            type="number" minValue={"0"}/>
 
             <div className="row">
               <InputComponent className={"col-md-6"} label="Tag" value={this.state.tag} disable={this.state.disabled}
