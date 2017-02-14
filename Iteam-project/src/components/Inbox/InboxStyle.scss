@@ -28,11 +28,14 @@
   font-size: medium;
   margin-right: 0;
   margin-left: 0;
+  margin-bottom: 1%;
 }
 
 .msgRow {
   margin-bottom: 5px;
-  display: inline;
+  display: inline-flex;;
+  margin-right: 0;
+  margin-left: 0;
 }
 
 .userLabel {
@@ -45,6 +48,7 @@
   font-size: large;
   margin-left: 2%;
   margin-top: 2%;
+  float: left;
 }
 
 .msgTime {

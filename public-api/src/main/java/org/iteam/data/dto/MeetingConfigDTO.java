@@ -14,9 +14,6 @@ public class MeetingConfigDTO {
 
     private int votes;
     private List<String> tags;
-    private int PBtime;
-    private int SBtime;
-    private int template;
     private String technic;
 
     /**
@@ -47,51 +44,6 @@ public class MeetingConfigDTO {
      */
     public void setTags(List<String> tags) {
         this.tags = tags;
-    }
-
-    /**
-     * @return the pBtime
-     */
-    public int getPBtime() {
-        return PBtime;
-    }
-
-    /**
-     * @param pBtime
-     *            the pBtime to set
-     */
-    public void setPBtime(int pBtime) {
-        PBtime = pBtime;
-    }
-
-    /**
-     * @return the sBtime
-     */
-    public int getSBtime() {
-        return SBtime;
-    }
-
-    /**
-     * @param sBtime
-     *            the sBtime to set
-     */
-    public void setSBtime(int sBtime) {
-        SBtime = sBtime;
-    }
-
-    /**
-     * @return the template
-     */
-    public int getTemplate() {
-        return template;
-    }
-
-    /**
-     * @param template
-     *            the template to set
-     */
-    public void setTemplate(int template) {
-        this.template = template;
     }
 
     /**

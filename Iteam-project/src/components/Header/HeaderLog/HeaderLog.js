@@ -69,7 +69,7 @@ class HeaderLog extends Component {
     meetingScheduler.executeNow()
   }
 
-  componentDidUnmount() {
+  componentWillUnmount() {
     this.notShowList();
     meetingScheduler.stop()
   }
@@ -89,6 +89,26 @@ class HeaderLog extends Component {
   goToHistory() {
     this.notShowList();
     this.props.meetingHistory();
+  }
+
+  goHome(){
+    this.notShowList();
+    this.props.home();
+  }
+
+  goProfile(){
+    this.notShowList();
+    this.props.profile();
+  }
+
+  goMyMeetings(){
+    this.notShowList();
+    this.props.myMeeting();
+  }
+
+  goTeams(){
+    this.notShowList();
+    this.props.teamList();
   }
 
   notShowList() {
@@ -116,11 +136,11 @@ class HeaderLog extends Component {
           <Navigation type="horizontal" theme={themeNav}>
             <ul className={classes.ul}>
               <li><Button label='HOME' theme={themeButton}
-                          onClick={this.props.home}/></li>
+                          onClick={this.goHome.bind(this)}/></li>
               <li><Button label='PROFILE' theme={themeButton}
-                          onClick={this.props.profile}/></li>
+                          onClick={this.goProfile.bind(this)}/></li>
               <li><Button label='MY MEETINGS' theme={themeButton}
-                          onClick={this.props.myMeeting}/></li>
+                          onClick={this.goMyMeetings.bind(this)}/></li>
               <li><Button label='NEW MEETING' theme={themeButton}
                           onClick={this.goToNewMeeting.bind(this)}/></li>
               <li><Button label='HISTORY' theme={themeButton}
@@ -128,7 +148,7 @@ class HeaderLog extends Component {
               <li><Button label='NEW TEAM' theme={themeButton}
                           onClick={this.goToNewTeam.bind(this)}/></li>
               <li><Button label='MY TEAMS' theme={themeButton}
-                          onClick={this.props.teamList}/></li>
+                          onClick={this.goTeams.bind(this)}/></li>
               <li><Button icon='inbox' label={this.state.count} theme={themeButton}
                           onClick={this.onClickShowList.bind(this)}/></li>
               <li><span className={classes.span}><label>{this.props.user}</label></span ></li>

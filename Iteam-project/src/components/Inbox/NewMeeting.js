@@ -26,11 +26,11 @@ class NewMeeting extends Component {
   render() {
     return (
       <div className={classes.inboxConteiner}>
-        <div className="row classes.msgRow">
-          <div className={"col-md-6 classes.chatUsername"}>{this.props.topic}</div>
-          <div className={"col-md-6 classes.msgTime"}>{this.dateToString()}</div>
+        <div className={"row col-md-12 " + classes.msgRow}>
+          <div className={"col-md-6 " + classes.chatUsername}>{this.props.topic}</div>
+          <div className={"col-md-6 " + classes.msgTime}>{this.dateToString()}</div>
         </div>
-        <div className="row">
+        <div className={"row "  + classes.msgRow}>
           <div className="col-md-12"><p>{this.showText()}</p></div>
         </div>
       </div>

@@ -10,3 +10,8 @@ export function updateMeetingsViewed(meetingsViewed) {
 export function meetingsNotViewed() {
   return axios.get(MEETING.MEETING_NOT_VIEWED)
 }
+
+export function createMeeting(meeting){
+  return axios.post(MEETING.MEETING_CREATE,
+  meeting)
+}
