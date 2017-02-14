@@ -158,10 +158,6 @@ public interface MeetingRepository {
 
     public PaginationModel<Meeting> getEndedMeetings(String username, int offset, int limit);
 
-    public List<Meeting> getCustomReportByMeeting(String ownerName, String topicToken);
-
-    public D3CollapseTreeModel generateCustomReportByMeeting(List<String> meetingId);
-
     public String getMeetingTopic(String meetingId);
 
     public List<Idea> getIdeasGivenMeetingId(String meetingId);

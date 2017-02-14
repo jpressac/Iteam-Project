@@ -1,20 +1,15 @@
 package org.iteam.services.meeting;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.iteam.data.dal.meeting.MeetingRepository;
 import org.iteam.data.dal.meeting.MeetingRepositoryImpl;
 import org.iteam.data.dto.Meeting;
-import org.iteam.data.dto.UserDTO;
-import org.iteam.data.model.D3CollapseTreeModel;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
 import org.iteam.data.model.PaginationModel;
 import org.iteam.services.team.TeamService;
 import org.iteam.services.user.UserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -64,11 +59,6 @@ public class MeetingServiceImpl implements MeetingService {
     @Override
     public void updateMeetingUsers(String meetingId, String users) {
         meetingRepositoryImpl.saveMeetingUsers(users, meetingId);
-    }
-
-    @Override
-    public List<Meeting> getMeetingByState(String username) {
-        return meetingRepositoryImpl.getMeetingsByState(username);
     }
 
     @Override

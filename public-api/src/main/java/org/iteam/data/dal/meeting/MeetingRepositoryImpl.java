@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.elasticsearch.ElasticsearchException;
 import org.elasticsearch.action.bulk.BulkResponse;
@@ -24,7 +23,6 @@ import org.iteam.data.dal.client.ElasticsearchClient;
 import org.iteam.data.dal.client.ElasticsearchClientImpl;
 import org.iteam.data.dto.Idea;
 import org.iteam.data.dto.Meeting;
-import org.iteam.data.model.D3CollapseTreeModel;
 import org.iteam.data.model.BiFieldModel;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
@@ -40,7 +38,6 @@ import org.springframework.util.ObjectUtils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 
 @Repository
 public class MeetingRepositoryImpl implements MeetingRepository {
