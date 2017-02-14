@@ -15,5 +15,7 @@ public final class StringUtilities {
     public static final String INDEX_MEETING_INFO = "meetinginfo";
     public static final String INDEX_TYPE_MEETING_INFO = "meetinginfodata";
     public static final String INDEX_TYPE_MEETING_INFO_USERS = "meetinginfousers";
+    public static final String INDEX_MEETING_VIEWED_USERS = "meetingviewedusers";
+    public static final String INDEX_TYPE_MEETING_VIEWED_USERS = "meetingviewedusersdata";
 
 }

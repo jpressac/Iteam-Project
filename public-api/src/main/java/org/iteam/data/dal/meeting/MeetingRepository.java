@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.iteam.data.dto.Idea;
 import org.iteam.data.dto.Meeting;
+import org.iteam.data.dto.ViewedMeeting;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
 import org.iteam.data.model.PaginationModel;
@@ -161,5 +162,13 @@ public interface MeetingRepository {
     public String getMeetingTopic(String meetingId);
 
     public List<Idea> getIdeasGivenMeetingId(String meetingId);
+
+    public boolean createMeetingViewed(Meeting meeting);
+
+    public List<ViewedMeeting> getMeetingsNotViewed(String username);
+
+    public void updateMeetingViewedByUser(List<ViewedMeeting> meetingsViewedByUser, String username);
+
+    public void updateMeetingViewed(Meeting updatedMeeting);
 
 }

@@ -5,6 +5,8 @@ import java.util.List;
 import org.iteam.data.dal.meeting.MeetingRepository;
 import org.iteam.data.dal.meeting.MeetingRepositoryImpl;
 import org.iteam.data.dto.Meeting;
+import org.iteam.data.dto.UserDTO;
+import org.iteam.data.dto.ViewedMeeting;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
 import org.iteam.data.model.PaginationModel;
@@ -130,6 +132,26 @@ public class MeetingServiceImpl implements MeetingService {
     @Override
     public PaginationModel<Meeting> getEndedMeetings(String username, int offset, int limit) {
         return meetingRepositoryImpl.getEndedMeetings(username, offset, limit);
+    }
+
+    @Override
+    public boolean createMeetingViewed(Meeting meeting) {
+        return this.meetingRepositoryImpl.createMeetingViewed(meeting);
+    }
+
+    @Override
+    public List<ViewedMeeting> getMeetingsNotViewed(String username) {
+        return this.meetingRepositoryImpl.getMeetingsNotViewed(username);
+    }
+
+    @Override
+    public void updateMeetingViewedByUser(List<ViewedMeeting> meetingsViewedByUser, String username) {
+        this.meetingRepositoryImpl.updateMeetingViewedByUser(meetingsViewedByUser, username);
+    }
+
+    @Override
+    public void updateMeetingViewed(Meeting updatedMeeting) {
+        this.meetingRepositoryImpl.updateMeetingViewed(updatedMeeting);
     }
 
 }

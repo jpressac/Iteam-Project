@@ -31,6 +31,7 @@ import org.elasticsearch.search.sort.SortBuilder;
 import org.iteam.configuration.ExternalConfigurationProperties;
 import org.iteam.data.model.BiFieldModel;
 import org.iteam.exceptions.ElasticsearchClientException;
+import org.iteam.services.utils.JSONUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -209,7 +210,7 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
         data.forEach((dataToUpdate) -> {
 
             UpdateRequest updateRequest = new UpdateRequest(index, type, dataToUpdate.getKey());
-            updateRequest.doc(dataToUpdate.getValue());
+            updateRequest.doc(JSONUtils.ObjectToJSON(dataToUpdate.getValue()));
             updateList.add(updateRequest);
         });
 
@@ -224,7 +225,7 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
         data.forEach((dataToUpdate) -> {
 
             UpdateRequest updateRequest = new UpdateRequest(index, type, dataToUpdate.getKey());
-            updateRequest.script(getScript(Double.parseDouble(dataToUpdate.getValue())));
+            updateRequest.script(getScript(Double.parseDouble((String) dataToUpdate.getValue())));
             updateList.add(updateRequest);
         });
 

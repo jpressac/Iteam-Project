@@ -3,12 +3,12 @@ package org.iteam.data.model;
 /**
  * Model that could be used for many queries.
  */
-public class BiFieldModel {
+public class BiFieldModel<T> {
 
     private String key;
-    private String value;
+    private T value;
 
-    public BiFieldModel(String field, String value) {
+    public BiFieldModel(String field, T value) {
         this.key = field;
         this.value = value;
     }
@@ -21,11 +21,11 @@ public class BiFieldModel {
         this.key = key;
     }
 
-    public String getValue() {
+    public T getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(T value) {
         this.value = value;
     }
 
