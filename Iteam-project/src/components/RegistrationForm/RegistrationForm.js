@@ -1,22 +1,22 @@
-import React, {Component, PropTypes} from "react";
-import {submitUser, userExistence} from "../../utils/actions/userActions";
-import {getProfessions, getNationalities} from '../../utils/actions/utilsActions';
-import InputComponent from '../InputComponent/InputComponent';
-import ButtonComponent from '../ButtonComponent/ButtonComponent';
-import DropdownComponent from '../DropdownComponent/DropdownComponent';
-import BootstrapModal from "../BootstrapModal";
-import user from "./user.png";
-import classes from "./RegistrationForm.scss";
+import React, {Component, PropTypes} from 'react'
+import {submitUser, userExistence} from '../../utils/actions/userActions'
+import {getProfessions, getNationalities} from '../../utils/actions/utilsActions'
+import InputComponent from '../InputComponent/InputComponent'
+import ButtonComponent from '../ButtonComponent/ButtonComponent'
+import AutocompleteComponent from '../AutocompleteComponent/AutocompleteComponent'
+import BootstrapModal from '../BootstrapModal'
+import user from './user.png'
+import classes from './RegistrationForm.scss'
 import cssClasses from '../ComponentCSSForms/componentCSS.scss'
-import {RadioGroup, RadioButton} from "react-toolbox/lib/radio";
-import DatePicker from "react-toolbox/lib/date_picker";
-import Input from "react-toolbox/lib/input";
-import themeLabel from "./label.scss";
-import Tooltip from "react-toolbox/lib/tooltip";
-import {PATHS} from "../../constants/routes";
-import {connect} from "react-redux";
-import {push} from "react-router-redux";
-import Spinner from "../Spinner/Spinner";
+import {RadioGroup, RadioButton} from 'react-toolbox/lib/radio'
+import DatePicker from 'react-toolbox/lib/date_picker'
+import Input from 'react-toolbox/lib/input'
+import themeLabel from './label.scss'
+import Tooltip from 'react-toolbox/lib/tooltip'
+import {PATHS} from '../../constants/routes'
+import {connect} from 'react-redux'
+import {push} from 'react-router-redux'
+import Spinner from '../Spinner/Spinner'
 
 const TooltipInput = Tooltip(Input);
 
@@ -82,7 +82,7 @@ class RegistrationForm extends React.Component {
   }
 
   handleChange = (key, value) => {
-    this.setState({[key]: value});
+    this.setState({[key]: value})
   };
 
   dateChange = (datetime) => {
@@ -110,13 +110,13 @@ class RegistrationForm extends React.Component {
             <label>CREATE YOUR ACCOUNT</label>
           </div>
           <div className={cssClasses.form}>
-              <div className={"row col-md-12 "  + cssClasses.paddingInnerElements}>
-                <img className={cssClasses.imageAvatar} src={user}/>
-                <label>
-                  <span className={cssClasses.labelInfo}> Add a photo </span>
-                  <p className={cssClasses.paragraphImageFooter}>to help your teammates identify you</p>
-                </label>
-              </div>
+            <div className={"row col-md-12 " + cssClasses.paddingInnerElements}>
+              <img className={cssClasses.imageAvatar} src={user}/>
+              <label>
+                <span className={cssClasses.labelInfo}> Add a photo </span>
+                <p className={cssClasses.paragraphImageFooter}>to help your teammates identify you</p>
+              </label>
+            </div>
             <div className={"row col-md-12 " + cssClasses.paddingInnerElements}>
               <InputComponent className="col-md-6" type='text' label='First Name' name='firstName'
                               value={this.state.firstName} required
@@ -130,7 +130,7 @@ class RegistrationForm extends React.Component {
               <div className="col-md-6">
                 <DatePicker label='Date of birth' sundayFirstDayOfWeek
                             required onChange={this.dateChange} theme={themeLabel} value={this.state.date}
-                            maxDate={Date.now()}/>
+                            maxDate={new Date()}/>
               </div>
               <div className="col-md-6">
                 <RadioGroup name='gender' value={this.state.genderValue}
@@ -143,12 +143,12 @@ class RegistrationForm extends React.Component {
             <div className="row col-md-12">
               <div className="row">
                 <div className="col-md-6">
-                  <DropdownComponent source={this.state.dropDownSourceProfession} label="Select profession"
-                                     initialValue='' onValueChange={this.handleChange.bind(this, 'profession')}/>
+                  <AutocompleteComponent onValueChange={this.handleChange.bind(this, 'profession')}
+                                         label="Select Profession" source={this.state.dropDownSourceProfession}/>
                 </div>
                 <div className="col-md-6">
-                  <DropdownComponent source={this.state.dropDownSourceNationalities} label="Select nationality"
-                                     initialValue='' onValueChange={this.handleChange.bind(this, 'nationality')}/>
+                  <AutocompleteComponent onValueChange={this.handleChange.bind(this, 'nationality')}
+                                         label="Select Nationality" source={this.state.dropDownSourceNationalities}/>
                 </div>
               </div>
             </div>
@@ -188,7 +188,8 @@ class RegistrationForm extends React.Component {
               </div>
             </div>
             <div className="row">
-              <ButtonComponent className={"col-md-12 " + classes.buttonCreate} raisedValue iconButton="save" value="Create"
+              <ButtonComponent className={"col-md-12 " + classes.buttonCreate} raisedValue iconButton="save"
+                               value="Create"
                                onClick={this.saveUser.bind(this)}/>
             </div>
           </div>

@@ -1,21 +1,19 @@
-import React, {Component, PropTypes}from 'react';
+import React, {Component, PropTypes}from 'react'
 import classes from './HomeForm.scss'
 import {PATHS} from '../../constants/routes'
 import {connect} from 'react-redux'
 import {push} from 'react-router-redux'
-import Dialog from 'react-toolbox/lib/dialog';
-import Input from 'react-toolbox/lib/input';
-import {Button} from 'react-toolbox/lib/button';
+import Dialog from 'react-toolbox/lib/dialog'
+import Input from 'react-toolbox/lib/input'
+import {Button} from 'react-toolbox/lib/button'
 import themeLabel from './label.scss'
 import ButtonComponent from '../ButtonComponent/ButtonComponent'
 import buttonTheme from './buttonTheme.scss'
 
 const mapDispatchToProps = dispatch => ({
-
   login: () => dispatch(push('/' + PATHS.MENUNOTLOGGEDIN.LOGIN)),
   register: () => dispatch(push('/' + PATHS.MENUNOTLOGGEDIN.REGISTER)),
   meeting: () => dispatch(push('/' + PATHS.MENULOGGEDIN.MEETING))
-
 });
 
 const mapStateToProps = (state) => {
@@ -39,8 +37,8 @@ class HomeForm extends React.Component {
   };
 
   handleChange(key, value) {
-    this.setState({[key]: value});
-  };
+    this.setState({[key]: value})
+  }
 
   renderDialog() {
     return (

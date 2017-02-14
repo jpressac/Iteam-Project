@@ -131,6 +131,7 @@ class MeetingConfigForm extends Component {
     let tags = this.state.tags;
 
     tags.push("Miscellaneous");
+    tags.push("All")
     tags.reverse();
 
     axios.post(MEETING.MEETING_CREATE, {
