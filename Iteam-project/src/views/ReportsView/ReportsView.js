@@ -5,7 +5,7 @@ import classes from '../ViewContainerCSS/ViewContainer.scss'
 export class ReportsView extends React.Component {
   render() {
     return (
-      <div className={classes.form}>
+      <div className={classes.formContainer}>
         <ReportsForm  />
       </div>
     );

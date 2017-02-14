@@ -6,7 +6,6 @@ import javax.validation.Valid;
 
 import org.iteam.data.dto.Meeting;
 import org.iteam.data.dto.ViewedMeeting;
-import org.iteam.data.model.D3CollapseTreeModel;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
 import org.iteam.data.model.PaginationModel;
@@ -80,60 +79,6 @@ public class MeetingController {
         } else {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-    }
-
-    /**
-     * Generate the standard report by tag and ranking for the given meeting.
-     * 
-     * @param meetingId
-     *            the id of the meeting.
-     * @param tags
-     *            the list of tags for the ideas.
-     * @return 204 NO CONTENT
-     */
-    @RequestMapping(value = "/meeting/report", method = RequestMethod.GET)
-    public ResponseEntity<D3CollapseTreeModel> generateReport(
-            @RequestParam(value = "meetingId", required = true) String meetingId,
-            @RequestParam(value = "tags", required = true) List<String> tags) {
-        D3CollapseTreeModel report = meetingServiceImpl.generateReportByRanking(meetingId, tags);
-
-        return new ResponseEntity<D3CollapseTreeModel>(report, HttpStatus.OK);
-    }
-
-    /**
-     * Generate a report by user for the given meeting.
-     * 
-     * @param meetingId
-     *            the id of the meeting.
-     * @param tags
-     *            the list of tags for the ideas.
-     * @return 204 NO CONTENT
-     */
-    @RequestMapping(value = "/meeting/report/byuser", method = RequestMethod.GET)
-    public ResponseEntity<D3CollapseTreeModel> generateReportByUser(
-            @RequestParam(value = "meetingId", required = true) String meetingId,
-            @RequestParam(value = "tags", required = true) List<String> tags) {
-        D3CollapseTreeModel report = meetingServiceImpl.generateReportByUser(meetingId, tags);
-
-        return new ResponseEntity<D3CollapseTreeModel>(report, HttpStatus.OK);
-    }
-
-    /**
-     * Generate a report by tags for the given meeting.
-     * 
-     * @param meetingId
-     *            the id of the meeting.
-     * @param tags
-     *            the list of tags for the ideas.
-     * @return 204 NO CONTENT
-     */
-    @RequestMapping(value = "/meeting/report/bytag", method = RequestMethod.GET)
-    public ResponseEntity<D3CollapseTreeModel> generateReportByTag(
-            @RequestParam(value = "meetingId", required = true) String meetingId,
-            @RequestParam(value = "tags", required = true) List<String> tags) {
-        D3CollapseTreeModel report = meetingServiceImpl.generateReportByTag(meetingId, tags);
-
-        return new ResponseEntity<D3CollapseTreeModel>(report, HttpStatus.OK);
     }
 
     /**

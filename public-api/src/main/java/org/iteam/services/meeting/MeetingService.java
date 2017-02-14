@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.iteam.data.dto.Meeting;
 import org.iteam.data.dto.ViewedMeeting;
-import org.iteam.data.model.D3CollapseTreeModel;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
 import org.iteam.data.model.PaginationModel;
@@ -32,39 +31,6 @@ public interface MeetingService {
      * @return true if it was successful, false otherwise
      */
     public void savedIdeas(IdeasDTO ideas);
-
-    /**
-     * Generate report by tag and ranking for the given meeting.
-     * 
-     * @param meetingId
-     *            the meeting id.
-     * @param tags
-     *            tags to create the report
-     * @return the an structure to generate a report tree
-     */
-    public D3CollapseTreeModel generateReportByRanking(String meetingId, List<String> tags);
-
-    /**
-     * Generate report for the given meeting.
-     * 
-     * @param meetingId
-     *            the meeting id.
-     * @param tags
-     *            tags to create the report.
-     * @return the an structure to generate a report tree
-     */
-    public D3CollapseTreeModel generateReportByUser(String meetingId, List<String> tags);
-
-    /**
-     * Generate report for the given meeting.
-     * 
-     * @param meetingId
-     *            the meeting id.
-     * @param tags
-     *            tags to create the report.
-     * @return the an structure to generate a report tree
-     */
-    public D3CollapseTreeModel generateReportByTag(String meetingId, List<String> tags);
 
     /**
      *
