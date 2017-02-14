@@ -23,10 +23,12 @@ import Chip from 'react-toolbox/lib/chip';
 import {saveConfig} from '../../redux/reducers/Meeting/MeetingConfigReducer';
 import Spinner from '../Spinner/Spinner';
 import {validateDate, validateStart, validateHour, changeEndDate} from '../../utils/DateUtils'
+import {calculateTotalPages, calculateOffset} from '../../utils/mathUtils'
 import ButtonComponent from '../ButtonComponent/'
 import ReactPagination from 'react-paginate'
 import pagination from './pagination.scss'
 import dialogTheme from './dialog.scss'
+import {getProgrammedMeetings, getSearchProgrammed} from '../../utils/actions/meetingActions'
 
 var programDate = new Date();
 var endDate = new Date();
@@ -101,7 +103,7 @@ class MymeetForm extends Component {
     {label: "OK", onClick: this.handleToggle.bind(this)}
   ];
 
-  handleToggle(){
+  handleToggle() {
     this.setState({active: !this.state.active});
   };
 
@@ -163,9 +165,9 @@ class MymeetForm extends Component {
         }
         return this.adminActionsEdit; //TODO borra cuando ande el history
       }
-        //fecha mayor, puede editar
-        return this.userActionsView;
-      }
+      //fecha mayor, puede editar
+      return this.userActionsView;
+    }
     else {
       //fecha ya paso
       if (!validateDate(meetingDate)) {
@@ -174,9 +176,9 @@ class MymeetForm extends Component {
           return this.userActionsJoin;
         }
       }
-        // fecha mayor, puede poner ver
-        return this.userActionsView;
-      }
+      // fecha mayor, puede poner ver
+      return this.userActionsView;
+    }
   }
 
   renderDate(meetingTime) {
@@ -194,7 +196,7 @@ class MymeetForm extends Component {
   }
 
   calculateTotalPages() {
-    let total = Math.ceil(this.state.totalMeetings / ITEMS_PER_PAGE);
+    let total = calculateTotalPages(this.state.totalMeetings, ITEMS_PER_PAGE);
     this.setState({totalPages: total});
   }
 
@@ -331,9 +333,7 @@ class MymeetForm extends Component {
   handleAddTag() {
     if (this.state.tag !== '') {
       let newTags = this.state.config.tags;
-
       newTags.push((this.state.tag));
-
       let newConfig = this.state.config;
 
       newConfig.tags = newTags;
@@ -450,13 +450,7 @@ class MymeetForm extends Component {
 
   searchByToken() {
     if (this.state.searchField.length != 0) {
-      axios.get(MEETING.MEETING_SEARCH_PROGRAMMED, {
-        params: {
-          token: this.state.searchField,
-          offset: this.state.offset,
-          limit: ITEMS_PER_PAGE
-        }
-      }).then(function (response) {
+      getSearchProgrammed(this.state.searchField, this.state.offset, ITEMS_PER_PAGE).then(function (response) {
         this.fillFields(response.data)
       }.bind(this))
     }
@@ -466,23 +460,18 @@ class MymeetForm extends Component {
   }
 
   getAllProgrammedMeetings() {
-    axios.get(MEETING.MEETING_PROGRAMMED, {
-      params: {
-        offset: this.state.offset,
-        limit: ITEMS_PER_PAGE
-      }
-    }).then(function (response) {
+    getProgrammedMeetings(this.state.offset, ITEMS_PER_PAGE).then(function (response) {
       this.fillFields(response.data)
-    }.bind(this))
+    }.bind(this));
   }
 
   handlePageClick = (data) => {
+    console.debug(data);
     let actualPageNumber = data.selected;
-    let offset = Math.ceil(actualPageNumber * ITEMS_PER_PAGE);
+    let offset = calculateOffset(actualPageNumber, ITEMS_PER_PAGE);
+    this.getAllProgrammedMeetings();
 
-    this.setState({offset: offset}, () => {
-      this.getAllProgrammedMeetings();
-    });
+    this.setState({offset: offset});
   };
 
   render() {
@@ -532,7 +521,7 @@ class MymeetForm extends Component {
                            pageCount={this.state.totalPages}
                            marginPagesDisplayed={2}
                            pageRangeDisplayed={5}
-                           onPageChange={this.handlePageClick}
+                           onPageChange={this.handlePageClick.bind(this)}
                            initialPage={1}
                            disableInitialCallback={true}
                            pageClassName={pagination.ul}
