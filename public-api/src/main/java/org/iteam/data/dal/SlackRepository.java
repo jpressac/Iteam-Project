@@ -1,12 +1,23 @@
 package org.iteam.data.dal;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.iteam.data.dal.team.TeamRepositoryImpl;
+import org.iteam.data.dto.UserDTO;
+import org.iteam.data.model.SlackModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.github.seratch.jslack.Slack;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 import com.github.seratch.jslack.api.methods.request.channels.ChannelsCreateRequest;
@@ -22,12 +33,16 @@ import com.github.seratch.jslack.api.methods.response.chat.ChatPostMessageRespon
 import com.github.seratch.jslack.api.methods.response.pins.PinsAddResponse;
 import com.github.seratch.jslack.api.methods.response.users.UsersListResponse;
 import com.github.seratch.jslack.api.model.Channel;
+import com.github.seratch.jslack.api.model.User;
 
 @Repository
 public class SlackRepository {
 
+    private TeamRepositoryImpl teamRepositoryImpl;
     private Slack slack = Slack.getInstance();
     private static final Logger LOGGER = LoggerFactory.getLogger(SlackRepository.class);
+
+    private static final String URI_TEMPLATE_SLACK_ADD_TEAM = "https://slack.com/api/users.admin.invite?token={token}&email={mail}";
 
     public void createMeetingChannel(String meetingId, String token) {
 
@@ -101,15 +116,68 @@ public class SlackRepository {
         }
     }
 
-    public String getTeamUsers(String teamToken) {
+    public UsersListResponse getIteamAppUsers(String teamToken) {
+
         UsersListRequest userListRequest = UsersListRequest.builder().token(teamToken).build();
         try {
             UsersListResponse response = slack.methods().usersList(userListRequest);
-            return response.toString();
+            return response;
         } catch (Exception e) {
             LOGGER.error("Error when retrieving users", e);
         }
         return null;
+    }
+
+    public List<String> getTeamUsers(String teamToken) {
+        List<String> userEmails = new ArrayList<>();
+        List<User> allIteamSlackUsers = getIteamAppUsers(teamToken).getMembers();
+        for (User user : allIteamSlackUsers) {
+            userEmails.add(user.getProfile().getEmail());
+        }
+        return userEmails;
+    }
+
+    public boolean userIsTeamMember(String userMail, String teamToken) {
+        return getTeamUsers(teamToken).contains(userMail);
+    }
+
+    public List<String> getTeamUsersIds(String teamToken) {
+        List<String> userIds = new ArrayList<>();
+        List<User> allIteamSlackUsers = getIteamAppUsers(teamToken).getMembers();
+        for (User user : allIteamSlackUsers) {
+            userIds.add(user.getProfile().getEmail());
+        }
+        return userIds;
+    }
+
+    // public List<String> getMyTeamSlackUserIds(String teamId, String
+    // teamToken) {
+    // List<UserDTO> teamMembers = teamRepositoryImpl.getTeamUsers(teamId);
+    // List<User> allSlackUsers = getIteamAppUsers(teamToken).getMembers();
+    // List<String> slackUserIds = new ArrayList<>();
+
+    // ME QUEMEEE
+    // }
+
+    public SlackModel getSlackAndNonSlackUsers(String teamToken, String teamId) {
+
+        List<String> slackUsers = getTeamUsers(teamToken);
+        List<UserDTO> teamMembers = teamRepositoryImpl.getTeamUsers(teamId);
+        List<String> usersInSlack = new ArrayList<>();
+        List<String> usersWithoutSlack = new ArrayList<>();
+
+        for (UserDTO user : teamMembers) {
+            if (slackUsers.contains(user.getMail())) {
+                usersInSlack.add(user.getUsername());
+
+            } else {
+                usersWithoutSlack.add(user.getName());
+            }
+        }
+
+        SlackModel model = new SlackModel(usersInSlack, usersWithoutSlack);
+
+        return model;
     }
 
     public String inviteUserToChannel(String channelName, String userId, String token) {
@@ -128,5 +196,23 @@ public class SlackRepository {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public void addUserToSlackGroup(String token, String email) {
+
+        RestTemplate restTemplate = new RestTemplate();
+        HttpEntity<?> entity = new HttpEntity<>(new HttpHeaders());
+        try {
+            HttpEntity<JsonNode> response = restTemplate.exchange(URI_TEMPLATE_SLACK_ADD_TEAM, HttpMethod.POST, entity,
+                    JsonNode.class, token, email);
+
+        } catch (Exception e) {
+            LOGGER.error("User could not be added to Iteam app slack group", e);
+        }
+    }
+
+    @Autowired
+    private void setTeamRepository(TeamRepositoryImpl teamRepository) {
+        this.teamRepositoryImpl = teamRepository;
     }
 }

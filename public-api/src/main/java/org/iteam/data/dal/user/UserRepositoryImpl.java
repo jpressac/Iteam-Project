@@ -74,9 +74,10 @@ public class UserRepositoryImpl implements UserRepsoitory {
 
         if (indexResponse != null && indexResponse.isCreated()) {
             LOGGER.info("User created");
+        } else {
+            LOGGER.warn("User cannot be created - User: '{}'", user.toString());
         }
 
-        LOGGER.warn("User cannot be created - User: '{}'", user.toString());
     }
 
     @Override
@@ -162,4 +163,5 @@ public class UserRepositoryImpl implements UserRepsoitory {
         LOGGER.info("Updating user score");
         LOGGER.debug("User scores: '{}'", dataToUpdate.toString());
     }
+
 }

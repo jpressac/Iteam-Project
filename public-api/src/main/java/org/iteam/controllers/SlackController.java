@@ -1,5 +1,6 @@
 package org.iteam.controllers;
 
+import org.iteam.data.model.SlackModel;
 import org.iteam.services.SlackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,15 +34,28 @@ public class SlackController {
     }
 
     @RequestMapping(value = "slack/teamusers", method = RequestMethod.GET)
-    public ResponseEntity<String> getTeamUsers(@RequestParam(value = "token") String token) {
-        return new ResponseEntity<String>(slackService.getUsersList(APP_TOKEN), HttpStatus.OK);
+    public ResponseEntity<SlackModel> getTeamUsers(@RequestParam(value = "token") String token,
+            @RequestParam(value = "teamId") String teamId) {
+        return new ResponseEntity<SlackModel>(slackService.getTeamUsers(APP_TOKEN, teamId), HttpStatus.OK);
     }
 
     @RequestMapping(value = "slack/channelinvite", method = RequestMethod.GET)
     public ResponseEntity<String> inviteToChannel(@RequestParam(value = "userId", required = true) String userId,
-            @RequestParam(value = "channelName", required = true) String channelName) {
+            @RequestParam(value = "channelName", required = true) String channelName,
+            @RequestParam(value = "teamId", required = true) String teamId) {
         return new ResponseEntity<String>(slackService.inviteUserToChannel(channelName, userId, APP_TOKEN),
                 HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "slack/group", method = RequestMethod.POST)
+    public ResponseEntity<Void> addUserToSlack(@RequestParam(value = "email") String email) {
+        slackService.addUserToSlackGroup(APP_TOKEN, email);
+        return new ResponseEntity<Void>(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "slack/ismember", method = RequestMethod.GET)
+    public ResponseEntity<Boolean> isGroupMember(@RequestParam(value = "email") String email) {
+        return new ResponseEntity<Boolean>(slackService.isTeamMember(email, APP_TOKEN), HttpStatus.OK);
     }
 
     @Autowired

@@ -219,48 +219,13 @@ public class TeamRepositoryImpl implements TeamRepository {
                 StringUtilities.INDEX_TYPE_MEETING, meetingId);
 
         TeamUserModel teamUserModel = new TeamUserModel();
-
+        List<UserDTO> usersList = new ArrayList<>();
         if (meetingResponse.isExists()) {
             Meeting meeting = (Meeting) JSONUtils.JSONToObject(meetingResponse.getSourceAsString(), Meeting.class);
 
-            LOGGER.debug("Meeting retrieved '{}'", meeting.toString());
-
-            GetResponse teamResponse = elasticsearchClient.getDocument(StringUtilities.INDEX_TEAM,
-                    StringUtilities.INDEX_TYPE_TEAM, meeting.getTeamName());
-
-            if (teamResponse.isExists()) {
-
-                LOGGER.debug("Team retrieved '{}'", teamResponse.toString());
-
-                Team team = (Team) JSONUtils.JSONToObject(teamResponse.getSourceAsString(), Team.class);
-
-                teamUserModel.setTeamId(team.getName());
-
-                BoolQueryBuilder query = QueryBuilders.boolQuery();
-
-                query.should(QueryBuilders.termsQuery(USER_USERNAME_FIELD, team.getMembers()));
-
-                // This could change in the future.
-                query.minimumNumberShouldMatch(1);
-
-                SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_USER, query);
-
-                List<UserDTO> usersList = new ArrayList<>();
-
-                if (response.getHits().getTotalHits() > 0) {
-
-                    for (SearchHit hit : response.getHits()) {
-
-                        UserDTO user = (UserDTO) JSONUtils.JSONToObject(hit.getSourceAsString(), UserDTO.class);
-
-                        usersList.add(user);
-                    }
-                }
-
-                teamUserModel.setTeamUsers(usersList);
-            }
+            usersList = getTeamUsers(meeting.getTeamName());
+            teamUserModel.setTeamUsers(usersList);
         }
-
         return teamUserModel;
     }
 
@@ -275,6 +240,35 @@ public class TeamRepositoryImpl implements TeamRepository {
         SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_TEAM, queryBuilder);
 
         return response.getHits().getTotalHits() > 0;
+    }
+
+    public List<UserDTO> getTeamUsers(String teamId) {
+        List<UserDTO> usersList = new ArrayList<>();
+
+        GetResponse teamResponse = elasticsearchClient.getDocument(StringUtilities.INDEX_TEAM,
+                StringUtilities.INDEX_TYPE_TEAM, teamId);
+
+        if (teamResponse.isExists()) {
+
+            LOGGER.debug("Team retrieved '{}'", teamResponse.toString());
+
+            Team team = (Team) JSONUtils.JSONToObject(teamResponse.getSourceAsString(), Team.class);
+
+            BoolQueryBuilder query = QueryBuilders.boolQuery();
+            query.should(QueryBuilders.termsQuery(USER_USERNAME_FIELD, team.getMembers()));
+            // This could change in the future.
+            query.minimumNumberShouldMatch(1);
+
+            SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_USER, query);
+
+            if (response.getHits().getTotalHits() > 0) {
+                for (SearchHit hit : response.getHits()) {
+                    UserDTO user = (UserDTO) JSONUtils.JSONToObject(hit.getSourceAsString(), UserDTO.class);
+                    usersList.add(user);
+                }
+            }
+        }
+        return usersList;
     }
 
     @Autowired

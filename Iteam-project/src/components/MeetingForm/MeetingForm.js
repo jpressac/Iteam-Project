@@ -46,7 +46,6 @@ class MeetingView extends Component {
       endDate: new Date(),
       time: new Date(),
       endTime: new Date(),
-      teamName: '',
       teamsObj: [],
       teamSelectedName: '',
       teamList: [],

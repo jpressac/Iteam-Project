@@ -16,7 +16,8 @@ export function submitUser(data, nationality, profession) {
     profession: profession,
     name: data.firstName,
     lastName: data.lastName,
-    score: data.score
+    score: data.score,
+    useSlack : data.useSlack
   })
 }
 
