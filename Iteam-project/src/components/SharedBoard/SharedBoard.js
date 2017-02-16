@@ -73,9 +73,9 @@ class SharedBoard extends Component {
       participants: [],
       usersConnected: [],
       users: [{value: 0, label: 'All'}],
-      mapTag: [{value: 0, label: 'All'}],
+      mapTag: [{value: 0, label: 'Miscellaneous'}],
       tagValue: '',
-      tagName: 'All',
+      tagName: 'Miscellaneous',
       userValue: '',
       userName: 'All',
       usersNames: []
@@ -118,7 +118,7 @@ class SharedBoard extends Component {
   renderTechnic(technic) {
     console.log(technic);
     switch (technic) {
-      case 0:
+      case 'Brainstorming':
         console.log('brainstorming');
         return(
           <div name="Notes container" className={classes.notes}>
@@ -126,16 +126,16 @@ class SharedBoard extends Component {
           </div>
         );
         break;
-      case 1:
+      case 'SCAMPER':
         console.log('scamper');
-        console.log(this.state.notes)
+        console.log(this.state.notes);
         //return this.renderScamper();
           return(
             <Scamper renderNotes={this.renderNotes.bind(this)} notes={this.state.notes} />
             );
         break;
 
-      case 2:
+      case 'Starfish Retrospective':
         console.log('Retrospective');
             return (
               <StarfishRetro  renderNotes={this.renderNotes.bind(this)} notes={this.state.notes}/>
@@ -546,7 +546,6 @@ class SharedBoard extends Component {
           </NavDrawer>
           <Panel scrollY theme={panelTheme}>
             {this.renderTechnic(this.props.meetingConfiguration.technic)}
-
 
           </Panel>
           <Drawer active={this.state.active} theme={classes}

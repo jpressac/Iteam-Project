@@ -13,14 +13,14 @@ import inputTheme from "./input.scss";
 import radioTheme from "./radio.scss"
 import tooltipTheme from "./tooltip.scss"
 import buttonPdf from "./buttonPdf.scss";
-import {MEETING} from "../../constants/HostConfiguration";
-import D3Tree from "./D3tree/D3Tree";
-import D3ChartTree from "./D3ChartTree/D3ChartTree";
+import ButtonComponent from '../ButtonComponent/'
+import cssClasses from '../ComponentCSSForms/componentCSS.scss'
 import generateUUID from "../../constants/utils/GetUUID";
 import Spinner from "../Spinner/Spinner";
 import Tooltip from "react-toolbox/lib/tooltip";
 import {List, ListItem, ListSubHeader} from 'react-toolbox/lib/list';
 import {getMeetingsToGenerateReport} from '../../utils/actions/reportActions'
+import DropdownComponent from '../DropdownComponent/DropdownComponent'
 import {reportsToReportsView} from '../../redux/reducers/Reports/ReportsReducer'
 
 
@@ -156,76 +156,63 @@ class ReportForm extends Component {
   render() {
     if (!this.state.showSpinner) {
       return (
-        <div className="container" style={{marginTop: 80}}>
-          <div className={classes.label2}>
+        <div className={"container " + cssClasses.containerForm}>
+          <div className={cssClasses.labelMainTitle}>
             <label>REPORTS</label>
           </div>
-          <div className={classes.form}>
-            <div className={"form-horizontal"}>
-              <div className="form-group">
-                <div className="col-md-12">
-                  <div className={classes.labelInfo}>
-                    <label >Basic Reports</label>
-                  </div>
-                  <div className="row" className={classes.buttonDiv}>
-                    < Button label="Ideas by ranking" icon='star' theme={buttonPdf}
-                             onClick={this.handleReport.bind(this,'byranking')} raised active/>
-                    < Button label="Ideas by user" icon='group' theme={buttonPdf}
-                             onClick={this.handleReport.bind(this,'byuser')}/>
-                    < Button label="Ideas by tag" icon='lightbulb_outline' theme={buttonPdf}
-                             onClick={this.handleReport.bind(this,'bytag')}/>
-                  </div>
-                </div>
-              </div>
-
-
-              <div className="form-group">
-                <div className={classes.labelInfo}>
-                  <label>Advanced Reports</label>
-                </div>
-                <div className="row">
-                  <div className={classes.radiogroup}>
-                    <label >Select the option you want to search</label>
-                    <RadioGroup name='options' value={this.state.options}
-                                onChange={this.handleChange.bind(this, 'options')}>
-                      <RadioButton label='Meetings' value='meetings' theme={radioTheme}/>
-                      <RadioButton label='Ideas' value='ideas' theme={radioTheme}/>
-                    </RadioGroup>
-                  </div>
-                </div>
-                <div className="row">
-                  <InputComponent className="col-md-4" type='search' label='Search meetings or ideas' icon='search'
-                                  value={this.state.search} theme={inputTheme}
-                                  onValueChange={this.handleChange.bind(this, 'search')}/>
-                  <TooltipButton className="col-md-2" icon='search' tooltip='Search '
-                                 theme={tooltipTheme} onClick={this.generateReportSearch.bind(this)}
-                                 floating/>
-                </div>
-                <div className="row">
-                  <div className="col-md-4">
-                    <List selectable ripple className={classes.verticalbarright}>
-                      <ListSubHeader caption='Select meeting'/>
-                      {this.renderMeeting()}
-                    </List>
-                  </div>
-                  <div className="col-md-4">
-                    <List selectable ripple>
-                      <ListSubHeader caption='Meeting Selected'/>
-                      {this.renderMeetingSelected()}
-                    </List>
-                  </div>
-                </div>
-                <div className="row">
-                  <Button style={{margin: 15, color: 'white', background: '#900C3F'}} target='_blank' raised
-                  >
-                    View
-                  </Button>
-                </div>
-              </div>
-
+          <div className={"row " + cssClasses.form}>
+            <div className={classes.labelInfo}>
+              <label >Basic Reports</label>
             </div>
+            <div className="row col-md-12">
+              <ButtonComponent   className="col-md-4" value="Ideas by ranking" raisedValue iconButton='star'
+                                onClick={this.handleReport.bind(this,'byranking')} />
+              <ButtonComponent className="col-md-4" value="Ideas by user" iconButton='group' raisedValue
+                                onClick={this.handleReport.bind(this,'byuser')}/>
+              <ButtonComponent className="col-md-4" value="Ideas by tag" raisedValue iconButton='lightbulb_outline'
+                                onClick={this.handleReport.bind(this,'bytag')}/>
+            </div>
+
+
+              <label className={classes.labelInfo}>Advanced Reports</label>
+
+            <div className={"row col-md-12" + cssClasses.radiogroup}>
+              <label >Select the option you want to search</label>
+              <RadioGroup name='options' value={this.state.options}
+                          onChange={this.handleChange.bind(this, 'options')}>
+                <RadioButton label='Meetings' value='meetings' theme={radioTheme}/>
+                <RadioButton label='Ideas' value='ideas' theme={radioTheme}/>
+              </RadioGroup>
+            </div>
+            <div className="row col-md-12">
+              <InputComponent className="col-md-6" type='search' label='Search meetings or ideas' icon='search'
+                              value={this.state.search} theme={inputTheme}
+                              onValueChange={this.handleChange.bind(this, 'search')}/>
+              <TooltipButton className="col-md-4" icon='search' tooltip='Search '
+                             theme={tooltipTheme} onClick={this.generateReportSearch.bind(this)}
+                             floating/>
+            </div>
+            <div className="row col-md-12">
+              <List className={classes.verticalbarright} selectable ripple >
+                <ListSubHeader caption='Select meeting'/>
+                {this.renderMeeting()}
+              </List>
+              <List selectable ripple >
+                <ListSubHeader caption='Meeting Selected'/>
+                {this.renderMeetingSelected()}
+              </List>
+            </div>
+
+          <div className="row col-md-12">
+            <ButtonComponent   className="col-md-4" value="View" raisedValue icon='star'
+                                />
+
+          </div>
           </div>
         </div>
+
+
+
 
       );
     } else {
@@ -237,10 +224,10 @@ class ReportForm extends Component {
 }
 
 ReportForm.propTypes = {
-  
+
   goToReportsView: PropTypes.func,
   meetingId: PropTypes.string,
   meetingConfiguration: PropTypes.any
 };
 
-export default connect(mapStateToProps,mapDispatchToProps)(ReportForm);
+export default connect(mapStateToProps, mapDispatchToProps)(ReportForm);

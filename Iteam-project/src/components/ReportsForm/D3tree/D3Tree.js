@@ -2,20 +2,28 @@ import React, {Component, PropTypes} from 'react';
 import * as d3 from 'd3'
 import ReactDom from 'react-dom'
 import textwrap from 'd3-textwrap'
+import {connect} from "react-redux";
 
-import {Button, IconButton} from 'react-toolbox/lib/button';
+
 
 import classes from './D3Tree.scss'
 
 var root, treemap, svg, i, duration, path;
 
+const mapStateToProps = (state) => {
+  return {
+    reportType: state.reportReducer,
+    meetingConfiguration: state.meetingConfigurationReducer.meeting.config
+  }
+};
 
 class D3Tree extends React.Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      tree: {}
+      tree: {},
+      technic:''
     }
   }
 
@@ -23,23 +31,41 @@ class D3Tree extends React.Component {
 
     if (nextProps.treeData != this.props.treeData) {
       //this.renderTreeCollapse(nextProps.treeData, ReactDom.findDOMNode(this));
-      this.renderTreeExpand(nextProps.treeData, ReactDom.findDOMNode(this));
+      this.renderTreeExpand(nextProps.treeData, ReactDom.findDOMNode(this),
+        this.props.meetingConfiguration.technic,this.props.reportType);
     }
   };
 
 
-  renderTreeExpand(treeData, svgNode) {
-    let margin = {top: 20, right: 90, bottom: 10, left: 120},
-      width = window.innerWidth - margin.right, //TODO: this is hardcoded so it antoher screen it will not work
-      height = window.innerHeight + 500;// TODO: calculate with a amount of nodes
+  renderTreeExpand(treeData, svgNode,technic,type) {
+    console.log("technic " + technic);
+    console.log("type " + type);
+    var margin = {top: 20, right: 90, bottom: 10, left: 120},
+      width,height;
+      if(technic=='Brainstorming'){
+        width = window.innerWidth - margin.right +200 //TODO: this is hardcoded so it antoher screen it will not work
+        height = window.innerHeight +400;
+        if(type=='bytag'){
+          height = height -400;
+        }
+
+    }
+    else {
+        width = window.innerWidth - margin.right +100//TODO: this is hardcoded so it antoher screen it will not work
+        height = window.innerHeight + 1000;
+        if(type=='bytag'){
+          height = height -500;
+        }
+
+      }
 
     i = 0;
     duration = 750;
 
 // declares a tree layout and assigns the size
     treemap = d3.tree()
-      .size([width, height])
-      .nodeSize([50, 30]);
+      .size([width +100, height])
+      .nodeSize([40, 30]);
 
 
     // remove the last SVG Node, just to create a new one
@@ -47,29 +73,23 @@ class D3Tree extends React.Component {
       .selectAll("*")
       .remove();
 
-// append the svg object to the body of the page
-// appends a 'group' element to 'svg'
-// moves the 'group' element to the top left margin
+
+
 
     svg = d3.select(svgNode)
-      .attr("width", width)
-      .attr("height", height +500)
+      .attr("width", width -300)
+      .attr("height", height +300)
       .attr("align", "center")
       .append("g")
       .attr("transform", "translate("
         + margin.left + "," + height*0.6 + ")");
 
-    // var svg = d3.select(classes.container)
-    //   .append("g")
-    //   .attr("preserveAspectRatio", "xMinYMin meet")
-    //   .attr("viewBox", "0 0 300 300")
-    //   .classed(classes.content, true);
 
     root = d3.hierarchy(treeData, function (d) {
       ;
       return d.children;
     });
-    root.x0 = height + 200 ;
+    root.x0 = height + 300 ;
     root.y0 = 0;
 
 // Collapse after the second level
@@ -128,8 +148,8 @@ class D3Tree extends React.Component {
       // Enter any new nodes at the parent's previous position.
       let nodeEnter = node.enter().append('g')
         .classed(classes.node, true)
-        .attr("transform", function () {
-          return "translate(" + source.y0 + "," + source.x0 + ")";
+        .attr("transform", function (d) {
+          return "translate(" + d.y + "," + source.x0 + ")";
         })
         .on('click', click);
         // .on("mouseover", function (d) {
@@ -169,19 +189,20 @@ class D3Tree extends React.Component {
 
       // Add labels for the nodes
       nodeEnter.append('text')
-        .attr("dy", function (d) {
-          return d.children || d._children ? -7 : ".7em";
+
+        .attr("dy", ".35em")
+        .attr("x", function(d) {
+          return d.children || d._children ? -13 : 13;
         })
-        .attr("x", function (d) {
-          return d.children || d._children ? 13 : 13;
-        })
-        .attr("text-anchor", function (d) {
-          return d.children || d._children ? "end" : "start";
-        })
+        .attr("text-anchor", "middle")
         .text(function (d) {
+          if(d.depth==0){
+            nodeEnter
+              .style("font-size","x-large")
+          }
           return d.data.name;
         })
-        .call(wrap, 300);
+        .call(wrap, 260);
 
 
       // UPDATE
@@ -218,7 +239,7 @@ class D3Tree extends React.Component {
       let nodeExit = node.exit().transition()
         .duration(duration)
         .attr("transform", function (d) {
-          return "translate(" + source.y + "," + source.x + ")";
+          return "translate(" + source.y + "," + source.x  + ")";
         })
         .remove();
 
@@ -311,7 +332,7 @@ class D3Tree extends React.Component {
               .append('tspan')
               .attr('x', x)
               .attr('y', y)
-              .attr('dy', dy + 'em');
+              .attr('dy', dy );
           while (word = words.pop()) {
             line.push(word);
             tspan.text(line.join(' '));
@@ -351,6 +372,8 @@ class D3Tree extends React.Component {
 
 
 D3Tree.propTypes = {
-  treeData: PropTypes.any
+  treeData: PropTypes.any,
+  meetingConfiguration: PropTypes.any,
+  reportType: PropTypes.string,
 };
-export default D3Tree;
+export default connect(mapStateToProps,null) (D3Tree);

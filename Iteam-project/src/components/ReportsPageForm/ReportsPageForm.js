@@ -108,12 +108,31 @@ class ReportsPageForm extends Component {
     if (this.state.ranking) {
 
       return (
-        <D3ChartTree treeData={this.state.treeData}/>
+        <D3ChartTree treeData={this.state.treeData} />
       )
     } else {
       return (
-        <D3Tree treeData={this.state.treeData}/>
+        <D3Tree treeData={this.state.treeData} technic={this.props.meetingConfiguration.technic} type={this.props.reportType}/>
       )
+    }
+  }
+  titleByReport(reportType){
+    switch (reportType) {
+      case 'byranking':
+       return(
+         <label className={classes.title}> Report By Ranking</label>
+       );
+        break;
+      case 'byuser':
+        return(
+          <label className={classes.title}> Report By User</label>
+        );
+        break;
+      case 'bytag':
+        return(
+          <label className={classes.title}> Report By Tag</label>
+        );
+        break;
     }
   }
 
@@ -121,9 +140,10 @@ class ReportsPageForm extends Component {
 
     return (
       <div className="container" style={{marginTop: 80}}>
+        {this.titleByReport(this.props.reportType)}
         {this.renderTrees()}
         {this.generateReport(this.props.reportType)}
-        <ButtonComponent className="col-md-6" value='BACK TO REPORT'
+        <ButtonComponent className="col-md-4" value='BACK TO REPORT' raisedValue
                          onClick={this.props.report} iconButton='backspace'/>
       </div>
 

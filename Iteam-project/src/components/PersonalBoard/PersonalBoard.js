@@ -60,7 +60,7 @@ class PersonalBoard extends Component {
       notes: {},
       mapTag: [],
       tagValue: '',
-      tagName: 'All'
+      tagName: 'Miscellaneous'
     }
 
   };
@@ -156,6 +156,8 @@ class PersonalBoard extends Component {
   renderNotes(noteMap, valueForFilter) {
     return Object.keys(noteMap).map((key) => {
       if (valueForFilter === this.state.mapTag[0].label) {
+        console.log(this.state.mapTag[0].label);
+        console.log(valueForFilter);
         return this.notes(noteMap, key);
       } else {
         if (noteMap[key].tag === valueForFilter) {

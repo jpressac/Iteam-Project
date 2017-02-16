@@ -37,7 +37,7 @@ const ITEMS_PER_PAGE = 10;
 
 const technics = [{value: 0, label: 'Brainstorming'}, {value: 1, label: 'SCAMPER'}, {
   value: 2,
-  label: 'morphological analysis'
+  label: 'Starfish Retrospective'
 }];
 
 
@@ -438,7 +438,7 @@ class MymeetForm extends Component {
             <TimePicker label='Start Time'
                         value={isNaN(new Date(this.state.time)) ? 0 : new Date(this.state.time)}
                         readonly={this.state.editable} onChange={this.onChangeProgrammedTime.bind(this)}
-                        ttheme={datesInput}/>
+                        theme={datesInput}/>
           </div>
           <div className="col-md-3">
             <TimePicker label='End Time'

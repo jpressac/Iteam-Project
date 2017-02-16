@@ -561,7 +561,6 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
     @Override
     public PaginationModel<Meeting> getProgrammedMeetings(String username, int from, int size) {
-        PaginationModel<Meeting> paginatedMeetings = null;
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
         queryBuilder.must(QueryBuilders.termQuery(MEETING_OWNER_NAME_FIELD, username))
@@ -570,14 +569,15 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING, queryBuilder,
                 SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD).order(SortOrder.DESC), size, from);
 
+        List<Meeting> meetings = new ArrayList<>();
         if (response.getHits().getTotalHits() > 0) {
-            List<Meeting> meetings = new ArrayList<>();
+
             for (SearchHit hit : response.getHits()) {
                 meetings.add((Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class));
             }
-            paginatedMeetings = new PaginationModel<>(response.getHits().getTotalHits(), meetings);
+
         }
-        return paginatedMeetings;
+        return new PaginationModel<>(response.getHits().getTotalHits(), meetings);
     }
 
     @Override
@@ -623,8 +623,6 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     @Override
     public PaginationModel<Meeting> getEndedMeetings(String username, int from, int size) {
 
-        PaginationModel<Meeting> paginationObject = null;
-
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
         queryBuilder.must(QueryBuilders.termQuery(MEETING_OWNER_NAME_FIELD, username))
                 .must(QueryBuilders.existsQuery(MEETING_STATE_NAME_FIELD));
@@ -632,14 +630,16 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING, queryBuilder,
                 SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD).order(SortOrder.DESC), size, from);
 
+        List<Meeting> meetings = new ArrayList<Meeting>();
         if (response.getHits().getTotalHits() > 0) {
-            List<Meeting> meetings = new ArrayList<Meeting>();
+
             for (SearchHit hit : response.getHits()) {
                 meetings.add((Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class));
             }
-            paginationObject = new PaginationModel<>(response.getHits().getTotalHits(), meetings);
+
         }
-        return paginationObject;
+        return new PaginationModel<>(response.getHits().getTotalHits(), meetings);
+
     }
 
     @Autowired
