@@ -37,7 +37,6 @@ public class UserRepositoryImpl implements UserRepsoitory {
     private static final String USER_GENDER_FEMALE = "female";
 
     private Long partialScore;
-    private String user;
 
     private ElasticsearchClient elasticsearchClient;
 
@@ -72,11 +71,11 @@ public class UserRepositoryImpl implements UserRepsoitory {
         IndexResponse indexResponse = elasticsearchClient.insertData(data, StringUtilities.INDEX_USER,
                 StringUtilities.INDEX_TYPE_USER, user.getUsername());
 
-        if (indexResponse != null && indexResponse.isCreated()) {
+        if (indexResponse.isCreated()) {
             LOGGER.info("User created");
+        } else {
+            LOGGER.warn("User cannot be created - User: '{}'", user.toString());
         }
-
-        LOGGER.warn("User cannot be created - User: '{}'", user.toString());
     }
 
     @Override
@@ -85,10 +84,7 @@ public class UserRepositoryImpl implements UserRepsoitory {
         GetResponse response = elasticsearchClient.getDocument(StringUtilities.INDEX_USER,
                 StringUtilities.INDEX_TYPE_USER, username);
 
-        if (response.isExists()) {
-            return true;
-        }
-        return false;
+        return response.isExists();
     }
 
     @Override
@@ -159,6 +155,7 @@ public class UserRepositoryImpl implements UserRepsoitory {
         });
 
         elasticsearchClient.updateScore(dataToUpdate, StringUtilities.INDEX_USER, StringUtilities.INDEX_TYPE_USER);
+
         LOGGER.info("Updating user score");
         LOGGER.debug("User scores: '{}'", dataToUpdate.toString());
     }

@@ -32,17 +32,6 @@ public interface MeetingService {
     public void savedIdeas(IdeasDTO ideas);
 
     /**
-     *
-     * Get all the meeting given a user.
-     * 
-     * @param username
-     *            the username of the user.
-     * 
-     * @return a list with all the meeting for the given user.
-     */
-    public List<Meeting> getMeetingByUser(String username);
-
-    /**
      * Retrieve the meeting ideas
      * 
      * @param meetingId
@@ -75,7 +64,13 @@ public interface MeetingService {
 
     public void updateMeetingUsers(String meetingId, String info);
 
-    public boolean updateMeeting(Meeting updatedMeeting);
+    /**
+     * Update the meeting information
+     * 
+     * @param updatedMeeting
+     *            the new information about the meeting.
+     */
+    public void updateMeeting(Meeting updatedMeeting);
 
     /**
      * Retrieve the meetings given a list of team names.

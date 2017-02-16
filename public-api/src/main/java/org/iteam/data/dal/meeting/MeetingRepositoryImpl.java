@@ -80,24 +80,16 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     }
 
     @Override
-    public boolean updateMeeting(Meeting updatedMeeting) {
+    public void updateMeeting(Meeting updatedMeeting) {
         LOGGER.info("Updating meeting");
         LOGGER.debug("Meeting: '{}'", updatedMeeting.toString());
 
-        if (!ObjectUtils.isEmpty(updatedMeeting.getProgrammedDate())) {
-            DateTime date = new DateTime(updatedMeeting.getProgrammedDate());
-            updatedMeeting.setProgrammedDate(date.withZone(DateTimeZone.UTC).getMillis());
-        }
-
         String data = JSONUtils.ObjectToJSON(updatedMeeting);
 
+        // we can't know for sure if elasticsearch has updated the document or
+        // not.
         elasticsearchClientImpl.modifyData(data, StringUtilities.INDEX_MEETING, StringUtilities.INDEX_TYPE_MEETING,
                 updatedMeeting.getMeetingId());
-
-        // LOGGER.error("The meeting couldn't be updated - Meeting: '{}'",
-        // updatedMeeting.toString());
-
-        return true;
     }
 
     @Override
@@ -124,30 +116,6 @@ public class MeetingRepositoryImpl implements MeetingRepository {
                     ideas.getIdeas().get(0).getMeetingId());
         }
 
-    }
-
-    @Override
-    public List<Meeting> getMeetingUser(String username) {
-        LOGGER.info("Getting meeting by user: '{}'", username);
-
-        SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING,
-                QueryBuilders.termQuery(MEETING_TEAM_NAME_FIELD, username),
-                SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD).order(SortOrder.ASC));
-
-        List<Meeting> meetingList = new ArrayList<>();
-
-        LOGGER.debug("meetings retrieved: ", response.getHits().getTotalHits());
-
-        for (SearchHit hit : response.getHits()) {
-
-            LOGGER.debug("User '{}' meeting: '{}'", username, hit.getSourceAsString());
-
-            meetingList.add((Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class));
-        }
-
-        LOGGER.debug("User '{}' list of meetings: '{}'", username, meetingList.toString());
-
-        return meetingList;
     }
 
     @Override
@@ -338,68 +306,6 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
     }
 
-    private void saveUsersRetry(int count, String user, String meetingId) {
-        MeetingUsers connectedUsers = getConnectedUsers(meetingId);
-
-        if (!connectedUsers.getUsers().contains(user)) {
-            connectedUsers.addUser(user);
-        } else {
-            connectedUsers.getUsers().remove(user);
-        }
-
-        try {
-            elasticsearchClientImpl.insertData(JSONUtils.ObjectToJSON(connectedUsers),
-                    StringUtilities.INDEX_MEETING_INFO, StringUtilities.INDEX_TYPE_MEETING_INFO_USERS, meetingId);
-
-            LOGGER.info("Meeting connected users updated - Meeting: '{}'", meetingId);
-        } catch (ElasticsearchException e) {
-
-            LOGGER.error("Failed to update meeting connected users - Retry '{}'", count);
-
-            if (MAX_RETRIES > count) {
-                saveUsersRetry(count += 1, user, meetingId);
-            }
-        }
-    }
-
-    private void insertOrUpdateMeetingInfo(String meetingId, String info) {
-
-        elasticsearchClientImpl.insertData(info, StringUtilities.INDEX_MEETING_INFO,
-                StringUtilities.INDEX_TYPE_MEETING_INFO, meetingId);
-
-        LOGGER.info("Meeting info updated - Meeting: '{}'", meetingId);
-    }
-
-    @SuppressWarnings("unchecked")
-    private void saveInfoRetry(int count, String data, String meetingId) {
-
-        HashMap<String, Object> notesMap = (HashMap<String, Object>) JSONUtils.JSONToObject(data, HashMap.class);
-
-        GetResponse getResponse = elasticsearchClientImpl.getDocument(StringUtilities.INDEX_MEETING_INFO,
-                StringUtilities.INDEX_TYPE_MEETING_INFO, meetingId);
-
-        Map<String, Object> notesMapCache = new HashMap<>();
-
-        if (getResponse.isExists()) {
-            notesMapCache = (Map<String, Object>) JSONUtils.JSONToObject(getResponse.getSourceAsString(),
-                    HashMap.class);
-        }
-
-        notesMapCache.putAll(notesMap);
-
-        String dataCache = JSONUtils.ObjectToJSON(notesMapCache);
-
-        try {
-            insertOrUpdateMeetingInfo(meetingId, dataCache);
-            LOGGER.info("Meeting info updated - Meeting: '{}'", meetingId);
-        } catch (ElasticsearchException e) {
-            LOGGER.error("Failed to update meeting info - Retry '{}'", count);
-            if (MAX_RETRIES > count) {
-                saveInfoRetry(count += 1, data, meetingId);
-            }
-        }
-    }
-
     @Override
     public String getMeetingTopic(String meetingId) {
         GetResponse meetingResponse = elasticsearchClientImpl.getDocument(StringUtilities.INDEX_MEETING,
@@ -458,7 +364,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
                 BiFieldModel meetingToUpdate = new BiFieldModel(MEETING_HAS_ENDED, hit.getId());
                 meetingsToUpdate.add(meetingToUpdate);
             }
-            BulkResponse bulkResponse = elasticsearchClientImpl.updateNew(meetingsToUpdate,
+            BulkResponse bulkResponse = elasticsearchClientImpl.bulkUpdate(meetingsToUpdate,
                     StringUtilities.INDEX_MEETING, StringUtilities.INDEX_TYPE_MEETING);
 
             if (bulkResponse.hasFailures()) {
@@ -469,36 +375,29 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     }
 
     @Override
-    public PaginationModel<Meeting> getProgrammedMeetings(String username, int from, int size) {
-        PaginationModel<Meeting> paginatedMeetings = null;
+    public PaginationModel<Meeting> getMeetingsByToken(String username, String token, int from, int size,
+            boolean ended) {
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
-        queryBuilder.must(QueryBuilders.termQuery(MEETING_OWNER_NAME_FIELD, username))
-                .mustNot(QueryBuilders.existsQuery(MEETING_STATE_NAME_FIELD));
+        queryBuilder.must(QueryBuilders.termQuery(MEETING_OWNER_NAME_FIELD, username));
 
-        SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING, queryBuilder,
-                SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD).order(SortOrder.DESC), size, from);
-
-        if (response.getHits().getTotalHits() > 0) {
-            List<Meeting> meetings = new ArrayList<>();
-            for (SearchHit hit : response.getHits()) {
-                meetings.add((Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class));
-            }
-            paginatedMeetings = new PaginationModel<>(response.getHits().getTotalHits(), meetings);
+        // Add token search
+        if (!ObjectUtils.isEmpty(token)) {
+            queryBuilder.must(QueryBuilders.matchQuery(MEETING_TOPIC, token));
         }
-        return paginatedMeetings;
-    }
 
-    @Override
-    public PaginationModel<Meeting> getEndedMeetingByToken(String username, String token, int from, int size) {
+        // Define if the meetings is ended or not.
+        if (ended) {
+            queryBuilder.must(QueryBuilders.existsQuery(MEETING_STATE_NAME_FIELD));
+        } else {
+            queryBuilder.mustNot(QueryBuilders.existsQuery(MEETING_STATE_NAME_FIELD));
+        }
 
-        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
-        queryBuilder.must(QueryBuilders.termQuery(MEETING_OWNER_NAME_FIELD, username))
-                .must(QueryBuilders.existsQuery(MEETING_STATE_NAME_FIELD))
-                .must(QueryBuilders.matchQuery(MEETING_TOPIC, token));
+        SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING, queryBuilder, size,
+                from);
 
-        SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING, queryBuilder);
         List<Meeting> meetings = new ArrayList<>();
+
         if (response.getHits().getTotalHits() > 0) {
             for (SearchHit hit : response.getHits()) {
                 meetings.add((Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class));
@@ -509,51 +408,74 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     }
 
     @Override
-    public PaginationModel<Meeting> getProgrammedMeetingsByToken(String username, String token, int from, int size) {
-
-        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
-        queryBuilder.must(QueryBuilders.termQuery(MEETING_OWNER_NAME_FIELD, username))
-                .mustNot(QueryBuilders.existsQuery(MEETING_STATE_NAME_FIELD))
-                .must(QueryBuilders.matchQuery(MEETING_TOPIC, token));
-
-        SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING, queryBuilder,
-                SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD).order(SortOrder.DESC), size, from);
-        List<Meeting> meetings = new ArrayList<>();
-        if (response.getHits().getTotalHits() > 0) {
-            for (SearchHit hit : response.getHits()) {
-                meetings.add((Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class));
-            }
-
-        }
-        return new PaginationModel<>(response.getHits().getTotalHits(), meetings);
-
+    public PaginationModel<Meeting> getMeetingsByToken(String username, int from, int size, boolean ended) {
+        return getMeetingsByToken(username, null, from, size, ended);
     }
 
-    @Override
-    public PaginationModel<Meeting> getEndedMeetings(String username, int from, int size) {
+    private void insertOrUpdateMeetingInfo(String meetingId, String info) {
 
-        PaginationModel<Meeting> paginationObject = null;
+        elasticsearchClientImpl.insertData(info, StringUtilities.INDEX_MEETING_INFO,
+                StringUtilities.INDEX_TYPE_MEETING_INFO, meetingId);
 
-        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
-        queryBuilder.must(QueryBuilders.termQuery(MEETING_OWNER_NAME_FIELD, username))
-                .must(QueryBuilders.existsQuery(MEETING_STATE_NAME_FIELD));
+        LOGGER.info("Meeting info updated - Meeting: '{}'", meetingId);
+    }
 
-        SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING, queryBuilder,
-                SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD).order(SortOrder.DESC), size, from);
+    @SuppressWarnings("unchecked")
+    private void saveInfoRetry(int count, String data, String meetingId) {
 
-        if (response.getHits().getTotalHits() > 0) {
-            List<Meeting> meetings = new ArrayList<Meeting>();
-            for (SearchHit hit : response.getHits()) {
-                meetings.add((Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class));
-            }
-            paginationObject = new PaginationModel<>(response.getHits().getTotalHits(), meetings);
+        HashMap<String, Object> notesMap = (HashMap<String, Object>) JSONUtils.JSONToObject(data, HashMap.class);
+
+        GetResponse getResponse = elasticsearchClientImpl.getDocument(StringUtilities.INDEX_MEETING_INFO,
+                StringUtilities.INDEX_TYPE_MEETING_INFO, meetingId);
+
+        Map<String, Object> notesMapCache = new HashMap<>();
+
+        if (getResponse.isExists()) {
+            notesMapCache = (Map<String, Object>) JSONUtils.JSONToObject(getResponse.getSourceAsString(),
+                    HashMap.class);
         }
-        return paginationObject;
+
+        notesMapCache.putAll(notesMap);
+
+        String dataCache = JSONUtils.ObjectToJSON(notesMapCache);
+
+        try {
+            insertOrUpdateMeetingInfo(meetingId, dataCache);
+            LOGGER.info("Meeting info updated - Meeting: '{}'", meetingId);
+        } catch (ElasticsearchException e) {
+            LOGGER.error("Failed to update meeting info - Retry '{}'", count);
+            if (MAX_RETRIES > count) {
+                saveInfoRetry(count += 1, data, meetingId);
+            }
+        }
+    }
+
+    private void saveUsersRetry(int count, String user, String meetingId) {
+        MeetingUsers connectedUsers = getConnectedUsers(meetingId);
+
+        if (!connectedUsers.getUsers().contains(user)) {
+            connectedUsers.addUser(user);
+        } else {
+            connectedUsers.getUsers().remove(user);
+        }
+
+        try {
+            elasticsearchClientImpl.insertData(JSONUtils.ObjectToJSON(connectedUsers),
+                    StringUtilities.INDEX_MEETING_INFO, StringUtilities.INDEX_TYPE_MEETING_INFO_USERS, meetingId);
+
+            LOGGER.info("Meeting connected users updated - Meeting: '{}'", meetingId);
+        } catch (ElasticsearchException e) {
+
+            LOGGER.error("Failed to update meeting connected users - Retry '{}'", count);
+
+            if (MAX_RETRIES > count) {
+                saveUsersRetry(count += 1, user, meetingId);
+            }
+        }
     }
 
     @Autowired
     private void setElasticsearchClientImpl(ElasticsearchClientImpl elasticsearchClientImpl) {
         this.elasticsearchClientImpl = elasticsearchClientImpl;
     }
-
 }

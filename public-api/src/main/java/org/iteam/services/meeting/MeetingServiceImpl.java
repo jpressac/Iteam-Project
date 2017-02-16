@@ -26,18 +26,13 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public boolean updateMeeting(Meeting updatedMeeting) {
-        return meetingRepositoryImpl.updateMeeting(updatedMeeting);
+    public void updateMeeting(Meeting updatedMeeting) {
+        meetingRepositoryImpl.updateMeeting(updatedMeeting);
     }
 
     @Override
     public void savedIdeas(IdeasDTO ideas) {
         meetingRepositoryImpl.saveIdeas(ideas);
-    }
-
-    @Override
-    public List<Meeting> getMeetingByUser(String username) {
-        return meetingRepositoryImpl.getMeetingUser(username);
     }
 
     @Override
@@ -94,17 +89,27 @@ public class MeetingServiceImpl implements MeetingService {
 
     @Override
     public PaginationModel<Meeting> getProgrammedMeetings(String username, int offset, int limit) {
-        return meetingRepositoryImpl.getProgrammedMeetings(username, offset, limit);
+        return meetingRepositoryImpl.getMeetingsByToken(username, null, offset, limit, false);
     }
 
     @Override
     public PaginationModel<Meeting> getEndedMeetingsByToken(String username, String token, int offset, int limit) {
-        return this.meetingRepositoryImpl.getEndedMeetingByToken(username, token, offset, limit);
+        return this.meetingRepositoryImpl.getMeetingsByToken(username, token, offset, limit, true);
     }
 
     @Override
     public PaginationModel<Meeting> getProgrammedMeetingsByToken(String name, String token, int offset, int limit) {
-        return this.meetingRepositoryImpl.getProgrammedMeetingsByToken(name, token, offset, limit);
+        return this.meetingRepositoryImpl.getMeetingsByToken(name, token, offset, limit, false);
+    }
+
+    @Override
+    public void generateScore(IdeasDTO ideas, List<String> usersList) {
+        userServiceImpl.generateScore(ideas, usersList);
+    }
+
+    @Override
+    public PaginationModel<Meeting> getEndedMeetings(String username, int offset, int limit) {
+        return meetingRepositoryImpl.getMeetingsByToken(username, offset, limit, true);
     }
 
     @Autowired
@@ -121,15 +126,4 @@ public class MeetingServiceImpl implements MeetingService {
     private void setUserServiceImpl(UserService userServiceImpl) {
         this.userServiceImpl = userServiceImpl;
     }
-
-    @Override
-    public void generateScore(IdeasDTO ideas, List<String> usersList) {
-        userServiceImpl.generateScore(ideas, usersList);
-    }
-
-    @Override
-    public PaginationModel<Meeting> getEndedMeetings(String username, int offset, int limit) {
-        return meetingRepositoryImpl.getEndedMeetings(username, offset, limit);
-    }
-
 }

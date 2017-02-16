@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.ObjectUtils;
 
 @Repository
 public class TeamRepositoryImpl implements TeamRepository {
@@ -96,7 +97,7 @@ public class TeamRepositoryImpl implements TeamRepository {
 
         SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_USER,
                 applyFiltersToQuery(filterList));
-        if (response != null) {
+        if (response.getHits().getTotalHits() > 0) {
             for (SearchHit hit : response.getHits()) {
                 UserDTO user = (UserDTO) JSONUtils.JSONToObject(hit.getSourceAsString(), UserDTO.class);
                 userList.add(user);
@@ -107,35 +108,14 @@ public class TeamRepositoryImpl implements TeamRepository {
     }
 
     @Override
-    public PaginationModel<TeamModel> getTeams(String ownerName, int size, int from) {
-        PaginationModel<TeamModel> paginationObject = null;
+    public PaginationModel<TeamModel> getTeamsByToken(String ownerName, String token, Integer size, Integer from) {
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
         queryBuilder.must(QueryBuilders.termQuery(OWNER_NAME_FIELD, ownerName));
 
-        try {
-            SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_TEAM, queryBuilder, size, from);
-
-            if (response.getHits().getTotalHits() > 0) {
-                List<TeamModel> teamList = new ArrayList<>();
-                for (SearchHit hit : response.getHits()) {
-                    teamList.add(new TeamModel(hit.getId(),
-                            (Team) JSONUtils.JSONToObject(hit.getSourceAsString(), Team.class)));
-                }
-                paginationObject = new PaginationModel<TeamModel>(response.getHits().getTotalHits(), teamList);
-            }
-        } catch (IndexNotFoundException e) {
-            LOGGER.warn("The team index doesn't exists");
+        if (!ObjectUtils.isEmpty(token)) {
+            queryBuilder.must(QueryBuilders.matchQuery(TEAM_NAME_FIELD, token));
         }
-        return paginationObject;
-    }
-
-    @Override
-    public PaginationModel<TeamModel> getTeamsByToken(String ownerName, String token, int size, int from) {
-
-        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
-        queryBuilder.must(QueryBuilders.termQuery(OWNER_NAME_FIELD, ownerName))
-                .must(QueryBuilders.matchQuery(TEAM_NAME_FIELD, token));
 
         SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_TEAM, queryBuilder, size, from);
         List<TeamModel> teamList = new ArrayList<>();
@@ -149,57 +129,14 @@ public class TeamRepositoryImpl implements TeamRepository {
     }
 
     @Override
-    public List<TeamModel> getAllTeams(String ownerName) {
-        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
-        queryBuilder.must(QueryBuilders.termQuery(OWNER_NAME_FIELD, ownerName));
-
-        List<TeamModel> teamList = new ArrayList<>();
-
-        try {
-            SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_TEAM, queryBuilder);
-
-            if (response.getHits().getTotalHits() > 0) {
-                for (SearchHit hit : response.getHits()) {
-                    teamList.add(new TeamModel(hit.getId(),
-                            (Team) JSONUtils.JSONToObject(hit.getSourceAsString(), Team.class)));
-                }
-            }
-        } catch (IndexNotFoundException e) {
-            LOGGER.warn("The team index doesn't exists");
-        }
-        return teamList;
+    public PaginationModel<TeamModel> getTeamsByToken(String ownerName, Integer size, Integer from) {
+        return getTeamsByToken(ownerName, null, size, from);
     }
 
-    private QueryBuilder applyFiltersToQuery(FilterList filterList) {
-        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
-
-        for (Filter filter : filterList.getFilters()) {
-
-            if (filter.getField().equals("Age")) {
-
-                Long from = new DateTime().minusYears(Integer.parseInt((filter.getValues().get(0)))).getMillis();
-                Long to = new DateTime().minusYears(Integer.parseInt((filter.getValues().get(1)))).getMillis();
-
-                queryBuilder.should(QueryBuilders.rangeQuery(BORN_DATE_FIELD).to(from).from(to));
-            }
-
-            if (filter.getField().equals("Scoring")) {
-
-                Long from = new DateTime().minusYears(Integer.parseInt((filter.getValues().get(0)))).getMillis();
-                Long to = new DateTime().minusYears(Integer.parseInt((filter.getValues().get(1)))).getMillis();
-
-                queryBuilder.should(QueryBuilders.rangeQuery(SCORING_FIELD).to(to).from(from));
-            }
-
-            if (filter.getField().equals("Profession") || filter.getField().equals("Nationality")) {
-                queryBuilder
-                        .should(QueryBuilders.termsQuery(filter.getField().toLowerCase(), filter.getValues().get(0)));
-            }
-        }
-
-        queryBuilder.must(QueryBuilders.termQuery(LOGICAL_DELETE_FIELD, false));
-        return queryBuilder.minimumNumberShouldMatch(1);
-
+    @Override
+    public List<TeamModel> getAllTeams(String ownerName) {
+        PaginationModel<TeamModel> paginationModel = getTeamsByToken(ownerName, null, null, null);
+        return paginationModel.getModel();
     }
 
     @Override
@@ -292,6 +229,38 @@ public class TeamRepositoryImpl implements TeamRepository {
         }
 
         return false;
+    }
+
+    private QueryBuilder applyFiltersToQuery(FilterList filterList) {
+        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+
+        for (Filter filter : filterList.getFilters()) {
+
+            if (filter.getField().equals("Age")) {
+
+                Long from = new DateTime().minusYears(Integer.parseInt((filter.getValues().get(0)))).getMillis();
+                Long to = new DateTime().minusYears(Integer.parseInt((filter.getValues().get(1)))).getMillis();
+
+                queryBuilder.should(QueryBuilders.rangeQuery(BORN_DATE_FIELD).to(from).from(to));
+            }
+
+            if (filter.getField().equals("Scoring")) {
+
+                Long from = new DateTime().minusYears(Integer.parseInt((filter.getValues().get(0)))).getMillis();
+                Long to = new DateTime().minusYears(Integer.parseInt((filter.getValues().get(1)))).getMillis();
+
+                queryBuilder.should(QueryBuilders.rangeQuery(SCORING_FIELD).to(to).from(from));
+            }
+
+            if (filter.getField().equals("Profession") || filter.getField().equals("Nationality")) {
+                queryBuilder
+                        .should(QueryBuilders.termsQuery(filter.getField().toLowerCase(), filter.getValues().get(0)));
+            }
+        }
+
+        queryBuilder.must(QueryBuilders.termQuery(LOGICAL_DELETE_FIELD, false));
+        return queryBuilder.minimumNumberShouldMatch(1);
+
     }
 
     @Autowired

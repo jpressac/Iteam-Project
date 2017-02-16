@@ -39,7 +39,8 @@ public class MeetingController {
     @RequestMapping(value = "/meeting/create", method = RequestMethod.POST)
     public ResponseEntity<Void> createMeeting(@RequestBody Meeting meeting) {
 
-        return checkResult(meetingServiceImpl.createMeeting(meeting));
+        return meetingServiceImpl.createMeeting(meeting) ? new ResponseEntity<Void>(HttpStatus.OK)
+                : new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
 
     }
 
@@ -51,7 +52,9 @@ public class MeetingController {
     @RequestMapping(value = "/meeting/update", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
     public ResponseEntity<Void> updateMeeting(@RequestBody Meeting updatedMeeting) {
 
-        return checkResult(meetingServiceImpl.updateMeeting(updatedMeeting));
+        meetingServiceImpl.updateMeeting(updatedMeeting);
+
+        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 
     }
 
@@ -65,32 +68,11 @@ public class MeetingController {
     @RequestMapping(value = "/meeting/ideas/save", method = RequestMethod.POST)
     public ResponseEntity<Void> saveIdeas(@RequestBody @Valid IdeasDTO ideas,
             @RequestParam(value = "team", required = true) List<String> team) {
+
         meetingServiceImpl.generateScore(ideas, team);
         meetingServiceImpl.savedIdeas(ideas);
+
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    private ResponseEntity<Void> checkResult(boolean flag) {
-        if (flag) {
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    /**
-     * Get a list of all meetings given a username. First get all teams in which
-     * the user is a member, then get all meetings which those teams are
-     * included
-     * 
-     * @param username
-     *            the username of the user
-     * @return the list of meetings by user.
-     */
-
-    @RequestMapping(value = "/meeting/meetingbyuser")
-    public List<Meeting> getUserMeetings(@RequestParam(value = "username", required = true) String username) {
-        return meetingServiceImpl.getMeetingByUser(username);
     }
 
     @RequestMapping(value = "/meeting/meetingusers", method = RequestMethod.GET)

@@ -62,16 +62,7 @@ public class MeetingControllerTest {
         givenIdeas();
         givenAMeetingService(true);
         whenSaveIdeasIsCalled();
-        thenCheckStatus(HttpStatus.OK);
-    }
-
-    @Test
-    public void saveIdeasFail() {
-        givenIdeas();
-        givenAMeetingService(false);
-        whenSaveIdeasIsCalled();
-        thenCheckStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-
+        thenCheckStatus(HttpStatus.NO_CONTENT);
     }
 
     private void whenSaveIdeasIsCalled() {
@@ -96,7 +87,7 @@ public class MeetingControllerTest {
     }
 
     private void givenQueryCreateMeetingParameters() {
-        // meeting = new Meeting();
+        meeting = new Meeting();
     }
 
 }

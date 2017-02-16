@@ -64,15 +64,12 @@ public class UserRepositoryImplTest {
         givenANewUser("male");
         givenAnElasticsearchIndexResponseOk();
         whenSetUserIsCalled();
-        thenUserWasInserted();
+        thenVerifyInsertUserCalls(1);
     }
 
-    @Test
-    public void setUserNotSuccessfulResponseNull() {
-        givenANewUser("male");
-        givenAnElasticsearchIndexResponseNull();
-        whenSetUserIsCalled();
-        thenUserWasntInserted();
+    private void thenVerifyInsertUserCalls(int times) {
+        Mockito.verify(elasticsearchClient, Mockito.times(times)).insertData(Mockito.anyString(), Mockito.anyString(),
+                Mockito.anyString(), Mockito.anyString());
     }
 
     @Test
@@ -99,14 +96,6 @@ public class UserRepositoryImplTest {
     }
 
     @Test
-    public void checkUserExistenceNotSuccessfulNull() {
-        givenAnUsername();
-        givenAnElasticsearchGetResponseNull();
-        whenCheckUserExistenceIsCalled();
-        thenUserNotExists();
-    }
-
-    @Test
     public void checkUserExistenceResponseFailure() {
         givenAnUsername();
         givenAnElasticsearchGetResponseFailure();
@@ -114,27 +103,47 @@ public class UserRepositoryImplTest {
         thenUserNotExists();
     }
 
-    private void givenAnElasticsearchGetResponseFailure() {
-        givenAnElasticsearchGetResponse(false);
-    }
+    /* THEN */
 
     private void thenUserNotExists() {
         Assert.assertFalse(flag);
-    }
-
-    private void givenAnElasticsearchGetResponseNull() {
-        Mockito.when(elasticsearchClient.getDocument(Mockito.anyString(), Mockito.anyString(), Mockito.anyString()))
-                .thenReturn(null);
-
-        ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClient);
     }
 
     private void thenUserExists() {
         Assert.assertTrue(flag);
     }
 
+    private void thenUserWasntInserted() {
+        Assert.assertFalse(flag);
+    }
+
+    private void thenUserIsOk() {
+        Assert.assertEquals(username, user.getUsername());
+        Assert.assertEquals("iteamProject", user.getName());
+    }
+
+    private void thenUserIsNull() {
+        Assert.assertNull(user);
+    }
+
+    /* WHEN */
+
     private void whenCheckUserExistenceIsCalled() {
         flag = underTest.checkUserExistance(username);
+    }
+
+    private void whenSetUserIsCalled() {
+        underTest.setUser(user);
+    }
+
+    private void whenGetUserIsCalled() {
+        user = underTest.getUser(username);
+    }
+
+    /* GIVEN */
+
+    private void givenAnElasticsearchGetResponseFailure() {
+        givenAnElasticsearchGetResponse(false);
     }
 
     private void givenAnElasticsearchGetResponseOk() {
@@ -143,25 +152,6 @@ public class UserRepositoryImplTest {
 
     private void givenAnElasticsearchIndexResponseFailure() {
         givenAnElasticsearchIndexResponse(false);
-    }
-
-    private void thenUserWasntInserted() {
-        Assert.assertFalse(flag);
-    }
-
-    private void givenAnElasticsearchIndexResponseNull() {
-        Mockito.when(elasticsearchClient.insertData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
-                Mockito.anyString())).thenReturn(null);
-
-        ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClient);
-    }
-
-    private void thenUserWasInserted() {
-        Assert.assertTrue(flag);
-    }
-
-    private void whenSetUserIsCalled() {
-        underTest.setUser(user);
     }
 
     private void givenAnElasticsearchIndexResponseOk() {
@@ -187,10 +177,6 @@ public class UserRepositoryImplTest {
         ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClient);
     }
 
-    private void thenUserIsNull() {
-        Assert.assertNull(user);
-    }
-
     private void givenAnElasticsearchResponseNull() {
         Mockito.when(elasticsearchClient.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(null);
 
@@ -199,15 +185,6 @@ public class UserRepositoryImplTest {
 
     private void givenAnUsername() {
         username = "iteam";
-    }
-
-    private void thenUserIsOk() {
-        Assert.assertEquals(username, user.getUsername());
-        Assert.assertEquals("iteamProject", user.getName());
-    }
-
-    private void whenGetUserIsCalled() {
-        user = underTest.getUser(username);
     }
 
     private void givenAnElasticsearchResponseOk() {

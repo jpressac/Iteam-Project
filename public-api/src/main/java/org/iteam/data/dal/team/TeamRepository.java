@@ -49,9 +49,28 @@ public interface TeamRepository {
      * 
      * @param ownerName,
      *            the owner of the teams.
-     * @return a list of teams.
+     * @param token
+     *            token of the team name to be search
+     * @param size
+     *            pagination limit
+     * @param from
+     *            pagination from
+     * @return a mondel representation of the team.
      */
-    public PaginationModel<TeamModel> getTeams(String ownerName, int size, int from);
+    public PaginationModel<TeamModel> getTeamsByToken(String ownerName, String token, Integer size, Integer from);
+
+    /**
+     * Get the list of teams given an owner.
+     * 
+     * @param ownerName,
+     *            the owner of the teams.
+     * @param size
+     *            pagination limit
+     * @param from
+     *            pagination from
+     * @return a mondel representation of the team.
+     */
+    public PaginationModel<TeamModel> getTeamsByToken(String ownerName, Integer size, Integer from);
 
     /**
      * Retrieved the list of teams where a user is part of.
@@ -82,7 +101,10 @@ public interface TeamRepository {
      */
     public boolean checkTeamNameExistent(String teamName, String teamOwner);
 
-    public PaginationModel<TeamModel> getTeamsByToken(String ownerName, String token, int size, int from);
-
+    /**
+     * 
+     * @param ownerName
+     * @return
+     */
     public List<TeamModel> getAllTeams(String ownerName);
 }

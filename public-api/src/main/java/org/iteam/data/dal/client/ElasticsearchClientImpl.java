@@ -124,6 +124,10 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
         return search(index, queryBuilder, aggregationBuilder, SIZE_RESPONSE, null, null);
     }
 
+    public SearchResponse search(String index, AbstractAggregationBuilder aggregationBuilder, Integer size) {
+        return search(index, null, aggregationBuilder, size, null, null);
+    }
+
     @Override
     public SearchResponse search(String index, QueryBuilder queryBuilder, AbstractAggregationBuilder aggregationBuilder,
             Integer size, Integer from, SortBuilder sort) {
@@ -202,7 +206,7 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
     }
 
     @Override
-    public BulkResponse updateNew(List<BiFieldModel> data, String index, String type) {
+    public BulkResponse bulkUpdate(List<BiFieldModel> data, String index, String type) {
 
         List<UpdateRequest> updateList = new ArrayList<>();
 
