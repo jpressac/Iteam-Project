@@ -2,6 +2,7 @@ package org.iteam.data.dal;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -44,38 +46,59 @@ public class SlackRepository {
 
     private static final String URI_TEMPLATE_SLACK_ADD_TEAM = "https://slack.com/api/users.admin.invite?token={token}&email={mail}";
 
-    public void createMeetingChannel(String meetingId, String token) {
+    public void createAndinviteToMeetingChannel(String meetingTopic, String token, String teamId) {
+        String channelId = createMeetingChannel(meetingTopic, token);
+        String messageTimestamp = postMessage(channelId, token, "Meeting information");
+        pinMeetingInfo(channelId, messageTimestamp, token);
+        inviteUsersToMeetingChannel(token, teamId, channelId);
+    }
 
+    public String createMeetingChannel(String meetingId, String token) {
+        String channelId = StringUtils.EMPTY;
         ChannelsCreateRequest channelCreation = ChannelsCreateRequest.builder().token(token).name(meetingId).build();
         try {
             ChannelsCreateResponse response = slack.methods().channelsCreate(channelCreation);
             LOGGER.info("Slack channel for meeting {} ", meetingId);
-
-            String messageTimestamp = postMessage(meetingId, token, "Meeting information");
-            pinMeetingInfo(meetingId, messageTimestamp, token);
-
+            channelId = response.getChannel().getId();
         } catch (Exception e) {
             LOGGER.error("Error when creating slack channel for meeting ", e);
         }
-
+        return channelId;
     }
 
-    public void postMessageToChannel(String channelName, String token, String message) {
+    public void postMessageToChannel(String channelId, String token, String message) {
 
         try {
-            ChatPostMessageResponse postResponse = slack.methods().chatPostMessage(ChatPostMessageRequest.builder()
-                    .token(token).channel(getChannelId(channelName, token)).text(message).build());
+            ChatPostMessageResponse postResponse = slack.methods().chatPostMessage(
+                    ChatPostMessageRequest.builder().token(token).channel(channelId).text(message).build());
             LOGGER.info(postResponse.toString());
         } catch (Exception e) {
             LOGGER.error("Error when sending message to slack channel ", e);
         }
     }
 
+    // Used by API
+    public void inviteUsersToMeetingChannel(String teamToken, String teamId, String meetingTopic) {
+        List<String> userIds = getUsersSlackIds(teamToken, teamId, meetingTopic);
+
+        for (String id : userIds) {
+            ChannelsInviteRequest inviteReq = ChannelsInviteRequest.builder().token(teamToken).channel(meetingTopic)
+                    .user(id).build();
+            LOGGER.info(id);
+            try {
+                ChannelsInviteResponse inviteResponse = slack.methods().channelsInvite(inviteReq);
+                LOGGER.info(inviteResponse.toString());
+            } catch (Exception e) {
+
+            }
+        }
+    }
+
     public String postMessage(String channelName, String token, String message) {
         String timestamp = StringUtils.EMPTY;
         try {
-            ChatPostMessageResponse postResponse = slack.methods().chatPostMessage(ChatPostMessageRequest.builder()
-                    .token(token).channel(getChannelId(channelName, token)).text(message).build());
+            ChatPostMessageResponse postResponse = slack.methods().chatPostMessage(
+                    ChatPostMessageRequest.builder().token(token).channel(channelName).text(message).build());
             timestamp = postResponse.getTs();
             LOGGER.info(postResponse.toString());
         } catch (Exception e) {
@@ -105,8 +128,8 @@ public class SlackRepository {
     public void pinMeetingInfo(String channel, String timestamp, String token) {
         try {
 
-            PinsAddRequest pinAddRequest = PinsAddRequest.builder().token(token).channel(getChannelId(channel, token))
-                    .timestamp(timestamp).build();
+            PinsAddRequest pinAddRequest = PinsAddRequest.builder().token(token).channel(channel).timestamp(timestamp)
+                    .build();
             PinsAddResponse pinAddResponse = slack.methods().pinsAdd(pinAddRequest);
 
             LOGGER.info("Message pinned successfully" + pinAddResponse.toString());
@@ -141,23 +164,29 @@ public class SlackRepository {
         return getTeamUsers(teamToken).contains(userMail);
     }
 
-    public List<String> getTeamUsersIds(String teamToken) {
-        List<String> userIds = new ArrayList<>();
-        List<User> allIteamSlackUsers = getIteamAppUsers(teamToken).getMembers();
-        for (User user : allIteamSlackUsers) {
-            userIds.add(user.getProfile().getEmail());
+    public HashMap<String, String> getTeamSlackUsersData(String teamId, String teamToken) {
+        List<User> allSlackUsers = getIteamAppUsers(teamToken).getMembers();
+        HashMap<String, String> slackUserData = new HashMap<>();
+
+        for (User slackUser : allSlackUsers) {
+            slackUserData.put(slackUser.getProfile().getEmail(), slackUser.getId());
         }
-        return userIds;
+        return slackUserData;
     }
 
-    // public List<String> getMyTeamSlackUserIds(String teamId, String
-    // teamToken) {
-    // List<UserDTO> teamMembers = teamRepositoryImpl.getTeamUsers(teamId);
-    // List<User> allSlackUsers = getIteamAppUsers(teamToken).getMembers();
-    // List<String> slackUserIds = new ArrayList<>();
+    public List<String> getUsersSlackIds(String teamToken, String teamId, String meetingTopic) {
+        List<UserDTO> users = teamRepositoryImpl.getTeamUsers(teamId);
+        HashMap<String, String> allIteamSlackUsersData = getTeamSlackUsersData(teamId, teamToken);
+        List<String> usersSlackIds = new ArrayList<>();
 
-    // ME QUEMEEE
-    // }
+        for (UserDTO user : users) {
+            if (!ObjectUtils.isEmpty(allIteamSlackUsersData.get(user.getMail()))) {
+                usersSlackIds.add(allIteamSlackUsersData.get(user.getMail()));
+            }
+
+        }
+        return usersSlackIds;
+    }
 
     public SlackModel getSlackAndNonSlackUsers(String teamToken, String teamId) {
 

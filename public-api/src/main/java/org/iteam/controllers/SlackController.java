@@ -58,6 +58,14 @@ public class SlackController {
         return new ResponseEntity<Boolean>(slackService.isTeamMember(email, APP_TOKEN), HttpStatus.OK);
     }
 
+    @RequestMapping(value = "slack/inviteusers", method = RequestMethod.POST)
+    public ResponseEntity<Void> inviteUsersToMeetingChannel(
+            @RequestParam(value = "meetingTopic", required = true) String meetingTopic,
+            @RequestParam(value = "teamId", required = true) String teamId) {
+        slackService.inviteUsersToChannel(APP_TOKEN, teamId, meetingTopic);
+        return new ResponseEntity<Void>(HttpStatus.OK);
+    }
+
     @Autowired
     private void setSlackService(SlackService slackService) {
         this.slackService = slackService;

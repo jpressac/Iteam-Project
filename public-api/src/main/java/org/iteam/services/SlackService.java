@@ -38,4 +38,8 @@ public class SlackService {
     public SlackModel getTeamUsers(String teamToken, String teamName) {
         return slackRepository.getSlackAndNonSlackUsers(teamToken, teamName);
     }
+
+    public void inviteUsersToChannel(String token, String teamId, String meetingTopic) {
+        slackRepository.createAndinviteToMeetingChannel(meetingTopic, token, teamId);
+    }
 }
