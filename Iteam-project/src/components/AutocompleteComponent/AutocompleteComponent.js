@@ -17,7 +17,6 @@ class AutocompleteComponent extends React.Component {
   }
 
   render() {
-    console.log(this.props.source)
     return (
       <Autocomplete theme={theme} direction="down" selectedPosition="none" suggestionMatch="anywhere" multiple={false}
                     onChange={this.handleChange.bind(this, 'value')} label={this.props.label} source={this.props.source}

@@ -7,7 +7,7 @@ import {connect} from 'react-redux'
 import DatePicker from 'react-toolbox/lib/date_picker'
 import BootstrapModal from '../../components/BootstrapModal/BootstrapModal'
 import InputComponent from '../InputComponent/InputComponent'
-import DropdownComponent from '../DropdownComponent/DropdownComponent'
+import AutocompleteComponent from '../AutocompleteComponent/AutocompleteComponent'
 import ButtonComponent from '../ButtonComponent/ButtonComponent'
 import Spinner from '../Spinner/Spinner'
 import {saveMeeting, meetingToMeetingConfig} from '../../redux/reducers/Meeting/MeetingReducer'
@@ -140,22 +140,29 @@ class MeetingView extends Component {
   }
 
   addTagMiscellaneous() {
+    let newTags = this.state.tags;
+
     if (this.state.technic == 'Brainstorming') {
-      var newTags = this.state.tags;
-      newTags.push('Miscellaneous');
-      newTags.reverse();
-      this.setState({tags: newTags})
+      newTags.push('Miscellaneous')
     }
+
+    //The 'All' will be available for all technics
+    newTags.push('All')
+    newTags.reverse()
+    this.setState({tags: newTags})
   }
 
   createNewMeeting() {
     let teamId = '';
+
     if (this.state.topic === '' || this.state.description === '' || this.state.teamSelectedName === '') {
       this.setState({message: '¡You have to complete the form!'});
       this.refs.meetingModal.openModal();
 
     } else {
+
       this.addTagMiscellaneous();
+
       teamId = this.searchTeamIdGivenTeamName(this.state.teamSelectedName);
 
       let meetingInfo = {
@@ -171,9 +178,15 @@ class MeetingView extends Component {
           technic: this.state.technic
         }
       };
-      createMeeting(meetingInfo);
-      this.props.myMeetings();
 
+
+      createMeeting(meetingInfo)
+        .then(() => {
+          this.props.myMeetings();
+        })
+        .catch(() => {
+          //TODO: implement modal here or go to error page
+        })
 
       //REDUCER
       //this.props.goToMeetingConfig(meetingInfo);
@@ -205,15 +218,7 @@ class MeetingView extends Component {
     this.props.meetingToCreateNewTeam();
   }
 
-  dropdownTeam() {
-    return (
-      <DropdownComponent label="Select team" initialValue={this.state.teamSelectedName}
-                         onValueChange={this.handleChange.bind(this, 'teamSelectedName')}
-                         source={this.state.teamsObj}/>
-    );
-  }
-
-  handleConfigChange = (key, value)=> {
+  handleConfigChange = (key, value) => {
     this.setState({[key]: value})
   };
 
@@ -253,7 +258,8 @@ class MeetingView extends Component {
               </div>
             </div>
             <div className={"col-md-8 " + cssClasses.paddingInnerElements}>
-              {this.dropdownTeam()}
+              <AutocompleteComponent onValueChange={this.handleChange.bind(this, 'teamSelectedName')}
+                                     label="Select team" initialValue='' source={this.state.teamsObj}/>
             </div>
             <ButtonComponent className={"col-md-4 " + cssClasses.paddingInnerElements} raisedValue
                              onClick={this.createTeamAction.bind(this)} value="Create Team"/>

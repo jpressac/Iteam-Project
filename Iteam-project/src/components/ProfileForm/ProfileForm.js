@@ -47,13 +47,6 @@ class ProfileForm extends React.Component {
     }
   }
 
-  componentDidMount() {
-    getProfessions()
-      .then((response) => {
-        this.setState({showSpinner: false, dropDownSource: response.data})
-      });
-  }
-
   componentWillMount() {
     getUserInformation()
       .then((response) => {
@@ -70,6 +63,13 @@ class ProfileForm extends React.Component {
           score: 0 //response.data.score.toString()
         })
       })
+  }
+
+  componentDidMount() {
+    getProfessions()
+      .then((response) => {
+        this.setState({showSpinner: false, dropDownSource: response.data})
+      });
   }
 
 
@@ -154,7 +154,8 @@ class ProfileForm extends React.Component {
             <div className={"row col-md-12 " + cssClasses.paddingInnerElements}>
               <div className="col-md-6">
                 <AutocompleteComponent source={this.state.dropDownSource} label="Select profession"
-                                       onValueChange={this.handleChangeState.bind(this, 'profession')}/>
+                                       onValueChange={this.handleChangeState.bind(this, 'profession')}
+                                       initialValue={this.state.profession}/>
               </div>
               <div className="col-md-6 ">
                 <TooltipInput type='text' label='Hobbies' theme={tooltopLabel} name='hobbies'
