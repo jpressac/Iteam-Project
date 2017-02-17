@@ -22,11 +22,13 @@ import Tooltip from "react-toolbox/lib/tooltip";
 import {List, ListItem, ListSubHeader} from 'react-toolbox/lib/list';
 import {getMeetingsToGenerateReport} from '../../utils/actions/reportActions'
 import {reportsToReportsView} from '../../redux/reducers/Report/ReportsReducer'
+import {cleanMeetingChats} from '../../redux/reducers/Meeting/MeetingChatMessagesReducer'
 
 
 const mapDispatchToProps = dispatch => ({
 
-  goToReportsView: (reportType) => dispatch(reportsToReportsView(reportType))
+  goToReportsView: (reportType) => dispatch(reportsToReportsView(reportType)),
+  finishChat: () => dispatch(cleanMeetingChats())
 
 });
 
@@ -67,6 +69,10 @@ class ReportForm extends Component {
       meetingReport: [],
       meetingSelected: []
     }
+  }
+
+  componentDidMount() {
+    this.props.finishChat();
   }
 
   handleToggle = () => {
@@ -240,7 +246,8 @@ ReportForm.propTypes = {
 
   goToReportsView: PropTypes.func,
   meetingId: PropTypes.string,
-  meetingConfiguration: PropTypes.any
+  meetingConfiguration: PropTypes.any,
+  finishChat: PropTypes.any
 };
 
 export default connect(mapStateToProps,mapDispatchToProps)(ReportForm);
