@@ -1,20 +1,20 @@
-import React, {Component, PropTypes} from 'react';
-import {updateUser, validatePasswordUser, getUserInformation} from '../../utils/actions/userActions.js';
+import React, {Component, PropTypes} from 'react'
+import {updateUser, validatePasswordUser, getUserInformation} from '../../utils/actions/userActions.js'
 import {getProfessions} from '../../utils/actions/utilsActions'
-import classes from './ProfileForm.scss';
+import classes from './ProfileForm.scss'
 import cssClasses from '../ComponentCSSForms/componentCSS.scss'
-import {PATHS} from './../../constants/routes';
-import user from './user.png';
-import {connect} from 'react-redux';
-import Tooltip from 'react-toolbox/lib/tooltip';
-import {push} from 'react-router-redux';
-import Spinner from '../Spinner/Spinner';
-import InputComponent from '../InputComponent/InputComponent';
-import ButtonComponent from '../ButtonComponent/ButtonComponent';
-import DropdownComponent from '../DropdownComponent/DropdownComponent';
-import Input from 'react-toolbox/lib/input';
-import tooltopLabel from './tooltipLabel.css';
-import BootstrapModal from "../BootstrapModal";
+import {PATHS} from './../../constants/routes'
+import user from './user.png'
+import {connect} from 'react-redux'
+import Tooltip from 'react-toolbox/lib/tooltip'
+import {push} from 'react-router-redux'
+import Spinner from '../Spinner/Spinner'
+import InputComponent from '../InputComponent/InputComponent'
+import ButtonComponent from '../ButtonComponent/ButtonComponent'
+import AutocompleteComponent from '../AutocompleteComponent/AutocompleteComponent'
+import Input from 'react-toolbox/lib/input'
+import tooltopLabel from './tooltipLabel.css'
+import BootstrapModal from "../BootstrapModal"
 
 const mapDispatchToProps = dispatch => ({
   home: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HOME))
@@ -47,13 +47,6 @@ class ProfileForm extends React.Component {
     }
   }
 
-  componentDidMount() {
-    getProfessions()
-      .then((response) => {
-        this.setState({showSpinner: false, dropDownSource: response.data})
-      });
-  }
-
   componentWillMount() {
     getUserInformation()
       .then((response) => {
@@ -70,6 +63,13 @@ class ProfileForm extends React.Component {
           score: 0 //response.data.score.toString()
         })
       })
+  }
+
+  componentDidMount() {
+    getProfessions()
+      .then((response) => {
+        this.setState({showSpinner: false, dropDownSource: response.data})
+      });
   }
 
 
@@ -153,9 +153,9 @@ class ProfileForm extends React.Component {
             </div>
             <div className={"row col-md-12 " + cssClasses.paddingInnerElements}>
               <div className="col-md-6">
-                <DropdownComponent source={this.state.dropDownSource} label="Select profession"
-                                   initialValue={this.state.profession}
-                                   onValueChange={this.handleChangeState.bind(this, 'profession')}/>
+                <AutocompleteComponent source={this.state.dropDownSource} label="Select profession"
+                                       onValueChange={this.handleChangeState.bind(this, 'profession')}
+                                       initialValue={this.state.profession}/>
               </div>
               <div className="col-md-6 ">
                 <TooltipInput type='text' label='Hobbies' theme={tooltopLabel} name='hobbies'

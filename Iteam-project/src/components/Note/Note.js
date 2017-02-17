@@ -3,6 +3,7 @@ import {ItemTypes} from '../Constants/Constants';
 import {DragSource} from 'react-dnd';
 import {IconButton} from 'react-toolbox/lib/button';
 import {Card, CardTitle, CardText, CardActions} from 'react-toolbox/lib/card';
+import AutocompleteComponent from '../AutocompleteComponent/AutocompleteComponent'
 import Chip from 'react-toolbox/lib/chip'
 import CardYellow from './Card.scss'
 import cardTitlescss from'./CardTitle.scss'
@@ -12,11 +13,6 @@ import classes from './Note.scss'
 import inputSize from './InputSize.scss'
 import Chipscss from './Chip.scss'
 import Input from 'react-toolbox/lib/input';
-import Dropdown from 'react-toolbox/lib/dropdown';
-import themeLabel from './label.scss'
-import themedrop from './dropdown.scss'
-
-
 
 const NoteSource = {
   beginDrag(props) {
@@ -28,7 +24,6 @@ const NoteSource = {
 const style = {
   cursor: 'move'
 };
-
 
 class Note extends Component {
 
@@ -45,13 +40,6 @@ class Note extends Component {
     }
   }
 
-  componentWillMount() {
-    if(this.props.boardType === 'personal'){
-      this.setValuesOptionsTags(this.props.tagMap);
-    }
-  }
-
-
   render() {
     const {connectDragSource, isDragging, left, top} = this.props;
     if (isDragging) {
@@ -63,9 +51,8 @@ class Note extends Component {
           return (
             <div className={classes.card} style={{...style, left, top}}>
               <Card theme={CardYellow}>
-                <Dropdown label="Select Tag" auto theme={themedrop} style={{color: '#900C3F'}}
-                          onChange={this.comboTags.bind(this)} required
-                          source={this.state.mapTag} value={this.state.tagValue}/>
+                <AutocompleteComponent label="Select Tag" onValueChange={this.handleChange.bind(this, 'tagName')}
+                                       source={this.props.tagMap} initialValue=''/>
                 <Input theme={inputSize} type='text' label='Title' value={this.state.title} required
                        onChange={this.handleChange.bind(this, 'title')} maxLength={140} multiline={'True'}/>
                 <CardActions theme={cardActionsscss}>
@@ -142,25 +129,8 @@ class Note extends Component {
       }
   }
 
-  comboTags(value) {
-    let filteredLabelObject = this.state.mapTag.filter(filter => filter["value"] == value);
-    this.setState({tagValue: value, tagName: filteredLabelObject[0]["label"]})
-  }
-
-  setValuesOptionsTags(data) {
-    let opt = data.map(function (option, index) {
-      let rObj = {};
-      rObj["value"] = index;
-      rObj["label"] = option;
-      return rObj;
-    });
-
-    this.setState({mapTag: opt, tagValue: opt[0].value});
-  }
-
-
   handleChange = (name, value) => {
-    this.setState({...this.state, [name]: value});
+    this.setState({[name]: value});
   };
 
   send() {
@@ -173,7 +143,6 @@ class Note extends Component {
   }
 
   save() {
-    //TODO: remove tag from here
     this.props.onChange(this.state.title, this.props.id, this.state.tagName);
     this.setState({view: 'normal'})
   }
@@ -207,34 +176,6 @@ class Note extends Component {
     this.props.onVote(this.props.id, vote);
     this.setState({view: 'normal'})
   }
-
-  //addTag(){
-  // this.setState({view: 'tag'});
-  //}
-
-  /* saveTag(){
-   tag.push(
-   <Chip deletable>{this.state.tag}</Chip>
-   );
-   this.setState({tag: tag});
-   this.setState({view: 'normal'})
-   }
-   */
-  // renderTag(){
-  //   let tagArray = this.state.tag;
-  //
-  //   if(tagArray.length === 1){
-  //     return createFragment(this.state.tag)
-  //   }else{
-  //     tagArray.map(t => {
-  //       return createFragment(t)
-  //     })
-  //   }
-  // }
-
-  removeTag() {
-    //ver como borrar un tag
-  }
 }
 
 Note.propTypes = {
@@ -248,14 +189,17 @@ Note.propTypes = {
   comments: PropTypes.string,
   title: PropTypes.string,
   tag: PropTypes.string,
-  ranking:PropTypes.string,
-  tagMap: PropTypes.any
+  ranking: PropTypes.string,
+  tagMap: PropTypes.any,
+  onAddComment: PropTypes.func,
+  onRemove: PropTypes.func,
+  onVote: PropTypes.func
 };
 
 export default DragSource(ItemTypes.NOTE,
   NoteSource, (connect, monitor) => ( {
-    connectDragSource: connect.dragSource(),
-    isDragging: monitor.isDragging()
-  }
+      connectDragSource: connect.dragSource(),
+      isDragging: monitor.isDragging()
+    }
   ))
 (Note);

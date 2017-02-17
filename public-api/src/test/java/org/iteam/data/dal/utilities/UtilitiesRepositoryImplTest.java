@@ -173,9 +173,8 @@ public class UtilitiesRepositoryImplTest {
         Mockito.when(bucket.getKeyAsString()).thenReturn("Estudiante");
         Mockito.when(bucket2.getKeyAsString()).thenReturn("Software Engineer");
 
-        // Mockito.when(elasticsearchClient.search(Mockito.anyString(),
-        // Mockito.anyObject(), Mockito.anyObject(),
-        // Mockito.anyInt())).thenReturn(response);
+        Mockito.when(elasticsearchClient.search(Mockito.anyString(), Mockito.anyObject(), Mockito.anyInt()))
+                .thenReturn(response);
 
         ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClient);
     }
