@@ -1,6 +1,7 @@
 
 package org.iteam.data.dal.meeting;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -15,10 +16,15 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.iteam.data.dal.client.ElasticsearchClientImpl;
+import org.iteam.data.dal.team.TeamRepositoryImpl;
 import org.iteam.data.dto.Idea;
 import org.iteam.data.dto.Meeting;
+import org.iteam.data.dto.UserDTO;
+import org.iteam.data.dto.ViewedMeeting;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
+import org.iteam.data.model.TeamUserModel;
+import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -39,10 +45,14 @@ public class MeetingRepositoryImplTest {
     @Mock
     private ElasticsearchClientImpl elasticsearchClientImpl;
 
+    @Mock
+    private TeamRepositoryImpl teamRepository;
+
     private static final String MEETING_REPRESENTATION = "{\"topic\":\"test\",\"meetingId\":\"1234-456-789\",\"creationDate\":\"12345678987\",\"programmedDate\":\"123456789987\", \"ownerName\":\"test-iteam\", \"teamName\":\"123-456-987\", \"description\":\"es un test\"}";
     private static final String IDEA_REPRESENTATION = "{\"id\":\"546-45695-4564\", \"username\":\"jpressac\"}";
     private static final String TOPIC_NAME = "juan topic";
     private static final String MEETING_USER_RESPONSE = "{\"users\":[\"juan\", \"juandos\"]}";
+    private static final String MEETING_VIEWED_RESPONSE = "{\"users\":[\"juan\",\"test\"], \"meetingId\":\"4654-5465\", \"time\":\"546456465465\", \"meetingTopic\":\"topic\"}";
 
     private Meeting meeting;
     private boolean success;
@@ -54,6 +64,11 @@ public class MeetingRepositoryImplTest {
     private List<Idea> ideasList;
     private String meetingTopic;
     private MeetingUsers meetingUsers;
+    private String username;
+    private List<ViewedMeeting> viewedMeetings;
+    private List<ViewedMeeting> meetingsViewedByUser;
+
+    private boolean created;
 
     @Before
     public void init() {
@@ -84,21 +99,12 @@ public class MeetingRepositoryImplTest {
         thenVerifyInsertAndDeleteDataCalls(1);
     }
 
-    @SuppressWarnings("unchecked")
-    private void thenVerifyInsertAndDeleteDataCalls(int times) {
-        Mockito.verify(elasticsearchClientImpl, Mockito.times(times)).insertData(Mockito.anyList(), Mockito.anyString(),
-                Mockito.anyString());
-
-        Mockito.verify(elasticsearchClientImpl, Mockito.times(times)).delete(Mockito.anyString(), Mockito.anyString(),
-                Mockito.anyString());
-    }
-
     @Test
     public void saveMeetingInfoSuccess() {
         givenMeetingData();
         givenAMeetingId();
         givenAGetResponse(false);
-        givenAnElasticsearchIndexResponse();
+        givenAnElasticsearchIndexResponse(true);
         whenSaveMeetingInfoIsCalled();
         thenVerifySaveMeetingInfoIsCalled(1);
     }
@@ -267,7 +273,171 @@ public class MeetingRepositoryImplTest {
         thenVerifySizeUserList(0);
     }
 
+    @Test
+    public void getMeetingNotViewedSuccess() {
+        givenAUsername();
+        givenAnElasticsearchResponseViewed(MEETING_VIEWED_RESPONSE, 1);
+        whenGetMeetingsNotViewedIsCalled();
+        thenVerifyCalls(1);
+        thenVerifyMeetingsNotViewed(1);
+    }
+
+    @Test
+    public void getMeetingNotViewedNoMeetings() {
+        givenAUsername();
+        givenAnElasticsearchResponseViewed(MEETING_VIEWED_RESPONSE, 0);
+        whenGetMeetingsNotViewedIsCalled();
+        thenVerifyCalls(1);
+        thenVerifyMeetingsNotViewed(0);
+    }
+
+    @Test
+    public void updateViewedMeetingsByUserSuccess() {
+        givenAListOfMeetingViewed();
+        givenAUsername();
+        givenAnElasticsearchBulkUpdate(false);
+        whenUpdateMeetingViewedByUserIsCalled();
+        thenVerifyCallsBulkUpdateMeetingNotViewed(1);
+    }
+
+    @Test
+    public void updateViewedMeetingsByUserNotMeetingsToUpdate() {
+        givenAListOfMeetingViewedEmpty();
+        givenAUsername();
+        givenAnElasticsearchBulkUpdate(false);
+        whenUpdateMeetingViewedByUserIsCalled();
+        thenVerifyCallsBulkUpdateMeetingNotViewed(0);
+    }
+
+    @Test
+    public void updateViewedMeetingsByUserNullMeetingsToUpdate() {
+        givenAUsername();
+        givenAnElasticsearchBulkUpdate(false);
+        whenUpdateMeetingViewedByUserIsCalled();
+        thenVerifyCallsBulkUpdateMeetingNotViewed(0);
+    }
+
+    @Test
+    public void createMeetingViewedSuccess() {
+        givenAMeetingWithInformation();
+        givenAnElasticsearchIndexResponse(true);
+        givenATeamRepository();
+        whenCreateMeetingViewedIsCalled();
+        thenVerifyIndexCall(1);
+        thenVerifyCreation(true);
+    }
+
+    @Test
+    public void createMeetingViewedFailure() {
+        givenAMeetingWithInformation();
+        givenAnElasticsearchIndexResponse(false);
+        givenATeamRepository();
+        whenCreateMeetingViewedIsCalled();
+        thenVerifyIndexCall(1);
+        thenVerifyCreation(false);
+    }
+
+    private void thenVerifyCreation(boolean viewedCreated) {
+        Assert.assertEquals(viewedCreated, created);
+    }
+
+    private void thenVerifyIndexCall(int times) {
+        Mockito.verify(elasticsearchClientImpl, Mockito.times(times)).insertData(Mockito.anyString(),
+                Mockito.anyString(), Mockito.anyString(), Mockito.anyString());
+    }
+
+    private void whenCreateMeetingViewedIsCalled() {
+        created = underTest.createMeetingViewed(meeting);
+    }
+
+    private void givenATeamRepository() {
+        TeamUserModel userModel = new TeamUserModel();
+
+        UserDTO user = new UserDTO();
+        user.setUsername("test");
+
+        userModel.setTeamUsers(Lists.newArrayList(user));
+
+        Mockito.when(teamRepository.getTeamUsersByMeeting("testMeeting")).thenReturn(userModel);
+    }
+
+    private void givenAMeetingWithInformation() {
+        meeting = new Meeting();
+        meeting.setMeetingId("testMeeting");
+        meeting.setTopic("topic");
+        meeting.setProgrammedDate(DateTime.now().getMillis());
+        meeting.setOwnerName("test");
+    }
+
+    private void givenAListOfMeetingViewedEmpty() {
+        meetingsViewedByUser = Lists.emptyList();
+    }
+
+    private void thenVerifyCallsBulkUpdateMeetingNotViewed(int times) {
+        Mockito.verify(elasticsearchClientImpl, Mockito.times(times)).bulkUpdate(Mockito.anyList(), Mockito.anyString(),
+                Mockito.anyString());
+    }
+
+    private void whenUpdateMeetingViewedByUserIsCalled() {
+        underTest.updateMeetingViewedByUser(meetingsViewedByUser, username);
+    }
+
+    private void givenAListOfMeetingViewed() {
+        ViewedMeeting viewed1 = new ViewedMeeting();
+        ViewedMeeting viewed2 = new ViewedMeeting();
+
+        meetingsViewedByUser = new ArrayList<>();
+        meetingsViewedByUser.add(viewed1);
+        meetingsViewedByUser.add(viewed2);
+    }
+
+    private void thenVerifyMeetingsNotViewed(int size) {
+        Assert.assertEquals(size, viewedMeetings.size());
+    }
+
+    private void thenVerifyCalls(int times) {
+        Mockito.verify(elasticsearchClientImpl, Mockito.times(times)).search(Mockito.anyString(), Mockito.anyObject());
+    }
+
+    private void whenGetMeetingsNotViewedIsCalled() {
+        viewedMeetings = underTest.getMeetingsNotViewed(username);
+    }
+
+    // FIXME: This method can be generic
+    private void givenAnElasticsearchResponseViewed(String meetingViewedResponse, long totalHits) {
+        SearchResponse response = Mockito.mock(SearchResponse.class);
+
+        SearchHits hits = Mockito.mock(SearchHits.class);
+        SearchHit hit = Mockito.mock(SearchHit.class);
+
+        @SuppressWarnings("unchecked")
+        Iterator<SearchHit> iterator = Mockito.mock(Iterator.class);
+
+        Mockito.when(hits.iterator()).thenReturn(iterator);
+        Mockito.when(iterator.hasNext()).thenReturn(true, false);
+        Mockito.when(iterator.next()).thenReturn(hit);
+        Mockito.when(hits.getTotalHits()).thenReturn(totalHits);
+        Mockito.when(hit.getSourceAsString()).thenReturn(meetingViewedResponse);
+
+        Mockito.when(response.getHits()).thenReturn(hits);
+
+        Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
+    }
+
+    private void givenAUsername() {
+        username = "juan";
+    }
+
     /* THEN */
+
+    @SuppressWarnings("unchecked")
+    private void thenVerifyInsertAndDeleteDataCalls(int times) {
+        Mockito.verify(elasticsearchClientImpl, Mockito.times(times)).insertData(Mockito.anyList(), Mockito.anyString(),
+                Mockito.anyString());
+
+        Mockito.verify(elasticsearchClientImpl, Mockito.times(times)).delete(Mockito.anyString(), Mockito.anyString(),
+                Mockito.anyString());
+    }
 
     private void thenVerifySizeUserList(int size) {
         Assert.assertEquals(size, meetingUsers.getUsers().size());
@@ -543,14 +713,14 @@ public class MeetingRepositoryImplTest {
         meetingId = "13";
     }
 
-    private void givenAnElasticsearchIndexResponse() {
+    private void givenAnElasticsearchIndexResponse(boolean created) {
 
         IndexResponse response = Mockito.mock(IndexResponse.class);
 
+        Mockito.when(response.isCreated()).thenReturn(created);
+
         Mockito.when(elasticsearchClientImpl.insertData(Mockito.anyString(), Mockito.anyString(), Mockito.anyString(),
                 Mockito.anyString())).thenReturn(response);
-
-        ReflectionTestUtils.setField(underTest, "elasticsearchClientImpl", elasticsearchClientImpl);
 
     }
 

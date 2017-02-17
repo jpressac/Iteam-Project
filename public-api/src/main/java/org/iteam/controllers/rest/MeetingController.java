@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.iteam.data.dto.Meeting;
+import org.iteam.data.dto.ViewedMeeting;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
 import org.iteam.data.model.PaginationModel;
@@ -39,9 +40,9 @@ public class MeetingController {
     @RequestMapping(value = "/meeting/create", method = RequestMethod.POST)
     public ResponseEntity<Void> createMeeting(@RequestBody Meeting meeting) {
 
-        return meetingServiceImpl.createMeeting(meeting) ? new ResponseEntity<Void>(HttpStatus.OK)
+        meetingServiceImpl.createMeeting(meeting);
+        return meetingServiceImpl.createMeetingViewed(meeting) ? new ResponseEntity<Void>(HttpStatus.NO_CONTENT)
                 : new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
-
     }
 
     /**
@@ -53,6 +54,7 @@ public class MeetingController {
     public ResponseEntity<Void> updateMeeting(@RequestBody Meeting updatedMeeting) {
 
         meetingServiceImpl.updateMeeting(updatedMeeting);
+        meetingServiceImpl.updateMeetingViewed(updatedMeeting);
 
         return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 
@@ -139,5 +141,19 @@ public class MeetingController {
     @Autowired
     private void setMeetingServiceImpl(MeetingServiceImpl meetingServiceImpl) {
         this.meetingServiceImpl = meetingServiceImpl;
+    }
+
+    @RequestMapping(value = "meeting/notViewed", method = RequestMethod.GET)
+    public ResponseEntity<List<ViewedMeeting>> getMeetingsNotViewed() {
+        List<ViewedMeeting> meetings = meetingServiceImpl
+                .getMeetingsNotViewed(SecurityContextHolder.getContext().getAuthentication().getName());
+        return new ResponseEntity<List<ViewedMeeting>>(meetings, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/meeting/viewed", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+    public ResponseEntity<Void> updateMeetingViewed(@RequestBody @Valid List<ViewedMeeting> meetingsViewedByUser) {
+        meetingServiceImpl.updateMeetingViewedByUser(meetingsViewedByUser,
+                SecurityContextHolder.getContext().getAuthentication().getName());
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

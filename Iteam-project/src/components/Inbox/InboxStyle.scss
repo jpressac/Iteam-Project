@@ -1,0 +1,67 @@
+.InboxButton {
+  width: 25%;
+  position: fixed;
+  right: 1%;
+  border-top-right-radius: 3px;
+  border-top-left-radius: 3px;
+  font-family: monospace;
+  font-size: 12px;
+  border: 1px solid lightgray;
+  display: flex;
+  flex-direction: column;
+}
+
+.messageList{
+  overflow: auto;
+  height: auto;
+  max-height: 300px;
+  width: 25%;
+  position: fixed;
+  right: 1%;
+  margin-top: 5.1%;
+  background: white;
+  color: #900C3F;
+}
+
+.inboxConteiner{
+  background: whitesmoke;
+  font-size: medium;
+  margin-right: 0;
+  margin-left: 0;
+  margin-bottom: 1%;
+}
+
+.msgRow {
+  margin-bottom: 5px;
+  display: inline-flex;;
+  margin-right: 0;
+  margin-left: 0;
+}
+
+.userLabel {
+  font-size: 11px;
+  width: inherit;
+}
+
+.chatUsername {
+  color: #900C3F;
+  font-size: large;
+  margin-left: 2%;
+  margin-top: 2%;
+  float: left;
+}
+
+.msgTime {
+  font-size: medium;
+  float: right;
+  color: #900C3F;
+  margin-right:2%;
+  margin-top: 2%;
+}
+
+.p{
+  text-align: center;
+  color: #900C3F;
+  font-size: large;
+  margin-top: 4%;
+}

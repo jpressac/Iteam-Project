@@ -31,6 +31,7 @@ import org.elasticsearch.search.sort.SortBuilder;
 import org.iteam.configuration.ExternalConfigurationProperties;
 import org.iteam.data.model.BiFieldModel;
 import org.iteam.exceptions.ElasticsearchClientException;
+import org.iteam.services.utils.JSONUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,6 +125,7 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
         return search(index, queryBuilder, aggregationBuilder, SIZE_RESPONSE, null, null);
     }
 
+    @Override
     public SearchResponse search(String index, AbstractAggregationBuilder aggregationBuilder, Integer size) {
         return search(index, null, aggregationBuilder, size, null, null);
     }
@@ -206,14 +208,14 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
     }
 
     @Override
-    public BulkResponse bulkUpdate(List<BiFieldModel> data, String index, String type) {
+    public BulkResponse bulkUpdate(@SuppressWarnings("rawtypes") List<BiFieldModel> data, String index, String type) {
 
         List<UpdateRequest> updateList = new ArrayList<>();
 
         data.forEach((dataToUpdate) -> {
 
             UpdateRequest updateRequest = new UpdateRequest(index, type, dataToUpdate.getKey());
-            updateRequest.doc(dataToUpdate.getValue());
+            updateRequest.doc(JSONUtils.ObjectToJSON(dataToUpdate.getValue()));
             updateList.add(updateRequest);
         });
 
@@ -222,13 +224,13 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
     }
 
     @Override
-    public BulkResponse updateScore(List<BiFieldModel> data, String index, String type) {
+    public BulkResponse updateScore(@SuppressWarnings("rawtypes") List<BiFieldModel> data, String index, String type) {
         List<UpdateRequest> updateList = new ArrayList<>();
 
         data.forEach((dataToUpdate) -> {
 
             UpdateRequest updateRequest = new UpdateRequest(index, type, dataToUpdate.getKey());
-            updateRequest.script(getScript(Double.parseDouble(dataToUpdate.getValue())));
+            updateRequest.script(getScript(Double.parseDouble((String) dataToUpdate.getValue())));
             updateList.add(updateRequest);
         });
 
