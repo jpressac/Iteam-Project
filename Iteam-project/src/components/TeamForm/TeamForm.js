@@ -34,7 +34,7 @@ const mapDispatchToProps = dispatch => ({
     dispatch(push('/' + PATHS.MENULOGGEDIN.MEETING))
   },
   normal: () => {
-    dispatch(push('/' + PATHS.MENULOGGEDIN.HOME))
+    dispatch(push('/' + PATHS.MENULOGGEDIN.TEAMLIST))
   }
 });
 

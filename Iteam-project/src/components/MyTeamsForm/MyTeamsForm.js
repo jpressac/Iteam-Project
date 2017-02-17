@@ -10,6 +10,7 @@ import {TEAM} from '../../constants/HostConfiguration'
 import Spinner from '../Spinner/Spinner';
 import ReactPagination from 'react-paginate'
 import InputComponent from '../InputComponent'
+import pagination from './pagination.scss'
 import {calculateTotalPages, calculateOffset} from '../../utils/mathUtils'
 import {getTeamByOwner, getTeamByOwnerPaginated} from '../../utils/actions/teamActions'
 
@@ -106,7 +107,7 @@ class MyTeamsForm extends Component {
               <label>MY TEAMS</label>
             </div>
             <div>
-              <InputComponent className="col-md-8" label='Team Name' value={this.state.searchField}
+              <InputComponent label='Team Name' name="searchField" value={this.state.searchField}
                               onKeyPress={this.handleSubmit.bind(this)}
                               onValueChange={this.handleChange.bind(this,'searchField')}/>
             </div>
@@ -132,9 +133,10 @@ class MyTeamsForm extends Component {
                              pageCount={this.state.totalPages}
                              marginPagesDisplayed={2}
                              pageRangeDisplayed={5}
-                             onPageChange={this.handlePageClick.bind(this)}
-                             initialPage={1}
-                             disableInitialCallback={true}
+                             onPageChange={this.handlePageClick}
+                             initialPage={0}
+                             disableInitialCallback={false}
+                             pageClassName={pagination.ul}
             />
           </div>
         </div>

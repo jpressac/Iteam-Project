@@ -16,6 +16,7 @@ import {updateMeetingId} from '../../redux/reducers/Meeting/MeetingReducer';
 import {MEETING} from '../../constants/HostConfiguration';
 import themeLabel from './label.scss';
 import datesInput from './dateInput.scss'
+import listItemGrey from './ListItemGrey.scss'
 import Dropdown from 'react-toolbox/lib/dropdown';
 import Tooltip from 'react-toolbox/lib/tooltip';
 import {Button} from 'react-toolbox/lib/button';
@@ -191,8 +192,9 @@ class MymeetForm extends Component {
       totalMeetings: data.total,
       showSpinner: false
     }, () => {
-      this.calculateTotalPages();
-    })
+      let total = calculateTotalPages(this.state.totalMeetings, ITEMS_PER_PAGE);
+      this.setState({totalPages: total});
+    });
   }
 
   calculateTotalPages() {
@@ -466,12 +468,12 @@ class MymeetForm extends Component {
   }
 
   handlePageClick = (data) => {
-    console.debug(data);
     let actualPageNumber = data.selected;
     let offset = calculateOffset(actualPageNumber, ITEMS_PER_PAGE);
-    this.getAllProgrammedMeetings();
 
-    this.setState({offset: offset});
+    this.setState({offset: offset}, () => {
+      this.getAllProgrammedMeetings();
+    });
   };
 
   render() {
@@ -503,6 +505,7 @@ class MymeetForm extends Component {
                 return (
                   <div key={key}>
                     <ListItem
+                      theme={listItemGrey}
                       caption={meetMap[key].topic}
                       legend={renderDateTime}
                       leftIcon='send'
@@ -521,11 +524,10 @@ class MymeetForm extends Component {
                            pageCount={this.state.totalPages}
                            marginPagesDisplayed={2}
                            pageRangeDisplayed={5}
-                           onPageChange={this.handlePageClick.bind(this)}
-                           initialPage={1}
-                           disableInitialCallback={true}
+                           onPageChange={this.handlePageClick}
+                           initialPage={0}
+                           disableInitialCallback={false}
                            pageClassName={pagination.ul}
-                           pageLinkClassName={pagination}
           />
         </div>
       )
