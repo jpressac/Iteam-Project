@@ -7,6 +7,8 @@ export const meetingsNotViewedByUser = (done) => {
   meetingsNotViewed().then((response)=> {
     store.dispatch(meetingsNotViewedReducer(response.data));
     done()
+  }).catch( () => {
+    done()
   })
 };
 

@@ -93,13 +93,13 @@ public class MeetingController {
         return meetingServiceImpl.getMeetingInfoByUserPersonalBoard(meetingId, username);
     }
 
-    @RequestMapping(value = "meeting/usersconnection", method = RequestMethod.HEAD)
+    @RequestMapping(value = "/meeting/usersconnection", method = RequestMethod.HEAD)
     public void setUserState(@RequestHeader(value = "username", required = true) String username,
             @RequestHeader(value = "meetingId", required = true) String meetingId) {
         meetingServiceImpl.updateMeetingUsers(meetingId, username);
     }
 
-    @RequestMapping(value = "meeting/programmed", method = RequestMethod.GET)
+    @RequestMapping(value = "/meeting/programmed", method = RequestMethod.GET)
     public ResponseEntity<PaginationModel<Meeting>> getProgrammedMeetings(
             @RequestParam(value = "offset", required = true) int offset,
             @RequestParam(value = "limit", required = true) int limit) {
@@ -108,7 +108,7 @@ public class MeetingController {
         return new ResponseEntity<PaginationModel<Meeting>>(meetings, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "meeting/search/history", method = RequestMethod.GET)
+    @RequestMapping(value = "/meeting/search/history", method = RequestMethod.GET)
     public ResponseEntity<PaginationModel<Meeting>> getEndedMeetingsByToken(
             @RequestParam(value = "token", required = true) String token,
             @RequestParam(value = "offset", required = true) int offset,
@@ -118,7 +118,7 @@ public class MeetingController {
         return new ResponseEntity<PaginationModel<Meeting>>(meetings, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "meeting/search/programmed", method = RequestMethod.GET)
+    @RequestMapping(value = "/meeting/search/programmed", method = RequestMethod.GET)
     public ResponseEntity<PaginationModel<Meeting>> getProgrammedMeetingsByToken(
             @RequestParam(value = "token", required = true) String token,
             @RequestParam(value = "offset", required = true) int offset,
@@ -128,7 +128,7 @@ public class MeetingController {
         return new ResponseEntity<PaginationModel<Meeting>>(meetings, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "meeting/paginated", method = RequestMethod.GET)
+    @RequestMapping(value = "/meeting/paginated", method = RequestMethod.GET)
     public ResponseEntity<PaginationModel<Meeting>> getPaginatedMeetings(
             @RequestParam(value = "offset", required = true) int offset,
             @RequestParam(value = "limit", required = true) int limit) {
@@ -143,7 +143,7 @@ public class MeetingController {
         this.meetingServiceImpl = meetingServiceImpl;
     }
 
-    @RequestMapping(value = "meeting/notViewed", method = RequestMethod.GET)
+    @RequestMapping(value = "/meeting/notViewed", method = RequestMethod.GET)
     public ResponseEntity<List<ViewedMeeting>> getMeetingsNotViewed() {
         List<ViewedMeeting> meetings = meetingServiceImpl
                 .getMeetingsNotViewed(SecurityContextHolder.getContext().getAuthentication().getName());

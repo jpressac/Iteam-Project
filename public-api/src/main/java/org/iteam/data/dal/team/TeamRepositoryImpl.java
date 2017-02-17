@@ -117,15 +117,26 @@ public class TeamRepositoryImpl implements TeamRepository {
             queryBuilder.must(QueryBuilders.matchQuery(TEAM_NAME_FIELD, token));
         }
 
-        SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_TEAM, queryBuilder, size, from);
         List<TeamModel> teamList = new ArrayList<>();
-        if (response.getHits().getTotalHits() > 0) {
-            for (SearchHit hit : response.getHits()) {
-                teamList.add(
-                        new TeamModel(hit.getId(), (Team) JSONUtils.JSONToObject(hit.getSourceAsString(), Team.class)));
+
+        try {
+
+            SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_TEAM, queryBuilder, size, from);
+
+            if (response.getHits().getTotalHits() > 0) {
+                for (SearchHit hit : response.getHits()) {
+                    teamList.add(new TeamModel(hit.getId(),
+                            (Team) JSONUtils.JSONToObject(hit.getSourceAsString(), Team.class)));
+                }
             }
+
+            return new PaginationModel<TeamModel>(response.getHits().getTotalHits(), teamList);
+        } catch (IndexNotFoundException e) {
+            LOGGER.error("Index not found exception - while retrieving teams ", e);
         }
-        return new PaginationModel<TeamModel>(response.getHits().getTotalHits(), teamList);
+
+        return new PaginationModel<>(0, teamList);
+
     }
 
     @Override

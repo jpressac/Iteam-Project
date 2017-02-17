@@ -431,22 +431,27 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     public List<ViewedMeeting> getMeetingsNotViewed(String username) {
         LOGGER.info("Get meeting not viewed by user");
         LOGGER.debug("User: '{}'", username);
+
         List<ViewedMeeting> meetingsName = new ArrayList<>();
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
         queryBuilder.must(QueryBuilders.termQuery(MEETING_NOT_VIEWED_USERS, username))
                 .mustNot(QueryBuilders.termQuery(MEETING_VIEWED_USERS, username));
 
-        SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING_VIEWED_USERS,
-                queryBuilder);
+        try {
+            SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING_VIEWED_USERS,
+                    queryBuilder);
 
-        if (response.getHits().getTotalHits() > 0) {
-            for (SearchHit hit : response.getHits()) {
-                ViewedMeeting meeting = (ViewedMeeting) JSONUtils.JSONToObject(hit.getSourceAsString(),
-                        ViewedMeeting.class);
-                meeting.setMeetingId(hit.getId());
-                meetingsName.add(meeting);
+            if (response.getHits().getTotalHits() > 0) {
+                for (SearchHit hit : response.getHits()) {
+                    ViewedMeeting meeting = (ViewedMeeting) JSONUtils.JSONToObject(hit.getSourceAsString(),
+                            ViewedMeeting.class);
+                    meeting.setMeetingId(hit.getId());
+                    meetingsName.add(meeting);
+                }
             }
+        } catch (IndexNotFoundException e) {
+            LOGGER.error("Index not found - while try to retrieve meetings viewed information ", e);
         }
         return meetingsName;
     }
