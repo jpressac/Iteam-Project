@@ -10,6 +10,7 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.iteam.configuration.StringUtilities;
 import org.iteam.data.dal.client.ElasticsearchClient;
+import org.iteam.data.dto.Idea;
 import org.iteam.data.dto.UserDTO;
 import org.iteam.data.model.BiFieldModel;
 import org.iteam.data.model.IdeasDTO;
@@ -35,8 +36,6 @@ public class UserRepositoryImpl implements UserRepsoitory {
 
     private static final String USER_GENDER_MALE = "male";
     private static final String USER_GENDER_FEMALE = "female";
-
-    private Long partialScore;
 
     private ElasticsearchClient elasticsearchClient;
 
@@ -91,7 +90,6 @@ public class UserRepositoryImpl implements UserRepsoitory {
     public void modifyUser(UserDTO user, String username) {
 
         if (!ObjectUtils.isEmpty(user.getPassword()) && validatePassword(username, user.getPassword())) {
-            // TODO: refactor me
             user.setPassword(PASSWORD_ENCODER.encode(user.getNewPassword()));
             user.setNewPassword(null);
         }
@@ -105,7 +103,6 @@ public class UserRepositoryImpl implements UserRepsoitory {
     @Override
     public boolean logicalDelete(String doc, String username) {
 
-        // TODO: verify how to validate update response.
         elasticsearchClient.logicalDelete(doc, StringUtilities.INDEX_USER, StringUtilities.INDEX_TYPE_USER, username);
         LOGGER.info("User deleted");
         return true;
@@ -125,38 +122,42 @@ public class UserRepositoryImpl implements UserRepsoitory {
         return false;
     }
 
-    @Autowired
-    private void setElasticsearchClient(ElasticsearchClient elasticsearchClient) {
-        this.elasticsearchClient = elasticsearchClient;
-    }
-
     @Override
     public void generateScore(IdeasDTO ideas, List<String> userList) {
         List<BiFieldModel> dataToUpdate = new ArrayList<>();
         List<String> tags = new ArrayList<>();
 
-        userList.forEach((userName) -> {
-            partialScore = 0L;
+        for (String userName : userList) {
+
+            long partialScore = 0L;
             tags.clear();
-            ideas.getIdeas().forEach((idea) -> {
+
+            for (Idea idea : ideas.getIdeas()) {
+
                 if (idea.getUsername().equals(userName)) {
+
                     partialScore += (long) Math.floor((0.1 + (idea.getRanking() * 0.7)) * 10);
                     if (!tags.contains(idea.getTag())) {
                         tags.add(idea.getTag());
                     }
                 }
-            });
+            }
 
             Long totalTags = (long) (tags.size() * 0.2 * 10);
             Long finalScore = partialScore + totalTags;
 
             BiFieldModel userToUpdate = new BiFieldModel(userName, finalScore.toString());
             dataToUpdate.add(userToUpdate);
-        });
+        }
 
         elasticsearchClient.updateScore(dataToUpdate, StringUtilities.INDEX_USER, StringUtilities.INDEX_TYPE_USER);
 
         LOGGER.info("Updating user score");
         LOGGER.debug("User scores: '{}'", dataToUpdate.toString());
+    }
+
+    @Autowired
+    private void setElasticsearchClient(ElasticsearchClient elasticsearchClient) {
+        this.elasticsearchClient = elasticsearchClient;
     }
 }

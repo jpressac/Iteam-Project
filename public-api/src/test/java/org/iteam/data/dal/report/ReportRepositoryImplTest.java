@@ -104,6 +104,35 @@ public class ReportRepositoryImplTest {
         thenVerifyMinimunD3Model("By User");
     }
 
+    @Test
+    public void generateReportByRankingSuccess() {
+        givenAMeetingId();
+        givenAListOfTags();
+        givenAMeetingRepositoryImpl("topic");
+        whenGenerateBasicReportByRankingIsCalled();
+        thenVerifyD3ModelRanking();
+    }
+
+    @Test
+    public void generateReportByRankingNoIdeas() {
+        givenAMeetingId();
+        givenAListOfTags();
+        givenAMeetingRepositoryImpl("");
+        whenGenerateBasicReportByRankingIsCalled();
+        thenVerifyMinimunD3Model("By Ranking");
+    }
+
+    /* THEN */
+    private void thenVerifyD3ModelRanking() {
+        Assert.assertEquals("topic", report.getName());
+        Assert.assertEquals("test", report.getChildren().get(0).getName());
+        Assert.assertEquals("test2", report.getChildren().get(1).getName());
+        Assert.assertEquals("test3", report.getChildren().get(2).getName());
+        Assert.assertEquals(new Integer(5), report.getChildren().get(0).getChildren().get(0).getValue());
+        Assert.assertEquals(new Integer(10), report.getChildren().get(1).getChildren().get(0).getValue());
+        Assert.assertEquals(new Integer(60), report.getChildren().get(2).getChildren().get(0).getValue());
+    }
+
     private void thenVerifyD3ModelByUser() {
         Assert.assertEquals("topic", report.getName());
         Assert.assertEquals("juan", report.getChildren().get(0).getName());
@@ -122,12 +151,14 @@ public class ReportRepositoryImplTest {
                 report.getChildren().get(1).getChildren().get(2).getChildren().get(0).getName());
     }
 
-    private void whenGenerateBasicReportByUserIsCalled() {
-        report = underTest.generateBasicReportByUser(meetingId, users, tags);
+    private void thenVerifyD3ModelNoIdeas() {
+        Assert.assertEquals("Mix Meetings", report.getName());
     }
 
-    private void givenAListOfUsers() {
-        users = Lists.newArrayList("juan", "juan2");
+    private void thenVerifyD3Model() {
+        Assert.assertEquals("Ideas", report.getName());
+        Assert.assertEquals("test", report.getChildren().get(0).getName());
+        Assert.assertEquals("juan test", report.getChildren().get(0).getChildren().get(0).getName());
     }
 
     private void thenVerifyMinimunD3Model(String byTag) {
@@ -144,10 +175,25 @@ public class ReportRepositoryImplTest {
         Assert.assertEquals("juan test3", report.getChildren().get(2).getChildren().get(0).getName());
     }
 
+    /* WHEN */
+
+    private void whenGenerateBasicReportByRankingIsCalled() {
+        report = underTest.generateBasicReportByRanking(meetingId, tags);
+    }
+
+    private void whenGenerateBasicReportByUserIsCalled() {
+        report = underTest.generateBasicReportByUser(meetingId, users, tags);
+    }
+
+    private void whenGenerateReportByMeetingIsCalled() {
+        report = underTest.generateReportByMeeting(meetingIds);
+    }
+
     private void whenGenerateBasicReportByTagIsCalled() {
         report = underTest.generateBasicReportByTag(meetingId, tags);
     }
 
+    /* GIVEN */
     private void givenAMeetingRepositoryImpl(String topic) {
 
         // Idea for tag test
@@ -155,18 +201,21 @@ public class ReportRepositoryImplTest {
         idea1.setTag("test");
         idea1.setTitle("juan test");
         idea1.setUsername("juan");
+        idea1.setRanking(5);
 
         // Idea for tag test2
         Idea idea2 = new Idea();
         idea2.setTag("test2");
         idea2.setTitle("juan test2");
         idea2.setUsername("juan");
+        idea2.setRanking(10);
 
         // Idea for tag test3
         Idea idea3 = new Idea();
         idea3.setTag("test3");
         idea3.setTitle("juan test3");
         idea3.setUsername("juan2");
+        idea3.setRanking(60);
 
         List<Idea> ideasList = new ArrayList<>();
         ideasList.add(idea1);
@@ -179,26 +228,16 @@ public class ReportRepositoryImplTest {
 
     }
 
+    private void givenAListOfUsers() {
+        users = Lists.newArrayList("juan", "juan2");
+    }
+
     private void givenAListOfTags() {
         tags = Lists.newArrayList("test", "test2", "test3");
     }
 
     private void givenAMeetingId() {
         meetingId = "asdfa-asdfasdf";
-    }
-
-    private void thenVerifyD3ModelNoIdeas() {
-        Assert.assertEquals("Mix Meetings", report.getName());
-    }
-
-    private void thenVerifyD3Model() {
-        Assert.assertEquals("Ideas", report.getName());
-        Assert.assertEquals("test", report.getChildren().get(0).getName());
-        Assert.assertEquals("juan test", report.getChildren().get(0).getChildren().get(0).getName());
-    }
-
-    private void whenGenerateReportByMeetingIsCalled() {
-        report = underTest.generateReportByMeeting(meetingIds);
     }
 
     private void givenAnElasticsearchResponse(String idea, long totalHits) {
