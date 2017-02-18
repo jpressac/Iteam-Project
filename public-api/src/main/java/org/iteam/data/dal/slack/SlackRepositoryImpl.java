@@ -1,6 +1,5 @@
-package org.iteam.data.dal;
+package org.iteam.data.dal.slack;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,12 +15,12 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.seratch.jslack.Slack;
-import com.github.seratch.jslack.api.methods.SlackApiException;
 import com.github.seratch.jslack.api.methods.request.channels.ChannelsCreateRequest;
 import com.github.seratch.jslack.api.methods.request.channels.ChannelsInviteRequest;
 import com.github.seratch.jslack.api.methods.request.channels.ChannelsListRequest;
@@ -38,21 +37,24 @@ import com.github.seratch.jslack.api.model.Channel;
 import com.github.seratch.jslack.api.model.User;
 
 @Repository
-public class SlackRepository {
+public class SlackRepositoryImpl implements SlackReposit {
 
     private TeamRepositoryImpl teamRepositoryImpl;
     private Slack slack = Slack.getInstance();
-    private static final Logger LOGGER = LoggerFactory.getLogger(SlackRepository.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SlackRepositoryImplTest.class);
 
     private static final String URI_TEMPLATE_SLACK_ADD_TEAM = "https://slack.com/api/users.admin.invite?token={token}&email={mail}";
 
+    @Override
     public void createAndinviteToMeetingChannel(String meetingTopic, String token, String teamId) {
         String channelId = createMeetingChannel(meetingTopic, token);
-        String messageTimestamp = postMessage(channelId, token, "Meeting information");
-        pinMeetingInfo(channelId, messageTimestamp, token);
-        inviteUsersToMeetingChannel(token, teamId, channelId);
+        if (!StringUtils.isEmpty(channelId)) {
+            pinMeetingInfo(channelId, "Meeting information", token);
+            inviteUsersToMeetingChannel(token, teamId, channelId);
+        }
     }
 
+    @Override
     public String createMeetingChannel(String meetingId, String token) {
         String channelId = StringUtils.EMPTY;
         ChannelsCreateRequest channelCreation = ChannelsCreateRequest.builder().token(token).name(meetingId).build();
@@ -66,6 +68,7 @@ public class SlackRepository {
         return channelId;
     }
 
+    @Override
     public void postMessageToChannel(String channelId, String token, String message) {
 
         try {
@@ -78,36 +81,27 @@ public class SlackRepository {
     }
 
     // Used by API
+    @Override
     public void inviteUsersToMeetingChannel(String teamToken, String teamId, String meetingTopic) {
         List<String> userIds = getUsersSlackIds(teamToken, teamId, meetingTopic);
 
-        for (String id : userIds) {
-            ChannelsInviteRequest inviteReq = ChannelsInviteRequest.builder().token(teamToken).channel(meetingTopic)
-                    .user(id).build();
-            LOGGER.info(id);
-            try {
-                ChannelsInviteResponse inviteResponse = slack.methods().channelsInvite(inviteReq);
-                LOGGER.info(inviteResponse.toString());
-            } catch (Exception e) {
-
+        if (!CollectionUtils.isEmpty(userIds)) {
+            for (String id : userIds) {
+                ChannelsInviteRequest inviteReq = ChannelsInviteRequest.builder().token(teamToken).channel(meetingTopic)
+                        .user(id).build();
+                LOGGER.info(id);
+                try {
+                    ChannelsInviteResponse inviteResponse = slack.methods().channelsInvite(inviteReq);
+                    LOGGER.info(inviteResponse.toString());
+                } catch (Exception e) {
+                    LOGGER.error("Users couldn't be invited to channel", e);
+                }
             }
         }
     }
 
-    public String postMessage(String channelName, String token, String message) {
-        String timestamp = StringUtils.EMPTY;
-        try {
-            ChatPostMessageResponse postResponse = slack.methods().chatPostMessage(
-                    ChatPostMessageRequest.builder().token(token).channel(channelName).text(message).build());
-            timestamp = postResponse.getTs();
-            LOGGER.info(postResponse.toString());
-        } catch (Exception e) {
-            LOGGER.error("Error when sending message to slack channel ", e);
-        }
-        return timestamp;
-    }
-
-    private String getChannelId(String channelName, String token) {
+    @Override
+    public String getChannelId(String channelName, String token) {
         String channelId = StringUtils.EMPTY;
 
         try {
@@ -122,23 +116,29 @@ public class SlackRepository {
         }
 
         return channelId;
-
     }
 
-    public void pinMeetingInfo(String channel, String timestamp, String token) {
+    @Override
+    public void pinMeetingInfo(String channelName, String message, String token) {
         try {
+            ChatPostMessageResponse postResponse = slack.methods().chatPostMessage(
+                    ChatPostMessageRequest.builder().token(token).channel(channelName).text(message).build());
+            String timestamp = postResponse.getTs();
 
-            PinsAddRequest pinAddRequest = PinsAddRequest.builder().token(token).channel(channel).timestamp(timestamp)
-                    .build();
-            PinsAddResponse pinAddResponse = slack.methods().pinsAdd(pinAddRequest);
+            if (StringUtils.isNotEmpty(timestamp)) {
+                PinsAddRequest pinAddRequest = PinsAddRequest.builder().token(token).channel(channelName)
+                        .timestamp(timestamp).build();
+                PinsAddResponse pinAddResponse = slack.methods().pinsAdd(pinAddRequest);
 
-            LOGGER.info("Message pinned successfully" + pinAddResponse.toString());
+                LOGGER.info("Message pinned successfully" + pinAddResponse.toString());
+            }
 
         } catch (Exception e) {
             LOGGER.error("Error when trying to pin message", e);
         }
     }
 
+    @Override
     public UsersListResponse getIteamAppUsers(String teamToken) {
 
         UsersListRequest userListRequest = UsersListRequest.builder().token(teamToken).build();
@@ -151,82 +151,87 @@ public class SlackRepository {
         return null;
     }
 
-    public List<String> getTeamUsers(String teamToken) {
+    private List<String> getTeamSlackUsers(String teamToken) {
         List<String> userEmails = new ArrayList<>();
         List<User> allIteamSlackUsers = getIteamAppUsers(teamToken).getMembers();
-        for (User user : allIteamSlackUsers) {
-            userEmails.add(user.getProfile().getEmail());
+
+        if (!CollectionUtils.isEmpty(allIteamSlackUsers)) {
+            for (User user : allIteamSlackUsers) {
+                userEmails.add(user.getProfile().getEmail());
+            }
         }
         return userEmails;
     }
 
+    @Override
     public boolean userIsTeamMember(String userMail, String teamToken) {
-        return getTeamUsers(teamToken).contains(userMail);
+        return getTeamSlackUsers(teamToken).contains(userMail);
     }
 
+    @Override
     public HashMap<String, String> getTeamSlackUsersData(String teamId, String teamToken) {
         List<User> allSlackUsers = getIteamAppUsers(teamToken).getMembers();
         HashMap<String, String> slackUserData = new HashMap<>();
 
-        for (User slackUser : allSlackUsers) {
-            slackUserData.put(slackUser.getProfile().getEmail(), slackUser.getId());
+        if (!CollectionUtils.isEmpty(allSlackUsers)) {
+            for (User slackUser : allSlackUsers) {
+                slackUserData.put(slackUser.getProfile().getEmail(), slackUser.getId());
+            }
         }
         return slackUserData;
     }
 
+    @Override
     public List<String> getUsersSlackIds(String teamToken, String teamId, String meetingTopic) {
         List<UserDTO> users = teamRepositoryImpl.getTeamUsers(teamId);
         HashMap<String, String> allIteamSlackUsersData = getTeamSlackUsersData(teamId, teamToken);
         List<String> usersSlackIds = new ArrayList<>();
 
-        for (UserDTO user : users) {
-            if (!ObjectUtils.isEmpty(allIteamSlackUsersData.get(user.getMail()))) {
-                usersSlackIds.add(allIteamSlackUsersData.get(user.getMail()));
+        if ((!CollectionUtils.isEmpty(users)) && (!CollectionUtils.isEmpty(allIteamSlackUsersData))) {
+            for (UserDTO user : users) {
+                if (!ObjectUtils.isEmpty(allIteamSlackUsersData.get(user.getMail()))) {
+                    usersSlackIds.add(allIteamSlackUsersData.get(user.getMail()));
+                }
             }
-
         }
         return usersSlackIds;
     }
 
+    @Override
     public SlackModel getSlackAndNonSlackUsers(String teamToken, String teamId) {
 
-        List<String> slackUsers = getTeamUsers(teamToken);
+        List<String> slackUsers = getTeamSlackUsers(teamToken);
         List<UserDTO> teamMembers = teamRepositoryImpl.getTeamUsers(teamId);
         List<String> usersInSlack = new ArrayList<>();
         List<String> usersWithoutSlack = new ArrayList<>();
 
-        for (UserDTO user : teamMembers) {
-            if (slackUsers.contains(user.getMail())) {
-                usersInSlack.add(user.getUsername());
-
-            } else {
-                usersWithoutSlack.add(user.getName());
+        if ((!CollectionUtils.isEmpty(slackUsers) && (!CollectionUtils.isEmpty(teamMembers)))) {
+            for (UserDTO user : teamMembers) {
+                if (slackUsers.contains(user.getMail())) {
+                    usersInSlack.add(user.getUsername());
+                } else {
+                    usersWithoutSlack.add(user.getName());
+                }
             }
         }
-
         SlackModel model = new SlackModel(usersInSlack, usersWithoutSlack);
 
         return model;
     }
 
-    public String inviteUserToChannel(String channelName, String userId, String token) {
+    @Override
+    public void inviteUserToChannel(String channelName, String userId, String token) {
 
         ChannelsInviteRequest inviteReq = ChannelsInviteRequest.builder().token(token)
                 .channel(getChannelId(channelName, token)).user(userId).build();
-
         try {
             ChannelsInviteResponse inviteResponse = slack.methods().channelsInvite(inviteReq);
-            return inviteResponse.toString();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (SlackApiException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (Exception e) {
+            LOGGER.error("Error when inviting user to channel", e);
         }
-        return null;
     }
 
+    @Override
     public void addUserToSlackGroup(String token, String email) {
 
         RestTemplate restTemplate = new RestTemplate();
@@ -234,7 +239,7 @@ public class SlackRepository {
         try {
             HttpEntity<JsonNode> response = restTemplate.exchange(URI_TEMPLATE_SLACK_ADD_TEAM, HttpMethod.POST, entity,
                     JsonNode.class, token, email);
-
+            LOGGER.info(response.toString());
         } catch (Exception e) {
             LOGGER.error("User could not be added to Iteam app slack group", e);
         }
@@ -244,4 +249,5 @@ public class SlackRepository {
     private void setTeamRepository(TeamRepositoryImpl teamRepository) {
         this.teamRepositoryImpl = teamRepository;
     }
+
 }

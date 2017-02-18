@@ -5,7 +5,7 @@ import java.util.List;
 import org.iteam.data.dal.user.UserRepositoryImpl;
 import org.iteam.data.dto.UserDTO;
 import org.iteam.data.model.IdeasDTO;
-import org.iteam.services.SlackService;
+import org.iteam.services.slack.SlackServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
     private UserRepositoryImpl userRepository;
-    private SlackService slackService;
+    private SlackServiceImpl slackService;
 
     private static String APP_TOKEN = "xoxp-140386445603-141146385335-141139898470-d07c0391cc828de808c1ca6832f0dbd8";
 
@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Autowired
-    private void setSlackService(SlackService slackService) {
+    private void setSlackService(SlackServiceImpl slackService) {
         this.slackService = slackService;
     }
 

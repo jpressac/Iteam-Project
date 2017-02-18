@@ -1,7 +1,7 @@
-package org.iteam.controllers;
+package org.iteam.controllers.slack;
 
 import org.iteam.data.model.SlackModel;
-import org.iteam.services.SlackService;
+import org.iteam.services.slack.SlackServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class SlackController {
 
-    private SlackService slackService;
+    private SlackServiceImpl slackService;
     // private static String TOKEN =
     // "xoxp-42952114835-44793745938-139712933216-c558a1777b26f523bfb8fda50b404de8";
     private static String BOT_TOKEN = "xoxb-141135744790-P7NOxQkNferYDZnZUAvF7M7W";
@@ -27,9 +27,9 @@ public class SlackController {
 
     @RequestMapping(value = "slack/sendmessage", method = RequestMethod.POST)
     public ResponseEntity<Void> sendMessageToChannel(
-            @RequestParam(value = "meetingId", required = true) String meetingId,
+            @RequestParam(value = "meetingTopic", required = true) String meetingTopic,
             @RequestParam(value = "message") String message) {
-        slackService.postMesageToChannel(meetingId, BOT_TOKEN, message);
+        slackService.postMesageToChannel(meetingTopic, BOT_TOKEN, message);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
@@ -40,11 +40,11 @@ public class SlackController {
     }
 
     @RequestMapping(value = "slack/channelinvite", method = RequestMethod.GET)
-    public ResponseEntity<String> inviteToChannel(@RequestParam(value = "userId", required = true) String userId,
+    public ResponseEntity<Void> inviteToChannel(@RequestParam(value = "userId", required = true) String userId,
             @RequestParam(value = "channelName", required = true) String channelName,
             @RequestParam(value = "teamId", required = true) String teamId) {
-        return new ResponseEntity<String>(slackService.inviteUserToChannel(channelName, userId, APP_TOKEN),
-                HttpStatus.OK);
+        slackService.inviteUserToChannel(channelName, userId, APP_TOKEN);
+        return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
     @RequestMapping(value = "slack/group", method = RequestMethod.POST)
@@ -67,7 +67,7 @@ public class SlackController {
     }
 
     @Autowired
-    private void setSlackService(SlackService slackService) {
+    private void setSlackService(SlackServiceImpl slackService) {
         this.slackService = slackService;
     }
 
