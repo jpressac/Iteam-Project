@@ -19,6 +19,7 @@ import {push} from "react-router-redux";
 import Spinner from "../Spinner/Spinner";
 
 const TooltipInput = Tooltip(Input);
+const MIN_LENGTH = 6;
 
 const mapDispatchToProps = (dispatch) => ({
   goToHome: () => dispatch(push('/' + PATHS.MENUNOTLOGGEDIN.HOME))
@@ -64,10 +65,21 @@ class RegistrationForm extends React.Component {
   validatePassword() {
     if (this.state.password === this.state.repeatPassword) {
       return '';
-    } else {
+    }
+    else {
       return 'Passwords must match'
     }
   }
+
+  validateMinLength(key, value){
+    if (0 == value.length || value.length >= MIN_LENGTH) {
+      return '';
+    }
+    else {
+      return 'Your ' + key + ' is too short. It should have ' + MIN_LENGTH + ' characters.'
+    }
+  };
+
 
   saveUser() {
     this.setState({showSpinner: true});
@@ -171,14 +183,17 @@ class RegistrationForm extends React.Component {
                               value={this.state.username}
                               onValueChange={this.handleChange.bind(this, 'username')} required
                               onBlur={this.checkUsername.bind(this)}
-                              onValueError={this.state.userExists}/>
+                              onValueError={this.state.userExists}
+                              maxLength={10}
+                              onValueError={this.validateMinLength('username',this.state.username)}/>
             </div>
             <div className="row col-md-12">
               <div className="row">
                 <InputComponent className="col-md-6" type='password' label='Password'
                                 value={this.state.password}
                                 onValueChange={this.handleChange.bind(this, 'password')}
-                                onValueError={this.validatePassword()}/>
+                                onValueError={this.validateMinLength('password',this.state.password)}
+                                maxLength={20}/>
               </div>
               <div className="row">
                 <InputComponent className="col-md-6" type='password' label='Repeat Password'

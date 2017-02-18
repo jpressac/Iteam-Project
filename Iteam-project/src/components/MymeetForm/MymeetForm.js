@@ -30,6 +30,8 @@ import ReactPagination from 'react-paginate'
 import pagination from './pagination.scss'
 import dialogTheme from './dialog.scss'
 import {getProgrammedMeetings, getSearchProgrammed} from '../../utils/actions/meetingActions'
+import {cleanMeetingChats} from '../../redux/reducers/Meeting/MeetingChatMessagesReducer'
+
 
 var programDate = new Date();
 var endDate = new Date();
@@ -56,7 +58,8 @@ const mapDispatchToProps = (dispatch) => ({
 
   onClick: () => dispatch(push('/' + PATHS.MENULOGGEDIN.PERSONALBOARD)),
   updateMyMeetingId: (meetingId) => dispatch(updateMeetingId(meetingId)),
-  saveMeetingConfig: (meeting) => dispatch(saveConfig(meeting))
+  saveMeetingConfig: (meeting) => dispatch(saveConfig(meeting)),
+  finishChat: () => dispatch(cleanMeetingChats())
 });
 
 
@@ -121,6 +124,7 @@ class MymeetForm extends Component {
 
     //Reducer for meeting ID
     this.props.updateMyMeetingId(this.state.meetEdit.meetingId);
+    this.props.finishChat();
 
     //Dispatch to personal board
     this.props.onClick();
@@ -542,7 +546,8 @@ class MymeetForm extends Component {
 MymeetForm.propTypes = {
   onClick: PropTypes.func,
   user: PropTypes.any,
-  saveMeetingConfig: PropTypes.func
+  saveMeetingConfig: PropTypes.func,
+  finishChat: PropTypes.any
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(MymeetForm);
