@@ -166,6 +166,7 @@ class HeaderLog extends Component {
         </AppBar>
         {this.renderInbox()}
       </header>
+      
     );
   };
 }

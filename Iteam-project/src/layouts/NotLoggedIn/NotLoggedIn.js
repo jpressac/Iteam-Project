@@ -8,7 +8,7 @@ export const NotLoggedIn = ({children}) => (
   <div className={notLoggedInTheme.notLoggedIn}>
     <HeaderNotLog />
     {children}
-    <Footer/>
+ <Footer/>
   </div>
 )
 

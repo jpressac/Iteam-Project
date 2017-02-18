@@ -1,10 +1,13 @@
 import React from 'react'
 import HomeForm from '../../components/HomeForm/'
+import classes from '../../views/ViewContainerCSS/ViewContainer.scss'
 
 class HomeView extends React.Component {
   render() {
     return (
-      <HomeForm/>
+      <div className={classes.formContainer}>
+        <HomeForm />
+      </div>
     )
   }
 }
