@@ -40,8 +40,8 @@ const mapStateToProps = (state) => {
       meetingId: state.meetingReducer.meetingId,
       connected: state.meetingUser,
       user: state.loginUser.user.username,
-      meetingConfiguration: state.meetingConfigurationReducer.meeting.config,
-      meetingOwner: state.meetingConfigurationReducer.meeting.owner
+      meetingConfiguration: state.meetingConfigurationReducer.config,
+      meetingOwner: state.meetingConfigurationReducer.ownerName
     }
   }
 };
@@ -112,7 +112,9 @@ class SharedBoard extends Component {
   renderTechnic(technic) {
     console.log(technic);
     switch (technic) {
+
       case 'Brainstorming':
+        console.log(this.state.notes)
         return (
           <div name="Notes container" className={classes.notes}>
             {this.renderNotes(this.state.notes, this.state.tagName, this.state.userName)}
@@ -165,9 +167,11 @@ class SharedBoard extends Component {
 
   renderNotes(noteMap, valueForTagFilter, valueForUserFilter) {
     console.log('Filters:' + ' ' + valueForTagFilter + ' ' + valueForUserFilter);
+    console.log(this.state.mapTag)
+    console.log(noteMap)
     //First get notes that have the selected tag
     let filteredNotes = Object.values(noteMap).filter((note) => {
-        if (valueForTagFilter === this.state.mapTag[0]) {
+        if (valueForTagFilter === this.state.mapTag[this.state.mapTag.length - 1]) {
 
           return note;
         } else {
@@ -509,7 +513,6 @@ class SharedBoard extends Component {
           </NavDrawer>
           <Panel scrollY theme={panelTheme}>
             {this.renderTechnic(this.props.meetingConfiguration.technic)}
-
           </Panel>
           <Drawer active={this.state.active} theme={classes}
                   type="right"

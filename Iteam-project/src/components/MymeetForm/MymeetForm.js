@@ -20,7 +20,7 @@ import Dropdown from 'react-toolbox/lib/dropdown';
 import Tooltip from 'react-toolbox/lib/tooltip';
 import {Button} from 'react-toolbox/lib/button';
 import Chip from 'react-toolbox/lib/chip';
-import {saveConfig} from '../../redux/reducers/Meeting/MeetingConfigReducer';
+import {saveMeetingConfig} from '../../redux/reducers/Meeting/MeetingConfigReducer';
 import Spinner from '../Spinner/Spinner';
 import {validateDate, validateStart, validateHour, changeEndDate} from '../../utils/DateUtils'
 import ButtonComponent from '../ButtonComponent/'
@@ -53,7 +53,7 @@ const mapDispatchToProps = (dispatch) => ({
 
   onClick: () => dispatch(push('/' + PATHS.MENULOGGEDIN.PERSONALBOARD)),
   updateMyMeetingId: (meetingId) => dispatch(updateMeetingId(meetingId)),
-  saveMeetingConfig: (meeting) => dispatch(saveConfig(meeting))
+  saveMeetingConfigReducer: (meeting) => dispatch(saveMeetingConfig(meeting))
 });
 
 
@@ -114,7 +114,7 @@ class MymeetForm extends Component {
     meetingInfo.config = this.state.config;
 
     //Reducer containing toolbar info
-    this.props.saveMeetingConfig(meetingInfo);
+    this.props.saveMeetingConfigReducer(meetingInfo);
 
     //Reducer for meeting ID
     this.props.updateMyMeetingId(this.state.meetEdit.meetingId);
@@ -536,7 +536,7 @@ class MymeetForm extends Component {
                            initialPage={1}
                            disableInitialCallback={true}
                            pageClassName={pagination.ul}
-                           pageLinkClassName={pagination}
+                           pageLinkClassName={pagination.li}
           />
         </div>
       )
@@ -551,7 +551,7 @@ class MymeetForm extends Component {
 MymeetForm.propTypes = {
   onClick: PropTypes.func,
   user: PropTypes.any,
-  saveMeetingConfig: PropTypes.func
+  saveMeetingConfigReducer: PropTypes.func
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(MymeetForm);

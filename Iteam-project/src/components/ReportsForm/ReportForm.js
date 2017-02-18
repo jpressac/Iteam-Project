@@ -8,9 +8,6 @@ import inputTheme from "./input.scss";
 import radioTheme from "./radio.scss"
 import tooltipTheme from "./tooltip.scss"
 import buttonPdf from "./buttonPdf.scss";
-import {MEETING} from "../../constants/HostConfiguration";
-import D3Tree from "./D3tree/D3Tree";
-import D3ChartTree from "./D3ChartTree/D3ChartTree";
 import generateUUID from "../../constants/utils/GetUUID";
 import Spinner from "../Spinner/Spinner";
 import Tooltip from "react-toolbox/lib/tooltip";
@@ -22,9 +19,7 @@ import {reportsToReportsView} from '../../redux/reducers/Reports/ReportsReducer'
 
 
 const mapDispatchToProps = dispatch => ({
-
   goToReportsView: (reportType) => dispatch(reportsToReportsView(reportType))
-
 });
 
 const mapStateToProps = (state) => {
@@ -38,7 +33,6 @@ const mapStateToProps = (state) => {
 };
 
 const TooltipButton = Tooltip(Button);
-
 
 class ReportForm extends Component {
   constructor(props) {
@@ -64,12 +58,17 @@ class ReportForm extends Component {
   };
 
   generateReportSearch() {
-    getMeetingsToGenerateReport(this.state.search).then((response) => {
-      console.log(response.data);
-      this.setState({
-        meetingReport: response.data
+    getMeetingsToGenerateReport(this.state.search)
+      .then((response) => {
+        console.log(response.data);
+        this.setState({
+          meetingReport: response.data
+        })
       })
-    })
+      .catch((response) => {
+        console.log(response)
+        //TODO: catch exceptions here
+      })
   }
 
   renderMeeting() {
@@ -106,7 +105,6 @@ class ReportForm extends Component {
                   legend={meeting.description}
                   onClick={this.removeMeeting.bind(this, meeting.meetingId)}/>
       )
-
     })
   }
 

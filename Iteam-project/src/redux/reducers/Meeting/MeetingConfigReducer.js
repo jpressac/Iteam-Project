@@ -1,16 +1,7 @@
-/**
- * Created by Randanne on 11/12/2016.
- */
 import {createAction} from 'redux-actions';
 
 
 export const SAVE_MEETING_CONFIG = 'SAVE_MEETING_CONFIG';
-
-export function saveConfig (meeting){
-  return function (dispatch) {
-    dispatch(saveMeetingConfig(meeting));
-  }
-}
 
 export default function meetingConfigurationReducer(state = null, action) {
   switch (action.type) {
@@ -21,4 +12,4 @@ export default function meetingConfigurationReducer(state = null, action) {
   }
 }
 
-export const saveMeetingConfig = createAction('SAVE_MEETING_CONFIG', (meeting) => ({meeting}));
+export const saveMeetingConfig = createAction('SAVE_MEETING_CONFIG', (meeting) => (meeting));

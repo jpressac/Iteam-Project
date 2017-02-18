@@ -39,7 +39,6 @@ const mapStateToProps = (state) => {
   }
 };
 
-
 class MeetingView extends Component {
 
   constructor(props) {
@@ -58,7 +57,7 @@ class MeetingView extends Component {
       showSpinner: true,
       meetingConfig: {},
       votes: 0,
-      technic: '',
+      technic: 'Brainstorming',
       tags: []
     }
   };
@@ -143,12 +142,12 @@ class MeetingView extends Component {
     let newTags = this.state.tags;
 
     if (this.state.technic == 'Brainstorming') {
-      newTags.push('Miscellaneous')
+      newTags.add('Miscellaneous')
     }
 
     //The 'All' will be available for all technics
-    newTags.push('All')
-    newTags.reverse()
+    newTags.add('All')
+
     this.setState({tags: newTags})
   }
 
@@ -178,7 +177,6 @@ class MeetingView extends Component {
           technic: this.state.technic
         }
       };
-
 
       createMeeting(meetingInfo)
         .then(() => {
@@ -210,8 +208,8 @@ class MeetingView extends Component {
       programmedDate: this.state.programmedDate,
       time: this.state.time,
       votes: this.state.votes,
-      tags: tags,
-      technic: this.state.technics
+      tags: this.state.tags,
+      technic: this.state.technic
     };
 
     this.props.saveMeetingInfo(meetingInfo);

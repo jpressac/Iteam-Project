@@ -44,7 +44,7 @@ const mapStateToProps = (state) => {
     user: state.loginUser.user.username,
     meetingId: state.meetingReducer.meetingId,
     connected: state.meetingUser,
-    meetingConfiguration: state.meetingConfigurationReducer.meeting.config
+    meetingConfiguration: state.meetingConfigurationReducer.config
   }
 };
 
@@ -141,7 +141,9 @@ class PersonalBoard extends Component {
     return Object.keys(noteMap).map((key) => {
       console.log(this.state.mapTag)
       console.log(valueForFilter)
-      if (valueForFilter === this.state.mapTag[0]) {
+
+      //TODO: find a better way to do this, we know that the tag 'all' it's always the last one but this could change
+      if (valueForFilter === this.state.mapTag[this.state.mapTag.length - 1]) {
         return this.notes(noteMap, key);
       } else {
         if (noteMap[key].tag === valueForFilter) {

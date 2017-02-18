@@ -1,20 +1,20 @@
-import React, {Component, PropTypes} from "react";
-import {connect} from "react-redux";
-import axios from "axios";
-import {MEETING} from "../../constants/HostConfiguration";
-import D3Tree from "../ReportsForm/D3tree/D3Tree";
-import D3ChartTree from "../ReportsForm/D3ChartTree/D3ChartTree";
-import {PATHS} from './../../constants/routes';
-import ButtonComponent from '../ButtonComponent/ButtonComponent';
-import {push} from 'react-router-redux';
+import React, {Component, PropTypes} from 'react'
+import {connect} from 'react-redux'
+import axios from 'axios'
+import {MEETING} from '../../constants/HostConfiguration'
+import D3Tree from '../ReportsForm/D3tree/D3Tree'
+import D3ChartTree from '../ReportsForm/D3ChartTree/D3ChartTree'
+import {PATHS} from './../../constants/routes'
+import ButtonComponent from '../ButtonComponent/ButtonComponent'
+import {push} from 'react-router-redux'
 
 
 const mapStateToProps = (state) => {
   if (state.meetingReducer != null) {
     return {
-      meetingId: state.meetingReducer.meetingId,
+      meetingId: state.meetingConfigurationReducer.meetingId,
       user: state.loginUser.user.username,
-      meetingConfiguration: state.meetingConfigurationReducer.meeting.config,
+      meetingConfiguration: state.meetingConfigurationReducer.config,
       reportType: state.reportReducer
     }
   }
@@ -131,30 +131,24 @@ class ReportsPageForm extends Component {
   }
 
   render() {
-
     return (
       <div className="container" style={{marginTop: 80}}>
         {this.titleByReport(this.props.reportType)}
         {this.renderTrees()}
         {this.generateReport(this.props.reportType)}
-        <ButtonComponent className="col-md-4" value='BACK TO REPORT' raisedValue
+        <ButtonComponent className="col-md-6" value='BACK TO REPORT' raisedValue
                          onClick={this.props.report} iconButton='backspace'/>
       </div>
-
     );
-
   };
 }
 
 ReportsPageForm.propTypes = {
-
-
   reportType: PropTypes.string,
   user: PropTypes.any,
   meetingId: PropTypes.string,
   meetingConfiguration: PropTypes.any,
   report: PropTypes.func
-
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ReportsPageForm)

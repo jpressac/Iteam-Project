@@ -224,7 +224,7 @@ public interface ElasticsearchClient {
      *            the type of the document
      * @return a bulk response with the information about the request.
      */
-    public BulkResponse bulkUpdate(@SuppressWarnings("rawtypes") List<BiFieldModel> data, String index, String type);
+    public BulkResponse bulkUpdate(List<BiFieldModel<String>> data, String index, String type);
 
     /**
      * Perform bulk update (upsert request) for the given index, using an inline

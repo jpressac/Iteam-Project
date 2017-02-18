@@ -5,7 +5,6 @@ import java.util.List;
 import org.iteam.data.dal.meeting.MeetingRepository;
 import org.iteam.data.dal.meeting.MeetingRepositoryImpl;
 import org.iteam.data.dto.Meeting;
-import org.iteam.data.dto.UserDTO;
 import org.iteam.data.dto.ViewedMeeting;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
@@ -114,7 +113,7 @@ public class MeetingServiceImpl implements MeetingService {
         return meetingRepositoryImpl.getMeetingsByToken(username, offset, limit, true);
     }
 
- @Override
+    @Override
     public boolean createMeetingViewed(Meeting meeting) {
         return this.meetingRepositoryImpl.createMeetingViewed(meeting);
     }

@@ -31,7 +31,6 @@ import org.elasticsearch.search.sort.SortBuilder;
 import org.iteam.configuration.ExternalConfigurationProperties;
 import org.iteam.data.model.BiFieldModel;
 import org.iteam.exceptions.ElasticsearchClientException;
-import org.iteam.services.utils.JSONUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,7 +115,7 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
     @Override
     public SearchResponse search(String index, QueryBuilder queryBuilder, SortBuilder sort) {
 
-        return search(index, queryBuilder, null, null, SIZE_RESPONSE, null);
+        return search(index, queryBuilder, null, SIZE_RESPONSE, null, null);
     }
 
     @Override
@@ -208,19 +207,18 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
     }
 
     @Override
-    public BulkResponse bulkUpdate(@SuppressWarnings("rawtypes") List<BiFieldModel> data, String index, String type) {
+    public BulkResponse bulkUpdate(List<BiFieldModel<String>> data, String index, String type) {
 
         List<UpdateRequest> updateList = new ArrayList<>();
 
         data.forEach((dataToUpdate) -> {
 
             UpdateRequest updateRequest = new UpdateRequest(index, type, dataToUpdate.getKey());
-            updateRequest.doc(JSONUtils.ObjectToJSON(dataToUpdate.getValue()));
+            updateRequest.doc(dataToUpdate.getValue());
             updateList.add(updateRequest);
         });
 
         return updateData(updateList);
-
     }
 
     @Override
