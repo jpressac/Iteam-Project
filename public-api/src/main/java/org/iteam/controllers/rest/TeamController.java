@@ -73,14 +73,14 @@ public class TeamController {
      * 
      * @return a list of teams.
      */
-    @RequestMapping(value = "team/byowner", method = RequestMethod.GET)
+    @RequestMapping(value = "/team/byowner", method = RequestMethod.GET)
     public ResponseEntity<List<TeamModel>> getTeams() {
         List<TeamModel> teams = teamService
                 .getAllTeams(SecurityContextHolder.getContext().getAuthentication().getName());
         return new ResponseEntity<List<TeamModel>>(teams, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "team/byowner/paginated", method = RequestMethod.GET)
+    @RequestMapping(value = "/team/byowner/paginated", method = RequestMethod.GET)
     public ResponseEntity<PaginationModel<TeamModel>> getTeamByOwner(
             @RequestParam(value = "offset", required = true) int from,
             @RequestParam(value = "limit", required = true) int size) {
@@ -89,7 +89,7 @@ public class TeamController {
         return new ResponseEntity<PaginationModel<TeamModel>>(teams, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "team/byowner/search", method = RequestMethod.GET)
+    @RequestMapping(value = "/team/byowner/search", method = RequestMethod.GET)
     public ResponseEntity<PaginationModel<TeamModel>> getTeamByToken(
             @RequestParam(value = "token", required = true) String token,
             @RequestParam(value = "offset", required = true) int from,
@@ -107,7 +107,7 @@ public class TeamController {
      *            the id of the meeting.
      * @return a model representation of the information.
      */
-    @RequestMapping(value = "team/users/bymeeting", method = RequestMethod.GET)
+    @RequestMapping(value = "/team/users/bymeeting", method = RequestMethod.GET)
     public TeamUserModel getTeamUserInformation(@RequestParam(value = "meetingId", required = true) String meetingId) {
         return teamService.getTeamUserInformationByMeeting(meetingId);
     }

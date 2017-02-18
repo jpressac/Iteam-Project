@@ -1,10 +1,5 @@
-/**
- * Created by Randanne on 15/10/2016.
- */
 import React, {Component, PropTypes} from "react";
-import jsPDF from "jspdf";
 import {connect} from "react-redux";
-import axios from "axios";
 import Button from "react-toolbox/lib/button";
 import {RadioGroup, RadioButton} from "react-toolbox/lib/radio";
 import classes from "./ReportForm.scss";
@@ -13,14 +8,16 @@ import inputTheme from "./input.scss";
 import radioTheme from "./radio.scss"
 import tooltipTheme from "./tooltip.scss"
 import buttonPdf from "./buttonPdf.scss";
-import ButtonComponent from '../ButtonComponent/'
-import cssClasses from '../ComponentCSSForms/componentCSS.scss'
+import {MEETING} from "../../constants/HostConfiguration";
+import D3Tree from "./D3tree/D3Tree";
+import D3ChartTree from "./D3ChartTree/D3ChartTree";
 import generateUUID from "../../constants/utils/GetUUID";
 import Spinner from "../Spinner/Spinner";
 import Tooltip from "react-toolbox/lib/tooltip";
 import {List, ListItem, ListSubHeader} from 'react-toolbox/lib/list';
 import {getMeetingsToGenerateReport} from '../../utils/actions/reportActions'
-import DropdownComponent from '../DropdownComponent/DropdownComponent'
+import ButtonComponent from '../ButtonComponent/'
+import cssClasses from '../ComponentCSSForms/componentCSS.scss'
 import {reportsToReportsView} from '../../redux/reducers/Reports/ReportsReducer'
 
 
@@ -40,13 +37,6 @@ const mapStateToProps = (state) => {
   }
 };
 
-const report = new jsPDF()
-
-var specialElementHandlers = {
-  '#editor': function (element, renderer) {
-    return true;
-  }
-};
 const TooltipButton = Tooltip(Button);
 
 
@@ -68,20 +58,6 @@ class ReportForm extends Component {
       meetingSelected: []
     }
   }
-
-  handleToggle = () => {
-    this.setState({active: !this.state.active});
-  };
-
-
-  generatePDF = () => {
-    report.fromHTML(document.getElementById('reportHTML').innerHTML, 15, 15, {
-      'width': 190,
-      'elementHandlers': specialElementHandlers
-    });
-    report.save('report.pdf');
-  };
-
 
   handleChange = (key, value) => {
     this.setState({[key]: value});
@@ -224,7 +200,7 @@ class ReportForm extends Component {
 }
 
 ReportForm.propTypes = {
-
+  
   goToReportsView: PropTypes.func,
   meetingId: PropTypes.string,
   meetingConfiguration: PropTypes.any

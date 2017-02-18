@@ -3,7 +3,7 @@ package org.iteam.services.meeting;
 import java.util.List;
 
 import org.iteam.data.dto.Meeting;
-import org.iteam.data.model.D3CollapseTreeModel;
+import org.iteam.data.dto.ViewedMeeting;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
 import org.iteam.data.model.PaginationModel;
@@ -31,50 +31,6 @@ public interface MeetingService {
      * @return true if it was successful, false otherwise
      */
     public void savedIdeas(IdeasDTO ideas);
-
-    /**
-     * Generate report by tag and ranking for the given meeting.
-     * 
-     * @param meetingId
-     *            the meeting id.
-     * @param tags
-     *            tags to create the report
-     * @return the an structure to generate a report tree
-     */
-    public D3CollapseTreeModel generateReportByRanking(String meetingId, List<String> tags);
-
-    /**
-     * Generate report for the given meeting.
-     * 
-     * @param meetingId
-     *            the meeting id.
-     * @param tags
-     *            tags to create the report.
-     * @return the an structure to generate a report tree
-     */
-    public D3CollapseTreeModel generateReportByUser(String meetingId, List<String> tags);
-
-    /**
-     * Generate report for the given meeting.
-     * 
-     * @param meetingId
-     *            the meeting id.
-     * @param tags
-     *            tags to create the report.
-     * @return the an structure to generate a report tree
-     */
-    public D3CollapseTreeModel generateReportByTag(String meetingId, List<String> tags);
-
-    /**
-     *
-     * Get all the meeting given a user.
-     * 
-     * @param username
-     *            the username of the user.
-     * 
-     * @return a list with all the meeting for the given user.
-     */
-    public List<Meeting> getMeetingByUser(String username);
 
     /**
      * Retrieve the meeting ideas
@@ -109,7 +65,13 @@ public interface MeetingService {
 
     public void updateMeetingUsers(String meetingId, String info);
 
-    public boolean updateMeeting(Meeting updatedMeeting);
+    /**
+     * Update the meeting information
+     * 
+     * @param updatedMeeting
+     *            the new information about the meeting.
+     */
+    public void updateMeeting(Meeting updatedMeeting);
 
     /**
      * Retrieve the meetings given a list of team names.
@@ -181,4 +143,11 @@ public interface MeetingService {
 
     public void generateScore(IdeasDTO ideas, List<String> userList);
 
+    public boolean createMeetingViewed(Meeting meeting);
+
+    public List<ViewedMeeting> getMeetingsNotViewed(String username);
+
+    public void updateMeetingViewedByUser(List<ViewedMeeting> meetingsViewedByUser, String username);
+
+    public void updateMeetingViewed(Meeting updatedMeeting);
 }

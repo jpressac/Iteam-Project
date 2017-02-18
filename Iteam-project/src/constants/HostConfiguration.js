@@ -28,10 +28,6 @@ export const MEETING = {
   MEETING_CREATE : URL + '/meeting/create',
   MEETING_IDEAS_SAVE : URL + '/meeting/ideas/save',
   MEETING_UPDATE : URL + '/meeting/update',
-  MEETING_REPORT : URL + '/meeting/report',
-  MEETING_REPORT_BY_USER : URL + '/meeting/report/byuser',
-  MEETING_REPORT_BY_TAG : URL + '/meeting/report/bytag',
-  MEETING_BY_USER : URL + '/meeting/meetingbyuser',
   MEETING_INFO : URL + '/meeting/meetinginfo',
   MEETING_INFO_PERSONAL_BOARD : URL + '/meeting/meetinginfo/byuser',
   MEETING_USERS : URL + '/meeting/meetingusers',
@@ -41,8 +37,18 @@ export const MEETING = {
   MEETING_MARK_ENDED: URL + '/meeting/markended',
   MEETING_SEARCH_HISTORY: URL + '/meeting/search/history',
   MEETING_SEARCH_PROGRAMMED: URL + '/meeting/search/programmed',
-  MEETING_PAGINATED : URL + '/meeting/paginated'
+  MEETING_PAGINATED : URL + '/meeting/paginated',
+  MEETING_NOT_VIEWED: URL + '/meeting/notViewed',
+  MEETING_VIEWED: URL + '/meeting/viewed'
 };
+
+export const REPORT = {
+  SHARED_REPORT: URL + '/report/shared',
+  GENERATE_SHARED_REPORT: URL + '/report/generatesharedtoken',
+  MEETING_REPORT : URL + '/report/byranking',
+  MEETING_REPORT_BY_USER : URL + '/report/byuser',
+  MEETING_REPORT_BY_TAG : URL + '/report/bytag',
+}
 
 export const UTILITIES = {
   PROFESSIONS : URL + '/utilities/professions',

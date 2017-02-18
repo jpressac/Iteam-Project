@@ -5,7 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.iteam.data.dto.Meeting;
-import org.iteam.data.model.D3CollapseTreeModel;
+import org.iteam.data.dto.ViewedMeeting;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
 import org.iteam.data.model.PaginationModel;
@@ -40,8 +40,9 @@ public class MeetingController {
     @RequestMapping(value = "/meeting/create", method = RequestMethod.POST)
     public ResponseEntity<Void> createMeeting(@RequestBody Meeting meeting) {
 
-        return checkResult(meetingServiceImpl.createMeeting(meeting));
-
+        meetingServiceImpl.createMeeting(meeting);
+        return meetingServiceImpl.createMeetingViewed(meeting) ? new ResponseEntity<Void>(HttpStatus.NO_CONTENT)
+                : new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     /**
@@ -52,7 +53,10 @@ public class MeetingController {
     @RequestMapping(value = "/meeting/update", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
     public ResponseEntity<Void> updateMeeting(@RequestBody Meeting updatedMeeting) {
 
-        return checkResult(meetingServiceImpl.updateMeeting(updatedMeeting));
+        meetingServiceImpl.updateMeeting(updatedMeeting);
+        meetingServiceImpl.updateMeetingViewed(updatedMeeting);
+
+        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
 
     }
 
@@ -66,86 +70,11 @@ public class MeetingController {
     @RequestMapping(value = "/meeting/ideas/save", method = RequestMethod.POST)
     public ResponseEntity<Void> saveIdeas(@RequestBody @Valid IdeasDTO ideas,
             @RequestParam(value = "team", required = true) List<String> team) {
+
         meetingServiceImpl.generateScore(ideas, team);
         meetingServiceImpl.savedIdeas(ideas);
+
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }
-
-    private ResponseEntity<Void> checkResult(boolean flag) {
-        if (flag) {
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    /**
-     * Generate the standard report by tag and ranking for the given meeting.
-     * 
-     * @param meetingId
-     *            the id of the meeting.
-     * @param tags
-     *            the list of tags for the ideas.
-     * @return 204 NO CONTENT
-     */
-    @RequestMapping(value = "/meeting/report", method = RequestMethod.GET)
-    public ResponseEntity<D3CollapseTreeModel> generateReport(
-            @RequestParam(value = "meetingId", required = true) String meetingId,
-            @RequestParam(value = "tags", required = true) List<String> tags) {
-        D3CollapseTreeModel report = meetingServiceImpl.generateReportByRanking(meetingId, tags);
-
-        return new ResponseEntity<D3CollapseTreeModel>(report, HttpStatus.OK);
-    }
-
-    /**
-     * Generate a report by user for the given meeting.
-     * 
-     * @param meetingId
-     *            the id of the meeting.
-     * @param tags
-     *            the list of tags for the ideas.
-     * @return 204 NO CONTENT
-     */
-    @RequestMapping(value = "/meeting/report/byuser", method = RequestMethod.GET)
-    public ResponseEntity<D3CollapseTreeModel> generateReportByUser(
-            @RequestParam(value = "meetingId", required = true) String meetingId,
-            @RequestParam(value = "tags", required = true) List<String> tags) {
-        D3CollapseTreeModel report = meetingServiceImpl.generateReportByUser(meetingId, tags);
-
-        return new ResponseEntity<D3CollapseTreeModel>(report, HttpStatus.OK);
-    }
-
-    /**
-     * Generate a report by tags for the given meeting.
-     * 
-     * @param meetingId
-     *            the id of the meeting.
-     * @param tags
-     *            the list of tags for the ideas.
-     * @return 204 NO CONTENT
-     */
-    @RequestMapping(value = "/meeting/report/bytag", method = RequestMethod.GET)
-    public ResponseEntity<D3CollapseTreeModel> generateReportByTag(
-            @RequestParam(value = "meetingId", required = true) String meetingId,
-            @RequestParam(value = "tags", required = true) List<String> tags) {
-        D3CollapseTreeModel report = meetingServiceImpl.generateReportByTag(meetingId, tags);
-
-        return new ResponseEntity<D3CollapseTreeModel>(report, HttpStatus.OK);
-    }
-
-    /**
-     * Get a list of all meetings given a username. First get all teams in which
-     * the user is a member, then get all meetings which those teams are
-     * included
-     * 
-     * @param username
-     *            the username of the user
-     * @return the list of meetings by user.
-     */
-
-    @RequestMapping(value = "/meeting/meetingbyuser")
-    public List<Meeting> getUserMeetings(@RequestParam(value = "username", required = true) String username) {
-        return meetingServiceImpl.getMeetingByUser(username);
     }
 
     @RequestMapping(value = "/meeting/meetingusers", method = RequestMethod.GET)
@@ -164,13 +93,13 @@ public class MeetingController {
         return meetingServiceImpl.getMeetingInfoByUserPersonalBoard(meetingId, username);
     }
 
-    @RequestMapping(value = "meeting/usersconnection", method = RequestMethod.HEAD)
+    @RequestMapping(value = "/meeting/usersconnection", method = RequestMethod.HEAD)
     public void setUserState(@RequestHeader(value = "username", required = true) String username,
             @RequestHeader(value = "meetingId", required = true) String meetingId) {
         meetingServiceImpl.updateMeetingUsers(meetingId, username);
     }
 
-    @RequestMapping(value = "meeting/programmed", method = RequestMethod.GET)
+    @RequestMapping(value = "/meeting/programmed", method = RequestMethod.GET)
     public ResponseEntity<PaginationModel<Meeting>> getProgrammedMeetings(
             @RequestParam(value = "offset", required = true) int offset,
             @RequestParam(value = "limit", required = true) int limit) {
@@ -179,7 +108,7 @@ public class MeetingController {
         return new ResponseEntity<PaginationModel<Meeting>>(meetings, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "meeting/search/history", method = RequestMethod.GET)
+    @RequestMapping(value = "/meeting/search/history", method = RequestMethod.GET)
     public ResponseEntity<PaginationModel<Meeting>> getEndedMeetingsByToken(
             @RequestParam(value = "token", required = true) String token,
             @RequestParam(value = "offset", required = true) int offset,
@@ -189,7 +118,7 @@ public class MeetingController {
         return new ResponseEntity<PaginationModel<Meeting>>(meetings, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "meeting/search/programmed", method = RequestMethod.GET)
+    @RequestMapping(value = "/meeting/search/programmed", method = RequestMethod.GET)
     public ResponseEntity<PaginationModel<Meeting>> getProgrammedMeetingsByToken(
             @RequestParam(value = "token", required = true) String token,
             @RequestParam(value = "offset", required = true) int offset,
@@ -199,7 +128,7 @@ public class MeetingController {
         return new ResponseEntity<PaginationModel<Meeting>>(meetings, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "meeting/paginated", method = RequestMethod.GET)
+    @RequestMapping(value = "/meeting/paginated", method = RequestMethod.GET)
     public ResponseEntity<PaginationModel<Meeting>> getPaginatedMeetings(
             @RequestParam(value = "offset", required = true) int offset,
             @RequestParam(value = "limit", required = true) int limit) {
@@ -212,5 +141,19 @@ public class MeetingController {
     @Autowired
     private void setMeetingServiceImpl(MeetingServiceImpl meetingServiceImpl) {
         this.meetingServiceImpl = meetingServiceImpl;
+    }
+
+    @RequestMapping(value = "/meeting/notViewed", method = RequestMethod.GET)
+    public ResponseEntity<List<ViewedMeeting>> getMeetingsNotViewed() {
+        List<ViewedMeeting> meetings = meetingServiceImpl
+                .getMeetingsNotViewed(SecurityContextHolder.getContext().getAuthentication().getName());
+        return new ResponseEntity<List<ViewedMeeting>>(meetings, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/meeting/viewed", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+    public ResponseEntity<Void> updateMeetingViewed(@RequestBody @Valid List<ViewedMeeting> meetingsViewedByUser) {
+        meetingServiceImpl.updateMeetingViewedByUser(meetingsViewedByUser,
+                SecurityContextHolder.getContext().getAuthentication().getName());
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

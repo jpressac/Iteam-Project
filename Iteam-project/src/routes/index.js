@@ -21,41 +21,45 @@ import ReportsView from '../views/ReportsView/ReportsView'
 import ReportsPageView from '../views/ReportsPageView/ReportsPageView'
 import ChatView from '../views/ChatView/ChatView'
 import HistoryView from '../views/HistoryView/HistoryView'
-
+import SharedReportView from '../views/SharedReportView/SharedReportView'
+import TokenReportView from '../views/SharedReportView/TokenReportView/TokenReportView'
 
 export const createRoutes = (store) => (
 
-  <Route path={PATHS.ROOT}>
-    <Route path={PATHS.COMMON.ROOT} component={NotLoggedIn}>
-      <IndexRoute component={HomeView}/>
-      <Route path={PATHS.COMMON.HOME} component={HomeView}/>
-      <Route path={PATHS.COMMON.REGISTER} component={RegistrationView}/>
-      <Route path={PATHS.COMMON.CONTACT} component={ContactView}/>
-      <Route path={PATHS.COMMON.ABOUT} component={AboutView}/>
+    <Route path={PATHS.ROOT_APPLICATION}>
+      <Route path={PATHS.COMMON.ROOT} component={NotLoggedIn}>
+        <IndexRoute component={HomeView}/>
+        <Route path={PATHS.COMMON.HOME} component={HomeView}/>
+        <Route path={PATHS.COMMON.REGISTER} component={RegistrationView}/>
+        <Route path={PATHS.COMMON.CONTACT} component={ContactView}/>
+        <Route path={PATHS.COMMON.ABOUT} component={AboutView}/>
+        <Route path={PATHS.REPORT_NOT_LOGGEDIN.ROOT} component={SharedReportView}/>
+      </Route>
+      <Route path={PATHS.REPORT_NOT_LOGGEDIN.SHARED_REPORT} component={TokenReportView}/>
+      <Route path={PATHS.LOGGEDIN.ROOT} component={LoggedInLayout}>
+        <IndexRoute component={HomeView}/>
+        <Route path={PATHS.LOGGEDIN.NEWTEAM} component={TeamCreationView}/>
+        <Route path={PATHS.LOGGEDIN.HOME} component={HomeView}/>
+        <Route path={PATHS.LOGGEDIN.MEETING} component={MeetingView}/>
+        <Route path={PATHS.LOGGEDIN.PERSONALBOARD} component={PersonalBoardView}/>
+        <Route path={PATHS.LOGGEDIN.SHAREDBOARD} component={SharedBoardView}/>
+        <Route path={PATHS.LOGGEDIN.PROFILE} component={ProfileView}/>
+        <Route path={PATHS.LOGGEDIN.MYMEETINGS} component={MymeetView}/>
+        <Route path={PATHS.LOGGEDIN.MEETCONFIG} component={MeetingConfigView}/>
+        <Route path={PATHS.LOGGEDIN.REPORTS} component={ReportsView}/>
+<Route path={PATHS.LOGGEDIN.REPORTSPAGE} component={ReportsPageView}/>
+        <Route path={PATHS.LOGGEDIN.TEAMLIST} component={MyTeamView}/>
+        <Route path={PATHS.LOGGEDIN.CHAT} component={ChatView}/>
+        <Route path={PATHS.LOGGEDIN.HISTORY} component={HistoryView}/>
+        <Route path={PATHS.REPORT_NOT_LOGGEDIN.ROOT} component={SharedReportView}/>
+      </Route>
+      <Route path={PATHS.PERSONALBOARD.ROOT} component={PersonalBoardLayout}>
+        <Route path={PATHS.PERSONALBOARD.PERSONAL} component={PersonalBoardView}/>
+      </Route>
+      <Route path={PATHS.SHAREDBOARD.ROOT} component={SharedBoardLayout}>
+        <Route path={PATHS.SHAREDBOARD.SHARED_REPORT} component={SharedBoardView}/>
+      </Route>
     </Route>
-    <Route path={PATHS.LOGGEDIN.ROOT} component={LoggedInLayout}>
-      <IndexRoute component={HomeView}/>
-      <Route path={PATHS.LOGGEDIN.NEWTEAM} component={TeamCreationView}/>
-      <Route path={PATHS.LOGGEDIN.HOME} component={HomeView}/>
-      <Route path={PATHS.LOGGEDIN.MEETING} component={MeetingView}/>
-      <Route path={PATHS.LOGGEDIN.PERSONALBOARD} component={PersonalBoardView}/>
-      <Route path={PATHS.LOGGEDIN.SHAREDBOARD} component={SharedBoardView}/>
-      <Route path={PATHS.LOGGEDIN.PROFILE} component={ProfileView}/>
-      <Route path={PATHS.LOGGEDIN.MYMEETINGS} component={MymeetView}/>
-      <Route path={PATHS.LOGGEDIN.MEETCONFIG} component={MeetingConfigView}/>
-      <Route path={PATHS.LOGGEDIN.REPORTS} component={ReportsView}/>
-      <Route path={PATHS.LOGGEDIN.REPORTSPAGE} component={ReportsPageView}/>
-      <Route path={PATHS.LOGGEDIN.TEAMLIST} component={MyTeamView}/>
-      <Route path={PATHS.LOGGEDIN.CHAT} component={ChatView}/>
-      <Route path={PATHS.LOGGEDIN.HISTORY} component={HistoryView}/>
-    </Route>
-    <Route path={PATHS.PERSONALBOARD.ROOT} component={PersonalBoardLayout}>
-      <Route path={PATHS.PERSONALBOARD.PERSONAL} component={PersonalBoardView}/>
-    </Route>
-    <Route path={PATHS.SHAREDBOARD.ROOT} component={SharedBoardLayout}>
-      <Route path={PATHS.SHAREDBOARD.SHARED} component={SharedBoardView}/>
-    </Route>
-  </Route>
 );
 
 export default createRoutes

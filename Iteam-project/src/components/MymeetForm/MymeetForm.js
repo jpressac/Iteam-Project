@@ -87,34 +87,24 @@ class MymeetForm extends Component {
   }
 
   adminActionsEdit = [
-  {label: "Cancel", onClick: this.handleToggleDialog},
-  {label: "Delete MeetingConfig", onClick: this.handleToggleDialog},
-  {label: "Edit", onClick: this.edit.bind(this)},
-  {label: "Save", onClick: this.save.bind(this)}
-];
+    {label: "Cancel", onClick: this.handleToggle.bind(this)},
+    {label: "Edit", onClick: this.edit.bind(this)},
+    {label: "Save", onClick: this.save.bind(this)}
+  ];
 
   userActionsJoin = [
-    {label: "Cancel", onClick: this.handleToggleDialog},
+    {label: "Cancel", onClick: this.handleToggle.bind(this)},
     {label: "Join", onClick: this.startMeeting.bind(this)}
   ];
 
   userActionsView = [
-    {label: "OK", onClick: this.handleToggleDialog}
+    {label: "OK", onClick: this.handleToggle.bind(this)}
   ];
 
+  handleToggle(){
+    this.setState({active: !this.state.active});
+  };
 
-  goToReports() {
-
-    let meetingInfo = {};
-    meetingInfo.topic = this.state.meetEdit.topic;
-    meetingInfo.owner = this.state.owner;
-    meetingInfo.config = this.state.config;
-    //Reducer containing toolbar info
-    this.props.saveMeetingConfig(meetingInfo);
-
-    //Reducer for meeting ID
-    this.props.updateMyMeetingId(this.state.meetEdit.meetingId);
-  }
 
   startMeeting() {
     //Object that contains meeting info for reducer for Toolbar
@@ -171,12 +161,11 @@ class MymeetForm extends Component {
         if (validateStart(meetingDate)) {
           return this.userActionsJoin;
         }
-        //fecha mayor, puede editar
-        return this.adminActionsEdit;
+        return this.adminActionsEdit; //TODO borra cuando ande el history
       }
-      //update meeting to ended
-
-    }
+        //fecha mayor, puede editar
+        return this.userActionsView;
+      }
     else {
       //fecha ya paso
       if (!validateDate(meetingDate)) {
@@ -184,12 +173,10 @@ class MymeetForm extends Component {
         if (validateStart(meetingDate)) {
           return this.userActionsJoin;
         }
+      }
         // fecha mayor, puede poner ver
         return this.userActionsView;
       }
-      //update meeting to ended
-
-    }
   }
 
   renderDate(meetingTime) {
@@ -199,19 +186,19 @@ class MymeetForm extends Component {
   fillFields(data) {
     this.setState({
       meetings: data.model,
-      totalMeetings:data.total,
+      totalMeetings: data.total,
       showSpinner: false
     }, () => {
       this.calculateTotalPages();
     })
   }
 
-  calculateTotalPages(){
+  calculateTotalPages() {
     let total = Math.ceil(this.state.totalMeetings / ITEMS_PER_PAGE);
     this.setState({totalPages: total});
   }
 
-  setMeetingEnding(meetingId){
+  setMeetingEnding(meetingId) {
     axios.post(MEETING.MEETING_MARK_ENDED, {})
   }
 
@@ -251,21 +238,6 @@ class MymeetForm extends Component {
     });
   };
 
-  onChangeSharedBoardTime = (sharedBoardTime) => {
-    let newMeeting = this.state.meetEdit;
-    newMeeting.meetingConfig.sharedBoardTime = sharedBoardTime;
-    this.setState({
-      meetEdit: newMeeting
-    });
-  };
-
-  onChangePersonalBoardTime = (personalBoardTime) => {
-    let newMeeting = this.state.meetEdit;
-    newMeeting.meetingConfig.personalBoardTime = personalBoardTime;
-    this.setState({
-      meetEdit: newMeeting
-    });
-  };
 
   onChangeDescription = (description) => {
     let newMeeting = this.state.meetEdit;
@@ -415,10 +387,10 @@ class MymeetForm extends Component {
   showDialogForAdmin() {
     return (
       <Dialog theme={dialogTheme}
-        actions={this.showActions(this.state.meetEdit.ownerName, this.state.meetEdit.programmedDate)}
-        active={this.state.active}
-        onEscKeyDown={this.handleToggleDialog}
-        onOverlayClick={this.handleToggleDialog}>
+              actions={this.showActions(this.state.meetEdit.ownerName, this.state.meetEdit.programmedDate)}
+              active={this.state.active}
+              onEscKeyDown={this.handleToggleDialog}
+              onOverlayClick={this.handleToggleDialog}>
 
         <InputComponent label="Topic" value={this.state.meetEdit.topic} maxLength={30}
                         onValueChange={this.onChangeTopic.bind(this)}
@@ -448,14 +420,8 @@ class MymeetForm extends Component {
           </div>
         </div>
         <div className="row col-md-12">
-          <InputComponent className="col-md-3" value={this.state.config.votes} disable={this.state.editable}
-                          type="number" onValueChange={this.onChangeVotes.bind(this)} minValue={0} label="Votes"/>
-          <InputComponent className="col-md-4" label="Minutes in personal board"
-                          value={this.state.config.personalBoardTime}
-                          onValueChange={this.onChangePersonalBoardTime.bind(this)} disable={this.state.editable}
-                          minValue={0}/>
-          <InputComponent className="col-md-4" label="Minutes in shared board" value={this.state.config.sharedBoardTime}
-                          onValueChange={this.onChangeSharedBoardTime.bind(this)} minValue={0}/>
+          <InputComponent className="col-md-3" value={this.state.config.votes.toString()} disable={this.state.editable}
+                          type="number" onValueChange={this.onChangeVotes.bind(this)} minValue={'0'} label="Votes"/>
         </div>
         <div className="row col-md-12">
           <Dropdown label="Technic" auto onChange={this.handleChangeCombo.bind(this)}
@@ -482,8 +448,8 @@ class MymeetForm extends Component {
     }
   }
 
-  searchByToken(){
-    if ( this.state.searchField.length != 0 ) {
+  searchByToken() {
+    if (this.state.searchField.length != 0) {
       axios.get(MEETING.MEETING_SEARCH_PROGRAMMED, {
         params: {
           token: this.state.searchField,
@@ -499,21 +465,22 @@ class MymeetForm extends Component {
     }
   }
 
-  getAllProgrammedMeetings(){
+  getAllProgrammedMeetings() {
     axios.get(MEETING.MEETING_PROGRAMMED, {
-        params: {
-          offset: this.state.offset,
-          limit: ITEMS_PER_PAGE
-        }}).then(function (response) {
-        this.fillFields(response.data)
+      params: {
+        offset: this.state.offset,
+        limit: ITEMS_PER_PAGE
+      }
+    }).then(function (response) {
+      this.fillFields(response.data)
     }.bind(this))
   }
 
-  handlePageClick =(data) =>{
+  handlePageClick = (data) => {
     let actualPageNumber = data.selected;
     let offset = Math.ceil(actualPageNumber * ITEMS_PER_PAGE);
 
-    this.setState({offset:offset}, () => {
+    this.setState({offset: offset}, () => {
       this.getAllProgrammedMeetings();
     });
   };
@@ -528,48 +495,50 @@ class MymeetForm extends Component {
       });
 
       return (
-         <div className={"container " + cssClasses.containerForm}>
+        <div className={"container " + cssClasses.containerForm}>
           <div className={cssClasses.labelMainTitle}>
             <label>MY MEETINGS</label>
           </div>
-            <div>
-              <InputComponent label="Meeting topic"  name="searchField" value={this.state.searchField} onKeyPress={this.handleSubmit.bind(this)} onValueChange={this.handleChange.bind(this,'searchField')}/>
-              <ButtonComponent  onClick={this.searchByToken.bind(this)} value="Search"/>
-            </div>
-            <BootstrapModal ref="mymeetingModal" message={this.state.message}/>
-            <List theme={listFormat} selectable ripple>
-              <ListSubHeader />
-              {Object.keys(meetMap).map((key) => {
-                  meetingTime = meetMap[key].programmedDate;
-                  let renderDateTime = this.renderDate(meetingTime);
-                  return (
-                    <div key={key}>
-                      <ListItem
-                        caption={meetMap[key].topic}
-                        legend={renderDateTime}
-                        leftIcon='send'
-                        rightIcon='visibility'
-                        onClick={this.handleToggleDialog.bind(this, meetMap[key])}/>
-                      <ListDivider />
-                      <BootstrapModal ref="meetingModal" message={this.state.message}/>
-                    </div>
-                  );
-                }
-              )}
-              {this.showDialog()}
-            </List>
-            <ReactPagination previousLabel={"Previous"}
-                             nextLabel={"Next"}
-                             pageCount={this.state.totalPages}
-                             marginPagesDisplayed={2}
-                             pageRangeDisplayed={5}
-                             onPageChange={this.handlePageClick}
-                             initialPage ={1}
-                             disableInitialCallback={true}
-                             pageClassName={pagination.ul}
-                             pageLinkClassName={pagination}
-            />
+          <div>
+            <InputComponent label="Meeting topic" name="searchField" value={this.state.searchField}
+                            onKeyPress={this.handleSubmit.bind(this)}
+                            onValueChange={this.handleChange.bind(this,'searchField')}/>
+            <ButtonComponent onClick={this.searchByToken.bind(this)} value="Search"/>
           </div>
+          <BootstrapModal ref="mymeetingModal" message={this.state.message}/>
+          <List theme={listFormat} selectable ripple>
+            <ListSubHeader />
+            {Object.keys(meetMap).map((key) => {
+                meetingTime = meetMap[key].programmedDate;
+                let renderDateTime = this.renderDate(meetingTime).toString();
+                return (
+                  <div key={key}>
+                    <ListItem
+                      caption={meetMap[key].topic}
+                      legend={renderDateTime}
+                      leftIcon='send'
+                      rightIcon='visibility'
+                      onClick={this.handleToggleDialog.bind(this, meetMap[key])}/>
+                    <ListDivider />
+                    <BootstrapModal ref="meetingModal" message={this.state.message}/>
+                  </div>
+                );
+              }
+            )}
+            {this.showDialog()}
+          </List>
+          <ReactPagination previousLabel={"Previous"}
+                           nextLabel={"Next"}
+                           pageCount={this.state.totalPages}
+                           marginPagesDisplayed={2}
+                           pageRangeDisplayed={5}
+                           onPageChange={this.handlePageClick}
+                           initialPage={1}
+                           disableInitialCallback={true}
+                           pageClassName={pagination.ul}
+                           pageLinkClassName={pagination}
+          />
+        </div>
       )
     } else {
       return (
@@ -582,7 +551,6 @@ class MymeetForm extends Component {
 MymeetForm.propTypes = {
   onClick: PropTypes.func,
   user: PropTypes.any,
-  goToReports: PropTypes.func,
   saveMeetingConfig: PropTypes.func
 };
 

@@ -1,15 +1,9 @@
-/**
- * Created by Randanne on 15/10/2016.
- */
 import React, {Component, PropTypes} from "react";
-import jsPDF from "jspdf";
 import {connect} from "react-redux";
 import axios from "axios";
-import classes from "./ReportsPageForm.scss";
 import {MEETING} from "../../constants/HostConfiguration";
 import D3Tree from "../ReportsForm/D3tree/D3Tree";
 import D3ChartTree from "../ReportsForm/D3ChartTree/D3ChartTree";
-import Spinner from "../Spinner/Spinner";
 import {PATHS} from './../../constants/routes';
 import ButtonComponent from '../ButtonComponent/ButtonComponent';
 import {push} from 'react-router-redux';
