@@ -40,7 +40,6 @@ class MeetingConfigForm extends Component {
   }
 
   componentWillMount() {
-    console.debug(this.props.meetingInfo);
     if (this.props.meetingInfo != null) {
       this.setState({
         votes: this.props.meetingInfo["meeting"]["votes"],

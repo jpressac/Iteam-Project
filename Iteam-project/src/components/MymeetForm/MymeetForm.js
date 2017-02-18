@@ -17,13 +17,12 @@ import {MEETING} from '../../constants/HostConfiguration';
 import themeLabel from './label.scss';
 import datesInput from './dateInput.scss'
 import listItemGrey from './ListItemGrey.scss'
-import Dropdown from 'react-toolbox/lib/dropdown';
 import Tooltip from 'react-toolbox/lib/tooltip';
 import {Button} from 'react-toolbox/lib/button';
 import Chip from 'react-toolbox/lib/chip';
 import {saveConfig} from '../../redux/reducers/Meeting/MeetingConfigReducer';
 import Spinner from '../Spinner/Spinner';
-import {validateDate, validateStart, validateHour, changeEndDate} from '../../utils/DateUtils'
+import {validateDate, validateStart, validateHour, changeEndDate, checkDate} from '../../utils/DateUtils'
 import {calculateTotalPages, calculateOffset} from '../../utils/mathUtils'
 import ButtonComponent from '../ButtonComponent/'
 import ReactPagination from 'react-paginate'
@@ -31,6 +30,8 @@ import pagination from './pagination.scss'
 import dialogTheme from './dialog.scss'
 import {getProgrammedMeetings, getSearchProgrammed} from '../../utils/actions/meetingActions'
 import {cleanMeetingChats} from '../../redux/reducers/Meeting/MeetingChatMessagesReducer'
+import AutocompleteComponent from '../AutocompleteComponent/AutocompleteComponent'
+import generateUUID from '../../constants/utils/GetUUID'
 
 
 var programDate = new Date();
@@ -40,10 +41,12 @@ const TooltipButton = Tooltip(Button);
 
 const ITEMS_PER_PAGE = 10;
 
-const technics = [{value: 0, label: 'Brainstorming'}, {value: 1, label: 'SCAMPER'}, {
-  value: 2,
-  label: 'morphological analysis'
-}];
+//Technics
+const technics = ['Brainstorming', 'SCAMPER', 'Starfish Retrospective'];
+//Startfish retrospective tags
+const retroTags = new Set(['Start', 'Stop', 'Keep', 'More', 'Less']);
+//Scamper tags
+const scamperTags = new Set(['Sustitute', 'Combine', 'Adapt', 'Modify', 'Put to others use', 'Eliminate', 'Rearrange']);
 
 
 const mapStateToProps = (state) => {
@@ -76,15 +79,18 @@ class MymeetForm extends Component {
       config: {},
       meetEdit: {},
       editable: true,
-      technicValue: '',
+      technic: '',
       teamName: {},
       tag: '',
+      tags:new Set(),
       showSpinner: true,
       endTime: new Date(),
       searchField: '',
       offset: 0,
       totalMeetings: 0,
-      totalPages: 0
+      totalPages: 0,
+      disabled:true,
+      deletable:false
     }
   }
 
@@ -132,14 +138,19 @@ class MymeetForm extends Component {
 
   handleToggleDialog = (meeting) => {
     this.setState({
+      topic: meeting.topic,
+      description: meeting.description,
       active: !this.state.active,
       datetime: meeting.programmedDate,
-      owner: meeting.ownerName,
       time: meeting.programmedDate,
       endTime: meeting.endDate,
       config: meeting.meetingConfig,
       meetEdit: meeting,
-      editable: true
+      editable: true,
+      votes: meeting.meetingConfig.votes,
+      technic: meeting.meetingConfig.technic,
+      tags: meeting.meetingConfig.tags
+
     });
 
     let datetime = new Date(meeting.programmedDate);
@@ -211,14 +222,24 @@ class MymeetForm extends Component {
   }
 
   edit() {
-    this.setState({editable: false})
+    this.setState({editable: false}, ()=> {
+      this.handleChangeTechnic(this.state.technic);
+    });
   }
 
   save() {
-    let editedMeeting = this.state.meetEdit;
-
-    editedMeeting.meetingId = this.state.meetEdit.meetingId;
-    editedMeeting.meetingConfig = this.state.config;
+    let editedMeeting = {
+      meetingId: this.state.meetEdit.meetingId,
+      topic: this.state.topic,
+      description: this.state.description,
+      programmedDate: new Date(programDate).getTime(),
+      endDate: new Date(this.state.endTime).getTime(),
+      meetingConfig: {
+        votes: this.state.votes,
+        technic: this.state.technic,
+        tags: this.state.tags
+      }
+    };
 
     axios.post(MEETING.MEETING_UPDATE, editedMeeting).then(
       function (response) {
@@ -229,31 +250,6 @@ class MymeetForm extends Component {
 
     this.setState({active: !this.state.active});
   }
-
-  onChangeTopic = (topic) => {
-    let newMeeting = this.state.meetEdit;
-    newMeeting.topic = topic;
-    this.setState({
-      meetEdit: newMeeting
-    });
-  };
-
-  onChangeVotes = (votes) => {
-    let newMeeting = this.state.meetEdit;
-    newMeeting.meetingConfig.votes = votes;
-    this.setState({
-      meetEdit: newMeeting
-    });
-  };
-
-
-  onChangeDescription = (description) => {
-    let newMeeting = this.state.meetEdit;
-    newMeeting.description = description;
-    this.setState({
-      meetEdit: newMeeting
-    });
-  };
 
   onChangeProgrammedDate = (date) => {
     let newDate = new Date(changeEndDate(programDate, endDate, date));
@@ -266,11 +262,7 @@ class MymeetForm extends Component {
     endDate.setMonth(newDate.getMonth());
     endDate.setDate(newDate.getDate());
 
-    let newMeeting = this.state.meetEdit;
-    newMeeting.programmedDate = programDate.getTime();
-    newMeeting.endDate = endDate.getTime();
     this.setState({
-      meetEdit: newMeeting,
       datetime: date
     });
   };
@@ -280,10 +272,7 @@ class MymeetForm extends Component {
       programDate.setHours(time.getHours());
       programDate.setMinutes(time.getMinutes());
 
-      let newMeeting = this.state.meetEdit;
-      newMeeting.programmedDate = programDate.getTime();
       this.setState({
-        meetEdit: newMeeting,
         time: time
       });
     }
@@ -299,65 +288,57 @@ class MymeetForm extends Component {
     endDate.setHours(time.getHours());
     endDate.setMinutes(time.getMinutes());
 
-    let newMeeting = this.state.meetEdit;
-    newMeeting.endDate = endDate.getTime();
     this.setState({
-      meetEdit: newMeeting,
       endTime: time
     });
   };
 
-  handleChangeCombo = (value) => {
-    let filteredLabelObject = technics.filter(filter => filter["value"] == value);
-    let newConfig = this.state.config;
-
-    newConfig.technic = value;
-
-    this.setState({config: newConfig, technicValue: filteredLabelObject[0]["label"]})
+  handleChangeTechnic = (technic) => {
+    if (technic === 'SCAMPER') {
+      this.setState({tags: scamperTags, deletable: false, disabled: true});
+    }
+    else if (technic === 'Starfish Retrospective') {
+      this.setState({tags: retroTags, deletable: false, disabled: true});
+    }
+    else {
+      this.setState({tags: this.state.tags.clear , deletable: true, disabled: false});
+    }
   };
 
-
-  handleChange = (name, value) => {
-    this.setState({[name]: value});
+  handleChange = (key, value) => {
+    this.setState({[key]: value}, () => {
+      if (value == 'Brainstorming' || value == 'SCAMPER' || value == 'Starfish Retrospective') {
+        this.handleChangeTechnic(this.state.technic);
+      }
+    });
   };
 
   deleteTag(pos) {
-    let newTags = this.state.config.tags;
-
-    newTags.map(function (filter, index) {
-      if (pos === index) {
-        newTags.splice(index, 1);
-      }
-    });
-
-    let newConfig = this.state.config;
-    newConfig.tags = newTags;
-
-    this.setState({config: newConfig, tag: ''});
+    let newTags = this.state.tags;
+    newTags.delete(tag)
+    this.setState({tags: newTags});
   }
 
   handleAddTag() {
     if (this.state.tag !== '') {
-      let newTags = this.state.config.tags;
-      newTags.push((this.state.tag));
-      let newConfig = this.state.config;
+      let newTags = this.state.tags;
+      newTags.add((this.state.tag));
 
       newConfig.tags = newTags;
-      this.setState({config: newConfig, tag: ''});
+      this.setState({tag: '', tags: newTags});
     }
   }
-
   tagLabels() {
-    if (typeof this.state.config.tags !== "undefined") {
-      return this.state.config.tags.map(function (tag, index) {
-        return (
-          <Chip key={index} deletable={!this.state.editable} onDeleteClick={this.deleteTag.bind(this, index)}
-                theme={chipTheme}>
-            {tag}
-          </Chip>
-        );
-      }.bind(this));
-    }
+    let tagArray = [];
+    this.state.tags.forEach((tag) => {
+      tagArray.push(
+        <Chip key={generateUUID()} deletable={this.state.deletable} onDeleteClick={this.deleteTag.bind(this, tag)}
+              theme={chipTheme}>
+          {tag}
+        </Chip>
+      )
+    });
+    return tagArray
   }
 
   showDialog() {
@@ -372,8 +353,8 @@ class MymeetForm extends Component {
         active={this.state.active}
         onEscKeyDown={this.handleToggleDialog}
         onOverlayClick={this.handleToggleDialog}>
-        <InputComponent className="col-md-8" label="Topic" value={this.state.meetEdit.topic} disable={false}/>
-        <InputComponent className="col-md-8" label="Description" value={this.state.meetEdit.description}
+        <InputComponent className="col-md-8" label="Topic" value={this.state.topic} disable={false}/>
+        <InputComponent className="col-md-8" label="Description" value={this.state.description}
                         disable={false}/>
         <DatePicker label='Date' sundayFirstDayOfWeek value={new Date(this.state.datetime)}
                     readonly={this.state.editable} onChange={this.onChangeProgrammedDate.bind(this)}
@@ -398,12 +379,12 @@ class MymeetForm extends Component {
               onEscKeyDown={this.handleToggleDialog}
               onOverlayClick={this.handleToggleDialog}>
 
-        <InputComponent label="Topic" value={this.state.meetEdit.topic} maxLength={30}
-                        onValueChange={this.onChangeTopic.bind(this)}
+        <InputComponent label="Topic" value={this.state.topic} maxLength={30}
+                        onValueChange={this.handleChange.bind(this, 'topic')}
                         disable={this.state.editable}/>
 
-        <InputComponent label="Description" value={this.state.meetEdit.description} maxLength={144}
-                        onValueChange={this.onChangeDescription.bind(this)} disable={this.state.editable}/>
+        <InputComponent label="Description" value={this.state.description} maxLength={144}
+                        onValueChange={this.handleChange.bind(this, 'description')} disable={this.state.editable}/>
 
         <div className="row col-md-12">
           <div className="col-md-4">
@@ -426,20 +407,21 @@ class MymeetForm extends Component {
           </div>
         </div>
         <div className="row col-md-12">
-          <InputComponent className="col-md-3" value={this.state.config.votes.toString()} disable={this.state.editable}
-                          type="number" onValueChange={this.onChangeVotes.bind(this)} minValue={'0'} label="Votes"/>
+          <InputComponent className="col-md-3" value={this.state.votes.toString()} disable={this.state.editable}
+                          type="number" onValueChange={this.handleChange.bind(this, 'votes')} minValue={'0'}
+                          label="Votes"/>
         </div>
         <div className="row col-md-12">
-          <Dropdown label="Technic" auto onChange={this.handleChangeCombo.bind(this)}
-                    source={technics} disabled={this.state.editable} value={this.state.config.technic}
-                    theme={themeLabel}/>
+          <AutocompleteComponent label="Technic" onValueChange={this.handleChange.bind(this, 'technic')}
+                                 source={technics} initialValue={this.state.technic}
+                                 disabled={this.state.editable}/>
         </div>
         <div className="row col-md-12">
-          <InputComponent className="col-md-8" label="Tag" value={this.state.tag} disable={this.state.editable}
-                          onValueChange={this.handleChange.bind(this)} maxLength={30}/>
+          <InputComponent className="col-md-8" label="Tag" value={this.state.tag} disable={this.state.disabled}
+                          onValueChange={this.handleChange.bind(this, 'tags')} maxLength={30}/>
           <div className="col-md-4">
             <TooltipButton icon='add' tooltip='Add tag' floating mini
-                           disabled={this.state.editable} onClick={this.handleAddTag.bind(this)}/>
+                           disabled={this.state.disabled} onClick={this.handleAddTag.bind(this)}/>
           </div>
         </div>
         {this.tagLabels()}
