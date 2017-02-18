@@ -1,6 +1,7 @@
 package org.iteam.data.dto;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
@@ -12,27 +13,32 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ViewedMeeting {
 
-    private List<String> users;
+    private Set<String> users;
     private String meetingId;
     private Long time;
     private String meetingTopic;
 
     @JsonInclude(Include.NON_ABSENT)
-    private List<String> viewedUsers;
+    private Set<String> viewedUsers;
 
-    public List<String> getUsers() {
+    public ViewedMeeting() {
+        this.viewedUsers = new HashSet<>();
+        this.users = new HashSet<>();
+    }
+
+    public Set<String> getUsers() {
         return users;
     }
 
-    public void setUsers(List<String> users) {
+    public void setUsers(Set<String> users) {
         this.users = users;
     }
 
-    public List<String> getViewedUsers() {
+    public Set<String> getViewedUsers() {
         return viewedUsers;
     }
 
-    public void setViewedUsers(List<String> viewedUsers) {
+    public void setViewedUsers(Set<String> viewedUsers) {
         this.viewedUsers = viewedUsers;
     }
 

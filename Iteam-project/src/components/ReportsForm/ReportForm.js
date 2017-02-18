@@ -1,10 +1,5 @@
-/**
- * Created by Randanne on 15/10/2016.
- */
 import React, {Component, PropTypes} from "react";
-import jsPDF from "jspdf";
 import {connect} from "react-redux";
-import axios from "axios";
 import Button from "react-toolbox/lib/button";
 import {RadioGroup, RadioButton} from "react-toolbox/lib/radio";
 import classes from "./ReportForm.scss";
@@ -13,9 +8,6 @@ import inputTheme from "./input.scss";
 import radioTheme from "./radio.scss"
 import tooltipTheme from "./tooltip.scss"
 import buttonPdf from "./buttonPdf.scss";
-import {MEETING} from "../../constants/HostConfiguration";
-import D3Tree from "./D3tree/D3Tree";
-import D3ChartTree from "./D3ChartTree/D3ChartTree";
 import generateUUID from "../../constants/utils/GetUUID";
 import Spinner from "../Spinner/Spinner";
 import Tooltip from "react-toolbox/lib/tooltip";
@@ -42,13 +34,6 @@ const mapStateToProps = (state) => {
   }
 };
 
-const report = new jsPDF()
-
-var specialElementHandlers = {
-  '#editor': function (element, renderer) {
-    return true;
-  }
-};
 const TooltipButton = Tooltip(Button);
 
 
@@ -77,15 +62,6 @@ class ReportForm extends Component {
 
   handleToggle = () => {
     this.setState({active: !this.state.active});
-  };
-
-
-  generatePDF = () => {
-    report.fromHTML(document.getElementById('reportHTML').innerHTML, 15, 15, {
-      'width': 190,
-      'elementHandlers': specialElementHandlers
-    });
-    report.save('report.pdf');
   };
 
 
@@ -173,13 +149,13 @@ class ReportForm extends Component {
                   <div className={classes.labelInfo}>
                     <label >Basic Reports</label>
                   </div>
-                  <div className="row" className={classes.buttonDiv}>
-                    < Button label="Ideas by ranking" icon='star' theme={buttonPdf}
-                             onClick={this.handleReport.bind(this,'byranking')} raised active/>
-                    < Button label="Ideas by user" icon='group' theme={buttonPdf}
-                             onClick={this.handleReport.bind(this,'byuser')}/>
-                    < Button label="Ideas by tag" icon='lightbulb_outline' theme={buttonPdf}
-                             onClick={this.handleReport.bind(this,'bytag')}/>
+                  <div className={classes.buttonDiv}>
+                    <Button label="Ideas by ranking" icon='star' theme={buttonPdf}
+                            onClick={this.handleReport.bind(this, 'byranking')} raised active/>
+                    <Button label="Ideas by user" icon='group' theme={buttonPdf}
+                            onClick={this.handleReport.bind(this, 'byuser')}/>
+                    <Button label="Ideas by tag" icon='lightbulb_outline' theme={buttonPdf}
+                            onClick={this.handleReport.bind(this, 'bytag')}/>
                   </div>
                 </div>
               </div>
@@ -228,11 +204,9 @@ class ReportForm extends Component {
                   </Button>
                 </div>
               </div>
-
             </div>
           </div>
         </div>
-
       );
     } else {
       return (
@@ -243,11 +217,10 @@ class ReportForm extends Component {
 }
 
 ReportForm.propTypes = {
-
   goToReportsView: PropTypes.func,
   meetingId: PropTypes.string,
   meetingConfiguration: PropTypes.any,
   finishChat: PropTypes.any
 };
 
-export default connect(mapStateToProps,mapDispatchToProps)(ReportForm);
+export default connect(mapStateToProps, mapDispatchToProps)(ReportForm);

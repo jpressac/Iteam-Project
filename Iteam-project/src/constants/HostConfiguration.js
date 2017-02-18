@@ -28,7 +28,6 @@ export const MEETING = {
   MEETING_CREATE : URL + '/meeting/create',
   MEETING_IDEAS_SAVE : URL + '/meeting/ideas/save',
   MEETING_UPDATE : URL + '/meeting/update',
-  MEETING_BY_USER : URL + '/meeting/meetingbyuser',
   MEETING_INFO : URL + '/meeting/meetinginfo',
   MEETING_INFO_PERSONAL_BOARD : URL + '/meeting/meetinginfo/byuser',
   MEETING_USERS : URL + '/meeting/meetingusers',
