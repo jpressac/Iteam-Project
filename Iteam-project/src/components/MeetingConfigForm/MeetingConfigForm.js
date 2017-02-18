@@ -28,7 +28,7 @@ class MeetingConfigForm extends Component {
       votes: 0,
       tag: '',
       tags: new Set(),
-      technic: 'Brainstorming',
+      technic: '',
       deletable: true,
       disabled: false,
       technicValue: 0,
@@ -37,6 +37,17 @@ class MeetingConfigForm extends Component {
       notesFunctions: [],
       message: ''
     };
+  }
+
+  componentWillMount() {
+    console.debug(this.props.meetingInfo);
+    if (this.props.meetingInfo != null) {
+      this.setState({
+        votes: this.props.meetingInfo["meeting"]["votes"],
+        tags: this.props.meetingInfo["meeting"]["tags"],
+        technic: this.props.meetingInfo["meeting"]["technic"]
+      })
+    }
   }
 
 
@@ -144,7 +155,8 @@ class MeetingConfigForm extends Component {
 
 
 MeetingConfigForm.propTypes = {
-  onSetConfig: PropTypes.func
+  onSetConfig: PropTypes.func,
+  meetingInfo: PropTypes.any
 };
 
 export default MeetingConfigForm
