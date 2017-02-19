@@ -6,11 +6,11 @@ import {Button} from 'react-toolbox/lib/button'
 import  card from './Card.scss'
 import divCss from '../MeetingsHistoryForm/formContainer.scss'
 import getUUID from '../../constants/utils/GetUUID'
-import {saveMeetingConfig} from '../../redux/reducers/Meeting/MeetingConfigReducer'
+import {saveMeetingInfo} from '../../redux/reducers/Meeting/MeetingReducer'
 import {PATHS} from '../../constants/routes'
 
 const mapDispatchToProps = (dispatch) => ({
-  updateMyMeeting: (meetingId) => dispatch(saveMeetingConfig(meetingId)),
+  updateMyMeeting: (meetingId) => dispatch(saveMeetingInfo(meetingId)),
   goToReportsPage: () => dispatch(push('/' + PATHS.MENULOGGEDIN.REPORTS))
 });
 

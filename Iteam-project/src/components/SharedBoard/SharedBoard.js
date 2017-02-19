@@ -247,14 +247,14 @@ class SharedBoard extends Component {
   saveNotes() {
     let ideas = Object.values(this.state.notes).map((value) => {
       return (
-      {
-        username: value.username,
-        title: value.title,
-        comments: value.comments,
-        ranking: value.ranking,
-        meetingId: value.meetingId,
-        tag: value.tag
-      }
+        {
+          username: value.username,
+          title: value.title,
+          comments: value.comments,
+          ranking: value.ranking,
+          meetingId: value.meetingId,
+          tag: value.tag
+        }
       );
     });
 
@@ -383,18 +383,18 @@ class SharedBoard extends Component {
         //TODO:same as update.
         Object.keys(jsonPayloadMessage).map((key) => {
           map[key] =
-          {
-            id: key,
-            left: SharedBoard.generateRandomNumber(),
-            top: SharedBoard.generateRandomNumber(),
-            username: jsonPayloadMessage[key].username,
-            title: jsonPayloadMessage[key].title,
-            comments: '',
-            ranking: 0,
-            meetingId: this.props.meetingId,
-            boardType: "shared",
-            tag: jsonPayloadMessage[key].tag
-          }
+            {
+              id: key,
+              left: SharedBoard.generateRandomNumber(),
+              top: SharedBoard.generateRandomNumber(),
+              username: jsonPayloadMessage[key].username,
+              title: jsonPayloadMessage[key].title,
+              comments: '',
+              ranking: 0,
+              meetingId: this.props.meetingId,
+              boardType: "shared",
+              tag: jsonPayloadMessage[key].tag
+            }
         });
 
         this.setState({notes: map});
@@ -404,18 +404,18 @@ class SharedBoard extends Component {
 
         if (map[jsonPayloadMessage.id].comments != jsonPayloadMessage.comments || map[jsonPayloadMessage.id].ranking != jsonPayloadMessage.ranking) {
           map[jsonPayloadMessage.id] =
-          {
-            id: jsonPayloadMessage.id,
-            username: jsonPayloadMessage.username,
-            left: map[jsonPayloadMessage.id].left,
-            top: map[jsonPayloadMessage.id].top,
-            title: jsonPayloadMessage.title,
-            comments: jsonPayloadMessage.comments,
-            ranking: jsonPayloadMessage.ranking,
-            meetingId: this.props.meetingId,
-            boardType: "shared",
-            tag: jsonPayloadMessage.tag
-          };
+            {
+              id: jsonPayloadMessage.id,
+              username: jsonPayloadMessage.username,
+              left: map[jsonPayloadMessage.id].left,
+              top: map[jsonPayloadMessage.id].top,
+              title: jsonPayloadMessage.title,
+              comments: jsonPayloadMessage.comments,
+              ranking: jsonPayloadMessage.ranking,
+              meetingId: this.props.meetingId,
+              boardType: "shared",
+              tag: jsonPayloadMessage.tag
+            };
         }
         this.setState({notes: map});
         break;
@@ -485,7 +485,7 @@ class SharedBoard extends Component {
 
   goToPersonal() {
     this.props.meetingsVotesUpdate(this.state.votes);
-    this.props.personalBoard
+    this.props.personalBoard()
   }
 
   availableVotes() {
@@ -557,7 +557,7 @@ export default flow(
   DropTarget(ItemTypes.NOTE, NoteTarget,
     connect =>
       ( {
-        connectDropTarget: connect.dropTarget()
-      }
+          connectDropTarget: connect.dropTarget()
+        }
       )), connect(mapStateToProps, mapDispatchToProps))(SharedBoard);
 
