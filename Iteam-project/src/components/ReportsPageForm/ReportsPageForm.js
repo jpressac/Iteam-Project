@@ -1,140 +1,154 @@
-import React, {Component, PropTypes} from "react";
-import {connect} from "react-redux";
-import axios from "axios";
-import {MEETING} from "../../constants/HostConfiguration";
-import D3Tree from "../ReportsForm/D3tree/D3Tree";
-import D3ChartTree from "../ReportsForm/D3ChartTree/D3ChartTree";
-import {PATHS} from './../../constants/routes';
-import ButtonComponent from '../ButtonComponent/ButtonComponent';
-import {push} from 'react-router-redux';
-
+import React, {Component, PropTypes} from 'react'
+import classes from './ReportsPageForm.scss'
+import {connect} from 'react-redux'
+import D3Tree from '../ReportsForm/D3tree/D3Tree'
+import D3ChartTree from '../ReportsForm/D3ChartTree/D3ChartTree'
+import {PATHS} from './../../constants/routes'
+import ButtonComponent from '../ButtonComponent/ButtonComponent'
+import BootstrapModal from '../BootstrapModal/BootstrapModal'
+import {push} from 'react-router-redux'
+import {
+  getReportByTag,
+  getReportByRanking,
+  getReportByUser,
+  getReportByMixMeetings,
+  generateSharedReport
+} from '../../utils/actions/reportActions'
 
 const mapStateToProps = (state) => {
-  if (state.meetingReducer != null) {
-    return {
-      meetingId: state.meetingReducer.meetingId,
-      user: state.loginUser.user.username,
-      meetingConfiguration: state.meetingConfigurationReducer.meeting.config,
-      reportType: state.reportReducer
-    }
+  return {
+    user: state.loginUser.user.username,
+    meetingConfiguration: state.meetingReducer,
+    reportType: state.reportReducer,
+    byMeeting: state.mixMeetingReducer
   }
 };
+
 const mapDispatchToProps = dispatch => ({
   report: () => dispatch(push('/' + PATHS.MENULOGGEDIN.REPORTS))
 });
+
 class ReportsPageForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
       treeData: {},
-      ranking: false,
-      showSpinner: false
-
+      showSpinner: false,
+      message: ''
     }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    console.log('state');
-    console.log(this.state);
-    console.log('nexSstate');
-    console.log(nextState);
     return this.props.reportType != nextProps.reportType
-      || Object.keys(this.state.treeData).length != Object.keys(nextState.treeData).length || this.state.ranking != nextState.ranking
+      || Object.keys(this.state.treeData).length != Object.keys(nextState.treeData).length ||
+      this.state.ranking != nextState.ranking || this.state.message != nextState.message
   }
 
   generateReport(reportType) {
     switch (reportType) {
       case 'byranking':
-        this.setState({ranking: true});
-        this.generateRankingReport();
-        break;
+        this.generateRankingReport()
+        break
       case 'byuser':
-        this.setState({ranking: false});
-        this.generateUserReport();
-        break;
+        this.generateUserReport()
+        break
       case 'bytag':
-        this.setState({ranking: false});
-        this.generateTagReport();
-        break;
+        this.generateTagReport()
+        break
+      case 'bymixingmeeting':
+        this.generateMixingMeetings()
     }
   }
 
-  generateUserReport = () => {
-    axios.get(MEETING.MEETING_REPORT_BY_USER, {
-      params: {
-        meetingId: this.props.meetingId,
-        tags: this.props.meetingConfiguration.tags.toString().toLowerCase()
-      }
-    }).then(function (response) {
-      this.setState({treeData: response.data});
-    }.bind(this)).catch(function (response) {
+  generateMixingMeetings() {
+    getReportByMixMeetings(this.props.byMeeting.meetingIds.toString(), this.props.byMeeting.reportName)
+      .then((response) => {
+        this.setState({treeData: response.data})
+      })
+  }
+
+  generateUserReport() {
+    getReportByUser(this.props.meetingConfiguration.meetingId, this.props.meetingConfiguration.meetingConfig.tags.toString())
+      .then(function (response) {
+        this.setState({treeData: response.data});
+      }.bind(this))
+      .catch(() => {
+        //TODO: what we do here????
+      })
+  }
+
+  generateTagReport() {
+    getReportByTag(this.props.meetingConfiguration.meetingId, this.props.meetingConfiguration.meetingConfig.tags.toString().toLowerCase())
+      .then(function (response) {
+        this.setState({treeData: response.data})
+      }.bind(this)).catch(function (response) {
       //TODO: what we do here????
     })
   };
 
-  generateTagReport = () => {
-    axios.get(MEETING.MEETING_REPORT_BY_TAG, {
-      params: {
-        meetingId: this.props.meetingId,
-        tags: this.props.meetingConfiguration.tags.toString().toLowerCase()
-      }
-    }).then(function (response) {
-      this.setState({treeData: response.data});
-    }.bind(this)).catch(function (response) {
-      //TODO: what we do here????
-    })
-  };
-
-  generateRankingReport = () => {
-    axios.get(MEETING.MEETING_REPORT, {
-      params: {
-        meetingId: this.props.meetingId,
-        tags: this.props.meetingConfiguration.tags.toString().toLowerCase()
-      }
-    }).then(function (response) {
-      this.setState({treeData: response.data});
-    }.bind(this)).catch(function (response) {
+  generateRankingReport() {
+    getReportByRanking(this.props.meetingConfiguration.meetingId, this.props.meetingConfiguration.meetingConfig.tags.toString().toLowerCase())
+      .then(function (response) {
+        this.setState({treeData: response.data})
+      }.bind(this)).catch(function (response) {
       //TODO: what we do here???? WTF
     })
   };
 
   renderTrees() {
-    if (this.state.ranking) {
-
+    if (this.props.reportType == 'byranking') {
       return (
         <D3ChartTree treeData={this.state.treeData}/>
       )
     } else {
       return (
-        <D3Tree treeData={this.state.treeData}/>
+        <D3Tree treeData={this.state.treeData} technic={this.props.meetingConfiguration.meetingConfig.technic}
+                type={this.props.reportType}/>
       )
     }
   }
 
+  shareReport() {
+    generateSharedReport(this.props.reportType == 'bymixingmeeting' ?
+      this.props.byMeeting.meetingIds.toString() : this.props.meetingConfiguration.meetingId)
+      .then(function (response) {
+        console.log(response.data)
+        this.setState({message: "URL for shared report: \n " + response.data.toString()})
+        this.refs.reportModal.openModal()
+      }.bind(this))
+      .catch((response) => {
+        //TODO: what we do here ???
+      })
+  }
+
   render() {
-
     return (
-      <div className="container" style={{marginTop: 80}}>
-        {this.renderTrees()}
+      <div className={"container " + classes.containerReport}>
+        <BootstrapModal ref='reportModal' message={this.state.message}/>
+        <label
+          className={classes.title}> {
+          this.props.reportType == 'byuser' ?
+            'Report By User' : this.props.reportType == 'byranking' ?
+              'Report by Ranking' : this.props.reportType == 'bytag' ? 'Report by Tag' : 'Report By Mix Meetings'
+        }
+        </label>
         {this.generateReport(this.props.reportType)}
-        <ButtonComponent className="col-md-6" value='BACK TO REPORT'
+        {this.renderTrees()}
+        <ButtonComponent className="col-md-6" value='BACK TO REPORT' raisedValue
                          onClick={this.props.report} iconButton='backspace'/>
+        <ButtonComponent className="col-md-6" value='SHARE REPORT'
+                         onClick={this.shareReport.bind(this)} raisedValue iconButton='share'/>
       </div>
-
     );
-
   };
 }
 
 ReportsPageForm.propTypes = {
-
-
   reportType: PropTypes.string,
   user: PropTypes.any,
-  meetingId: PropTypes.string,
+  byMeeting: PropTypes.any,
   meetingConfiguration: PropTypes.any,
   report: PropTypes.func
-
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(ReportsPageForm)

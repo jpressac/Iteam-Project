@@ -3,8 +3,10 @@
 }
 
 .node text {
-  font: 12px sans-serif;
+  font-size: 12px;
+  text-shadow: 0 2px 0 #fff, 0 -2px 0 #fff, 2px 0 0 #fff, -2px 0 0 #fff;
   margin:50px;
+
 }
 
 .node--internal circle {
@@ -12,7 +14,7 @@
 }
 
 .node--internal text {
-  text-shadow: 0 1px 0 #fff, 0 -1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff;
+  text-shadow:0 2px 0 #fff, 0 -2px 0 #fff, 2px 0 0 #fff, -2px 0 0 #fff;
 }
 
 .link {

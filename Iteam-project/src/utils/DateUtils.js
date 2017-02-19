@@ -2,7 +2,7 @@ export function validateDate(date) {
   let olderDate = new Date(date);
   let dateNow = new Date();
   let minimumDateRange = dateNow.setMinutes(dateNow.getMinutes() - 15);
-  
+
   return minimumDateRange > olderDate.getTime();
 }
 

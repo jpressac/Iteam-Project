@@ -48,6 +48,7 @@ export const REPORT = {
   MEETING_REPORT : URL + '/report/byranking',
   MEETING_REPORT_BY_USER : URL + '/report/byuser',
   MEETING_REPORT_BY_TAG : URL + '/report/bytag',
+  REPORT_BY_MEETING: URL + '/report/bymeeting'
 }
 
 export const UTILITIES = {

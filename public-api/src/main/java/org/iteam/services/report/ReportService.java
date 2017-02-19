@@ -49,6 +49,17 @@ public interface ReportService {
     public String generateSharedReport(List<String> meetingIds);
 
     /**
+     * Generate report given a list of meetingIds
+     * 
+     * @param meetingIds
+     *            the meetings ids of the generated report.
+     * @param reportName
+     *            the name of the report
+     * @return the token generated.
+     */
+    public D3CollapseTreeModel generateMixMeeting(List<String> meetingIds, String reportName);
+
+    /**
      * Retrieve the shared report given the token.
      * 
      * @param token

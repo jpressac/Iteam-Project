@@ -1,8 +1,4 @@
-/**
- * Created by Randanne on 15/01/2017.
- */
 import React, {Component, PropTypes}  from 'react';
-import {connect} from 'react-redux';
 import {MEETING} from '../../constants/HostConfiguration';
 import axios from 'axios';
 import MeetingCard from '../MeetingCard/MeetingCard';

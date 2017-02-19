@@ -44,6 +44,8 @@ public class ReportRepositoryImplTest {
 
     private ArrayList<String> users;
 
+    private String reportName;
+
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
@@ -51,6 +53,7 @@ public class ReportRepositoryImplTest {
 
     @Test
     public void generateReportByMeetingSuccess() {
+        givenAReportName();
         givenAListOfMeetingIds();
         givenAnElasticsearchResponse(IDEA_REPRESENTATION, 1);
         whenGenerateReportByMeetingIsCalled();
@@ -59,6 +62,7 @@ public class ReportRepositoryImplTest {
 
     @Test
     public void generateReportByMeetingSuccessNoIdeas() {
+        givenAReportName();
         givenAListOfMeetingIds();
         givenAnElasticsearchResponse(IDEA_REPRESENTATION, 0);
         whenGenerateReportByMeetingIsCalled();
@@ -152,11 +156,11 @@ public class ReportRepositoryImplTest {
     }
 
     private void thenVerifyD3ModelNoIdeas() {
-        Assert.assertEquals("Mix Meetings", report.getName());
+        Assert.assertEquals(reportName, report.getName());
     }
 
     private void thenVerifyD3Model() {
-        Assert.assertEquals("Ideas", report.getName());
+        Assert.assertEquals(reportName, report.getName());
         Assert.assertEquals("test", report.getChildren().get(0).getName());
         Assert.assertEquals("juan test", report.getChildren().get(0).getChildren().get(0).getName());
     }
@@ -186,7 +190,7 @@ public class ReportRepositoryImplTest {
     }
 
     private void whenGenerateReportByMeetingIsCalled() {
-        report = underTest.generateReportByMeeting(meetingIds);
+        report = underTest.generateReportByMeeting(meetingIds, reportName);
     }
 
     private void whenGenerateBasicReportByTagIsCalled() {
@@ -194,6 +198,11 @@ public class ReportRepositoryImplTest {
     }
 
     /* GIVEN */
+
+    private void givenAReportName() {
+        reportName = "test report";
+    }
+
     private void givenAMeetingRepositoryImpl(String topic) {
 
         // Idea for tag test
