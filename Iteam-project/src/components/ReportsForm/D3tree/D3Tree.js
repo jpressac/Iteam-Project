@@ -1,70 +1,52 @@
 import React, {Component, PropTypes} from 'react';
 import * as d3 from 'd3'
 import ReactDom from 'react-dom'
-import textwrap from 'd3-textwrap'
-import {connect} from "react-redux";
-
-
-
 import classes from './D3Tree.scss'
 
 var root, treemap, svg, i, duration, path;
 
-const mapStateToProps = (state) => {
-  return {
-    reportType: state.reportReducer,
-    meetingConfiguration: state.meetingConfigurationReducer.meeting.config
-  }
-};
-
 class D3Tree extends React.Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      tree: {},
-      technic:''
-    }
-  }
 
   componentWillReceiveProps(nextProps) {
 
-    if (nextProps.treeData != this.props.treeData) {
+    if (nextProps.treeData != this.props.treeData
+      || nextProps.technic != this.props.technic || nextProps.type != this.props.type) {
+      console.log("pase por aca la concha de tu hermana")
       //this.renderTreeCollapse(nextProps.treeData, ReactDom.findDOMNode(this));
       this.renderTreeExpand(nextProps.treeData, ReactDom.findDOMNode(this),
-        this.props.meetingConfiguration.technic,this.props.reportType);
+        this.props.technic, this.props.type);
     }
   };
 
 
-  renderTreeExpand(treeData, svgNode,technic,type) {
+  renderTreeExpand(treeData, svgNode, technic, type) {
     console.log("technic " + technic);
     console.log("type " + type);
     var margin = {top: 20, right: 90, bottom: 10, left: 120},
-      width,height;
-      if(technic=='Brainstorming'){
-        width = window.innerWidth - margin.right +200 //TODO: this is hardcoded so it antoher screen it will not work
-        height = window.innerHeight +400;
-        if(type=='bytag'){
-          height = height -400;
-        }
+      width, height;
+    if (technic == 'Brainstorming') {
+      width = window.innerWidth - margin.right + 200 //TODO: this is hardcoded so it antoher screen it will not work
+      height = window.innerHeight + 400;
+      if (type == 'bytag') {
+        height = height - 400;
+      }
 
     }
     else {
-        width = window.innerWidth - margin.right +100//TODO: this is hardcoded so it antoher screen it will not work
-        height = window.innerHeight + 1000;
-        if(type=='bytag'){
-          height = height -500;
-        }
-
+      width = window.innerWidth - margin.right + 100//TODO: this is hardcoded so it antoher screen it will not work
+      height = window.innerHeight + 1000;
+      if (type == 'bytag') {
+        height = height - 500;
       }
+
+    }
 
     i = 0;
     duration = 750;
 
-// declares a tree layout and assigns the size
+    // declares a tree layout and assigns the size
     treemap = d3.tree()
-      .size([width +100, height])
+      .size([width + 100, height])
       .nodeSize([40, 30]);
 
 
@@ -74,22 +56,19 @@ class D3Tree extends React.Component {
       .remove();
 
 
-
-
     svg = d3.select(svgNode)
-      .attr("width", width -300)
-      .attr("height", height +300)
+      .attr("width", width - 300)
+      .attr("height", height + 300)
       .attr("align", "center")
       .append("g")
       .attr("transform", "translate("
-        + margin.left + "," + height*0.6 + ")");
+        + margin.left + "," + height * 0.6 + ")");
 
 
     root = d3.hierarchy(treeData, function (d) {
-      ;
       return d.children;
     });
-    root.x0 = height + 300 ;
+    root.x0 = height + 300;
     root.y0 = 0;
 
 // Collapse after the second level
@@ -152,20 +131,20 @@ class D3Tree extends React.Component {
           return "translate(" + d.y + "," + source.x0 + ")";
         })
         .on('click', click);
-        // .on("mouseover", function (d) {
-        //   div.transition()
-        //     .style("opacity", .9);
-        //
-        //   div.html(d.data.name)
-        //     .style("display", "inline-block")
-        //     .style("left", (d3.event.pageX - 35 ) + "px")
-        //     .style("top", (d3.event.pageY - 30) + "px");
-        //
-        //
-        // })
-        // .on("mouseout", function (d) {
-        //   div.style("display", "none");
-        // });
+      // .on("mouseover", function (d) {
+      //   div.transition()
+      //     .style("opacity", .9);
+      //
+      //   div.html(d.data.name)
+      //     .style("display", "inline-block")
+      //     .style("left", (d3.event.pageX - 35 ) + "px")
+      //     .style("top", (d3.event.pageY - 30) + "px");
+      //
+      //
+      // })
+      // .on("mouseout", function (d) {
+      //   div.style("display", "none");
+      // });
 
       // Add Circle for the nodes
       nodeEnter.append('circle')
@@ -191,14 +170,14 @@ class D3Tree extends React.Component {
       nodeEnter.append('text')
 
         .attr("dy", ".35em")
-        .attr("x", function(d) {
+        .attr("x", function (d) {
           return d.children || d._children ? -13 : 13;
         })
         .attr("text-anchor", "middle")
         .text(function (d) {
-          if(d.depth==0){
+          if (d.depth == 0) {
             nodeEnter
-              .style("font-size","x-large")
+              .style("font-size", "x-large")
           }
           return d.data.name;
         })
@@ -239,7 +218,7 @@ class D3Tree extends React.Component {
       let nodeExit = node.exit().transition()
         .duration(duration)
         .attr("transform", function (d) {
-          return "translate(" + source.y + "," + source.x  + ")";
+          return "translate(" + source.y + "," + source.x + ")";
         })
         .remove();
 
@@ -263,7 +242,7 @@ class D3Tree extends React.Component {
       let linkEnter = link.enter().insert('path', "g")
         .classed(classes.link, true)
         .attr('d', function (d) {
-          let o = {x: source.x0 , y: source.y0 };
+          let o = {x: source.x0, y: source.y0};
           return diagonal(o, o)
         });
 
@@ -281,7 +260,7 @@ class D3Tree extends React.Component {
       let linkExit = link.exit().transition()
         .duration(duration)
         .attr('d', function (d) {
-          let o = {x: source.x , y: source.y };
+          let o = {x: source.x, y: source.y};
           return diagonal(o, o)
         })
         .remove();
@@ -332,7 +311,7 @@ class D3Tree extends React.Component {
               .append('tspan')
               .attr('x', x)
               .attr('y', y)
-              .attr('dy', dy );
+              .attr('dy', dy);
           while (word = words.pop()) {
             line.push(word);
             tspan.text(line.join(' '));
@@ -348,24 +327,14 @@ class D3Tree extends React.Component {
             }
           }
         });
-
       }
     }
   };
 
   render() {
-
     // Render a blank svg node
     return (
-
-
-      <svg>
-
-      </svg>
-
-
-
-
+      <svg/>
     );
   };
 }
@@ -373,7 +342,7 @@ class D3Tree extends React.Component {
 
 D3Tree.propTypes = {
   treeData: PropTypes.any,
-  meetingConfiguration: PropTypes.any,
-  reportType: PropTypes.string,
+  technic: PropTypes.string,
+  type: PropTypes.string
 };
-export default connect(mapStateToProps,null) (D3Tree);
+export default D3Tree;

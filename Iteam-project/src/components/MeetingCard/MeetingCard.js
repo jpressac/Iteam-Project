@@ -1,14 +1,17 @@
 import React, {Component, PropTypes}  from 'react'
-import {connect} from "react-redux"
+import {connect} from 'react-redux'
+import {push} from 'react-router-redux'
 import {Card, CardTitle, CardActions} from 'react-toolbox/lib/card'
-import {Button} from "react-toolbox/lib/button"
+import {Button} from 'react-toolbox/lib/button'
 import  card from './Card.scss'
 import divCss from '../MeetingsHistoryForm/formContainer.scss'
 import getUUID from '../../constants/utils/GetUUID'
 import {saveMeetingConfig} from '../../redux/reducers/Meeting/MeetingConfigReducer'
+import {PATHS} from '../../constants/routes'
 
 const mapDispatchToProps = (dispatch) => ({
-  updateMyMeeting: (meetingId) => dispatch(saveMeetingConfig(meetingId))
+  updateMyMeeting: (meetingId) => dispatch(saveMeetingConfig(meetingId)),
+  goToReportsPage: () => dispatch(push('/' + PATHS.MENULOGGEDIN.REPORTS))
 });
 
 class MeetingCard extends Component {
@@ -30,6 +33,7 @@ class MeetingCard extends Component {
       'ownerName': meeting.ownerName,
       'meetingConfig': meeting.meetingConfig
     });
+    this.props.goToReportsPage()
   }
 
   render() {
@@ -60,7 +64,8 @@ class MeetingCard extends Component {
 
 MeetingCard.propTypes = {
   endedMeetings: PropTypes.any,
-  updateMyMeeting: PropTypes.func
+  updateMyMeeting: PropTypes.func,
+  goToReportsPage: PropTypes.func
 };
 
 export default connect(null, mapDispatchToProps)(MeetingCard);

@@ -86,6 +86,25 @@ public class ReportsController {
         return new ResponseEntity<D3CollapseTreeModel>(report, HttpStatus.OK);
     }
 
+    /**
+     * Generate a report by tags for the list of meetingIds.
+     * 
+     * @param meetingId
+     *            the id of the meeting.
+     * @param tags
+     *            the list of tags for the ideas.
+     * @return 204 NO CONTENT
+     */
+    @RequestMapping(value = "/report/bymeeting", method = RequestMethod.GET)
+    public ResponseEntity<D3CollapseTreeModel> generateReportByMixMeetings(
+            @RequestParam(value = "meetingIds", required = true) List<String> meetingIds,
+            @RequestParam(value = "reportName", required = true) String reportName) {
+
+        D3CollapseTreeModel report = reportServiceImpl.generateMixMeeting(meetingIds, reportName);
+
+        return new ResponseEntity<D3CollapseTreeModel>(report, HttpStatus.OK);
+    }
+
     @Autowired
     public void setReportServiceImpl(ReportService reportServiceImpl) {
         this.reportServiceImpl = reportServiceImpl;

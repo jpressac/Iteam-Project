@@ -77,7 +77,7 @@ class SharedBoard extends Component {
 
   componentWillMount() {
     console.log(this.props.meetingConfiguration.tags)
-    this.setState({mapTag: this.props.meetingConfiguration.tags })
+    this.setState({mapTag: this.props.meetingConfiguration.tags})
 
     //Getting notes already shared in the board before rendering
     axios.get(MEETING.MEETING_INFO, {
@@ -136,15 +136,12 @@ class SharedBoard extends Component {
 
     }
   }
-  filterNoteByScamper(tag, noteMap){
-   let notes= Object.values(noteMap).filter((note) => tag === note.tag);
- console.log(notes);
+
+  filterNoteByScamper(tag, noteMap) {
+    let notes = Object.values(noteMap).filter((note) => tag === note.tag);
+    console.log(notes);
     return notes;
   }
-
-
-
-
 
 
   notes(note) {
@@ -241,8 +238,12 @@ class SharedBoard extends Component {
       return userInfo;
     });
 
-    let userTag = this.state.users.concat(teamParticipants.map( (user) => user.username))
+    let userTag = this.state.users.concat(teamParticipants.map((user) => user.username))
+
+    userTag.push('All')
+    userTag.reverse()
     console.log(userTag)
+
 
     this.setState(
       {
@@ -481,7 +482,7 @@ class SharedBoard extends Component {
     }
   }
 
-  handleChange(key, value){
+  handleChange(key, value) {
     this.setState({[key]: value})
   }
 

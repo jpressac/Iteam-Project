@@ -138,11 +138,6 @@ public class MeetingController {
 
     }
 
-    @Autowired
-    private void setMeetingServiceImpl(MeetingServiceImpl meetingServiceImpl) {
-        this.meetingServiceImpl = meetingServiceImpl;
-    }
-
     @RequestMapping(value = "/meeting/notViewed", method = RequestMethod.GET)
     public ResponseEntity<List<ViewedMeeting>> getMeetingsNotViewed() {
         List<ViewedMeeting> meetings = meetingServiceImpl
@@ -155,5 +150,10 @@ public class MeetingController {
         meetingServiceImpl.updateMeetingViewedByUser(meetingsViewedByUser,
                 SecurityContextHolder.getContext().getAuthentication().getName());
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @Autowired
+    private void setMeetingServiceImpl(MeetingServiceImpl meetingServiceImpl) {
+        this.meetingServiceImpl = meetingServiceImpl;
     }
 }

@@ -1,36 +1,24 @@
-import React, {Component, PropTypes} from "react";
-import {connect} from "react-redux";
-import Button from "react-toolbox/lib/button";
-import {RadioGroup, RadioButton} from "react-toolbox/lib/radio";
-import classes from "./ReportForm.scss";
-import InputComponent from '../InputComponent/InputComponent';
-import inputTheme from "./input.scss";
-import radioTheme from "./radio.scss"
-import tooltipTheme from "./tooltip.scss"
-import buttonPdf from "./buttonPdf.scss";
-import generateUUID from "../../constants/utils/GetUUID";
-import Spinner from "../Spinner/Spinner";
-import Tooltip from "react-toolbox/lib/tooltip";
-import {List, ListItem, ListSubHeader} from 'react-toolbox/lib/list';
+import React, {Component, PropTypes} from 'react'
+import {connect} from 'react-redux'
+import Button from 'react-toolbox/lib/button'
+import classes from './ReportForm.scss'
+import InputComponent from '../InputComponent/InputComponent'
+import tooltipTheme from './tooltip.scss'
+import generateUUID from '../../constants/utils/GetUUID'
+import Spinner from '../Spinner/Spinner'
+import Tooltip from 'react-toolbox/lib/tooltip'
+import {List, ListItem, ListSubHeader} from 'react-toolbox/lib/list'
 import {getMeetingsToGenerateReport} from '../../utils/actions/reportActions'
 import ButtonComponent from '../ButtonComponent/'
 import cssClasses from '../ComponentCSSForms/componentCSS.scss'
-import {reportsToReportsView} from '../../redux/reducers/Reports/ReportsReducer'
-
+import {reportsToReportsView} from '../../redux/reducers/Report/ReportsReducer'
+import {saveMixMeeting} from '../../redux/reducers/Report/ReportByMeetingReducer'
+import BootstrapModal from '../BootstrapModal/BootstrapModal'
 
 const mapDispatchToProps = dispatch => ({
-  goToReportsView: (reportType) => dispatch(reportsToReportsView(reportType))
+  saveMeetingConfigInformation: (reportType) => dispatch(reportsToReportsView(reportType)),
+  saveMeetingIdsForReports: (meetingIds) => dispatch(saveMixMeeting(meetingIds))
 });
-
-const mapStateToProps = (state) => {
-  if (state.meetingReducer != null) {
-    return {
-      meetingId: state.meetingReducer.meetingId,
-      meetingConfiguration: state.meetingConfigurationReducer.meeting.config
-
-    }
-  }
-};
 
 const TooltipButton = Tooltip(Button);
 
@@ -39,17 +27,13 @@ class ReportForm extends Component {
     super(props);
     this.state = {
       active: true,
-      meetingTopic: '',
-      meetingDescription: '',
-      meetingIdeas: [],
-      selectedReport: '',
       treeData: {},
-      ranking: false,
       showSpinner: false,
       search: '',
-      options: 'meetings',
       meetingReport: [],
-      meetingSelected: []
+      meetingSelected: [],
+      reportName: '',
+      messageModal: ''
     }
   }
 
@@ -60,9 +44,8 @@ class ReportForm extends Component {
   generateReportSearch() {
     getMeetingsToGenerateReport(this.state.search)
       .then((response) => {
-        console.log(response.data);
         this.setState({
-          meetingReport: response.data
+          meetingReport: response.data.model
         })
       })
       .catch((response) => {
@@ -124,70 +107,70 @@ class ReportForm extends Component {
   }
 
   handleReport(reportType) {
-    this.props.goToReportsView(reportType)
+    this.props.saveMeetingConfigInformation(reportType)
+  }
+
+  reportByMixing() {
+
+    if(this.state.meetingSelected.length  > 0 || this.state.reportName != '') {
+
+      let meetingIds = this.state.meetingSelected.map((meeting) => meeting.meetingId)
+
+      this.props.saveMeetingIdsForReports({'meetingIds': meetingIds, 'reportName': this.state.reportName})
+      this.props.saveMeetingConfigInformation('bymixingmeeting')
+    }else{
+      this.setState({messageModal: '!Please fill the reportName field and select at least one meeting¡'})
+      this.refs.formModal.openModal()
+    }
   }
 
   render() {
     if (!this.state.showSpinner) {
       return (
         <div className={"container " + cssClasses.containerForm}>
+          <BootstrapModal ref="formModal" message={this.state.messageModal}/>
           <div className={cssClasses.labelMainTitle}>
             <label>REPORTS</label>
           </div>
           <div className={"row " + cssClasses.form}>
-            <div className={classes.labelInfo}>
-              <label >Basic Reports</label>
+            <div className={cssClasses.labelInfo}>
+              <label>Basic Reports</label>
             </div>
-            <div className="row col-md-12">
-              <ButtonComponent   className="col-md-4" value="Ideas by ranking" raisedValue iconButton='star'
-                                onClick={this.handleReport.bind(this,'byranking')} />
+            <div className={"row col-md-12 " + classes.buttonMargin}>
+              <ButtonComponent className="col-md-4" value="Ideas by ranking" raisedValue iconButton='star'
+                               onClick={this.handleReport.bind(this, 'byranking')}/>
               <ButtonComponent className="col-md-4" value="Ideas by user" iconButton='group' raisedValue
-                                onClick={this.handleReport.bind(this,'byuser')}/>
+                               onClick={this.handleReport.bind(this, 'byuser')}/>
               <ButtonComponent className="col-md-4" value="Ideas by tag" raisedValue iconButton='lightbulb_outline'
-                                onClick={this.handleReport.bind(this,'bytag')}/>
-            </div>
-
-
-              <label className={classes.labelInfo}>Advanced Reports</label>
-
-            <div className={"row col-md-12" + cssClasses.radiogroup}>
-              <label >Select the option you want to search</label>
-              <RadioGroup name='options' value={this.state.options}
-                          onChange={this.handleChange.bind(this, 'options')}>
-                <RadioButton label='Meetings' value='meetings' theme={radioTheme}/>
-                <RadioButton label='Ideas' value='ideas' theme={radioTheme}/>
-              </RadioGroup>
+                               onClick={this.handleReport.bind(this, 'bytag')}/>
             </div>
             <div className="row col-md-12">
-              <InputComponent className="col-md-6" type='search' label='Search meetings or ideas' icon='search'
-                              value={this.state.search} theme={inputTheme}
+              <label className={cssClasses.labelInfo}>Advanced Reports</label>
+              <InputComponent className="col-md-12" label='Report name' value={this.state.reportName}
+                              onValueChange={this.handleChange.bind(this, 'reportName')}/>
+              <InputComponent className="col-md-8" type='search' label='Search meetings or ideas' icon='search'
+                              value={this.state.search}
                               onValueChange={this.handleChange.bind(this, 'search')}/>
               <TooltipButton className="col-md-4" icon='search' tooltip='Search '
                              theme={tooltipTheme} onClick={this.generateReportSearch.bind(this)}
                              floating/>
             </div>
-            <div className="row col-md-12">
-              <List className={classes.verticalbarright} selectable ripple >
+            <div className="col-md-6">
+              <List className={classes.verticalbarright} selectable ripple>
                 <ListSubHeader caption='Select meeting'/>
                 {this.renderMeeting()}
               </List>
-              <List selectable ripple >
+            </div>
+            <div className="col-md-6">
+              <List className={classes.verticalbarright} selectable ripple>
                 <ListSubHeader caption='Meeting Selected'/>
                 {this.renderMeetingSelected()}
               </List>
             </div>
-
-          <div className="row col-md-12">
-            <ButtonComponent   className="col-md-4" value="View" raisedValue icon='star'
-                                />
-
-          </div>
+            <ButtonComponent className="col-md-12" value="View" raisedValue icon='star'
+                             onClick={this.reportByMixing.bind(this)}/>
           </div>
         </div>
-
-
-
-
       );
     } else {
       return (
@@ -198,10 +181,11 @@ class ReportForm extends Component {
 }
 
 ReportForm.propTypes = {
-  
-  goToReportsView: PropTypes.func,
+  saveMeetingConfigInformation: PropTypes.func,
   meetingId: PropTypes.string,
-  meetingConfiguration: PropTypes.any
+  meetingConfiguration: PropTypes.any,
+  goToReportsPage: PropTypes.func,
+  saveMeetingIdsForReports: PropTypes.func
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ReportForm);
+export default connect(null, mapDispatchToProps)(ReportForm);

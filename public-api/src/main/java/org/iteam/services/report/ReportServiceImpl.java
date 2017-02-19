@@ -54,4 +54,9 @@ public class ReportServiceImpl implements ReportService {
     public D3CollapseTreeModel getSharedReport(String token) {
         return this.reportRepositoryImpl.getSharedReport(token);
     }
+
+    @Override
+    public D3CollapseTreeModel generateMixMeeting(List<String> meetingIds, String reportName) {
+        return this.reportRepositoryImpl.generateReportByMeeting(meetingIds, reportName);
+    }
 }
