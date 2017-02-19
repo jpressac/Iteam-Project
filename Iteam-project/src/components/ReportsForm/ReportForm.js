@@ -14,10 +14,12 @@ import cssClasses from '../ComponentCSSForms/componentCSS.scss'
 import {reportsToReportsView} from '../../redux/reducers/Report/ReportsReducer'
 import {saveMixMeeting} from '../../redux/reducers/Report/ReportByMeetingReducer'
 import BootstrapModal from '../BootstrapModal/BootstrapModal'
+import {cleanMeetingChats} from '../../redux/reducers/Meeting/MeetingChatMessagesReducer'
 
 const mapDispatchToProps = dispatch => ({
   saveMeetingConfigInformation: (reportType) => dispatch(reportsToReportsView(reportType)),
   saveMeetingIdsForReports: (meetingIds) => dispatch(saveMixMeeting(meetingIds))
+  finishChat: () => dispatch(cleanMeetingChats())
 });
 
 const TooltipButton = Tooltip(Button);
@@ -36,6 +38,15 @@ class ReportForm extends Component {
       messageModal: ''
     }
   }
+
+  componentDidMount() {
+    this.props.finishChat();
+  }
+
+  handleToggle = () => {
+    this.setState({active: !this.state.active});
+  };
+
 
   handleChange = (key, value) => {
     this.setState({[key]: value});
@@ -185,7 +196,8 @@ ReportForm.propTypes = {
   meetingId: PropTypes.string,
   meetingConfiguration: PropTypes.any,
   goToReportsPage: PropTypes.func,
-  saveMeetingIdsForReports: PropTypes.func
+  saveMeetingIdsForReports: PropTypes.func,
+finishChat: PropTypes.any
 };
 
 export default connect(null, mapDispatchToProps)(ReportForm);

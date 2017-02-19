@@ -9,7 +9,6 @@ export function validateDate(date) {
 export function validateStart(date) {
   let dateToCompare = new Date(date);
   let dateNow = new Date();
-
   let minimumDateRange = dateNow.setMinutes(dateNow.getMinutes() - 15);
   let maximumDateRange = dateNow.setMinutes(dateNow.getMinutes() + 30);
 

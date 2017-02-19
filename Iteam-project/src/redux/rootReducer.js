@@ -10,6 +10,7 @@ import tokenReducer from './reducers/Report/TokenReducer'
 import reportReducer from './reducers/Report/ReportsReducer'
 import meetingsNotViewed from './reducers/Meeting/MeetingNotViewedReducer'
 import mixMeetingReducer from './reducers/Report/ReportByMeetingReducer'
+import meetingsVotesReducer from './reducers/Meeting/MeetingVotesReducer'
 
 
 export default combineReducers({
@@ -23,5 +24,6 @@ export default combineReducers({
   tokenReducer,
   reportReducer,
   meetingsNotViewed,
-  mixMeetingReducer
+  mixMeetingReducer,
+  meetingsVotesReducer
 })

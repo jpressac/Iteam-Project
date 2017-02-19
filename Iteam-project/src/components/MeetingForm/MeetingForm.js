@@ -11,7 +11,7 @@ import AutocompleteComponent from '../AutocompleteComponent/AutocompleteComponen
 import ButtonComponent from '../ButtonComponent/ButtonComponent'
 import Spinner from '../Spinner/Spinner'
 import {saveMeeting, meetingToMeetingConfig} from '../../redux/reducers/Meeting/MeetingReducer'
-import {meetingToNewTeam} from '../../redux/reducers/Meeting/MeetingForTeamReducer'
+import {meetingToNewTeam, meetingCreated} from '../../redux/reducers/Meeting/MeetingForTeamReducer'
 import themeLabel from './label.scss'
 import Avatar from 'react-toolbox/lib/avatar'
 import avatarTheme from './avatarTheme.scss'
@@ -26,7 +26,8 @@ const mapDispatchToProps = dispatch => ({
   meetingToCreateNewTeam: () => dispatch(meetingToNewTeam()),
   goToMeetingConfig: (meeting) => dispatch(meetingToMeetingConfig(meeting)),
   home: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HOME)),
-  myMeetings: () => dispatch(push('/' + PATHS.MENULOGGEDIN.MYMEETINGS))
+  myMeetings: () => dispatch(push('/' + PATHS.MENULOGGEDIN.MYMEETINGS)),
+  meetingCreatedok: () => dispatch(meetingCreated())
 });
 
 const mapStateToProps = (state) => {
@@ -57,8 +58,8 @@ class MeetingView extends Component {
       showSpinner: true,
       meetingConfig: {},
       votes: 0,
-      technic: 'Brainstorming',
-      tags: []
+      technic: '',
+      tags: new Set()
     }
   };
 
@@ -107,11 +108,15 @@ class MeetingView extends Component {
 
     if (this.props.fromMeeting === true) {
       this.setState({
-        topic: this.props.meetingInfoSave["meeting"]["topic"],
-        description: this.props.meetingInfoSave["meeting"]["description"],
-        programmedDate: this.props.meetingInfoSave["meeting"]["time"],
-        ownerName: this.props.meetingInfoSave["meeting"]["ownerName"],
-        time: this.props.meetingInfoSave["meeting"]["time"]
+        topic: this.props.meetingInfoSave.topic,
+        description: this.props.meetingInfoSave.description,
+        programmedDate: this.props.meetingInfoSave.time,
+        ownerName: this.props.meetingInfoSave.ownerName,
+        time: this.props.meetingInfoSave.time,
+        endTime: this.props.meetingInfoSave.endDate,
+        votes: this.props.meetingInfoSave.meetingConfig.votes,
+        tags: this.props.meetingInfoSave.meetingConfig.tags,
+        technic: this.props.meetingInfoSave.meetingConfig.technic
       })
     }
 
@@ -178,13 +183,12 @@ class MeetingView extends Component {
         }
       };
 
-      createMeeting(meetingInfo)
-        .then(() => {
-          this.props.myMeetings();
-        })
-        .catch(() => {
-          //TODO: implement modal here or go to error page
-        })
+      createMeeting(meetingInfo).then(() => {
+        this.props.meetingCreatedok();
+        this.props.myMeetings();
+      }).catch(() => {
+        //TODO: implement modal here or go to error page
+      });
 
       //REDUCER
       //this.props.goToMeetingConfig(meetingInfo);
@@ -206,10 +210,13 @@ class MeetingView extends Component {
       description: this.state.description,
       ownerName: this.props.user,
       programmedDate: this.state.programmedDate,
+      endDate: this.state.endDate,
       time: this.state.time,
-      votes: this.state.votes,
-      tags: this.state.tags,
-      technic: this.state.technic
+      meetingConfig: {
+        votes: this.state.votes,
+        tags: this.state.tags,
+        technic: this.state.technic
+      }
     };
 
     this.props.saveMeetingInfo(meetingInfo);
@@ -262,7 +269,8 @@ class MeetingView extends Component {
             <ButtonComponent className={"col-md-4 " + cssClasses.paddingInnerElements} raisedValue
                              onClick={this.createTeamAction.bind(this)} value="Create Team"/>
             <div className={"col-md-12 " + cssClasses.paddingInnerElements}>
-              <MeetingConfigForm onSetConfig={this.handleConfigChange.bind(this)}/>
+              <MeetingConfigForm onSetConfig={this.handleConfigChange.bind(this)}
+                                 meetingInfo={this.props.meetingInfoSave}/>
             </div>
 
             <div className={"col-md-12 " + cssClasses.paddingInnerElements}>
@@ -292,7 +300,8 @@ MeetingView.propTypes = {
   meetingInfoSave: PropTypes.any,
   fromMeeting: PropTypes.bool,
   home: PropTypes.func,
-  myMeetings: PropTypes.func
+  myMeetings: PropTypes.func,
+  meetingCreatedok: PropTypes.func
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(MeetingView)

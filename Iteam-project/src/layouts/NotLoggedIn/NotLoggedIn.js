@@ -8,10 +8,9 @@ export const NotLoggedIn = ({children}) => (
   <div className={notLoggedInTheme.notLoggedIn}>
     <HeaderNotLog />
     {children}
+ <Footer/>
   </div>
 )
-
-// <Footer/>
 
 NotLoggedIn.propTypes = {
   children: React.PropTypes.element.isRequired

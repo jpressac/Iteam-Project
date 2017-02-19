@@ -44,7 +44,7 @@ const mapStateToProps = (state) => {
     user: state.loginUser.user.username,
     meetingId: state.meetingReducer.meetingId,
     connected: state.meetingUser,
-    meetingConfiguration: state.meetingConfigurationReducer.config
+    meetingConfiguration: state.meetingReducer.meetingConfig
   }
 };
 
@@ -94,7 +94,6 @@ class PersonalBoard extends Component {
         this.setState({notes: response.data});
       }
     }.bind(this)).catch(function (response) {
-      console.log('error ' + response)
     });
   }
 
@@ -139,9 +138,6 @@ class PersonalBoard extends Component {
 
   renderNotes(noteMap, valueForFilter) {
     return Object.keys(noteMap).map((key) => {
-      console.log(this.state.mapTag)
-      console.log(valueForFilter)
-
       //TODO: find a better way to do this, we know that the tag 'all' it's always the last one but this could change
       if (valueForFilter === this.state.mapTag[this.state.mapTag.length - 1]) {
         return this.notes(noteMap, key);
@@ -157,18 +153,18 @@ class PersonalBoard extends Component {
     let map = this.state.notes;
     let id = generateUUID();
     map[id] =
-      {
-        id: id,
-        left: generateRandomNumber(),
-        top: generateRandomNumber(),
-        username: this.props.user,
-        title: text,
-        comments: "",
-        tag: this.state.mapTag[0],
-        ranking: 0,
-        meetingId: this.props.meetingId,
-        boardType: "personal"
-      };
+    {
+      id: id,
+      left: generateRandomNumber(),
+      top: generateRandomNumber(),
+      username: this.props.user,
+      title: text,
+      comments: "",
+      tag: this.state.mapTag[0],
+      ranking: 0,
+      meetingId: this.props.meetingId,
+      boardType: "personal"
+    };
     this.updateNotesCacheByUser(map);
 
     this.setState({notes: map});
@@ -275,9 +271,6 @@ class PersonalBoard extends Component {
             <MenuItem value='sharenotes' icon='share'
                       caption='Share all' onClick={this.sendAll.bind(this)}/>
             <MenuDivider/>
-            <MenuItem value='votes' icon='star_half'
-                      caption='Available votes:'>{this.props.meetingConfiguration.votes}
-            </MenuItem>
             <Autocomplete label="Tag filter" onValueChange={this.handleChange.bind(this, 'tagName')}
                           source={this.state.mapTag} initialValue='All'/>
             <MenuDivider/>
@@ -305,13 +298,14 @@ PersonalBoard.propTypes = {
   user: PropTypes.any,
   meetingId: PropTypes.string,
   connected: PropTypes.bool,
-  meetingConfiguration: PropTypes.any
+  meetingConfiguration: PropTypes.any,
+  meeting: PropTypes.func
 };
 
 export default flow(
   DropTarget(ItemTypes.NOTE, NoteTarget,
     connection =>
       ( {
-          connectDropTarget: connection.dropTarget()
-        }
+        connectDropTarget: connection.dropTarget()
+      }
       )), connect(mapStateToProps, mapDispatchToProps))(PersonalBoard);

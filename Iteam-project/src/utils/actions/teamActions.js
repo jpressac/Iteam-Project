@@ -25,3 +25,22 @@ export function selectTeam(filter) {
     }
   })
 }
+
+export function getTeamByOwner(token, offset, limit) {
+  return axios.get(TEAM.TEAM_BY_OWNER_SEARCH, {
+    params: {
+      token: token,
+      offset: offset,
+      limit: limit
+    }
+  })
+}
+
+export function getTeamByOwnerPaginated(offset, itemsPerPage) {
+  return axios.get(TEAM.TEAM_BY_OWNER_PAGINATED, {
+    params: {
+      offset: offset,
+      limit: itemsPerPage
+    }
+  })
+}

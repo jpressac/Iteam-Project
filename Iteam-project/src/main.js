@@ -46,7 +46,7 @@ userExists().then( () => {
 // Now that redux and react-router have been configured, we can render the
 // React application to the DOM!
 ReactDOM.render(
-  <Root history={history} routes={routes} store={store} />,
+  <Root history={history} routes={routes} store={store} style={{height:'100%'}}/>,
   document.getElementById('root')
 )
 export {store}
