@@ -23,7 +23,7 @@ const mapStateToProps = (state)=> {
   if (state.loginUser !== null) {
     return {
       user: state.loginUser.user.username,
-      meetingTopic: state.meetingConfigurationReducer.meeting.topic
+      meetingTopic: state.meetingReducer.meeting.topic
     }
   }
 };
