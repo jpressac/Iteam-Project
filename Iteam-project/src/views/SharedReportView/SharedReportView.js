@@ -53,6 +53,7 @@ class SharedReportView extends React.Component {
           <Avatar icon="supervisor_account"/>
         </div>
         <div className={cssClasses.form}>
+          <label>Copy link here to share report</label>
           <InputComponent className="col-md-12" label="Token URL"
                           onValueChange={this.handleChange.bind(this, 'urlToken')}
                           value={this.state.urlToken}/>
