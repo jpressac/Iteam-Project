@@ -4,7 +4,7 @@ import {PATHS} from '../../../constants/routes'
 import AppBar from 'react-toolbox/lib/app_bar'
 import Navigation from 'react-toolbox/lib/navigation'
 import LogoutButton from './LogoutButton'
-import {Button} from 'react-toolbox/lib/button';
+import {Button,IconButton} from 'react-toolbox/lib/button';
 import {connect} from 'react-redux'
 import {push} from 'react-router-redux'
 import themeAppBar from '../header.scss'
@@ -16,6 +16,9 @@ import themeButton from './button.scss'
 import Inbox from '../../Inbox/Inbox'
 import InboxList from '../../Inbox/InboxList';
 import meetingScheduler from '../../../utils/actions/getMeetingTask'
+import Avatar from 'react-toolbox/lib/avatar';
+import Chip from 'react-toolbox/lib/chip';
+import themeIcons from './icons.scss'
 
 const mapDispatchToProps = dispatch => ({
   home: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HOME)),
@@ -41,9 +44,7 @@ const mapStateToProps = (state) => {
   }
 };
 
-const iteamLogo = () => (
-  <img className={themeAppBar.logo} src={logo}/>
-);
+
 
 class HeaderLog extends Component {
 
@@ -86,36 +87,11 @@ class HeaderLog extends Component {
     this.props.newMeeting();
     this.props.team();
   }
+   goTo(value){
+     this.notShowList();
+     value();
+   }
 
-  goToHistory() {
-    this.notShowList();
-    this.props.meetingHistory();
-  }
-
-  goHome() {
-    this.notShowList();
-    this.props.home();
-  }
-
-  goProfile() {
-    this.notShowList();
-    this.props.profile();
-  }
-
-  goMyMeetings() {
-    this.notShowList();
-    this.props.myMeeting();
-  }
-
-  goTeams() {
-    this.notShowList();
-    this.props.teamList();
-  }
-
-  goSharedReports() {
-    this.notShowList();
-    this.props.sharedReport();
-  }
 
   notShowList() {
     this.setState({showList: false})
@@ -138,34 +114,39 @@ class HeaderLog extends Component {
   render() {
     return (
       <header >
-        <AppBar fixed flat theme={themeAppBar} leftIcon={iteamLogo()}>
+        <AppBar fixed flat theme={themeAppBar} >
+          <Button  onClick={this.goTo.bind(this, this.props.home)} theme={themeButton} neutral={false}>
+          <img className={themeAppBar.logo} src={logo} /></Button>
           <Navigation type="horizontal" theme={themeNav}>
             <ul className={classes.ul}>
-              <li><Button label='HOME' theme={themeButton}
-                          onClick={this.goHome.bind(this)}/></li>
-              <li><Button label='PROFILE' theme={themeButton}
-                          onClick={this.goProfile.bind(this)}/></li>
+
               <li><Button label='MY MEETINGS' theme={themeButton}
-                          onClick={this.goMyMeetings.bind(this)}/></li>
+                          onClick={this.goTo.bind(this, this.props.myMeeting)}/></li>
               <li><Button label='NEW MEETING' theme={themeButton}
                           onClick={this.goToNewMeeting.bind(this)}/></li>
               <li><Button label='HISTORY' theme={themeButton}
-                          onClick={this.goToHistory.bind(this)}/></li>
+                          onClick={this.goTo.bind(this, this.props.meetingHistory)}/></li>
               <li><Button label='NEW TEAM' theme={themeButton}
                           onClick={this.goToNewTeam.bind(this)}/></li>
               <li><Button label='MY TEAMS' theme={themeButton}
-                          onClick={this.goTeams.bind(this)}/></li>
+                          onClick={this.goTo.bind(this, this.props.teamList)}/></li>
               <li><Button label='SHARED REPORT' theme={themeButton}
-                          onClick={this.goSharedReports.bind(this)}/></li>
-              <li><Button icon='inbox' label={this.state.count} theme={themeButton}
+                          onClick={this.goTo.bind(this, this.props.sharedReport)}/></li>
+              <li><Button  onClick={this.goTo.bind(this, this.props.profile)} neutral={false}><Chip>
+                <Avatar icon="account_circle" />
+                <span className={classes.span}><label>{this.props.user}</label></span >
+              </Chip></Button>
+              </li>
+              <li><Button icon='inbox' label={this.state.count} theme={themeIcons}
                           onClick={this.onClickShowList.bind(this)}/></li>
-              <li><span className={classes.span}><label>{this.props.user}</label></span ></li>
+
               <li><LogoutButton/></li>
             </ul>
           </Navigation>
         </AppBar>
         {this.renderInbox()}
       </header>
+
     );
   };
 }
