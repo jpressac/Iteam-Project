@@ -34,7 +34,7 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public PaginationModel<TeamModel> getTeams(String ownerName, int size, int from) {
-        return teamRepository.getTeams(ownerName, size, from);
+        return teamRepository.getTeamsByToken(ownerName, size, from);
     }
 
     @Override

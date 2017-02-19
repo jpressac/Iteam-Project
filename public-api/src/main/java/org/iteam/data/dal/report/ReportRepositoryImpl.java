@@ -88,7 +88,7 @@ public class ReportRepositoryImpl implements ReportRepository {
         } catch (IOException | JWTVerificationException | IllegalArgumentException e) {
             LOGGER.error("Error while trying to verify or decode report token ", e);
         }
-        return null;
+        return new D3CollapseTreeModel("Mix Meetings");
     }
 
     @Override
@@ -137,7 +137,7 @@ public class ReportRepositoryImpl implements ReportRepository {
             return createRankingTree(tags, meetingRepositoryImpl.getIdeasGivenMeetingId(meetingId),
                     new D3CollapseTreeModel(topic));
         }
-        return null;
+        return new D3CollapseTreeModel("By Ranking");
     }
 
     @Override
@@ -151,7 +151,7 @@ public class ReportRepositoryImpl implements ReportRepository {
             return createTagTree(tags, meetingRepositoryImpl.getIdeasGivenMeetingId(meetingId),
                     new D3CollapseTreeModel(topic));
         }
-        return null;
+        return new D3CollapseTreeModel("By Tag");
     }
 
     @Override
@@ -166,7 +166,7 @@ public class ReportRepositoryImpl implements ReportRepository {
             return createUserTree(users, tags, meetingRepositoryImpl.getIdeasGivenMeetingId(meetingId),
                     new D3CollapseTreeModel(topic));
         }
-        return null;
+        return new D3CollapseTreeModel("By User");
 
     }
 

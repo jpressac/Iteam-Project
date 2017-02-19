@@ -5,17 +5,20 @@ import java.util.List;
 
 import org.assertj.core.util.Lists;
 import org.elasticsearch.action.delete.DeleteResponse;
+import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.iteam.configuration.ExternalConfigurationProperties;
+import org.iteam.configuration.StringUtilities;
 import org.iteam.data.dal.client.ElasticsearchClientImpl;
 import org.iteam.data.dto.Filter;
 import org.iteam.data.dto.Team;
 import org.iteam.data.dto.UserDTO;
 import org.iteam.data.model.FilterList;
 import org.iteam.data.model.TeamModel;
+import org.iteam.data.model.TeamUserModel;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -39,6 +42,8 @@ public class TeamRepositoryImplTest {
 
     private static final String JSON_REPRESNTATION_USER = "{\"username\":\"iteam\"}";
     private static final String JSON_REPRESNTATION_TEAM = "{\"ownerName\":\"iteam\", \"name\":\"testIteam\"}";
+    private static final String JSON_REPRESENTATION_MEETING = "{\"topic\":\"juan\", \"teamName\":\"54646-64654-65465\"}";
+    private static final String JSON_REPRESNTATION_TEAM_FOR_SEARCH = "{\"ownerName\":\"iteam\", \"name\":\"54646-64654-65465\", \"members\":[\"juan\", \"juanGroso\"]}";
 
     private boolean flag;
     private String ownerName;
@@ -46,6 +51,10 @@ public class TeamRepositoryImplTest {
     private FilterList filterList;
     private List<UserDTO> userList;
     private List<TeamModel> teamList;
+
+    private String meetingId;
+
+    private TeamUserModel teamUserModel;
 
     @Before
     public void init() {
@@ -94,25 +103,41 @@ public class TeamRepositoryImplTest {
     }
 
     @Test
-    public void filterParticipantsSuccessfully() {
-        givenAFilterList();
-        givenAnElasticsearchSearchResponseOk(JSON_REPRESNTATION_USER);
+    public void filterParticipantsSuccessfullyNationality() {
+        givenAFilterList("Nationality", Lists.newArrayList("Argentina", "Germany"));
+        givenAnElasticsearchResponseForFilters(JSON_REPRESNTATION_USER, 1);
         whenFilterToCreateTeamIsCalled();
         thenListOfUsersOk();
     }
 
     @Test
-    public void filterParticipantsNotSuccessfulNull() {
-        givenAFilterList();
-        givenAnElasticsearchSearchResponseNull();
+    public void filterParticipantsSuccessfullyAge() {
+        givenAFilterList("Age", Lists.newArrayList("89", "45"));
+        givenAnElasticsearchResponseForFilters(JSON_REPRESNTATION_USER, 1);
         whenFilterToCreateTeamIsCalled();
-        thenListOfUsersNull();
+        thenListOfUsersOk();
+    }
+
+    @Test
+    public void filterParticipantsSuccessfullyProfession() {
+        givenAFilterList("Profession", Lists.newArrayList("Student", "Engineer"));
+        givenAnElasticsearchResponseForFilters(JSON_REPRESNTATION_USER, 1);
+        whenFilterToCreateTeamIsCalled();
+        thenListOfUsersOk();
+    }
+
+    @Test
+    public void filterParticipantsSuccessfullyScoring() {
+        givenAFilterList("Scoring", Lists.newArrayList("150", "589"));
+        givenAnElasticsearchResponseForFilters(JSON_REPRESNTATION_USER, 1);
+        whenFilterToCreateTeamIsCalled();
+        thenListOfUsersOk();
     }
 
     @Test
     public void filterParticipantsNotSuccessful() {
-        givenAFilterList();
-        givenAnElasticsearchSearchResponseNotHits();
+        givenAFilterList("Nationality", Lists.newArrayList("Argentina", "Germany"));
+        givenAnElasticsearchResponseForFilters(JSON_REPRESNTATION_USER, 0);
         whenFilterToCreateTeamIsCalled();
         thenListOfUsersNull();
     }
@@ -120,25 +145,106 @@ public class TeamRepositoryImplTest {
     @Test
     public void getTeamsSuccessful() {
         givenAnOwnerName();
-        givenAnElasticsearchSearchResponseOk(JSON_REPRESNTATION_TEAM);
-        // whenGetTeamsIsCalled();
-        // thenListOfTeamsNotEmpty();
-    }
-
-    @Test
-    public void getTeamNotSuccessfulNull() {
-        givenAnOwnerName();
-        givenAnElasticsearchSearchResponseNull();
-        // whenGetTeamsIsCalled();
-        thenListOfTeamsIsEmpty();
+        givenAnElasticsearchSearchResponseOk(JSON_REPRESNTATION_TEAM, 1);
+        whenGetTeamsIsCalled();
+        thenListOfTeamsNotEmpty();
     }
 
     @Test
     public void getTeamNotSuccessful() {
         givenAnOwnerName();
         givenAnElasticsearchSearchResponseNotHits();
-        // whenGetTeamsIsCalled();
+        whenGetTeamsIsCalled();
         thenListOfTeamsIsEmpty();
+    }
+
+    @Test
+    public void getTeamUserByMeetingSuccess() {
+        givenAMeetingId();
+        givenAGetDocumentResponse(StringUtilities.INDEX_MEETING, JSON_REPRESENTATION_MEETING, true);
+        givenAGetDocumentResponse(StringUtilities.INDEX_TEAM, JSON_REPRESNTATION_TEAM_FOR_SEARCH, true);
+        givenAnElasticsearchResponseForFilters(JSON_REPRESNTATION_USER, 1);
+        whenGetTeamUserByMeetingIsCalled();
+        thenVerifyGetMeetingCall(1);
+        thenVerifyGetTeamCall(1);
+        thenVerifySearchCall(1);
+        thenVerifyUsers(1);
+    }
+
+    @Test
+    public void getTeamUserByMeetingNoMeeting() {
+        givenAMeetingId();
+        givenAGetDocumentResponse(StringUtilities.INDEX_MEETING, JSON_REPRESENTATION_MEETING, false);
+        givenAGetDocumentResponse(StringUtilities.INDEX_TEAM, JSON_REPRESNTATION_TEAM_FOR_SEARCH, true);
+        givenAnElasticsearchResponseForFilters(JSON_REPRESNTATION_USER, 1);
+        whenGetTeamUserByMeetingIsCalled();
+        thenVerifyGetMeetingCall(1);
+        thenVerifyGetTeamCall(0);
+        thenVerifySearchCall(0);
+        thenVerifyUsesNull();
+    }
+
+    @Test
+    public void getTeamUserByMeetingNoTeam() {
+        givenAMeetingId();
+        givenAGetDocumentResponse(StringUtilities.INDEX_MEETING, JSON_REPRESENTATION_MEETING, true);
+        givenAGetDocumentResponse(StringUtilities.INDEX_TEAM, JSON_REPRESNTATION_TEAM_FOR_SEARCH, false);
+        givenAnElasticsearchResponseForFilters(JSON_REPRESNTATION_USER, 1);
+        whenGetTeamUserByMeetingIsCalled();
+        thenVerifyGetMeetingCall(1);
+        thenVerifyGetTeamCall(1);
+        thenVerifySearchCall(0);
+        thenVerifyUsesNull();
+    }
+
+    @Test
+    public void getTeamUserByMeetingNoUsers() {
+        givenAMeetingId();
+        givenAGetDocumentResponse(StringUtilities.INDEX_MEETING, JSON_REPRESENTATION_MEETING, true);
+        givenAGetDocumentResponse(StringUtilities.INDEX_TEAM, JSON_REPRESNTATION_TEAM_FOR_SEARCH, true);
+        givenAnElasticsearchResponseForFilters(JSON_REPRESNTATION_USER, 0);
+        whenGetTeamUserByMeetingIsCalled();
+        thenVerifyGetMeetingCall(1);
+        thenVerifyGetTeamCall(1);
+        thenVerifySearchCall(1);
+        thenVerifyUsers(0);
+    }
+
+    /* THEN */
+
+    private void thenVerifyUsesNull() {
+        Assert.assertNull(teamUserModel.getTeamUsers());
+    }
+
+    private void thenVerifyUsers(int size) {
+        Assert.assertEquals(size, teamUserModel.getTeamUsers().size());
+    }
+
+    private void thenVerifySearchCall(int times) {
+        Mockito.verify(elasticsearchClientImpl, Mockito.times(times)).search(Mockito.anyString(), Mockito.anyObject());
+    }
+
+    private void thenVerifyGetTeamCall(int times) {
+        Mockito.verify(elasticsearchClientImpl, Mockito.times(times))
+                .getDocument(Mockito.eq(StringUtilities.INDEX_TEAM), Mockito.anyString(), Mockito.anyString());
+    }
+
+    private void thenVerifyGetMeetingCall(int times) {
+        Mockito.verify(elasticsearchClientImpl, Mockito.times(times))
+                .getDocument(Mockito.eq(StringUtilities.INDEX_MEETING), Mockito.anyString(), Mockito.anyString());
+    }
+
+    private void thenTeamWasntDeleted() {
+        Assert.assertFalse(flag);
+    }
+
+    private void thenListOfUsersNull() {
+        Assert.assertEquals(0, userList.size());
+    }
+
+    private void thenListOfUsersOk() {
+        Assert.assertEquals(1, userList.size());
+        Assert.assertEquals("iteam", userList.get(0).getUsername());
     }
 
     private void thenListOfTeamsIsEmpty() {
@@ -149,10 +255,59 @@ public class TeamRepositoryImplTest {
         Assert.assertFalse(ObjectUtils.isEmpty(teamList));
     }
 
-    /*
-     * private void whenGetTeamsIsCalled() { teamList =
-     * underTest.getTeams(ownerName); }
-     */
+    private void thenTeamWasDeleted() {
+        Assert.assertTrue(flag);
+    }
+
+    private void thenTeamWasntCreated() {
+        Assert.assertFalse(flag);
+    }
+
+    private void thenTeamWasCreated() {
+        Assert.assertTrue(flag);
+    }
+
+    /* WHEN */
+
+    private void whenGetTeamUserByMeetingIsCalled() {
+        teamUserModel = underTest.getTeamUsersByMeeting(meetingId);
+    }
+
+    private void whenPutTeamIsCalled() {
+
+        Team team = new Team();
+
+        flag = underTest.putTeam(team);
+    }
+
+    private void whenFilterToCreateTeamIsCalled() {
+        userList = underTest.filterToCreateTeam(filterList);
+    }
+
+    private void whenDeleteTeamIsCalled() {
+        flag = underTest.deleteTeam(ownerName, teamName);
+    }
+
+    private void whenGetTeamsIsCalled() {
+        teamList = underTest.getTeamsByToken(ownerName, "token", 10, 10).getModel();
+    }
+
+    /* GIVEN */
+
+    private void givenAGetDocumentResponse(String index, String jsonRepresentation, boolean exists) {
+        GetResponse response = Mockito.mock(GetResponse.class);
+
+        Mockito.when(response.isExists()).thenReturn(exists);
+        Mockito.when(response.getSourceAsString()).thenReturn(jsonRepresentation);
+
+        Mockito.when(elasticsearchClientImpl.getDocument(Mockito.eq(index), Mockito.anyString(), Mockito.anyString()))
+                .thenReturn(response);
+
+    }
+
+    private void givenAMeetingId() {
+        meetingId = "546579879-8798789";
+    }
 
     private void givenAnElasticsearchSearchResponseNotHits() {
         SearchResponse response = Mockito.mock(SearchResponse.class);
@@ -165,31 +320,13 @@ public class TeamRepositoryImplTest {
         Mockito.when(searchHits.iterator()).thenReturn(hitIterator);
         Mockito.when(hitIterator.hasNext()).thenReturn(false);
 
-        Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
+        Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject(), Mockito.anyInt(),
+                Mockito.anyInt())).thenReturn(response);
 
         ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
     }
 
-    private void givenAnElasticsearchSearchResponseNull() {
-        Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(null);
-
-        ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
-    }
-
-    private void thenListOfUsersNull() {
-        Assert.assertEquals(0, userList.size());
-    }
-
-    private void thenListOfUsersOk() {
-        Assert.assertEquals(1, userList.size());
-        Assert.assertEquals("iteam", userList.get(0).getUsername());
-    }
-
-    private void whenFilterToCreateTeamIsCalled() {
-        userList = underTest.filterToCreateTeam(filterList);
-    }
-
-    private void givenAnElasticsearchSearchResponseOk(String jsonRepresentation) {
+    private void givenAnElasticsearchResponseForFilters(String jsonRepresentation, long totalHits) {
         SearchResponse response = Mockito.mock(SearchResponse.class);
         SearchHits searchHits = Mockito.mock(SearchHits.class);
         SearchHit hit = Mockito.mock(SearchHit.class);
@@ -198,20 +335,37 @@ public class TeamRepositoryImplTest {
         Iterator<SearchHit> hitIterator = Mockito.mock(Iterator.class);
 
         Mockito.when(response.getHits()).thenReturn(searchHits);
+        Mockito.when(searchHits.getTotalHits()).thenReturn(totalHits);
         Mockito.when(searchHits.iterator()).thenReturn(hitIterator);
         Mockito.when(hitIterator.hasNext()).thenReturn(true, false);
         Mockito.when(hitIterator.next()).thenReturn(hit);
         Mockito.when(hit.getSourceAsString()).thenReturn(jsonRepresentation);
 
         Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
-
-        ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
-
     }
 
-    private void givenAFilterList() {
+    private void givenAnElasticsearchSearchResponseOk(String jsonRepresentation, long totalHits) {
+        SearchResponse response = Mockito.mock(SearchResponse.class);
+        SearchHits searchHits = Mockito.mock(SearchHits.class);
+        SearchHit hit = Mockito.mock(SearchHit.class);
+
+        @SuppressWarnings("unchecked")
+        Iterator<SearchHit> hitIterator = Mockito.mock(Iterator.class);
+
+        Mockito.when(response.getHits()).thenReturn(searchHits);
+        Mockito.when(searchHits.getTotalHits()).thenReturn(totalHits);
+        Mockito.when(searchHits.iterator()).thenReturn(hitIterator);
+        Mockito.when(hitIterator.hasNext()).thenReturn(true, false);
+        Mockito.when(hitIterator.next()).thenReturn(hit);
+        Mockito.when(hit.getSourceAsString()).thenReturn(jsonRepresentation);
+
+        Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject(), Mockito.anyInt(),
+                Mockito.anyInt())).thenReturn(response);
+    }
+
+    private void givenAFilterList(String filterName, List<String> filters) {
         filterList = new FilterList();
-        filterList.addFilter(new Filter("nationality", Lists.newArrayList("Argentina", "Germany")));
+        filterList.addFilter(new Filter(filterName, filters));
     }
 
     private void givenAnElasticsearchClientDeleteFailure() {
@@ -236,10 +390,6 @@ public class TeamRepositoryImplTest {
         ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
     }
 
-    private void thenTeamWasntDeleted() {
-        Assert.assertFalse(flag);
-    }
-
     private void givenAnElasticsearchClientSearchFailure() {
         SearchResponse response = Mockito.mock(SearchResponse.class);
         SearchHits searchHits = Mockito.mock(SearchHits.class);
@@ -253,10 +403,6 @@ public class TeamRepositoryImplTest {
         Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
 
         ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
-    }
-
-    private void whenDeleteTeamIsCalled() {
-        flag = underTest.deleteTeam(ownerName, teamName);
     }
 
     private void givenAnElasticsearchClientSearchDeleteOk() {
@@ -281,10 +427,6 @@ public class TeamRepositoryImplTest {
         ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
     }
 
-    private void thenTeamWasDeleted() {
-        Assert.assertTrue(flag);
-    }
-
     private void givenATeamName() {
         teamName = "iteam";
     }
@@ -302,21 +444,6 @@ public class TeamRepositoryImplTest {
                 Mockito.anyString())).thenReturn(response);
 
         ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
-    }
-
-    private void thenTeamWasntCreated() {
-        Assert.assertFalse(flag);
-    }
-
-    private void thenTeamWasCreated() {
-        Assert.assertTrue(flag);
-    }
-
-    private void whenPutTeamIsCalled() {
-
-        Team team = new Team();
-
-        flag = underTest.putTeam(team);
     }
 
     private void givenAnElasticsearchClientResponseOk() {

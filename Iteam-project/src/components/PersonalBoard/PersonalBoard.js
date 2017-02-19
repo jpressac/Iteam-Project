@@ -1,25 +1,25 @@
-import React, {Component, PropTypes} from 'react';
-import {DropTarget} from 'react-dnd';
-import classes from './PersonalBoard.scss';
+import React, {Component, PropTypes} from 'react'
+import {DropTarget} from 'react-dnd'
+import classes from './PersonalBoard.scss'
 import cssClasses from '../ComponentCSSForms/componentCSS.scss'
-import Note from '../Note/Note';
-import {ItemTypes} from '../Constants/Constants';
-import flow from 'lodash/flow';
-import {connectAndSubscribe, initWebSocket, sendMessage, disconnect} from '../../websocket/websocket';
-import {connect} from 'react-redux';
-import axios from 'axios';
-import {MEETING} from '../../constants/HostConfiguration';
-import generateUUID from '../../constants/utils/GetUUID';
-import {userConnection} from '../../redux/reducers/Meeting/MeetingUserConnected';
-import {Layout, NavDrawer, Panel, Sidebar} from 'react-toolbox';
-import logo from '../Header/image/iteamLogo.jpg';
-import {PATHS} from '../../constants/routes';
-import {push} from 'react-router-redux';
-import navTheme from './NavDrawer.scss';
-import Dropdown from 'react-toolbox/lib/dropdown';
-import {MenuItem, MenuDivider} from 'react-toolbox/lib/menu';
-import Chat from '../Chat/Chat';
-import Modal from '../BootstrapModal/BootstrapModal';
+import Note from '../Note/Note'
+import Autocomplete from '../AutocompleteComponent/AutocompleteComponent'
+import {ItemTypes} from '../Constants/Constants'
+import flow from 'lodash/flow'
+import {connectAndSubscribe, initWebSocket, sendMessage, disconnect} from '../../websocket/websocket'
+import {connect} from 'react-redux'
+import axios from 'axios'
+import {MEETING} from '../../constants/HostConfiguration'
+import generateUUID from '../../constants/utils/GetUUID'
+import {userConnection} from '../../redux/reducers/Meeting/MeetingUserConnected'
+import {Layout, NavDrawer, Panel, Sidebar} from 'react-toolbox'
+import logo from '../Header/image/iteamLogo.jpg'
+import {PATHS} from '../../constants/routes'
+import {push} from 'react-router-redux'
+import navTheme from './NavDrawer.scss'
+import {MenuItem, MenuDivider} from 'react-toolbox/lib/menu'
+import Chat from '../Chat/Chat'
+import Modal from '../BootstrapModal/BootstrapModal'
 
 const NoteTarget = {
   drop(props, monitor, component) {
@@ -44,7 +44,7 @@ const mapStateToProps = (state) => {
     user: state.loginUser.user.username,
     meetingId: state.meetingReducer.meetingId,
     connected: state.meetingUser,
-    meetingConfiguration: state.meetingConfigurationReducer.meeting.config
+    meetingConfiguration: state.meetingReducer.meetingConfig
   }
 };
 
@@ -62,11 +62,10 @@ class PersonalBoard extends Component {
       tagValue: '',
       tagName: 'All'
     }
-
   };
 
   componentWillMount() {
-    this.setValuesOptionsTags(this.props.meetingConfiguration.tags);
+    this.setState({mapTag: this.props.meetingConfiguration.tags})
   }
 
   componentDidMount() {
@@ -95,7 +94,6 @@ class PersonalBoard extends Component {
         this.setState({notes: response.data});
       }
     }.bind(this)).catch(function (response) {
-      console.log('error ' + response)
     });
   }
 
@@ -117,23 +115,8 @@ class PersonalBoard extends Component {
     this.refs.mymodal.openModal();
   }
 
-  filterTags(value) {
-    let filteredLabelObject = this.state.mapTag
-      .filter(filter => filter["value"] == value);
-
-    this.setState({tagValue: value, tagName: filteredLabelObject[0]["label"]})
-  }
-
-
-  setValuesOptionsTags(data) {
-    let opt = data.map(function (option, index) {
-      let rObj = {};
-      rObj["value"] = index;
-      rObj["label"] = option;
-      return rObj;
-    });
-
-    this.setState({mapTag: opt});
+  handleChange(key, value) {
+    this.setState({[key]: value})
   }
 
   notes(noteMap, key) {
@@ -155,7 +138,7 @@ class PersonalBoard extends Component {
 
   renderNotes(noteMap, valueForFilter) {
     return Object.keys(noteMap).map((key) => {
-      if (valueForFilter === this.state.mapTag[0].label) {
+      if (valueForFilter === this.state.mapTag[0]) {
         return this.notes(noteMap, key);
       } else {
         if (noteMap[key].tag === valueForFilter) {
@@ -169,18 +152,18 @@ class PersonalBoard extends Component {
     let map = this.state.notes;
     let id = generateUUID();
     map[id] =
-      {
-        id: id,
-        left: generateRandomNumber(),
-        top: generateRandomNumber(),
-        username: this.props.user,
-        title: text,
-        comments: "",
-        tag: this.state.mapTag[0].label,
-        ranking: 0,
-        meetingId: this.props.meetingId,
-        boardType: "personal"
-      };
+    {
+      id: id,
+      left: generateRandomNumber(),
+      top: generateRandomNumber(),
+      username: this.props.user,
+      title: text,
+      comments: "",
+      tag: this.state.mapTag[0],
+      ranking: 0,
+      meetingId: this.props.meetingId,
+      boardType: "personal"
+    };
     this.updateNotesCacheByUser(map);
 
     this.setState({notes: map});
@@ -224,33 +207,29 @@ class PersonalBoard extends Component {
 
   //Function that sends all notes together
   sendAll() {
-    let map = {};
-    map = this.state.notes;
+    let map = this.state.notes;
     sendMessage("insertSharedBoard", this.props.meetingId, JSON.stringify(map));
     this.deleteAll();
     //Clean the personal board
     this.setState({notes: {}});
 
   }
-  renderStarfishGuide(technic){
-    if(technic == 'Starfish Retrospective'){
 
+  renderStarfishGuide(technic) {
+    if (technic == 'Starfish Retrospective') {
       return (
         <div>
           <label className={classes.guide}>
             <p>GUIDE</p>
-           <p> What should we START doing?</p>
-           <p> What should we STOP doing?</p>
+            <p> What should we START doing?</p>
+            <p> What should we STOP doing?</p>
             <p>What should we KEEP doing?</p>
             <p>What should we do MORE of?</p>
             <p>What should we do LESS of?</p>
           </label>
         </div>
-
       )
     }
-
-
   }
 
   deleteAll() {
@@ -273,14 +252,16 @@ class PersonalBoard extends Component {
   render() {
     return this.props.connectDropTarget(
       <div name="Personal Board Component" className={cssClasses.containerBoard}>
-        <Layout>
+        <Layout >
           <NavDrawer active={true}
-                     pinned={true} permanentAt='sm' theme={navTheme}>
+                     pinned={true} permanentAt='lg' theme={navTheme}>
             <div>
               <img className={cssClasses.imageAvatar} src={logo} onClick={this.props.home}/>
             </div>
 
-            <label className={cssClasses.labelBoards}>PERSONAL BOARD</label>
+            <label className={cssClasses.labelBoards}>
+              PERSONAL BOARD
+            </label>
             <MenuItem value='sharedBoard' icon='people'
                       caption='Shared Board' onClick={this.props.sharedBoard}/>
             <MenuDivider/>
@@ -289,17 +270,11 @@ class PersonalBoard extends Component {
             <MenuItem value='sharenotes' icon='share'
                       caption='Share all' onClick={this.sendAll.bind(this)}/>
             <MenuDivider/>
-            <MenuItem value='votes' icon='star_half'
-                      caption='Available votes:'>{this.props.meetingConfiguration.votes}</MenuItem>
-            <MenuItem value='votes' icon='access_time'
-                      caption='Time:'>{this.props.meetingConfiguration.votes}</MenuItem>
-            <Dropdown label="Tag filter" auto
-                      onChange={this.filterTags.bind(this)} required
-                      source={this.state.mapTag} value={this.state.tagValue}/>
+            <Autocomplete label="Tag filter" onValueChange={this.handleChange.bind(this, 'tagName')}
+                          source={this.state.mapTag} initialValue='All'/>
             <MenuDivider/>
           </NavDrawer>
           <Panel>
-            {this.renderStarfishGuide(this.props.meetingConfiguration.technic)}
             <div name="Notes container" className={classes.noteContainer}>
               {this.renderNotes(this.state.notes, this.state.tagName)}
             </div>
@@ -312,6 +287,8 @@ class PersonalBoard extends Component {
   }
 }
 
+//{this.renderStarfishGuide(this.props.meetingConfiguration.technic)}
+
 PersonalBoard.propTypes = {
   connectDropTarget: PropTypes.func.isRequired,
   userConnected: PropTypes.func,
@@ -320,13 +297,14 @@ PersonalBoard.propTypes = {
   user: PropTypes.any,
   meetingId: PropTypes.string,
   connected: PropTypes.bool,
-  meetingConfiguration: PropTypes.any
+  meetingConfiguration: PropTypes.any,
+  meeting: PropTypes.func
 };
 
 export default flow(
   DropTarget(ItemTypes.NOTE, NoteTarget,
     connection =>
       ( {
-          connectDropTarget: connection.dropTarget()
-        }
+        connectDropTarget: connection.dropTarget()
+      }
       )), connect(mapStateToProps, mapDispatchToProps))(PersonalBoard);

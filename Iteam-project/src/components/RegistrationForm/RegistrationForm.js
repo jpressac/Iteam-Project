@@ -1,24 +1,25 @@
-import React, {Component, PropTypes} from "react";
-import {submitUser, userExistence} from "../../utils/actions/userActions";
-import {getProfessions, getNationalities} from '../../utils/actions/utilsActions';
-import InputComponent from '../InputComponent/InputComponent';
-import ButtonComponent from '../ButtonComponent/ButtonComponent';
-import DropdownComponent from '../DropdownComponent/DropdownComponent';
-import BootstrapModal from "../BootstrapModal";
-import user from "./user.png";
-import classes from "./RegistrationForm.scss";
+import React, {Component, PropTypes} from 'react'
+import {submitUser, userExistence} from '../../utils/actions/userActions'
+import {getProfessions, getNationalities} from '../../utils/actions/utilsActions'
+import InputComponent from '../InputComponent/InputComponent'
+import ButtonComponent from '../ButtonComponent/ButtonComponent'
+import AutocompleteComponent from '../AutocompleteComponent/AutocompleteComponent'
+import BootstrapModal from '../BootstrapModal'
+import user from './user.png'
+import classes from './RegistrationForm.scss'
 import cssClasses from '../ComponentCSSForms/componentCSS.scss'
-import {RadioGroup, RadioButton} from "react-toolbox/lib/radio";
-import DatePicker from "react-toolbox/lib/date_picker";
-import Input from "react-toolbox/lib/input";
-import themeLabel from "./label.scss";
-import Tooltip from "react-toolbox/lib/tooltip";
-import {PATHS} from "../../constants/routes";
-import {connect} from "react-redux";
-import {push} from "react-router-redux";
-import Spinner from "../Spinner/Spinner";
+import {RadioGroup, RadioButton} from 'react-toolbox/lib/radio'
+import DatePicker from 'react-toolbox/lib/date_picker'
+import Input from 'react-toolbox/lib/input'
+import themeLabel from './label.scss'
+import Tooltip from 'react-toolbox/lib/tooltip'
+import {PATHS} from '../../constants/routes'
+import {connect} from 'react-redux'
+import {push} from 'react-router-redux'
+import Spinner from '../Spinner/Spinner'
 
 const TooltipInput = Tooltip(Input);
+const MIN_LENGTH = 6;
 
 const mapDispatchToProps = (dispatch) => ({
   goToHome: () => dispatch(push('/' + PATHS.MENUNOTLOGGEDIN.HOME))
@@ -64,10 +65,21 @@ class RegistrationForm extends React.Component {
   validatePassword() {
     if (this.state.password === this.state.repeatPassword) {
       return '';
-    } else {
+    }
+    else {
       return 'Passwords must match'
     }
   }
+
+  validateMinLength(key, value){
+    if (0 == value.length || value.length >= MIN_LENGTH) {
+      return '';
+    }
+    else {
+      return 'Your ' + key + ' is too short. It should have ' + MIN_LENGTH + ' characters.'
+    }
+  };
+
 
   saveUser() {
     this.setState({showSpinner: true});
@@ -82,7 +94,7 @@ class RegistrationForm extends React.Component {
   }
 
   handleChange = (key, value) => {
-    this.setState({[key]: value});
+    this.setState({[key]: value})
   };
 
   dateChange = (datetime) => {
@@ -110,13 +122,13 @@ class RegistrationForm extends React.Component {
             <label>CREATE YOUR ACCOUNT</label>
           </div>
           <div className={cssClasses.form}>
-              <div className={"row col-md-12 "  + cssClasses.paddingInnerElements}>
-                <img className={cssClasses.imageAvatar} src={user}/>
-                <label>
-                  <span className={cssClasses.labelInfo}> Add a photo </span>
-                  <p className={cssClasses.paragraphImageFooter}>to help your teammates identify you</p>
-                </label>
-              </div>
+            <div className={"row col-md-12 " + cssClasses.paddingInnerElements}>
+              <img className={cssClasses.imageAvatar} src={user}/>
+              <label>
+                <span className={cssClasses.labelInfo}> Add a photo </span>
+                <p className={cssClasses.paragraphImageFooter}>to help your teammates identify you</p>
+              </label>
+            </div>
             <div className={"row col-md-12 " + cssClasses.paddingInnerElements}>
               <InputComponent className="col-md-6" type='text' label='First Name' name='firstName'
                               value={this.state.firstName} required
@@ -130,7 +142,7 @@ class RegistrationForm extends React.Component {
               <div className="col-md-6">
                 <DatePicker label='Date of birth' sundayFirstDayOfWeek
                             required onChange={this.dateChange} theme={themeLabel} value={this.state.date}
-                            maxDate={Date.now()}/>
+                            maxDate={new Date()}/>
               </div>
               <div className="col-md-6">
                 <RadioGroup name='gender' value={this.state.genderValue}
@@ -143,12 +155,12 @@ class RegistrationForm extends React.Component {
             <div className="row col-md-12">
               <div className="row">
                 <div className="col-md-6">
-                  <DropdownComponent source={this.state.dropDownSourceProfession} label="Select profession"
-                                     initialValue='' onValueChange={this.handleChange.bind(this, 'profession')}/>
+                  <AutocompleteComponent onValueChange={this.handleChange.bind(this, 'profession')}
+                                         label="Select Profession" source={this.state.dropDownSourceProfession}/>
                 </div>
                 <div className="col-md-6">
-                  <DropdownComponent source={this.state.dropDownSourceNationalities} label="Select nationality"
-                                     initialValue='' onValueChange={this.handleChange.bind(this, 'nationality')}/>
+                  <AutocompleteComponent onValueChange={this.handleChange.bind(this, 'nationality')}
+                                         label="Select Nationality" source={this.state.dropDownSourceNationalities}/>
                 </div>
               </div>
             </div>
@@ -171,14 +183,17 @@ class RegistrationForm extends React.Component {
                               value={this.state.username}
                               onValueChange={this.handleChange.bind(this, 'username')} required
                               onBlur={this.checkUsername.bind(this)}
-                              onValueError={this.state.userExists}/>
+                              onValueError={this.state.userExists}
+                              maxLength={10}
+                              onValueError={this.validateMinLength('username',this.state.username)}/>
             </div>
             <div className="row col-md-12">
               <div className="row">
                 <InputComponent className="col-md-6" type='password' label='Password'
                                 value={this.state.password}
                                 onValueChange={this.handleChange.bind(this, 'password')}
-                                onValueError={this.validatePassword()}/>
+                                onValueError={this.validateMinLength('password',this.state.password)}
+                                maxLength={20}/>
               </div>
               <div className="row">
                 <InputComponent className="col-md-6" type='password' label='Repeat Password'
@@ -188,7 +203,8 @@ class RegistrationForm extends React.Component {
               </div>
             </div>
             <div className="row">
-              <ButtonComponent className={"col-md-12 " + classes.buttonCreate} raisedValue iconButton="save" value="Create"
+              <ButtonComponent className={"col-md-12 " + classes.buttonCreate} raisedValue iconButton="save"
+                               value="Create"
                                onClick={this.saveUser.bind(this)}/>
             </div>
           </div>

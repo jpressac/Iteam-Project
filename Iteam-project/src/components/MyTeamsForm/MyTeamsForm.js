@@ -10,6 +10,9 @@ import {TEAM} from '../../constants/HostConfiguration'
 import Spinner from '../Spinner/Spinner';
 import ReactPagination from 'react-paginate'
 import InputComponent from '../InputComponent'
+import pagination from './pagination.scss'
+import {calculateTotalPages, calculateOffset} from '../../utils/mathUtils'
+import {getTeamByOwner, getTeamByOwnerPaginated} from '../../utils/actions/teamActions'
 
 const mapStateToProps = (state) => {
   if (state.loginUser !== null) {
@@ -41,11 +44,7 @@ class MyTeamsForm extends Component {
   }
 
   getAllTeams() {
-    axios.get(TEAM.TEAM_BY_OWNER_PAGINATED, {
-      params: {
-        offset: this.state.offset,
-        limit: ITEMS_PER_PAGE
-      }}).then(function (response) {
+    getTeamByOwnerPaginated(this.state.offset, ITEMS_PER_PAGE).then(function (response) {
       this.fillFields(response.data);
     }.bind(this));
   }
@@ -53,15 +52,15 @@ class MyTeamsForm extends Component {
   fillFields(data) {
     this.setState({
       teams: data.model,
-      totalTeams:data.total,
+      totalTeams: data.total,
       showSpinner: false
     }, () => {
-        this.calculateTotalPages();
-      });
+      this.calculateTotalPages();
+    });
   }
 
-  calculateTotalPages(){
-    let total = Math.ceil(this.state.totalTeams / ITEMS_PER_PAGE);
+  calculateTotalPages() {
+    let total = calculateTotalPages(this.state.totalTeams, ITEMS_PER_PAGE);
     this.setState({totalPages: total});
   }
 
@@ -74,12 +73,7 @@ class MyTeamsForm extends Component {
 
   searchByToken() {
     if (this.state.searchField.length != 0) {
-      axios.get(TEAM.TEAM_BY_OWNER_SEARCH, {
-        params: {
-          token: this.state.searchField,
-          offset: this.state.offset,
-          limit: ITEMS_PER_PAGE
-        }}).then(function(response){
+      getTeamByOwner(this.state.searchField, this.state.offset, ITEMS_PER_PAGE).then(function (response) {
         this.fillFields(response.data)
       }.bind(this))
     }
@@ -88,11 +82,11 @@ class MyTeamsForm extends Component {
     }
   }
 
-  handlePageClick =(data) =>{
+  handlePageClick = (data) => {
     let actualPageNumber = data.selected;
-    let offset = Math.ceil(actualPageNumber * ITEMS_PER_PAGE);
+    let offset = calculateOffset(actualPageNumber, ITEMS_PER_PAGE);
 
-    this.setState({offset:offset}, () => {
+    this.setState({offset: offset}, () => {
       this.getAllTeams();
     });
   };
@@ -102,7 +96,7 @@ class MyTeamsForm extends Component {
   };
 
   render() {
-    if(!this.state.showSpinner) {
+    if (!this.state.showSpinner) {
       let teamMap = this.state.teams;
       let members;
 
@@ -113,7 +107,9 @@ class MyTeamsForm extends Component {
               <label>MY TEAMS</label>
             </div>
             <div>
-              <InputComponent className="col-md-8" label='Team Name' value={this.state.searchField} onKeyPress={this.handleSubmit.bind(this)} onValueChange={this.handleChange.bind(this,'searchField')}/>
+              <InputComponent label='Team Name' name="searchField" value={this.state.searchField}
+                              onKeyPress={this.handleSubmit.bind(this)}
+                              onValueChange={this.handleChange.bind(this,'searchField')}/>
             </div>
             <List theme={listFormat} ripple>
               <ListSubHeader />
@@ -138,13 +134,14 @@ class MyTeamsForm extends Component {
                              marginPagesDisplayed={2}
                              pageRangeDisplayed={5}
                              onPageChange={this.handlePageClick}
-                             initialPage ={1}
-                             disableInitialCallback={true}
+                             initialPage={0}
+                             disableInitialCallback={false}
+                             pageClassName={pagination.ul}
             />
           </div>
         </div>
       )
-    }else {
+    } else {
       return (
         <Spinner/>
       )

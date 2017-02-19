@@ -5,13 +5,19 @@ import {Button} from 'react-toolbox/lib/button'
 import Tooltip from 'react-toolbox/lib/tooltip'
 import Chip from 'react-toolbox/lib/chip'
 import InputComponent from '../InputComponent/InputComponent'
-import DropdownComponent from '../DropdownComponent/DropdownComponent'
-
+import AutocompleteComponent from '../AutocompleteComponent/AutocompleteComponent'
+import generateUUID from '../../constants/utils/GetUUID'
 
 const TooltipButton = Tooltip(Button);
-const technics = ['Brainstorming', 'SCAMPER', 'Starfish Retrospective'];
-const retroTags = ['Start', 'Stop', 'Keep', 'More', 'Less'];
-const scamperTags = ['Sustitute', 'Combine', 'Adapt', 'Modify', 'Put to others use', 'Eliminate', 'Rearrange'];
+
+//Technics
+const technics = ['Brainstorming', 'SCAMPER', 'Starfish Retrospective']
+
+//Startfish retrospective tags
+const retroTags = new Set(['Start', 'Stop', 'Keep', 'More', 'Less'])
+
+//Scamper tags
+const scamperTags = new Set(['Sustitute', 'Combine', 'Adapt', 'Modify', 'Put to others use', 'Eliminate', 'Rearrange'])
 
 
 class MeetingConfigForm extends Component {
@@ -21,8 +27,8 @@ class MeetingConfigForm extends Component {
     this.state = {
       votes: 0,
       tag: '',
-      tags: [],
-      technic: 'Brainstorming',
+      tags: new Set(),
+      technic: '',
       deletable: true,
       disabled: false,
       technicValue: 0,
@@ -33,8 +39,18 @@ class MeetingConfigForm extends Component {
     };
   }
 
+  componentWillMount() {
+    if (this.props.meetingInfo != null) {
+      this.setState({
+        votes: this.props.meetingInfo.meetingConfig.votes,
+        tags: this.props.meetingInfo.meetingConfig.tags,
+        technic: this.props.meetingInfo.meetingConfig.technic
+      })
+    }
+  }
 
-  handleChangeTechnic = (technic)=> {
+
+  handleChangeTechnic = (technic) => {
     if (technic === 'SCAMPER') {
       this.setState({tags: scamperTags, deletable: false, disabled: true}, () => {
         this.handleChangeTags(this.state.tags)
@@ -57,47 +73,51 @@ class MeetingConfigForm extends Component {
     this.setState({[key]: value}, () => {
       if (value == 'Brainstorming' || value == 'SCAMPER' || value == 'Starfish Retrospective') {
         this.handleChangeTechnic(this.state.technic);
-        this.props.onSetConfig('technic', this.state.technic);
+        this.props.onSetConfig('technic', value);
       }
       if (key == 'votes') {
-        this.props.onSetConfig('votes', this.state.votes)
+        this.props.onSetConfig('votes', value)
       }
     });
   };
 
   handleChangeTags(tags) {
-    this.props.onSetConfig('tags', this.state.tags);
+    this.props.onSetConfig('tags', tags);
   };
 
   handleAddTag() {
     if (this.state.tag !== '') {
+
       let newTags = this.state.tags;
-      newTags.push((this.state.tag));
+      newTags.add((this.state.tag));
+
       this.setState({tags: newTags, tag: ''});
       this.props.onSetConfig('tags', newTags);
     }
   }
 
-  deleteTag(pos) {
+  deleteTag(tag) {
     let newTags = this.state.tags;
-    newTags.map(function (filter, index) {
-      if (pos === index) {
-        newTags.splice(index, 1);
-      }
-    });
+
+    newTags.delete(tag)
+
     this.setState({tags: newTags});
     this.props.onSetConfig('tags', newTags);
   }
 
   tagLabels() {
-    return this.state.tags.map(function (tag, index) {
-      return (
-        <Chip key={index} deletable={this.state.deletable} onDeleteClick={this.deleteTag.bind(this, index)}
+
+    let tagArray = []
+    this.state.tags.forEach((tag) => {
+      tagArray.push(
+        <Chip key={generateUUID()} deletable={this.state.deletable} onDeleteClick={this.deleteTag.bind(this, tag)}
               theme={chipTheme}>
           {tag}
         </Chip>
-      );
-    }.bind(this));
+      )
+    })
+
+    return tagArray
   }
 
 
@@ -109,8 +129,8 @@ class MeetingConfigForm extends Component {
         </div>
         <div className={"row col-md-12 " + cssClasses.form}>
           <div className="col-md-8">
-            <DropdownComponent label="Select technic" onValueChange={this.handleChange.bind(this, "technic")}
-                               source={technics} initialValue={this.state.technic}/>
+            <AutocompleteComponent label="Select Technic" onValueChange={this.handleChange.bind(this, 'technic')}
+                                   source={technics} initialValue={this.state.technic}/>
           </div>
           <InputComponent className={"col-md-4"}
                           onValueChange={this.handleChange.bind(this, "votes")} value={this.state.votes.toString()}
@@ -134,7 +154,8 @@ class MeetingConfigForm extends Component {
 
 
 MeetingConfigForm.propTypes = {
-  onSetConfig: PropTypes.func
+  onSetConfig: PropTypes.func,
+  meetingInfo: PropTypes.any
 };
 
 export default MeetingConfigForm
