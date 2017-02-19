@@ -109,15 +109,15 @@ class MeetingView extends Component {
 
     if (this.props.fromMeeting === true) {
       this.setState({
-        topic: this.props.meetingInfoSave["meeting"]["topic"],
-        description: this.props.meetingInfoSave["meeting"]["description"],
-        programmedDate: this.props.meetingInfoSave["meeting"]["time"],
-        ownerName: this.props.meetingInfoSave["meeting"]["ownerName"],
-        time: this.props.meetingInfoSave["meeting"]["time"],
-        endTime: this.props.meetingInfoSave["meeting"]["endDate"],
-        votes: this.props.meetingInfoSave["meeting"]["votes"],
-        tags: this.props.meetingInfoSave["meeting"]["tags"],
-        technic: this.props.meetingInfoSave["meeting"]["technic"]
+        topic: this.props.meetingInfoSave.topic,
+        description: this.props.meetingInfoSave.description,
+        programmedDate: this.props.meetingInfoSave.time,
+        ownerName: this.props.meetingInfoSave.ownerName,
+        time: this.props.meetingInfoSave.time,
+        endTime: this.props.meetingInfoSave.endDate,
+        votes: this.props.meetingInfoSave.meetingConfig.votes,
+        tags: this.props.meetingInfoSave.meetingConfig.tags,
+        technic: this.props.meetingInfoSave.meetingConfig.technic
       })
     }
 
@@ -212,9 +212,11 @@ class MeetingView extends Component {
       programmedDate: this.state.programmedDate,
       endDate: this.state.endDate,
       time: this.state.time,
-      votes: this.state.votes,
-      tags: this.state.tags,
-      technic: this.state.technic
+      meetingConfig: {
+        votes: this.state.votes,
+        tags: this.state.tags,
+        technic: this.state.technic
+      }
     };
 
     this.props.saveMeetingInfo(meetingInfo);

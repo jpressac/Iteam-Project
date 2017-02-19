@@ -20,7 +20,7 @@ import listItemGrey from './ListItemGrey.scss'
 import Tooltip from 'react-toolbox/lib/tooltip';
 import {Button} from 'react-toolbox/lib/button';
 import Chip from 'react-toolbox/lib/chip';
-import {saveConfig} from '../../redux/reducers/Meeting/MeetingConfigReducer';
+import {saveMeetingInfo} from '../../redux/reducers/Meeting/MeetingReducer';
 import Spinner from '../Spinner/Spinner';
 import {validateDate, validateStart, validateHour, changeEndDate, checkDate} from '../../utils/DateUtils'
 import {calculateTotalPages, calculateOffset} from '../../utils/mathUtils'
@@ -61,7 +61,7 @@ const mapDispatchToProps = (dispatch) => ({
 
   onClick: () => dispatch(push('/' + PATHS.MENULOGGEDIN.PERSONALBOARD)),
   updateMyMeetingId: (meetingId) => dispatch(updateMeetingId(meetingId)),
-  saveMeetingConfig: (meeting) => dispatch(saveConfig(meeting)),
+  saveMeeting: (meeting) => dispatch(saveMeetingInfo(meeting)),
   finishChat: () => dispatch(cleanMeetingChats())
 });
 
@@ -82,15 +82,15 @@ class MymeetForm extends Component {
       technic: '',
       teamName: {},
       tag: '',
-      tags:new Set(),
+      tags: new Set(),
       showSpinner: true,
       endTime: new Date(),
       searchField: '',
       offset: 0,
       totalMeetings: 0,
       totalPages: 0,
-      disabled:true,
-      deletable:false
+      disabled: true,
+      deletable: false
     }
   }
 
@@ -119,17 +119,10 @@ class MymeetForm extends Component {
 
 
   startMeeting() {
-    //Object that contains meeting info for reducer for Toolbar
-    let meetingInfo = {};
-    meetingInfo.topic = this.state.meetEdit.topic;
-    meetingInfo.owner = this.state.owner;
-    meetingInfo.config = this.state.config;
-
     //Reducer containing toolbar info
-    this.props.saveMeetingConfig(meetingInfo);
-
+    this.props.saveMeeting(this.state.meetEdit);
     //Reducer for meeting ID
-    this.props.updateMyMeetingId(this.state.meetEdit.meetingId);
+    //this.props.updateMyMeetingId(this.state.meetEdit.meetingId);
     this.props.finishChat();
 
     //Dispatch to personal board
@@ -152,6 +145,7 @@ class MymeetForm extends Component {
       tags: meeting.meetingConfig.tags
 
     });
+    this.props.saveMeeting(meeting);
 
     let datetime = new Date(meeting.programmedDate);
     programDate.setFullYear(datetime.getFullYear());
@@ -229,11 +223,12 @@ class MymeetForm extends Component {
 
   save() {
     let editedMeeting = {
+      owner: this.state.meetEdit.owner,
       meetingId: this.state.meetEdit.meetingId,
       topic: this.state.topic,
       description: this.state.description,
       programmedDate: new Date(programDate).getTime(),
-      endDate: new Date(this.state.endTime).getTime(),
+      endDate: new Date(endDate).getTime(),
       meetingConfig: {
         votes: this.state.votes,
         technic: this.state.technic,
@@ -248,7 +243,10 @@ class MymeetForm extends Component {
       //TODO: implement something here
     });
 
-    this.setState({active: !this.state.active});
+    this.setState({
+      active: !this.state.active,
+      meetEdit: editedMeeting
+    });
   }
 
   onChangeProgrammedDate = (date) => {
@@ -301,7 +299,7 @@ class MymeetForm extends Component {
       this.setState({tags: retroTags, deletable: false, disabled: true});
     }
     else {
-      this.setState({tags: this.state.tags.clear , deletable: true, disabled: false});
+      this.setState({tags: this.state.tags.clear, deletable: true, disabled: false});
     }
   };
 
@@ -328,6 +326,7 @@ class MymeetForm extends Component {
       this.setState({tag: '', tags: newTags});
     }
   }
+
   tagLabels() {
     let tagArray = [];
     this.state.tags.forEach((tag) => {
@@ -528,7 +527,7 @@ class MymeetForm extends Component {
 MymeetForm.propTypes = {
   onClick: PropTypes.func,
   user: PropTypes.any,
-  saveMeetingConfig: PropTypes.func,
+  saveMeeting: PropTypes.func,
   finishChat: PropTypes.any
 };
 

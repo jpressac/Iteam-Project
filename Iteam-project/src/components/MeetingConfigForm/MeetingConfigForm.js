@@ -42,9 +42,9 @@ class MeetingConfigForm extends Component {
   componentWillMount() {
     if (this.props.meetingInfo != null) {
       this.setState({
-        votes: this.props.meetingInfo["meeting"]["votes"],
-        tags: this.props.meetingInfo["meeting"]["tags"],
-        technic: this.props.meetingInfo["meeting"]["technic"]
+        votes: this.props.meetingInfo.meetingConfig.votes,
+        tags: this.props.meetingInfo.meetingConfig.tags,
+        technic: this.props.meetingInfo.meetingConfig.technic
       })
     }
   }

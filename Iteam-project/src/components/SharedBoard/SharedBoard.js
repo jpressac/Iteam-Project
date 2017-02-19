@@ -22,6 +22,7 @@ import Chat from '../Chat/Chat'
 import Modal from '../BootstrapModal/BootstrapModal'
 import panelTheme from '../SharedBoard/panel.scss'
 import Scamper from '../Scamper/Scamper'
+import {saveVotes} from '../../redux/reducers/Meeting/MeetingVotesReducer'
 import StarfishRetro from '../StarfishRetro/StarfishRetro'
 
 const NoteTarget = {
@@ -40,8 +41,9 @@ const mapStateToProps = (state) => {
       meetingId: state.meetingReducer.meetingId,
       connected: state.meetingUser,
       user: state.loginUser.user.username,
-      meetingConfiguration: state.meetingConfigurationReducer.meeting.config,
-      meetingOwner: state.meetingConfigurationReducer.meeting.owner
+      meetingConfiguration: state.meetingReducer.meetingConfig,
+      meetingOwner: state.meetingReducer.ownerName,
+      votes: state.meetingsVotesReducer
     }
   }
 };
@@ -51,8 +53,8 @@ const mapDispatchToProps = (dispatch) => ({
   onClick: () => dispatch(push('/' + PATHS.MENULOGGEDIN.REPORTS)),
   home: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HOME)),
   personalBoard: () => dispatch(push('/' + PATHS.MENULOGGEDIN.PERSONALBOARD)),
-  userDisconnected: () => dispatch(userDisconnection())
-
+  userDisconnected: () => dispatch(userDisconnection()),
+  meetingsVotesUpdate: (votes) => dispatch(saveVotes(votes))
 });
 
 
@@ -71,13 +73,16 @@ class SharedBoard extends Component {
       mapTag: [],
       tagName: 'All',
       userName: 'All',
-      usersNames: []
+      usersNames: [],
+      votes: 0
     }
   }
 
   componentWillMount() {
-    console.log(this.props.meetingConfiguration.tags)
-    this.setState({mapTag: this.props.meetingConfiguration.tags })
+    this.setState({
+      mapTag: this.props.meetingConfiguration.tags,
+      votes: this.props.votes != null ? this.props.votes : 0
+    });
 
     //Getting notes already shared in the board before rendering
     axios.get(MEETING.MEETING_INFO, {
@@ -88,7 +93,6 @@ class SharedBoard extends Component {
 
       this.setState({notes: response.data});
     }).catch((response) => {
-      console.log('error ' + response)
     });
 
     //Get team participants for sidebar
@@ -110,7 +114,6 @@ class SharedBoard extends Component {
   }
 
   renderTechnic(technic) {
-    console.log(technic);
     switch (technic) {
       case 'Brainstorming':
         return (
@@ -154,7 +157,6 @@ class SharedBoard extends Component {
   }
 
   renderNotes(noteMap, valueForTagFilter, valueForUserFilter) {
-    console.log('Filters:' + ' ' + valueForTagFilter + ' ' + valueForUserFilter);
     //First get notes that have the selected tag
     let filteredNotes = Object.values(noteMap).filter((note) => {
         if (valueForTagFilter === this.state.mapTag[0]) {
@@ -176,7 +178,6 @@ class SharedBoard extends Component {
         }
       }
     });
-    console.log(filteredNotes)
 
     //Finally get the notes that have the combination of both filters selected
     return filteredNotes.map((note) => {
@@ -227,8 +228,7 @@ class SharedBoard extends Component {
       return userInfo;
     });
 
-    let userTag = this.state.users.concat(teamParticipants.map( (user) => user.username))
-    console.log(userTag)
+    let userTag = this.state.users.concat(teamParticipants.map((user) => user.username))
 
     this.setState(
       {
@@ -241,14 +241,14 @@ class SharedBoard extends Component {
   saveNotes() {
     let ideas = Object.values(this.state.notes).map((value) => {
       return (
-        {
-          username: value.username,
-          title: value.title,
-          comments: value.comments,
-          ranking: value.ranking,
-          meetingId: value.meetingId,
-          tag: value.tag
-        }
+      {
+        username: value.username,
+        title: value.title,
+        comments: value.comments,
+        ranking: value.ranking,
+        meetingId: value.meetingId,
+        tag: value.tag
+      }
       );
     });
 
@@ -330,13 +330,19 @@ class SharedBoard extends Component {
   }
 
   onUpdateRanking(id, vote) {
-    let map = this.state.notes;
-    let note = map[id];
-    if (note.ranking + vote >= 0) {
-      note.ranking += vote;
-      this.sendUpdate("updateSharedBoardCache", id)
+    if (this.state.votes < this.props.meetingConfiguration.votes) {
+      let map = this.state.notes;
+      let note = map[id];
+      if (note.ranking + vote >= 0) {
+        note.ranking += vote;
+        this.sendUpdate("updateSharedBoardCache", id)
+      }
+      this.setState({note: map, votes: votes += 1})
     }
-    this.setState({note: map})
+    else {
+      this.setState({modalMessage: 'You do not have more votes!'});
+      this.refs.mymodal.openModal();
+    }
   }
 
   sendUpdate(action, id) {
@@ -371,18 +377,18 @@ class SharedBoard extends Component {
         //TODO:same as update.
         Object.keys(jsonPayloadMessage).map((key) => {
           map[key] =
-            {
-              id: key,
-              left: SharedBoard.generateRandomNumber(),
-              top: SharedBoard.generateRandomNumber(),
-              username: jsonPayloadMessage[key].username,
-              title: jsonPayloadMessage[key].title,
-              comments: '',
-              ranking: 0,
-              meetingId: this.props.meetingId,
-              boardType: "shared",
-              tag: jsonPayloadMessage[key].tag
-            }
+          {
+            id: key,
+            left: SharedBoard.generateRandomNumber(),
+            top: SharedBoard.generateRandomNumber(),
+            username: jsonPayloadMessage[key].username,
+            title: jsonPayloadMessage[key].title,
+            comments: '',
+            ranking: 0,
+            meetingId: this.props.meetingId,
+            boardType: "shared",
+            tag: jsonPayloadMessage[key].tag
+          }
         });
 
         this.setState({notes: map});
@@ -392,18 +398,18 @@ class SharedBoard extends Component {
 
         if (map[jsonPayloadMessage.id].comments != jsonPayloadMessage.comments || map[jsonPayloadMessage.id].ranking != jsonPayloadMessage.ranking) {
           map[jsonPayloadMessage.id] =
-            {
-              id: jsonPayloadMessage.id,
-              username: jsonPayloadMessage.username,
-              left: map[jsonPayloadMessage.id].left,
-              top: map[jsonPayloadMessage.id].top,
-              title: jsonPayloadMessage.title,
-              comments: jsonPayloadMessage.comments,
-              ranking: jsonPayloadMessage.ranking,
-              meetingId: this.props.meetingId,
-              boardType: "shared",
-              tag: jsonPayloadMessage.tag
-            };
+          {
+            id: jsonPayloadMessage.id,
+            username: jsonPayloadMessage.username,
+            left: map[jsonPayloadMessage.id].left,
+            top: map[jsonPayloadMessage.id].top,
+            title: jsonPayloadMessage.title,
+            comments: jsonPayloadMessage.comments,
+            ranking: jsonPayloadMessage.ranking,
+            meetingId: this.props.meetingId,
+            boardType: "shared",
+            tag: jsonPayloadMessage.tag
+          };
         }
         this.setState({notes: map});
         break;
@@ -467,8 +473,17 @@ class SharedBoard extends Component {
     }
   }
 
-  handleChange(key, value){
+  handleChange(key, value) {
     this.setState({[key]: value})
+  }
+
+  goToPersonal() {
+    this.props.meetingsVotesUpdate(this.state.votes);
+    this.props.personalBoard
+  }
+
+  availableVotes() {
+    return this.props.meetingConfiguration.votes - this.state.votes;
   }
 
   render() {
@@ -485,8 +500,11 @@ class SharedBoard extends Component {
             </div>
             <label className={classes.label1}>SHARED BOARD</label>
             <MenuItem value='personalBoard' icon='people'
-                      caption='Personal Board' onClick={this.props.personalBoard}/>
+                      caption='Personal Board' onClick={this.goToPersonal()}/>
             <MenuDivider/>
+            <MenuItem value='votes' icon='star_half'
+                      caption='Available votes: '>{this.availableVotes().toString()}
+            </MenuItem>
             <Autocomplete label="Tag Filter" source={this.state.mapTag} initialValue='All'
                           onValueChange={this.handleChange.bind(this, 'tagName')}/>
             <Autocomplete label="User Filter" source={this.state.users} initialValue='All'
@@ -526,14 +544,16 @@ SharedBoard.propTypes = {
   userDisconnected: PropTypes.func,
   meetingConfiguration: PropTypes.any,
   meetingEndingDate: PropTypes.any,
-  meetingOwner: PropTypes.string
+  meetingOwner: PropTypes.string,
+  meetingsVotesUpdate: PropTypes.any,
+  votes: PropTypes.func
 };
 
 export default flow(
   DropTarget(ItemTypes.NOTE, NoteTarget,
     connect =>
       ( {
-          connectDropTarget: connect.dropTarget()
-        }
+        connectDropTarget: connect.dropTarget()
+      }
       )), connect(mapStateToProps, mapDispatchToProps))(SharedBoard);
 
