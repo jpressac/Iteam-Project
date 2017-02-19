@@ -20,14 +20,7 @@ public class Meeting {
     private String teamName;
     private String description;
     private MeetingConfigDTO meetingConfig;
-
-    public String getOwnerName() {
-        return ownerName;
-    }
-
-    public Long getProgrammedDate() {
-        return programmedDate;
-    }
+    private boolean useSlack = false;
 
     public Meeting() {
     }
@@ -35,6 +28,22 @@ public class Meeting {
     public Meeting(String id, boolean ended) {
         this.meetingId = id;
         this.ended = ended;
+    }
+
+    public boolean isUseSlack() {
+        return useSlack;
+    }
+
+    public void setUseSlack(boolean useSlack) {
+        this.useSlack = useSlack;
+    }
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public Long getProgrammedDate() {
+        return programmedDate;
     }
 
     public Long getCreationDate() {

@@ -2,8 +2,9 @@ package org.iteam.data.dal.meeting;
 
 import java.util.List;
 
+import org.iteam.data.dto.Idea;
 import org.iteam.data.dto.Meeting;
-import org.iteam.data.model.D3CollapseTreeModel;
+import org.iteam.data.dto.ViewedMeeting;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
 import org.iteam.data.model.PaginationModel;
@@ -21,7 +22,7 @@ public interface MeetingRepository {
      *            the meeting to create
      * @return true if it was successful, false otherwise
      */
-    public String createMeeting(Meeting meeting);
+    public boolean createMeeting(Meeting meeting);
 
     /**
      * Save the ideas generated during the meeting.
@@ -31,50 +32,6 @@ public interface MeetingRepository {
      * @return true if it was successful, false otherwise.
      */
     public void saveIdeas(IdeasDTO ideas);
-
-    /**
-     * Generate the report aggregated by user
-     * 
-     * @param meetingId
-     *            the id of the meeting.
-     * @param users
-     *            the list of users to create the report.
-     * @param tags
-     *            the list of tag to create the report.
-     * @return the report information.
-     */
-    public D3CollapseTreeModel generateBasicReportByUser(String meetingId, List<String> users, List<String> tags);
-
-    /**
-     * Generate the report aggregated by tag
-     * 
-     * @param meetingId
-     *            the id of the meeting.
-     * @param tags
-     *            the list of tag to create the report.
-     * @return the report information.
-     */
-    public D3CollapseTreeModel generateBasicReportByTag(String meetingId, List<String> tags);
-
-    /**
-     * Generate the report aggregated by tag including the ranking of each idea.
-     * 
-     * @param meetingId
-     *            the id of the meeting.
-     * @param tags
-     *            the list of tag to create the report.
-     * @return the report information.
-     */
-    public D3CollapseTreeModel generateBasicReportByRanking(String meetingId, List<String> tags);
-
-    /**
-     * Retrieve the all the meetings in which a user is part of.
-     * 
-     * @param username
-     *            the username.
-     * @return the list of the meetings.
-     */
-    public List<Meeting> getMeetingUser(String username);
 
     /**
      * Save the ideas of a meeting, it's just temporary.
@@ -104,7 +61,7 @@ public interface MeetingRepository {
      * @return true if it's succes, false otherwise.
      */
 
-    public boolean updateMeeting(Meeting updatedMeeting);
+    public void updateMeeting(Meeting updatedMeeting);
 
     /**
      * Save actual users connected
@@ -183,14 +140,71 @@ public interface MeetingRepository {
      */
     public void removeIdeasFromCacheSharedBoard(String meetingId, String info);
 
-    public PaginationModel<Meeting> getProgrammedMeetings(String username, int offset, int limit);
-
+    /**
+     * Update the state of the meetings to ended, just the finalized meetings.
+     */
     public void updateEndedMeetings();
 
-    public PaginationModel<Meeting> getEndedMeetingByToken(String username, String token, int offset, int limit);
+    /**
+     * Retrieve the scheduled meeting given a token (some part of the topic)
+     * 
+     * @param username
+     *            the username of some team member
+     * @param token
+     *            the token to be search as part of meeting topic. If it's null
+     *            it will look for all meetings.
+     * @param offset
+     *            pagination from
+     * @param limit
+     *            pagination limit
+     * @param ended
+     *            true to search ended meetings, false to search scheduled
+     *            meetings.
+     * @return a model representation of the scheduled meetings.
+     */
+    public PaginationModel<Meeting> getMeetingsByToken(String username, String token, int offset, int limit,
+            boolean ended);
 
-    public PaginationModel<Meeting> getProgrammedMeetingsByToken(String name, String token, int offset, int limit);
+    /**
+     * Retrieve the scheduled meeting given a token (some part of the topic)
+     * 
+     * @param username
+     *            the username of some team member
+     * @param offset
+     *            pagination from
+     * @param limit
+     *            pagination limit
+     * @param ended
+     *            true to search ended meetings, false to search scheduled
+     *            meetings.
+     * @return a model representation of the scheduled meetings.
+     */
+    public PaginationModel<Meeting> getMeetingsByToken(String username, int offset, int limit, boolean ended);
 
-    public PaginationModel<Meeting> getEndedMeetings(String username, int offset, int limit);
+    /**
+     * Get the meeting topic, given the meeting id.
+     * 
+     * @param meetingId
+     *            the id of the meeting.
+     * @return the meeting topic.
+     */
+    public String getMeetingTopic(String meetingId);
+
+    /**
+     * Retrieve all the ideas given a meeting id.
+     * 
+     * @param meetingId
+     *            the id of the meeting.
+     * @return a list of ideas.
+     */
+    public List<Idea> getIdeasGivenMeetingId(String meetingId);
+
+    public boolean createMeetingViewed(Meeting meeting);
+
+    public List<ViewedMeeting> getMeetingsNotViewed(String username);
+
+    public void updateMeetingViewedByUser(List<ViewedMeeting> meetingsViewedByUser, String username);
+
+    public void updateMeetingViewed(Meeting updatedMeeting);
 
 }

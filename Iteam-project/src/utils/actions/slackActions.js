@@ -7,3 +7,12 @@ export function createChannel(meetingChannelName){
     meetingId: meetingChannelName
   }})
 }
+
+export function getSlackAndNonSlackUsers(teamId){
+  return axios.get(SLACK.SLACK_VERIFY_USERS, {
+    params: {
+      teamId : teamId
+    }
+  })
+}
+

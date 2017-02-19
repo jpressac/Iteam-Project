@@ -9,10 +9,12 @@ import org.springframework.stereotype.Service;
 public class SlackServiceImpl implements SlackService {
 
     private SlackRepositoryImpl slackRepository;
+    private static String BOT_TOKEN = "xoxb-141135744790-P7NOxQkNferYDZnZUAvF7M7W";
+    private static String APP_TOKEN = "xoxp-140386445603-141146385335-141139898470-d07c0391cc828de808c1ca6832f0dbd8";
 
     @Override
     public void createMeetingChannel(String meetingId, String token) {
-        slackRepository.createMeetingChannel(meetingId, token);
+        slackRepository.createMeetingGroup(meetingId, token);
     }
 
     @Override
@@ -41,8 +43,8 @@ public class SlackServiceImpl implements SlackService {
     }
 
     @Override
-    public void inviteUsersToChannel(String token, String teamId, String meetingTopic) {
-        slackRepository.createAndinviteToMeetingChannel(meetingTopic, token, teamId);
+    public void inviteUsersToChannel(String teamId, String meetingTopic) {
+        slackRepository.createAndinviteToMeetingGroup(meetingTopic, teamId);
     }
 
     @Autowired

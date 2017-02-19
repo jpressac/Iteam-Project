@@ -34,8 +34,7 @@ public class SlackController {
     }
 
     @RequestMapping(value = "slack/teamusers", method = RequestMethod.GET)
-    public ResponseEntity<SlackModel> getTeamUsers(@RequestParam(value = "token") String token,
-            @RequestParam(value = "teamId") String teamId) {
+    public ResponseEntity<SlackModel> getTeamUsers(@RequestParam(value = "teamId") String teamId) {
         return new ResponseEntity<SlackModel>(slackService.getTeamUsers(APP_TOKEN, teamId), HttpStatus.OK);
     }
 
@@ -62,7 +61,7 @@ public class SlackController {
     public ResponseEntity<Void> inviteUsersToMeetingChannel(
             @RequestParam(value = "meetingTopic", required = true) String meetingTopic,
             @RequestParam(value = "teamId", required = true) String teamId) {
-        slackService.inviteUsersToChannel(APP_TOKEN, teamId, meetingTopic);
+        slackService.inviteUsersToChannel(teamId, meetingTopic);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 

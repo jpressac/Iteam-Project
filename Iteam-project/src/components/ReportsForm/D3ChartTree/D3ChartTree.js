@@ -131,7 +131,7 @@ class D3ChartTree extends React.Component {
       });
 
     leafNodeG
-      .on("mousemove", function(d){
+      .on("mouseover", function(d){
         div
           .style("left", d3.event.pageX - 100 + "px")
           .style("top", d3.event.pageY - 70 + "px")
@@ -142,9 +142,8 @@ class D3ChartTree extends React.Component {
           .style("font-size","smaller")
           .text((d.data.name));
       })
-      .on("mouseout", function(d){ div.style("display", "none");});;
-    leafNodeG
       .on("mouseout", function(d){ div.style("display", "none");});
+
 
     leafNodeG.append("text")
       .attr("dy", 19.5)

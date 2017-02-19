@@ -59,7 +59,7 @@ public interface SlackReposit {
     /*
      * Invite all team members to a channel
      */
-    public void inviteUsersToMeetingChannel(String teamToken, String teamId, String meetingTopic);
+    public void inviteUsersToMeetingGroup(String teamId, String meetingTopic);
 
     /*
      * Posts a message to a channel
@@ -69,11 +69,12 @@ public interface SlackReposit {
     /*
      * Creates a meeting channel
      */
-    public String createMeetingChannel(String meetingId, String token);
+    public String createMeetingGroup(String meetingId, String token);
 
     /*
      * creates a channel, invites the whole team and pins the meeting
      * information
      */
-    public void createAndinviteToMeetingChannel(String meetingTopic, String token, String teamId);
+    public void createAndinviteToMeetingGroup(String meetingTopic, String teamId);
+
 }

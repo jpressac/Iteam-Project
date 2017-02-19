@@ -15,6 +15,7 @@ buildscript {
 		contextSupportVersion = '4.3.0.RELEASE'
 		javaMailVersion = '1.4.7'
 		googleAPIMailVersion = 'v1-rev44-1.22.0'
+		jwtVersion = '3.1.0'
 	}
 	repositories {
 		mavenCentral()
@@ -44,7 +45,7 @@ dependencies {
 	compile("com.google.apis:google-api-services-gmail:${googleAPIMailVersion}"){
 		exclude module: "guava-jdk5"
 	}
-	
+	compile ("com.auth0:java-jwt:${jwtVersion}")
 	compile("javax.websocket:javax.websocket-api:1.1")
 	compile("org.glassfish.tyrus.bundles:tyrus-standalone-client:1.13")
 	compile("com.github.seratch:jslack:1.0.8")
@@ -117,8 +118,10 @@ jacocoTestReport {
             	
             	excludes: [
             		'org/iteam/configuration/**/*',
-            		'org/iteam/controllers/Advisor/**',
+            		'org/iteam/controllers/**',
             		'org/iteam/data/dal/client/**',
+            		'org/iteam/data/dto/**',
+            		'org/iteam/data/model/**',
             		'org/iteam/data/model/**',
             		'org/iteam/exceptions/**'])
         })

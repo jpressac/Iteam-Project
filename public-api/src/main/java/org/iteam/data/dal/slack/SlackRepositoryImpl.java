@@ -21,16 +21,18 @@ import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.seratch.jslack.Slack;
-import com.github.seratch.jslack.api.methods.request.channels.ChannelsCreateRequest;
 import com.github.seratch.jslack.api.methods.request.channels.ChannelsInviteRequest;
 import com.github.seratch.jslack.api.methods.request.channels.ChannelsListRequest;
 import com.github.seratch.jslack.api.methods.request.chat.ChatPostMessageRequest;
+import com.github.seratch.jslack.api.methods.request.groups.GroupsCreateRequest;
+import com.github.seratch.jslack.api.methods.request.groups.GroupsInviteRequest;
 import com.github.seratch.jslack.api.methods.request.pins.PinsAddRequest;
 import com.github.seratch.jslack.api.methods.request.users.UsersListRequest;
-import com.github.seratch.jslack.api.methods.response.channels.ChannelsCreateResponse;
 import com.github.seratch.jslack.api.methods.response.channels.ChannelsInviteResponse;
 import com.github.seratch.jslack.api.methods.response.channels.ChannelsListResponse;
 import com.github.seratch.jslack.api.methods.response.chat.ChatPostMessageResponse;
+import com.github.seratch.jslack.api.methods.response.groups.GroupsCreateResponse;
+import com.github.seratch.jslack.api.methods.response.groups.GroupsInviteResponse;
 import com.github.seratch.jslack.api.methods.response.pins.PinsAddResponse;
 import com.github.seratch.jslack.api.methods.response.users.UsersListResponse;
 import com.github.seratch.jslack.api.model.Channel;
@@ -45,27 +47,30 @@ public class SlackRepositoryImpl implements SlackReposit {
 
     private static final String URI_TEMPLATE_SLACK_ADD_TEAM = "https://slack.com/api/users.admin.invite?token={token}&email={mail}";
 
+    private static String BOT_TOKEN = "xoxb-141135744790-P7NOxQkNferYDZnZUAvF7M7W";
+    private static String APP_TOKEN = "xoxp-140386445603-141146385335-141139898470-d07c0391cc828de808c1ca6832f0dbd8";
+
     @Override
-    public void createAndinviteToMeetingChannel(String meetingTopic, String token, String teamId) {
-        String channelId = createMeetingChannel(meetingTopic, token);
-        if (!StringUtils.isEmpty(channelId)) {
-            pinMeetingInfo(channelId, "Meeting information", token);
-            inviteUsersToMeetingChannel(token, teamId, channelId);
+    public void createAndinviteToMeetingGroup(String meetingTopic, String teamId) {
+        String groupId = createMeetingGroup(meetingTopic, APP_TOKEN);
+        if (!StringUtils.isEmpty(groupId)) {
+            pinMeetingInfo(groupId, "Meeting information", APP_TOKEN);
+            inviteUsersToMeetingGroup(teamId, groupId);
         }
     }
 
     @Override
-    public String createMeetingChannel(String meetingId, String token) {
-        String channelId = StringUtils.EMPTY;
-        ChannelsCreateRequest channelCreation = ChannelsCreateRequest.builder().token(token).name(meetingId).build();
+    public String createMeetingGroup(String meetingId, String token) {
+        String groupId = StringUtils.EMPTY;
+        GroupsCreateRequest groupCreateRequest = GroupsCreateRequest.builder().token(token).name(meetingId).build();
         try {
-            ChannelsCreateResponse response = slack.methods().channelsCreate(channelCreation);
-            LOGGER.info("Slack channel for meeting {} ", meetingId);
-            channelId = response.getChannel().getId();
+            GroupsCreateResponse response = slack.methods().groupsCreate(groupCreateRequest);
+            LOGGER.info("Slack group for meeting {} ", meetingId);
+            groupId = response.getGroup().getId();
         } catch (Exception e) {
             LOGGER.error("Error when creating slack channel for meeting ", e);
         }
-        return channelId;
+        return groupId;
     }
 
     @Override
@@ -82,19 +87,19 @@ public class SlackRepositoryImpl implements SlackReposit {
 
     // Used by API
     @Override
-    public void inviteUsersToMeetingChannel(String teamToken, String teamId, String meetingTopic) {
-        List<String> userIds = getUsersSlackIds(teamToken, teamId, meetingTopic);
+    public void inviteUsersToMeetingGroup(String teamId, String meetingTopic) {
+        List<String> userIds = getUsersSlackIds(APP_TOKEN, teamId, meetingTopic);
 
         if (!CollectionUtils.isEmpty(userIds)) {
             for (String id : userIds) {
-                ChannelsInviteRequest inviteReq = ChannelsInviteRequest.builder().token(teamToken).channel(meetingTopic)
+                GroupsInviteRequest inviteReq = GroupsInviteRequest.builder().token(APP_TOKEN).channel(meetingTopic)
                         .user(id).build();
                 LOGGER.info(id);
                 try {
-                    ChannelsInviteResponse inviteResponse = slack.methods().channelsInvite(inviteReq);
+                    GroupsInviteResponse inviteResponse = slack.methods().groupsInvite(inviteReq);
                     LOGGER.info(inviteResponse.toString());
                 } catch (Exception e) {
-                    LOGGER.error("Users couldn't be invited to channel", e);
+                    LOGGER.error("Users couldn't be invited to meeting group", e);
                 }
             }
         }
@@ -148,7 +153,7 @@ public class SlackRepositoryImpl implements SlackReposit {
         } catch (Exception e) {
             LOGGER.error("Error when retrieving users", e);
         }
-        return null;
+        return new UsersListResponse();
     }
 
     private List<String> getTeamSlackUsers(String teamToken) {
@@ -210,7 +215,7 @@ public class SlackRepositoryImpl implements SlackReposit {
                 if (slackUsers.contains(user.getMail())) {
                     usersInSlack.add(user.getUsername());
                 } else {
-                    usersWithoutSlack.add(user.getName());
+                    usersWithoutSlack.add(user.getUsername());
                 }
             }
         }

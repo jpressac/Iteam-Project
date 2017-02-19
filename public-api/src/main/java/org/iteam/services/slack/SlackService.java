@@ -16,5 +16,5 @@ public interface SlackService {
 
     public SlackModel getTeamUsers(String teamToken, String teamName);
 
-    public void inviteUsersToChannel(String token, String teamId, String meetingTopic);
+    public void inviteUsersToChannel(String teamId, String meetingTopic);
 }

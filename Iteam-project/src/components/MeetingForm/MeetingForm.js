@@ -1,28 +1,35 @@
 import React, {Component, PropTypes} from "react"
 import cssClasses from '../ComponentCSSForms/componentCSS.scss'
 import axios from 'axios'
+import {PATHS} from './../../constants/routes'
 import TimePicker from 'react-toolbox/lib/time_picker'
 import {connect} from 'react-redux'
 import DatePicker from 'react-toolbox/lib/date_picker'
 import BootstrapModal from '../../components/BootstrapModal/BootstrapModal'
 import InputComponent from '../InputComponent/InputComponent'
-import DropdownComponent from '../DropdownComponent/DropdownComponent'
+import AutocompleteComponent from '../AutocompleteComponent/AutocompleteComponent'
 import ButtonComponent from '../ButtonComponent/ButtonComponent'
 import Spinner from '../Spinner/Spinner'
-import {saveMeeting, meetingToMeetingConfig} from '../../redux/reducers/Meeting/MeetingReducer'
+import {saveMeeting, meetingSlackInfo} from '../../redux/reducers/Meeting/MeetingReducer'
 import {meetingToNewTeam} from '../../redux/reducers/Meeting/MeetingForTeamReducer'
 import themeLabel from './label.scss'
 import Avatar from 'react-toolbox/lib/avatar'
 import avatarTheme from './avatarTheme.scss'
 import {TEAM} from '../../constants/HostConfiguration'
-import {PATHS} from "../../constants/routes";
 import {push} from 'react-router-redux'
+import {createMeeting} from '../../utils/actions/meetingActions'
+import Tooltip from 'react-toolbox/lib/tooltip'
+import Checkbox from 'react-toolbox/lib/checkbox'
+import MeetingConfigForm from '../MeetingConfigForm/MeetingConfigForm'
+
+const TooltipCheckbox = Tooltip(Checkbox);
 
 const mapDispatchToProps = dispatch => ({
   saveMeetingInfo: (meeting) => dispatch(saveMeeting(meeting)),
   meetingToCreateNewTeam: () => dispatch(meetingToNewTeam()),
-  goToMeetingConfig: (meeting) => dispatch(meetingToMeetingConfig(meeting)),
-  home: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HOME))
+  goToSlackInfo: (meeting) => dispatch(meetingSlackInfo(meeting)),
+  home: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HOME)),
+  myMeetings: () => dispatch(push('/' + PATHS.MENULOGGEDIN.MYMEETINGS))
 });
 
 const mapStateToProps = (state) => {
@@ -34,6 +41,7 @@ const mapStateToProps = (state) => {
     }
   }
 };
+
 
 class MeetingView extends Component {
 
@@ -49,7 +57,12 @@ class MeetingView extends Component {
       teamsObj: [],
       teamSelectedName: '',
       teamList: [],
-      showSpinner: true
+      showSpinner: true,
+      meetingConfig: {},
+      votes: 0,
+      technic: '',
+      tags: [],
+      useSlack: false
     }
   };
 
@@ -96,13 +109,16 @@ class MeetingView extends Component {
 
   componentWillMount() {
 
-    if (this.props.fromMeeting === true) {
+    if (this.props.meetingInfoSave != null) {
       this.setState({
         topic: this.props.meetingInfoSave["meeting"]["topic"],
         description: this.props.meetingInfoSave["meeting"]["description"],
-        programmedDate: this.props.meetingInfoSave["meeting"]["time"],
+        programmedDate: new Date(this.props.meetingInfoSave["meeting"]["time"]),
         ownerName: this.props.meetingInfoSave["meeting"]["ownerName"],
-        time: this.props.meetingInfoSave["meeting"]["time"]
+        time: new Date(this.props.meetingInfoSave["meeting"]["time"]),
+        useSlack: this.props.meetingInfoSave["meeting"]["useSlack"],
+        teamSelectedName: this.props.meetingInfoSave["meeting"]["teamName"],
+        endDate: new Date(this.props.meetingInfoSave["meeting"]["endDate"])
       })
     }
 
@@ -110,7 +126,11 @@ class MeetingView extends Component {
     ).then(function (response) {
       this.fillTeam(response.data)
     }.bind(this));
+  }
 
+  getSlackInfo(){
+    let meetingInfo = this.setReducerInfo();
+    this.props.goToSlackInfo(meetingInfo);
   }
 
   fillTeam(data) {
@@ -129,30 +149,62 @@ class MeetingView extends Component {
     this.setState({teamsObj: opt, showSpinner: false, teamList: teamInfo})
   }
 
-  configureMeeting() {
-    let teamId = '';
+  addTagMiscellaneous() {
+    let newTags = this.state.tags;
+
+    if (this.state.technic == 'Brainstorming') {
+      newTags.add('Miscellaneous')
+    }
+
+    //The 'All' will be available for all technics
+    newTags.add('All')
+    this.setState({tags: newTags})
+  }
+
+  createNewMeeting() {
     if (this.state.topic === '' || this.state.description === '' || this.state.teamSelectedName === '') {
       this.setState({message: '¡You have to complete the form!'});
       this.refs.meetingModal.openModal();
 
     } else {
-      teamId = this.searchTeamIdGivenTeamName(this.state.teamSelectedName);
 
-      let meetingInfo = {
-        topic: this.state.topic,
-        description: this.state.description,
-        ownerName: this.props.user,
-        programmedDate: this.state.programmedDate.getTime(),
-        endDate: this.state.endDate.getTime(),
-        teamId: teamId
-      };
-      this.props.goToMeetingConfig(meetingInfo);
+      this.addTagMiscellaneous();
+      this.setState({showSpinner: true});
+      let meetingInfo = this.setReducerInfo();
+
+      createMeeting(meetingInfo).then(() => {
+          this.props.myMeetings();
+        }).catch(() => {
+          //TODO: implement modal here or go to error page
+        });
+      //REDUCER
+      //this.props.goToMeetingConfig(meetingInfo);
     }
   }
-
+  setReducerInfo(){
+    let teamId ='';
+    if(this.state.teamSelectedName !== '') {
+      teamId = this.searchTeamIdGivenTeamName(this.state.teamSelectedName);
+    }
+    let meetingInfo = {
+      topic: this.state.topic,
+      description: this.state.description,
+      ownerName: this.props.user,
+      programmedDate: this.state.programmedDate.getTime(),
+      endDate: this.state.endDate.getTime(),
+      time: this.state.time,
+      teamName: teamId,
+      meetingConfig: {
+        votes: this.state.votes,
+        tags: this.state.tags,
+        technic: this.state.technic
+      },
+      useSlack: this.state.useSlack
+    };
+    return meetingInfo;
+  }
   searchTeamIdGivenTeamName(teamNameCombo) {
     let filtered = this.state.teamList.filter(team => team.teamName === teamNameCombo);
-
     return filtered[0]["teamId"]
   }
 
@@ -161,27 +213,17 @@ class MeetingView extends Component {
   }
 
   createTeamAction() {
-    let meetingInfo = {
-      topic: this.state.topic,
-      description: this.state.description,
-      ownerName: this.props.user,
-      programmedDate: this.state.programmedDate,
-      time: this.state.time
-    };
+    let meetingInfo = this.setReducerInfo();
     this.props.saveMeetingInfo(meetingInfo);
     this.props.meetingToCreateNewTeam();
   }
 
-  dropdownTeam() {
-    return (
-      <DropdownComponent label="Select team" initialValue={this.state.teamSelectedName}
-                         onValueChange={this.handleChange.bind(this, 'teamSelectedName')}
-                         source={this.state.teamsObj}/>
-    );
-  }
+  handleConfigChange = (key, value) => {
+    this.setState({[key]: value})
+  };
+
 
   render() {
-
     if (!this.state.showSpinner) {
       return (
         <div className={"container " + cssClasses.containerForm}>
@@ -216,17 +258,31 @@ class MeetingView extends Component {
               </div>
             </div>
             <div className={"col-md-8 " + cssClasses.paddingInnerElements}>
-              {this.dropdownTeam()}
+              <AutocompleteComponent onValueChange={this.handleChange.bind(this, 'teamSelectedName')}
+                                     label="Select team" initialValue='' source={this.state.teamsObj}/>
             </div>
             <ButtonComponent className={"col-md-4 " + cssClasses.paddingInnerElements} raisedValue
                              onClick={this.createTeamAction.bind(this)} value="Create Team"/>
-
             <div className={"col-md-12 " + cssClasses.paddingInnerElements}>
-              <ButtonComponent className="col-md-6" onClick={this.props.home} iconButton="navigate_before"
-                               value="Cancel"/>
-              <ButtonComponent className="col-md-6"
-                               onClick={this.configureMeeting.bind(this)} iconButton="navigate_next"
-                               value="Meeting Settings"/>
+              <div className={"col-md-12 " + cssClasses.paddingInnerElements}>
+                <div className={"col-md-6 " + cssClasses.labelInfo}>
+                  <TooltipCheckbox label='Use a Slack channel'
+                                   checked={this.state.useSlack}
+                                   onChange={this.handleChange.bind(this, 'useSlack')}
+                                   tooltip='Use a slack channel for meeting updates and communication'/>
+                </div>
+                <ButtonComponent className={"col-md-6 " + cssClasses.paddingInnerElements} raisedValue
+                                 onClick={this.getSlackInfo.bind(this)} value="Slack info"/>
+              <MeetingConfigForm onSetConfig={this.handleConfigChange.bind(this)}/>
+            </div>
+
+              <div className={"col-md-12 " + cssClasses.paddingInnerElements}>
+                <ButtonComponent className="col-md-6" onClick={this.props.home} iconButton="navigate_before"
+                                 value="Cancel"/>
+                <ButtonComponent className="col-md-6"
+                                 onClick={this.createNewMeeting.bind(this)} iconButton="navigate_next"
+                                 value="Create Meeting"/>
+              </div>
             </div>
           </div>
         </div>
@@ -243,11 +299,12 @@ class MeetingView extends Component {
 MeetingView.propTypes = {
   meetingToCreateNewTeam: PropTypes.func,
   saveMeetingInfo: PropTypes.func,
-  goToMeetingConfig: PropTypes.func,
+  goToSlackInfo: PropTypes.func,
   user: PropTypes.any,
   meetingInfoSave: PropTypes.any,
   fromMeeting: PropTypes.bool,
-  home: PropTypes.func
+  home: PropTypes.func,
+  myMeetings: PropTypes.func
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(MeetingView)

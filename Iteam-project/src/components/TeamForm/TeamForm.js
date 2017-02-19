@@ -11,13 +11,13 @@ import Tooltip from 'react-toolbox/lib/tooltip'
 import Chip from 'react-toolbox/lib/chip'
 import Spinner from '../Spinner/Spinner'
 import InputComponent from '../InputComponent/InputComponent'
-import DropdownComponent from '../DropdownComponent/DropdownComponent'
+import AutocompleteComponent from '../AutocompleteComponent/AutocompleteComponent'
 import ButtonComponent from '../ButtonComponent/ButtonComponent'
 import {getProfessions, getNationalities} from '../../utils/actions/utilsActions'
 import {createTeam, teamNameExistence, selectTeam} from '../../utils/actions/teamActions'
 import {List, ListItem, ListSubHeader} from 'react-toolbox/lib/list'
 import generateUUID from '../../constants/utils/GetUUID'
-import listSubheader from './ListSubheader.css'
+import listSubheader from './ListSubheader.scss'
 
 const mapStateToProps = (state) => {
   if (state.loginUser !== null) {
@@ -299,8 +299,8 @@ class TeamForm extends React.Component {
 
   dropdownObjectFilteredValues(sourceData) {
     return (
-      <DropdownComponent label="Select Filter" source={sourceData}
-                         initialValue="" onValueChange={this.handleChange.bind(this, 'filterToAddValue')}/>
+      <AutocompleteComponent label="Select Filter" source={sourceData} initialValue=''
+                             onValueChange={this.handleChange.bind(this, 'filterToAddValue')}/>
     );
   };
 
@@ -361,13 +361,14 @@ class TeamForm extends React.Component {
             <label>CREATE TEAM</label>
           </div>
           <div className={"row " + cssClasses.form}>
-            <InputComponent className={"row col-md-12 " + cssClasses.paddingInnerElements} label='Team name' type='type' required
+            <InputComponent className={"row col-md-12 " + cssClasses.paddingInnerElements} label='Team name' type='type'
+                            required
                             value={this.state.teamName}
                             onValueChange={this.handleChange.bind(this, 'teamName')}
                             onBlur={this.checkName.bind(this)} onValueError={this.state.errorTeamName}/>
             <div className="col-md-4">
-              <DropdownComponent label="Select Filter" source={filterValues}
-                                 initialValue="" onValueChange={this.selectFilter.bind(this)}/>
+              <AutocompleteComponent label="Select Filter" source={filterValues} initialValue=''
+                                     onValueChange={this.selectFilter.bind(this)}/>
             </div>
             <div className="col-md-4">
               <TooltipButton icon='add' tooltip='Add filter'
