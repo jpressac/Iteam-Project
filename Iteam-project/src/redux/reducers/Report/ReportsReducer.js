@@ -2,10 +2,7 @@ import {createAction} from 'redux-actions';
 import {PATHS} from '../../../constants/routes'
 import {push} from 'react-router-redux';
 
-
 export const REPORTS = 'REPORTS';
-
-
 
 export const reportsToReportsView = (reportType) => {
   return function (dispatch) {
@@ -14,12 +11,10 @@ export const reportsToReportsView = (reportType) => {
   }
 };
 
-
 export default function reportReducer(state = null, action) {
   switch (action.type) {
     case REPORTS:
           return action.payload;
-    
     default:
       return state;
   }

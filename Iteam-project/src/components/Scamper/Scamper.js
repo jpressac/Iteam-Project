@@ -40,8 +40,8 @@ class Scamper extends Component {
           <div className={classes.square}>
             <div className={classes.content}>
               <label className={classes.letter}>S </label>
-              <label>(subtitute)</label>
-              {this.props.renderNotes(this.state.notes, 'Sustitute', 'All')}
+              <label>(substitute)</label>
+              {this.props.renderNotes(this.state.notes, 'Substitute', 'All')}
             </div>
           </div>
           <div className={classes.square}>
@@ -71,7 +71,7 @@ class Scamper extends Component {
             <div className={classes.content}>
               <label className={classes.letter}>P </label>
               <label>(put to other use)</label>
-              {this.props.renderNotes(this.state.notes, 'Put to other use', 'All')}
+              {this.props.renderNotes(this.state.notes, 'Put to others use', 'All')}
 
             </div>
           </div>

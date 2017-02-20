@@ -17,7 +17,7 @@ const technics = ['Brainstorming', 'SCAMPER', 'Starfish Retrospective']
 const retroTags = new Set(['Start', 'Stop', 'Keep', 'More', 'Less'])
 
 //Scamper tags
-const scamperTags = new Set(['Sustitute', 'Combine', 'Adapt', 'Modify', 'Put to others use', 'Eliminate', 'Rearrange'])
+const scamperTags = new Set(['Substitute', 'Combine', 'Adapt', 'Modify', 'Put to others use', 'Eliminate', 'Rearrange'])
 
 
 class MeetingConfigForm extends Component {
@@ -75,6 +75,7 @@ class MeetingConfigForm extends Component {
         this.handleChangeTechnic(this.state.technic);
         this.props.onSetConfig('technic', value);
       }
+
       if (key == 'votes') {
         this.props.onSetConfig('votes', value)
       }

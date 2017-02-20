@@ -24,8 +24,8 @@ class D3ChartTree extends React.Component {
   renderTree(treeData, svgDomNode) {
 
     let margin = {top: 20, right: 90, bottom: 30, left: 90},
-      width = window.innerWidth - 300, //TODO: this is hardcoded so it antoher screen it will not work
-      height = window.innerHeight + 300 ;
+      width = window.innerWidth - 400, //TODO: this is hardcoded so it antoher screen it will not work
+      height = window.innerHeight + 400 ;
 
 
     //Remove all elements before render
@@ -50,7 +50,7 @@ class D3ChartTree extends React.Component {
     }
 
     let xScale = d3.scaleLinear()
-      .domain([0, 5]) //d3.max(array(), function(d) { return d })]) //This depends on the max ranking number
+      .domain([0, 10]) //d3.max(array(), function(d) { return d })]) //This depends on the max ranking number
       .range([0, 500]);
 
     let xAxis = d3.axisTop()
@@ -81,7 +81,7 @@ class D3ChartTree extends React.Component {
     //   .style('background', '#FFFEAB')
     //   .style('opacity', 0);
 
-    var div =  d3.select("body").append("div").classed( classes.toolTip, "true");
+    var div =  d3.select("body").append("div").classed( classes.toolTip, true);
 
     let link = svg.selectAll("." + classes.link)
       .data(root.descendants().slice(1))
@@ -115,6 +115,14 @@ class D3ChartTree extends React.Component {
       .attr("class", classes.j)
       .attr("transform", "translate(8,-13)");
 
+    leafNodeG.append("text")
+      .attr("dy", 19.5)
+      .attr("x", 8)
+      .attr("overflow",'hidden')
+      .attr("color",'black')
+      .style("text-anchor", "start")
+    ;
+
     leafNodeG.append("rect")
       .attr("class", classes.shadow)
       .style("fill", function (d) {
@@ -136,22 +144,17 @@ class D3ChartTree extends React.Component {
           .style("left", d3.event.pageX - 100 + "px")
           .style("top", d3.event.pageY - 70 + "px")
           .style("display", "inline-block")
-          .attr('position', 'absolute')
-            .attr("padding", '0 10px')
           .style("width", "400px")
           .style("font-size","smaller")
-          .text((d.data.name));
-      })
-      .on("mouseout", function(d){ div.style("display", "none");});
+          .html((d.data.name));
+      });
+      leafNodeG.on("mouseout", function(){
+        div.style("display", "none")
+          .style("visibility","hidden");
+      });
 
 
-    leafNodeG.append("text")
-      .attr("dy", 19.5)
-      .attr("x", 8)
-      .attr("overflow",'hidden')
-      .attr("color",'black')
-      .style("text-anchor", "start")
-          ;
+
 
     // Write down text for every parent datum
     let internalNode = svg.selectAll("." + classes.a);
@@ -183,7 +186,9 @@ class D3ChartTree extends React.Component {
     // Emphasize the y-axis baseline.
     svg.selectAll("." + classes.grid).select("line")
       .style("stroke-dasharray", "20,1")
-      .style("stroke", "black");
+      .style("stroke", "black")
+  .on("mousemove", function(d){
+      div.style("display", "none");});
 
     // The moving ball
     let ballG = svg.insert("g")
@@ -198,6 +203,8 @@ class D3ChartTree extends React.Component {
     ballG.insert("text")
       .style("text-anchor", "middle")
       .attr("dy", 5)
+      .style("font-size","12px")
+      .style("font-weight",700)
       .text("0.0");
 
     // Animation functions for mouse on and off events.

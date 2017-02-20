@@ -357,7 +357,6 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     public void updateEndedMeetings() {
         LOGGER.info("Updating ended meetings");
 
-        @SuppressWarnings("rawtypes")
         List<BiFieldModel<String>> meetingsToUpdate = new ArrayList<BiFieldModel<String>>();
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
@@ -371,8 +370,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
             for (SearchHit hit : response.getHits()) {
 
-                @SuppressWarnings({ "rawtypes", "unchecked" })
-                BiFieldModel meetingToUpdate = new BiFieldModel(hit.getId(), MEETING_HAS_ENDED);
+                BiFieldModel<String> meetingToUpdate = new BiFieldModel<String>(hit.getId(), MEETING_HAS_ENDED);
                 meetingsToUpdate.add(meetingToUpdate);
             }
             if (!ObjectUtils.isEmpty(meetingsToUpdate)) {
@@ -457,7 +455,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
     @Override
     public void updateMeetingViewedByUser(List<ViewedMeeting> meetingsViewedByUser, String username) {
-        @SuppressWarnings("rawtypes")
+
         List<BiFieldModel<String>> dataToUpdate = new ArrayList<>();
 
         if (!ObjectUtils.isEmpty(meetingsViewedByUser)) {
@@ -468,7 +466,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
                 // exists or not the user, and there never be a repeated user.
                 meeting.getViewedUsers().add(username);
 
-                BiFieldModel<String> meetingToUpdate = new BiFieldModel<String>(meeting.getMeetingId(),
+                BiFieldModel<String> meetingToUpdate = new BiFieldModel<>(meeting.getMeetingId(),
                         JSONUtils.ObjectToJSON(meeting));
 
                 dataToUpdate.add(meetingToUpdate);

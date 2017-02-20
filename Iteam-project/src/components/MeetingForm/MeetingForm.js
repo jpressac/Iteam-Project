@@ -43,7 +43,6 @@ const mapStateToProps = (state) => {
   }
 };
 
-
 class MeetingView extends Component {
 
   constructor(props) {
@@ -162,7 +161,8 @@ class MeetingView extends Component {
     }
 
     //The 'All' will be available for all technics
-    newTags.add('All');
+    newTags.add('All')
+
     this.setState({tags: newTags})
   }
 

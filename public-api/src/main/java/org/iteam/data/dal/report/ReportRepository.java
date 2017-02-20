@@ -65,9 +65,11 @@ public interface ReportRepository {
      * 
      * @param meetingIds
      *            the meetings to generate the report
+     * @param reportName
+     *            the name of the report
      * @return the model representation of the report.
      */
-    public D3CollapseTreeModel generateReportByMeeting(List<String> meetingIds);
+    public D3CollapseTreeModel generateReportByMeeting(List<String> meetingIds, String reportName);
 
     /**
      * Generate a mix report given one or more ideas from one or more meetings.

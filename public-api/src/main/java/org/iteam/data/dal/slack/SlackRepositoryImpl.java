@@ -43,7 +43,7 @@ public class SlackRepositoryImpl implements SlackReposit {
 
     private TeamRepositoryImpl teamRepositoryImpl;
     private Slack slack = Slack.getInstance();
-    private static final Logger LOGGER = LoggerFactory.getLogger(SlackRepositoryImplTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SlackRepositoryImpl.class);
 
     private static final String URI_TEMPLATE_SLACK_ADD_TEAM = "https://slack.com/api/users.admin.invite?token={token}&email={mail}";
 

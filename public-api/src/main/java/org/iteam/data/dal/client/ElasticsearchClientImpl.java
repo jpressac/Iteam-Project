@@ -219,7 +219,6 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
         });
 
         return updateData(updateList);
-
     }
 
     @Override

@@ -83,16 +83,16 @@ public class ReportRepositoryImpl implements ReportRepository {
 
             LOGGER.info("MeetingIds from token {}", meetingIds.toString());
 
-            return generateReportByMeeting(meetingIds);
+            return generateReportByMeeting(meetingIds, "shared report");
 
         } catch (IOException | JWTVerificationException | IllegalArgumentException e) {
             LOGGER.error("Error while trying to verify or decode report token ", e);
         }
-        return new D3CollapseTreeModel("Mix Meetings");
+        return new D3CollapseTreeModel("Shared report", Lists.newArrayList(new D3CollapseTreeModel("no data")));
     }
 
     @Override
-    public D3CollapseTreeModel generateReportByMeeting(List<String> meetingIds) {
+    public D3CollapseTreeModel generateReportByMeeting(List<String> meetingIds, String reportName) {
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
 
@@ -111,9 +111,10 @@ public class ReportRepositoryImpl implements ReportRepository {
                 ideas.add(idea);
             }
 
-            return createTagTree(tags.stream().collect(Collectors.toList()), ideas, new D3CollapseTreeModel("Ideas"));
+            return createTagTree(tags.stream().collect(Collectors.toList()), ideas,
+                    new D3CollapseTreeModel(reportName));
         }
-        return new D3CollapseTreeModel("Mix Meetings");
+        return new D3CollapseTreeModel(reportName, Lists.newArrayList(new D3CollapseTreeModel("no data")));
     }
 
     @Override
@@ -137,7 +138,7 @@ public class ReportRepositoryImpl implements ReportRepository {
             return createRankingTree(tags, meetingRepositoryImpl.getIdeasGivenMeetingId(meetingId),
                     new D3CollapseTreeModel(topic));
         }
-        return new D3CollapseTreeModel("By Ranking");
+        return new D3CollapseTreeModel("By Ranking", Lists.newArrayList(new D3CollapseTreeModel("no data")));
     }
 
     @Override
@@ -151,7 +152,7 @@ public class ReportRepositoryImpl implements ReportRepository {
             return createTagTree(tags, meetingRepositoryImpl.getIdeasGivenMeetingId(meetingId),
                     new D3CollapseTreeModel(topic));
         }
-        return new D3CollapseTreeModel("By Tag");
+        return new D3CollapseTreeModel("By Tag", Lists.newArrayList(new D3CollapseTreeModel("no data")));
     }
 
     @Override
@@ -166,7 +167,7 @@ public class ReportRepositoryImpl implements ReportRepository {
             return createUserTree(users, tags, meetingRepositoryImpl.getIdeasGivenMeetingId(meetingId),
                     new D3CollapseTreeModel(topic));
         }
-        return new D3CollapseTreeModel("By User");
+        return new D3CollapseTreeModel("By User", Lists.newArrayList(new D3CollapseTreeModel("no data")));
 
     }
 

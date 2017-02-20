@@ -138,7 +138,8 @@ class PersonalBoard extends Component {
 
   renderNotes(noteMap, valueForFilter) {
     return Object.keys(noteMap).map((key) => {
-      if (valueForFilter === this.state.mapTag[0]) {
+      //TODO: find a better way to do this, we know that the tag 'all' it's always the last one but this could change
+      if (valueForFilter === this.state.mapTag[this.state.mapTag.length - 1]) {
         return this.notes(noteMap, key);
       } else {
         if (noteMap[key].tag === valueForFilter) {

@@ -11,7 +11,7 @@ export const USER = {
   DELETE_USER : URL + '/user/delete',
   USER_EXISTS : URL + '/user/exists',
   PASSWORD_VALIDATION: URL + '/validate/password'
-};
+}
 
 export const TEAM = {
   TEAM_CREATE : URL + '/team/create',
@@ -22,7 +22,7 @@ export const TEAM = {
   TEAM_USER_BY_MEETING : URL + '/team/users/bymeeting',
   TEAM_NAME_EXISTENT: URL + '/team/name/existent',
   TEAM_BY_OWNER_SEARCH : URL + '/team/byowner/search'
-};
+}
 
 export const MEETING = {
   MEETING_CREATE : URL + '/meeting/create',
@@ -40,7 +40,7 @@ export const MEETING = {
   MEETING_PAGINATED : URL + '/meeting/paginated',
   MEETING_NOT_VIEWED: URL + '/meeting/notViewed',
   MEETING_VIEWED: URL + '/meeting/viewed'
-};
+}
 
 export const REPORT = {
   SHARED_REPORT: URL + '/report/shared',
@@ -48,7 +48,8 @@ export const REPORT = {
   MEETING_REPORT : URL + '/report/byranking',
   MEETING_REPORT_BY_USER : URL + '/report/byuser',
   MEETING_REPORT_BY_TAG : URL + '/report/bytag',
-};
+  REPORT_BY_MEETING: URL + '/report/bymeeting'
+}
 
 export const SLACK = {
   SLACK_CREATE_CHANNEL : URL + '/slack/createchannel',
@@ -57,9 +58,9 @@ export const SLACK = {
   SLACK_INVITE_USERS : URL + '/slack/inviteusers',
   SLACK_IS_GROUP_MEMBER : URL + '/slack/ismember',
   
-};
+}
 
 export const UTILITIES = {
   PROFESSIONS : URL + '/utilities/professions',
   NATIONALITIES : URL + '/utilities/nationality/get'
-};
+}

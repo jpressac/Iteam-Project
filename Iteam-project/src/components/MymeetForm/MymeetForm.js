@@ -12,7 +12,6 @@ import cssClasses from '../ComponentCSSForms/componentCSS.scss'
 import BootstrapModal from '../../components/BootstrapModal/BootstrapModal';
 import listFormat from './List.scss';
 import chipTheme from './chips.scss';
-import {updateMeeting} from '../../redux/reducers/Meeting/MeetingReducer';
 import {MEETING} from '../../constants/HostConfiguration';
 import themeLabel from './label.scss';
 import datesInput from './dateInput.scss'
@@ -60,7 +59,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => ({
 
   onClick: () => dispatch(push('/' + PATHS.MENULOGGEDIN.PERSONALBOARD)),
-  updateMyMeetingId: (meetingId) => dispatch(updateMeetingId(meetingId)),
+
+  /*FIXME: this should be another reducer how to test the bug, create a meeting that can be modified or not to join yet, first go to MyMeetings and then go to New Meeting, the information abou the meeting showed in MyMeeting view will be displayed in the New Meeting view*/
   saveMeeting: (meeting) => dispatch(saveMeetingInfo(meeting)),
   finishChat: () => dispatch(cleanMeetingChats())
 });
@@ -121,8 +121,8 @@ class MymeetForm extends Component {
   startMeeting() {
     //Reducer containing toolbar info
     this.props.saveMeeting(this.state.meetEdit);
-    //Reducer for meeting ID
-    //this.props.updateMyMeetingId(this.state.meetEdit.meetingId);
+
+
     this.props.finishChat();
 
     //Dispatch to personal board
@@ -217,7 +217,7 @@ class MymeetForm extends Component {
   }
 
   edit() {
-    this.setState({editable: false}, ()=> {
+    this.setState({editable: false}, () => {
       this.handleChangeTechnic(this.state.technic);
     });
   }
@@ -479,7 +479,7 @@ class MymeetForm extends Component {
           <div>
             <InputComponent label="Meeting topic" name="searchField" value={this.state.searchField}
                             onKeyPress={this.handleSubmit.bind(this)}
-                            onValueChange={this.handleChange.bind(this,'searchField')}/>
+                            onValueChange={this.handleChange.bind(this, 'searchField')}/>
             <ButtonComponent onClick={this.searchByToken.bind(this)} value="Search"/>
           </div>
           <BootstrapModal ref="mymeetingModal" message={this.state.message}/>
