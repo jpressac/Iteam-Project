@@ -1,5 +1,5 @@
-import { combineReducers } from 'redux'
-import { routerReducer as router } from 'react-router-redux'
+import {combineReducers} from 'redux'
+import {routerReducer as router} from 'react-router-redux'
 import loginUser from './reducers/Login/LoginUser';
 import meetingReducer from './reducers/Meeting/MeetingReducer'
 import meetingForTeamReducer from './reducers/Meeting/MeetingForTeamReducer'
@@ -9,6 +9,7 @@ import meetingChatMessagesReducer from './reducers/Meeting/MeetingChatMessagesRe
 import tokenReducer from './reducers/Report/TokenReducer'
 import reportReducer from './reducers/Report/ReportsReducer'
 import meetingsNotViewed from './reducers/Meeting/MeetingNotViewedReducer'
+import meetingsVotesReducer from './reducers/Meeting/MeetingVotesReducer'
 import viewReportReducer from './reducers/Report/ViewReportReducer'
 
 export default combineReducers({
@@ -22,5 +23,6 @@ export default combineReducers({
   tokenReducer,
   reportReducer,
   meetingsNotViewed,
+  meetingsVotesReducer,
   viewReportReducer
 })

@@ -1,5 +1,11 @@
 import React, {PropTypes, Component} from 'react'
 import classes from './footer.scss'
+import facebook from './image/facebook.png'
+import twitter from './image/twitter.png'
+import google from './image/google.png'
+import mail from './image/mail.png'
+import logo from './image/iteamLogo.jpg'
+import slack from './image/slack.png'
 
 class Footer extends React.Component {
 
@@ -11,53 +17,22 @@ class Footer extends React.Component {
   render() {
     return (
       <div className={"container " + classes.footer}>
-        <div className="col-md-4">
-          <ul>
-            <li>
-              Puto 1
-            </li>
-            <li>
-              Puto 2
-            </li>
-            <li>
-              Puto 3
-            </li>
-            <li>
-              Puto 4
-            </li>
-          </ul>
+        <div className="col-md-9">
+          <img className={classes.logo} src={logo}/>
+          <p className={classes.links}>
+            <label className={classes.labels}> &copy; Copyright 2017 iteamHTML.am </label>
+            <a href="#"> Terms & conditions  </a>
+          <a href="#"> Privacy policy </a>
+          <a href="#">  Copyrights Notification</a>
+          </p>
+
         </div>
-        <div className="col-md-4">
-          <ul>
-            <li>
-              Puto 5
-            </li>
-            <li>
-              Puto 6
-            </li>
-            <li>
-              Puto 7
-            </li>
-            <li>
-              Puto 8
-            </li>
-          </ul>
-        </div>
-        <div className="col-md-4">
-          <ul>
-            <li>
-              Puto 9
-            </li>
-            <li>
-              Puto 10
-            </li>
-            <li>
-              Puto 11
-            </li>
-            <li>
-              Puto 12
-            </li>
-          </ul>
+
+        <div className={"col-md-3" + classes.socialMedia}>
+            <img className={classes.button} src={slack} alt="slack" />
+          <img className={classes.button} src={google} alt="google" />
+          <img className={classes.button} src={mail} alt="mail" />
+        <p className={classes.links}> <label className={classes.labels}>  iteam.proyecto@gmail.com</label></p>
         </div>
       </div>
     )

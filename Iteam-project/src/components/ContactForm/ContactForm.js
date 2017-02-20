@@ -26,7 +26,7 @@ class ContactForm extends React.Component {
     return (
       <div className={"container " + classes.contact}>
         <div className={classes.label}>
-          <label>CONTACT FORM</label>
+          <label>CONTACT US</label>
         </div>
         <div className={classes.form}>
           <InputComponent className={"col-md-12 " + classes.paddingZero}

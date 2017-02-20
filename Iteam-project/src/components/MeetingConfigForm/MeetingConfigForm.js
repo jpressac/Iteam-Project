@@ -28,7 +28,7 @@ class MeetingConfigForm extends Component {
       votes: 0,
       tag: '',
       tags: new Set(),
-      technic: 'Brainstorming',
+      technic: '',
       deletable: true,
       disabled: false,
       technicValue: 0,
@@ -37,6 +37,16 @@ class MeetingConfigForm extends Component {
       notesFunctions: [],
       message: ''
     };
+  }
+
+  componentWillMount() {
+    if (this.props.meetingInfo != null) {
+      this.setState({
+        votes: this.props.meetingInfo.meetingConfig.votes,
+        tags: this.props.meetingInfo.meetingConfig.tags,
+        technic: this.props.meetingInfo.meetingConfig.technic
+      })
+    }
   }
 
 
@@ -52,7 +62,7 @@ class MeetingConfigForm extends Component {
       });
     }
     else {
-      this.setState({tags: [], deletable: true, disabled: false}, () => {
+      this.setState({tags: new Set(), deletable: true, disabled: false}, () => {
         this.handleChangeTags(this.state.tags);
       });
     }
@@ -79,7 +89,7 @@ class MeetingConfigForm extends Component {
     if (this.state.tag !== '') {
 
       let newTags = this.state.tags;
-      newTags.add((this.state.tag));
+      newTags.add(this.state.tag);
 
       this.setState({tags: newTags, tag: ''});
       this.props.onSetConfig('tags', newTags);
@@ -144,7 +154,8 @@ class MeetingConfigForm extends Component {
 
 
 MeetingConfigForm.propTypes = {
-  onSetConfig: PropTypes.func
+  onSetConfig: PropTypes.func,
+  meetingInfo: PropTypes.any
 };
 
 export default MeetingConfigForm

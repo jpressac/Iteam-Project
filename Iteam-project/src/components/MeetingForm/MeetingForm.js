@@ -11,7 +11,7 @@ import AutocompleteComponent from '../AutocompleteComponent/AutocompleteComponen
 import ButtonComponent from '../ButtonComponent/ButtonComponent'
 import Spinner from '../Spinner/Spinner'
 import {saveMeeting, meetingSlackInfo} from '../../redux/reducers/Meeting/MeetingReducer'
-import {meetingToNewTeam} from '../../redux/reducers/Meeting/MeetingForTeamReducer'
+import {meetingToNewTeam, meetingCreated} from '../../redux/reducers/Meeting/MeetingForTeamReducer'
 import themeLabel from './label.scss'
 import Avatar from 'react-toolbox/lib/avatar'
 import avatarTheme from './avatarTheme.scss'
@@ -29,7 +29,8 @@ const mapDispatchToProps = dispatch => ({
   meetingToCreateNewTeam: () => dispatch(meetingToNewTeam()),
   goToSlackInfo: (meeting) => dispatch(meetingSlackInfo(meeting)),
   home: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HOME)),
-  myMeetings: () => dispatch(push('/' + PATHS.MENULOGGEDIN.MYMEETINGS))
+  myMeetings: () => dispatch(push('/' + PATHS.MENULOGGEDIN.MYMEETINGS)),
+  meetingCreatedok: () => dispatch(meetingCreated())
 });
 
 const mapStateToProps = (state) => {
@@ -54,6 +55,7 @@ class MeetingView extends Component {
       endDate: new Date(),
       time: new Date(),
       endTime: new Date(),
+      teamName: '',
       teamsObj: [],
       teamSelectedName: '',
       teamList: [],
@@ -61,7 +63,7 @@ class MeetingView extends Component {
       meetingConfig: {},
       votes: 0,
       technic: '',
-      tags: [],
+      tags: new Set(),
       useSlack: false
     }
   };
@@ -111,14 +113,17 @@ class MeetingView extends Component {
 
     if (this.props.meetingInfoSave != null) {
       this.setState({
-        topic: this.props.meetingInfoSave["meeting"]["topic"],
-        description: this.props.meetingInfoSave["meeting"]["description"],
-        programmedDate: new Date(this.props.meetingInfoSave["meeting"]["time"]),
-        ownerName: this.props.meetingInfoSave["meeting"]["ownerName"],
-        time: new Date(this.props.meetingInfoSave["meeting"]["time"]),
-        useSlack: this.props.meetingInfoSave["meeting"]["useSlack"],
-        teamSelectedName: this.props.meetingInfoSave["meeting"]["teamName"],
-        endDate: new Date(this.props.meetingInfoSave["meeting"]["endDate"])
+        topic: this.props.meetingInfoSave.topic,
+        description: this.props.meetingInfoSave.description,
+        programmedDate: new Date(this.props.meetingInfoSave.time),
+        ownerName: this.props.meetingInfoSave.ownerName,
+        time: this.props.meetingInfoSave.time,
+        endTime: new Date(this.props.meetingInfoSave.endDate),
+        votes: this.props.meetingInfoSave.meetingConfig.votes,
+        tags: this.props.meetingInfoSave.meetingConfig.tags,
+        technic: this.props.meetingInfoSave.meetingConfig.technic,
+        useSlack: this.props.meetingInfoSave.useSlack,
+        endDate: new Date(this.props.meetingInfoSave.endDate)
       })
     }
 
@@ -128,7 +133,7 @@ class MeetingView extends Component {
     }.bind(this));
   }
 
-  getSlackInfo(){
+  getSlackInfo() {
     let meetingInfo = this.setReducerInfo();
     this.props.goToSlackInfo(meetingInfo);
   }
@@ -157,7 +162,7 @@ class MeetingView extends Component {
     }
 
     //The 'All' will be available for all technics
-    newTags.add('All')
+    newTags.add('All');
     this.setState({tags: newTags})
   }
 
@@ -173,17 +178,18 @@ class MeetingView extends Component {
       let meetingInfo = this.setReducerInfo();
 
       createMeeting(meetingInfo).then(() => {
-          this.props.myMeetings();
-        }).catch(() => {
-          //TODO: implement modal here or go to error page
-        });
+        this.props.myMeetings();
+      }).catch(() => {
+        //TODO: implement modal here or go to error page
+      });
       //REDUCER
       //this.props.goToMeetingConfig(meetingInfo);
     }
   }
-  setReducerInfo(){
-    let teamId ='';
-    if(this.state.teamSelectedName !== '') {
+
+  setReducerInfo() {
+    let teamId = '';
+    if (this.state.teamSelectedName !== '') {
       teamId = this.searchTeamIdGivenTeamName(this.state.teamSelectedName);
     }
     let meetingInfo = {
@@ -192,7 +198,6 @@ class MeetingView extends Component {
       ownerName: this.props.user,
       programmedDate: this.state.programmedDate.getTime(),
       endDate: this.state.endDate.getTime(),
-      time: this.state.time,
       teamName: teamId,
       meetingConfig: {
         votes: this.state.votes,
@@ -203,6 +208,7 @@ class MeetingView extends Component {
     };
     return meetingInfo;
   }
+
   searchTeamIdGivenTeamName(teamNameCombo) {
     let filtered = this.state.teamList.filter(team => team.teamName === teamNameCombo);
     return filtered[0]["teamId"]
@@ -273,8 +279,8 @@ class MeetingView extends Component {
                 </div>
                 <ButtonComponent className={"col-md-6 " + cssClasses.paddingInnerElements} raisedValue
                                  onClick={this.getSlackInfo.bind(this)} value="Slack info"/>
-              <MeetingConfigForm onSetConfig={this.handleConfigChange.bind(this)}/>
-            </div>
+                <MeetingConfigForm onSetConfig={this.handleConfigChange.bind(this)}/>
+              </div>
 
               <div className={"col-md-12 " + cssClasses.paddingInnerElements}>
                 <ButtonComponent className="col-md-6" onClick={this.props.home} iconButton="navigate_before"
@@ -304,7 +310,8 @@ MeetingView.propTypes = {
   meetingInfoSave: PropTypes.any,
   fromMeeting: PropTypes.bool,
   home: PropTypes.func,
-  myMeetings: PropTypes.func
+  myMeetings: PropTypes.func,
+  meetingCreatedok: PropTypes.func
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(MeetingView)

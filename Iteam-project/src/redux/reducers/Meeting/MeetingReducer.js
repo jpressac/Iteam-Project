@@ -37,6 +37,6 @@ export default function meetingReducer(state = null, action) {
 }
 
 
-export const saveMeetingInfo = createAction('SAVE_MEETING', (meeting) => ({meeting}));
-export const updateMeeting = createAction('UPDATE_MEETING_ID', (meetingId) => ({meetingId}));
+export const saveMeetingInfo = createAction('SAVE_MEETING', (meeting) => (meeting));
+export const updateMeeting = createAction('UPDATE_MEETING_ID', (meetingId) => (meetingId));
 

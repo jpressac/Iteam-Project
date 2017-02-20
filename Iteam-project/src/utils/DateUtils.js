@@ -2,21 +2,16 @@ export function validateDate(date) {
   let olderDate = new Date(date);
   let dateNow = new Date();
   let minimumDateRange = dateNow.setMinutes(dateNow.getMinutes() - 15);
-
-  console.debug('min: ' + minimumDateRange);
-  console.debug('meeting: ' + olderDate.getTime());
+  
   return minimumDateRange > olderDate.getTime();
 }
 
 export function validateStart(date) {
   let dateToCompare = new Date(date);
   let dateNow = new Date();
-
   let minimumDateRange = dateNow.setMinutes(dateNow.getMinutes() - 15);
   let maximumDateRange = dateNow.setMinutes(dateNow.getMinutes() + 30);
-  console.debug('min: '+ minimumDateRange);
-  console.debug('meeting: '+ dateToCompare.getTime());
-  console.debug('max: '+ maximumDateRange);
+
   return (minimumDateRange < dateToCompare.getTime() && dateToCompare.getTime() < maximumDateRange);
 }
 
