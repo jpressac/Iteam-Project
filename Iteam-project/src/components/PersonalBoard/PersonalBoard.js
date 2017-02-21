@@ -32,7 +32,6 @@ const NoteTarget = {
 };
 
 const mapDispatchToProps = (dispatch) => ({
-
   home: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HOME)),
   userConnected: () => dispatch(userConnection()),
   sharedBoard: () => dispatch(push('/' + PATHS.MENULOGGEDIN.SHAREDBOARD))
@@ -42,9 +41,9 @@ const mapDispatchToProps = (dispatch) => ({
 const mapStateToProps = (state) => {
   return {
     user: state.loginUser.user.username,
-    meetingId: state.meetingReducer.meetingId,
+    meetingId: state.myMeetingReducer.meetingId,
     connected: state.meetingUser,
-    meetingConfiguration: state.meetingReducer.meetingConfig
+    meetingConfiguration: state.myMeetingReducer.meetingConfig
   }
 };
 

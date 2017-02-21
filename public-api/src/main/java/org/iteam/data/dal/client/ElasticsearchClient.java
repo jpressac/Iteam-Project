@@ -239,4 +239,5 @@ public interface ElasticsearchClient {
      * @return a bulk response with the information about the request.
      */
     public BulkResponse updateScore(@SuppressWarnings("rawtypes") List<BiFieldModel> data, String index, String type);
+
 }

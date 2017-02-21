@@ -22,8 +22,9 @@ import Chat from '../Chat/Chat'
 import Modal from '../BootstrapModal/BootstrapModal'
 import panelTheme from '../SharedBoard/panel.scss'
 import Scamper from '../Scamper/Scamper'
-import {saveVotes} from '../../redux/reducers/Meeting/MeetingVotesReducer'
+import {meetingsVotes} from '../../redux/reducers/Meeting/MeetingVotesReducer'
 import StarfishRetro from '../StarfishRetro/StarfishRetro'
+import {saveMeetingInfoForReports} from '../../redux/reducers/Report/ReportConfigReducer'
 
 const NoteTarget = {
   drop(props, monitor, component) {
@@ -36,25 +37,23 @@ const NoteTarget = {
 };
 
 const mapStateToProps = (state) => {
-  if (state.meetingReducer != null) {
     return {
-      meetingId: state.meetingReducer.meetingId,
+      meetingId: state.myMeetingReducer.meetingId,
       connected: state.meetingUser,
       user: state.loginUser.user.username,
-      meetingConfiguration: state.meetingReducer.meetingConfig,
-      meetingOwner: state.meetingReducer.ownerName,
+      meetingConfiguration: state.myMeetingReducer.meetingConfig,
+      meetingOwner: state.myMeetingReducer.ownerName,
       votes: state.meetingsVotesReducer
     }
-  }
 };
 
 const mapDispatchToProps = (dispatch) => ({
-
   onClick: () => dispatch(push('/' + PATHS.MENULOGGEDIN.REPORTS)),
   home: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HOME)),
   personalBoard: () => dispatch(push('/' + PATHS.MENULOGGEDIN.PERSONALBOARD)),
   userDisconnected: () => dispatch(userDisconnection()),
-  meetingsVotesUpdate: (votes) => dispatch(saveVotes(votes))
+  meetingsVotesUpdate: (votes) => dispatch(meetingsVotes(votes)),
+  saveReportInformation: (reportInfo) => dispatch(saveMeetingInfoForReports(reportInfo))
 });
 
 
@@ -158,6 +157,11 @@ class SharedBoard extends Component {
   }
 
   renderNotes(noteMap, valueForTagFilter, valueForUserFilter) {
+
+    console.log(noteMap)
+    console.log(valueForTagFilter)
+    console.log(valueForUserFilter)
+
     //First get notes that have the selected tag
     let filteredNotes = Object.values(noteMap).filter((note) => {
         if (valueForTagFilter === this.state.mapTag[this.state.mapTag.length - 1]) {
@@ -281,6 +285,13 @@ class SharedBoard extends Component {
   handleEndMeeting() {
     this.saveNotes();
     this.props.userDisconnected();
+
+    this.props.saveReportInformation({
+      'meetingId': this.props.meetingId,
+      'ownerName': this.props.meetingOwner,
+      'meetingConfig': this.props.meetingConfiguration
+    })
+
     //Send socket message to end meeting
     sendMessage('endMeeting', this.props.meetingId, JSON.stringify({}));
     this.props.onClick();
@@ -506,7 +517,7 @@ class SharedBoard extends Component {
             </div>
             <label className={classes.label1}>SHARED BOARD</label>
             <MenuItem value='personalBoard' icon='people'
-                      caption='Personal Board' onClick={this.goToPersonal()}/>
+                      caption='Personal Board' onClick={this.goToPersonal.bind(this)}/>
             <MenuDivider/>
             <MenuItem value='votes' icon='star_half'
                       caption='Available votes: '>{this.availableVotes().toString()}
@@ -550,7 +561,8 @@ SharedBoard.propTypes = {
   meetingEndingDate: PropTypes.any,
   meetingOwner: PropTypes.string,
   meetingsVotesUpdate: PropTypes.any,
-  votes: PropTypes.func
+  votes: PropTypes.func,
+  saveReportInformation: PropTypes.func
 };
 
 export default flow(

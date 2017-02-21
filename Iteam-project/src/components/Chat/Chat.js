@@ -1,7 +1,3 @@
-/**
- * Created by Usuario on 02/01/2017.
- */
-
 import React, {Component, PropTypes} from 'react';
 import {connect} from "react-redux";
 import {IconButton, Button} from 'react-toolbox/lib/button';
@@ -21,7 +17,7 @@ const mapStateToProps = (state) => {
   if (state.loginUser !== null) {
     return {
       user: state.loginUser.user.username,
-      meetingId: state.meetingReducer.meetingId,
+      meetingId: state.myMeetingReducer.meetingId,
       meetingChatMessages: state.meetingChatMessagesReducer
     }
   }

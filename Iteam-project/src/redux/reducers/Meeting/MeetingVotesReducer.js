@@ -2,12 +2,6 @@ import {createAction} from 'redux-actions';
 
 export const SAVE_MEETING_VOTES = 'SAVE_MEETING_VOTES';
 
-export function saveVotes(votes) {
-  return function (dispatch) {
-    dispatch(meetingsVotes(votes));
-  }
-}
-
 export default function meetingsVotesReducer(state = null, action) {
   switch (action.type) {
     case SAVE_MEETING_VOTES:

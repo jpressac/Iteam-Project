@@ -10,10 +10,10 @@ const ITEMS_PER_PAGE = 10;
 
 class MeetingHistory extends Component {
 
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
-      meetings:[],
+      meetings: [],
       searchField: '',
       offset: 0,
       totalMeetings: 0,
@@ -21,30 +21,30 @@ class MeetingHistory extends Component {
     }
   }
 
-  componentDidMount(){
+  componentDidMount() {
     this.loadMeetings();
   }
 
-  calculateTotalPages(){
+  calculateTotalPages() {
     let total = Math.ceil(this.state.totalMeetings / ITEMS_PER_PAGE);
     this.setState({totalPages: total});
   }
 
-  fillMeetings(data){
+  fillMeetings(data) {
     this.setState({
       meetings: data.model,
-      totalMeetings:data.total
+      totalMeetings: data.total
     }, () => {
       this.calculateTotalPages();
     })
   }
 
-  handleChange = (token) =>{
+  handleChange = (token) => {
     this.setState({searchField: token})
   }
 
-  searchByToken(){
-    if ( this.state.searchField.length != 0 ) {
+  searchByToken() {
+    if (this.state.searchField.length != 0) {
       axios.get(MEETING.MEETING_SEARCH_HISTORY, {
         params: {
           token: this.state.searchField,
@@ -60,22 +60,22 @@ class MeetingHistory extends Component {
     }
   }
 
-  handlePageClick =(data) =>{
+  handlePageClick = (data) => {
     let actualPageNumber = data.selected;
     let offset = Math.ceil(actualPageNumber * ITEMS_PER_PAGE);
 
-    this.setState({offset:offset}, () => {
+    this.setState({offset: offset}, () => {
       this.loadMeetings();
     });
   };
 
-  loadMeetings(){
-    axios.get(MEETING.MEETING_PAGINATED,{
+  loadMeetings() {
+    axios.get(MEETING.MEETING_PAGINATED, {
       params: {
         offset: this.state.offset,
         limit: ITEMS_PER_PAGE
       }
-    }) .then(function(response){
+    }).then(function (response) {
       this.fillMeetings(response.data);
     }.bind(this))
   }
@@ -87,27 +87,28 @@ class MeetingHistory extends Component {
     }
   }
 
-  render(){
-    return(
+  render() {
+    return (
       <div className="container">
-          <div>
-            <InputComponent className="col-md-8" label='Meeting name' value={this.state.searchField} onKeyPress={this.handleSubmit.bind(this)} onValueChange={this.handleChange.bind(this)}/>
-            <ButtonComponent  className="col-md-4"onClick={this.searchByToken.bind(this)} value="Search"/>
-          </div>
-          <div className="col-md-12">
-            <MeetingCard endedMeetings={this.state.meetings}/>
-          </div>
-          <div className="col-md-12">
-            <ReactPagination previousLabel={"previous"}
+        <div>
+          <InputComponent className="col-md-8" label='Meeting name' value={this.state.searchField}
+                          onKeyPress={this.handleSubmit.bind(this)} onValueChange={this.handleChange.bind(this)}/>
+          <ButtonComponent className="col-md-4" onClick={this.searchByToken.bind(this)} value="Search"/>
+        </div>
+        <div className="col-md-12">
+          <MeetingCard endedMeetings={this.state.meetings}/>
+        </div>
+        <div className="col-md-12">
+          <ReactPagination previousLabel={"previous"}
                            nextLabel={"next"}
                            pageCount={this.state.totalPages}
                            marginPagesDisplayed={2}
                            pageRangeDisplayed={5}
                            onPageChange={this.handlePageClick}
-                           initialPage ={1}
+                           initialPage={1}
                            disableInitialCallback={true}
-            />
-          </div>
+          />
+        </div>
       </div>
     )
   }

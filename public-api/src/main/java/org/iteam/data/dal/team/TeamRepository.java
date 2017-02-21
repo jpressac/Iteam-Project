@@ -107,4 +107,11 @@ public interface TeamRepository {
      * @return
      */
     public List<TeamModel> getAllTeams(String ownerName);
+
+    /**
+     * 
+     * @param teamId
+     * @return
+     */
+    public List<UserDTO> getTeamUsers(String teamId);
 }

@@ -23,9 +23,8 @@ public class UserDTO {
     private Long bornDate;
     private List<String> hobbies;
     private String profession;
-    private String mbtiTest;
-    private String discTest;
     private boolean logicalDelete = false;
+    private boolean useSlack = false;
     private Long insertionDate;
     private String mail;
     @JsonInclude(Include.NON_NULL)
@@ -111,22 +110,6 @@ public class UserDTO {
         this.profession = profession;
     }
 
-    public String getMbtiTest() {
-        return mbtiTest;
-    }
-
-    public void setMbtiTest(String mbtiTest) {
-        this.mbtiTest = mbtiTest;
-    }
-
-    public String getDiscTest() {
-        return discTest;
-    }
-
-    public void setDiscTest(String discTest) {
-        this.discTest = discTest;
-    }
-
     public boolean isLogicalDelete() {
         return logicalDelete;
     }
@@ -170,5 +153,13 @@ public class UserDTO {
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this);
+    }
+
+    public boolean isUseSlack() {
+        return useSlack;
+    }
+
+    public void setUseSlack(boolean useSlack) {
+        this.useSlack = useSlack;
     }
 }

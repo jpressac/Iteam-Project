@@ -17,8 +17,10 @@ import {PATHS} from '../../constants/routes'
 import {connect} from 'react-redux'
 import {push} from 'react-router-redux'
 import Spinner from '../Spinner/Spinner'
+import Checkbox from 'react-toolbox/lib/checkbox'
 
 const TooltipInput = Tooltip(Input);
+const TooltipCheckbox = Tooltip(Checkbox);
 const MIN_LENGTH = 6;
 
 const mapDispatchToProps = (dispatch) => ({
@@ -47,7 +49,8 @@ class RegistrationForm extends React.Component {
       showSpinner: true,
       messageModal: '',
       userExists: '',
-      score: 0
+      score: 0,
+      useSlack: false
     };
   }
 
@@ -88,7 +91,7 @@ class RegistrationForm extends React.Component {
         this.props.goToHome()
       })
       .catch(() => {
-        this.setState({messageModal: 'New user cannot be created at this moment, try again later, thanks'});
+        this.setState({messageModal: 'User cannot be created at this moment, try again later'});
         this.refs.registrationModal.openModal();
       });
   }
@@ -122,11 +125,16 @@ class RegistrationForm extends React.Component {
             <label>CREATE YOUR ACCOUNT</label>
           </div>
           <div className={cssClasses.form}>
-            <div className={"row col-md-12 " + cssClasses.paddingInnerElements}>
+            <div className={"row col-md-12 "  + cssClasses.paddingInnerElements}>
               <img className={cssClasses.imageAvatar} src={user}/>
               <label>
                 <span className={cssClasses.labelInfo}> Add a photo </span>
                 <p className={cssClasses.paragraphImageFooter}>to help your teammates identify you</p>
+              </label>
+            </div>
+            <div className={"row " + cssClasses.labelInfo}>
+              <label>
+                <span >Personal Information</span>
               </label>
             </div>
             <div className={"row col-md-12 " + cssClasses.paddingInnerElements}>
@@ -170,9 +178,18 @@ class RegistrationForm extends React.Component {
                             required onChange={this.handleChange.bind(this, 'hobbies')} maxLength={200}
                             tooltip='Write hobbies separate by commas'/>
             </div>
+            <div className={"col-md-12 " + cssClasses.labelInfo}>
+              <label>
+                <span>Slack account</span>
+              </label>
+              <TooltipCheckbox label='Slack'
+                               checked={this.state.useSlack}
+                               onChange={this.handleChange.bind(this, 'useSlack')}
+                               tooltip='Join our Slack team - Iteam App'/>
+            </div>
             <div className={"row " + cssClasses.labelLeftAlign}>
               <label>
-                <span className={classes.labelInfo}>User Information</span>
+                <span className={cssClasses.labelInfo}>User Information</span>
               </label>
             </div>
             <div className={"row col-md-12 " + cssClasses.paddingInnerElements}>

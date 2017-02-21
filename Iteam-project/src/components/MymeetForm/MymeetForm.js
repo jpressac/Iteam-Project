@@ -12,7 +12,6 @@ import cssClasses from '../ComponentCSSForms/componentCSS.scss'
 import BootstrapModal from '../../components/BootstrapModal/BootstrapModal';
 import listFormat from './List.scss';
 import chipTheme from './chips.scss';
-import {updateMeetingId} from '../../redux/reducers/Meeting/MeetingReducer';
 import {MEETING} from '../../constants/HostConfiguration';
 import themeLabel from './label.scss';
 import datesInput from './dateInput.scss'
@@ -20,7 +19,7 @@ import listItemGrey from './ListItemGrey.scss'
 import Tooltip from 'react-toolbox/lib/tooltip';
 import {Button} from 'react-toolbox/lib/button';
 import Chip from 'react-toolbox/lib/chip';
-import {saveMeetingInfo} from '../../redux/reducers/Meeting/MeetingReducer';
+import {saveMyMeetingInfo} from '../../redux/reducers/Meeting/MyMeetingReducer';
 import Spinner from '../Spinner/Spinner';
 import {validateDate, validateStart, validateHour, changeEndDate, checkDate} from '../../utils/DateUtils'
 import {calculateTotalPages, calculateOffset} from '../../utils/mathUtils'
@@ -60,8 +59,9 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => ({
 
   onClick: () => dispatch(push('/' + PATHS.MENULOGGEDIN.PERSONALBOARD)),
-  updateMyMeetingId: (meetingId) => dispatch(updateMeetingId(meetingId)),
-  saveMeeting: (meeting) => dispatch(saveMeetingInfo(meeting)),
+
+  /*FIXME: this should be another reducer how to test the bug, create a meeting that can be modified or not to join yet, first go to MyMeetings and then go to New Meeting, the information abou the meeting showed in MyMeeting view will be displayed in the New Meeting view*/
+  saveMeeting: (meeting) => dispatch(saveMyMeetingInfo(meeting)),
   finishChat: () => dispatch(cleanMeetingChats())
 });
 
@@ -98,6 +98,27 @@ class MymeetForm extends Component {
     this.getAllProgrammedMeetings();
   }
 
+  // shouldComponentUpdate(nextProps, nextState) {
+  //
+  //
+  //   if(this.state.editable == nextState.editable)
+  //
+  //
+  //   /*
+  //    * If the state of the dialog (active) or (editable) change it will trigger the render
+  //    * If the state of the spinner changes it will trigger the render
+  //    * If the state of the offset (page change) change it will trigger the render
+  //    * If the state of the input tag (deletable) changes it will trigger the render
+  //    */
+  //   return this.state.editable != nextState.editable || this.state.offset != nextState.offset
+  //     || this.state.showSpinner != nextState.showSpinner || this.state.active != nextState.active
+  //     || this.state.deletable != nextState.deletable
+  // }
+  //
+  // componentDidUpdate() {
+  //   this.getAllProgrammedMeetings();
+  // }
+
   adminActionsEdit = [
     {label: "Cancel", onClick: this.handleToggle.bind(this)},
     {label: "Edit", onClick: this.edit.bind(this)},
@@ -114,15 +135,22 @@ class MymeetForm extends Component {
   ];
 
   handleToggle() {
-    this.setState({active: !this.state.active});
+    //FIXME: We shouldu use shouuldComponentUpdate and componentDidUpdate to execute this query.
+    this.getAllProgrammedMeetings();
+
+    this.setState({
+      active: !this.state.active,
+      disabled: true,
+      deletable: false
+    });
   };
 
 
   startMeeting() {
     //Reducer containing toolbar info
+
     this.props.saveMeeting(this.state.meetEdit);
-    //Reducer for meeting ID
-    //this.props.updateMyMeetingId(this.state.meetEdit.meetingId);
+
     this.props.finishChat();
 
     //Dispatch to personal board
@@ -135,6 +163,7 @@ class MymeetForm extends Component {
       description: meeting.description,
       active: !this.state.active,
       datetime: meeting.programmedDate,
+      owner: meeting.ownerName,
       time: meeting.programmedDate,
       endTime: meeting.endDate,
       config: meeting.meetingConfig,
@@ -206,22 +235,20 @@ class MymeetForm extends Component {
     });
   }
 
-  calculateTotalPages() {
-    let total = calculateTotalPages(this.state.totalMeetings, ITEMS_PER_PAGE);
-    this.setState({totalPages: total});
-  }
-
-  setMeetingEnding(meetingId) {
-    axios.post(MEETING.MEETING_MARK_ENDED, {})
-  }
-
   edit() {
-    this.setState({editable: false}, ()=> {
+    this.setState({editable: false}, () => {
       this.handleChangeTechnic(this.state.technic);
     });
   }
 
   save() {
+
+    if (this.state.technic == 'Brainstorming') {
+      this.state.tags.add('Miscellaneous')
+    }
+
+    this.state.tags.add('All')
+
     let editedMeeting = {
       owner: this.state.meetEdit.owner,
       meetingId: this.state.meetEdit.meetingId,
@@ -245,8 +272,16 @@ class MymeetForm extends Component {
 
     this.setState({
       active: !this.state.active,
-      meetEdit: editedMeeting
+      meetEdit: editedMeeting,
+      deletable: false,
+      disabled: true
+    }, () => {
+      //FIXME: We shouldu use shouuldComponentUpdate and componentDidUpdate to execute this query.
+      //This can trigger a race condition with elasticsearch, because we are updating the database and consulting at the same time
+      this.getAllProgrammedMeetings();
     });
+
+
   }
 
   onChangeProgrammedDate = (date) => {
@@ -299,7 +334,9 @@ class MymeetForm extends Component {
       this.setState({tags: retroTags, deletable: false, disabled: true});
     }
     else {
-      this.setState({tags: this.state.tags.clear, deletable: true, disabled: false});
+      console.log(typeof this.state.tags)
+      console.log(this.state.tags)
+      this.setState({tags: new Set(this.state.tags), deletable: true, disabled: false});
     }
   };
 
@@ -311,7 +348,7 @@ class MymeetForm extends Component {
     });
   };
 
-  deleteTag(pos) {
+  deleteTag(tag) {
     let newTags = this.state.tags;
     newTags.delete(tag)
     this.setState({tags: newTags});
@@ -322,7 +359,6 @@ class MymeetForm extends Component {
       let newTags = this.state.tags;
       newTags.add((this.state.tag));
 
-      newConfig.tags = newTags;
       this.setState({tag: '', tags: newTags});
     }
   }
@@ -350,8 +386,8 @@ class MymeetForm extends Component {
         theme={dialogTheme}
         actions={this.showActions(this.state.meetEdit.ownerName, this.state.meetEdit.programmedDate)}
         active={this.state.active}
-        onEscKeyDown={this.handleToggleDialog}
-        onOverlayClick={this.handleToggleDialog}>
+        onEscKeyDown={this.handleToggle.bind(this)}
+        onOverlayClick={this.handleToggle.bind(this)}>
         <InputComponent className="col-md-8" label="Topic" value={this.state.topic} disable={false}/>
         <InputComponent className="col-md-8" label="Description" value={this.state.description}
                         disable={false}/>
@@ -375,8 +411,8 @@ class MymeetForm extends Component {
       <Dialog theme={dialogTheme}
               actions={this.showActions(this.state.meetEdit.ownerName, this.state.meetEdit.programmedDate)}
               active={this.state.active}
-              onEscKeyDown={this.handleToggleDialog}
-              onOverlayClick={this.handleToggleDialog}>
+              onEscKeyDown={this.handleToggle.bind(this)}
+              onOverlayClick={this.handleToggle.bind(this)}>
 
         <InputComponent label="Topic" value={this.state.topic} maxLength={30}
                         onValueChange={this.handleChange.bind(this, 'topic')}
@@ -417,7 +453,7 @@ class MymeetForm extends Component {
         </div>
         <div className="row col-md-12">
           <InputComponent className="col-md-8" label="Tag" value={this.state.tag} disable={this.state.disabled}
-                          onValueChange={this.handleChange.bind(this, 'tags')} maxLength={30}/>
+                          onValueChange={this.handleChange.bind(this, 'tag')} maxLength={30}/>
           <div className="col-md-4">
             <TooltipButton icon='add' tooltip='Add tag' floating mini
                            disabled={this.state.disabled} onClick={this.handleAddTag.bind(this)}/>
@@ -428,9 +464,9 @@ class MymeetForm extends Component {
     )
   }
 
-  handleSubmit(e) {
-    if (e.which == 13) {
-      e.preventDefault();
+  handleSubmit(event) {
+    if (event.which == 13) {
+      event.preventDefault();
       this.searchByToken();
     }
   }
@@ -478,7 +514,7 @@ class MymeetForm extends Component {
           <div>
             <InputComponent label="Meeting topic" name="searchField" value={this.state.searchField}
                             onKeyPress={this.handleSubmit.bind(this)}
-                            onValueChange={this.handleChange.bind(this,'searchField')}/>
+                            onValueChange={this.handleChange.bind(this, 'searchField')}/>
             <ButtonComponent onClick={this.searchByToken.bind(this)} value="Search"/>
           </div>
           <BootstrapModal ref="mymeetingModal" message={this.state.message}/>

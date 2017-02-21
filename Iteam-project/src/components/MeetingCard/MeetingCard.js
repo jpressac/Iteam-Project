@@ -6,11 +6,11 @@ import {Button} from 'react-toolbox/lib/button'
 import  card from './Card.scss'
 import divCss from '../MeetingsHistoryForm/formContainer.scss'
 import getUUID from '../../constants/utils/GetUUID'
-import {saveMeetingInfo} from '../../redux/reducers/Meeting/MeetingReducer'
+import {saveMeetingInfoForReports} from '../../redux/reducers/Report/ReportConfigReducer'
 import {PATHS} from '../../constants/routes'
 
 const mapDispatchToProps = (dispatch) => ({
-  updateMyMeeting: (meetingId) => dispatch(saveMeetingInfo(meetingId)),
+  updateMyMeeting: (meetingId) => dispatch(saveMeetingInfoForReports(meetingId)),
   goToReportsPage: () => dispatch(push('/' + PATHS.MENULOGGEDIN.REPORTS))
 });
 
@@ -20,8 +20,8 @@ class MeetingCard extends Component {
     super(props);
   }
 
-  static renderDate(meetingTime) {
-    return new Date(meetingTime).toLocaleDateString([], {hour: '2-digit', minute: '2-digit'});
+  renderDate(meetingTime) {
+    return new Date(meetingTime).toLocaleDateString([], {hour: '2-digit', minute: '2-digit'})
   }
 
   viewReports(meeting) {
@@ -38,8 +38,6 @@ class MeetingCard extends Component {
 
   render() {
     let meetings = this.props.endedMeetings;
-    console.log(meetings)
-
     return (
       <div className={divCss.cardsdiv}>
         {
@@ -48,7 +46,7 @@ class MeetingCard extends Component {
               <Card key={getUUID()} theme={card}>
                 <CardTitle className="col-md-3" title='Name' subtitle={meetings[key].topic}/>
                 <CardTitle className="col-md-3" title='Organizer' subtitle={meetings[key].ownerName}/>
-                <CardTitle className="col-md-3" title='Date' subtitle={MeetingCard.renderDate(meetings[key].endDate)}/>
+                <CardTitle className="col-md-3" title='Date' subtitle={this.renderDate(meetings[key].endDate)}/>
                 <CardActions className="col-md-3">
                   <Button label="View reports" onClick={this.viewReports.bind(this, meetings[key])}/>
                 </CardActions>
