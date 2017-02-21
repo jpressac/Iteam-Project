@@ -72,7 +72,8 @@ class TeamForm extends React.Component {
       dropdownSource: [],
       dropdownSourceP: [],
       filterToShow: '',
-      filterToAddValue: ''
+      filterToAddValue: '',
+      incorrectFields: false
     }
   }
 
@@ -106,38 +107,51 @@ class TeamForm extends React.Component {
     let update = false;
 
 
-    if (0 != this.state.rangeFrom) {
+    if (this.validateNumber(this.state.rangeFrom) && this.validateNumber(this.state.rangeTo)
+      && this.state.rangeFrom < this.state.rangeTo) {
       update = true;
       rangeFilterName = rangeFilterName.concat(" from:", this.state.rangeFrom.toString());
-    }
-
-    if (0 != this.state.rangeTo) {
-      update = true;
       rangeFilterName = rangeFilterName.concat(" to:", this.state.rangeTo.toString());
+
+      let newFilters = this.state.filters;
+
+      if (update) {
+        newFilters[this.state.filterToShow] = {
+          values: rangeFilterName,
+          from: this.state.rangeFrom,
+          key: this.state.filterToShow,
+          to: this.state.rangeTo
+        };
+
+        this.setState({
+          filters: newFilters,
+          rangeFrom: '',
+          rangeTo: '',
+          incorrectFields: false
+        })
+      }
     }
-
-    let newFilters = this.state.filters;
-
-    if (update) {
-      newFilters[this.state.filterToShow] = {
-        values: rangeFilterName,
-        from: this.state.rangeFrom,
-        key: this.state.filterToShow,
-        to: this.state.rangeTo
-      };
-
-      this.setState({filters: newFilters})
+    else {
+      this.setState({incorrectFields: true});
+      this.setState({message: '¡Please complete the required fields correct!'});
+      this.refs.mymodal.openModal();
     }
   }
 
   searchUsers() {
-    selectTeam(JSON.stringify(this.processFilters()))
-      .then(function (response) {
-        this.setState({userInformation: response.data});
-      }.bind(this))
-      .catch(function (response) {
-        //TODO: handle errors
-      });
+    if (!this.state.incorrectFields == true) {
+      selectTeam(JSON.stringify(this.processFilters()))
+        .then(function (response) {
+          this.setState({userInformation: response.data});
+        }.bind(this))
+        .catch(function (response) {
+          //TODO: handle errors
+        });
+    }
+    else {
+      this.setState({message: '¡Please complete the required fields correct!'});
+      this.refs.mymodal.openModal();
+    }
   }
 
   processFilters() {
@@ -204,6 +218,19 @@ class TeamForm extends React.Component {
     this.setState({[key]: value});
   };
 
+  validateField(value) {
+    if (this.validateNumber(value)) {
+      return '';
+    }
+    else {
+      return 'Incorrect number'
+    }
+  }
+
+  validateNumber(value) {
+    return (!isNaN(value) && value < Number.MAX_VALUE && value >= 0)
+  }
+
   checkName() {
     teamNameExistence(this.state.teamName, this.props.user)
       .then(function () {
@@ -266,7 +293,7 @@ class TeamForm extends React.Component {
     }
   }
 
-  //TODO: this should be another component.
+//TODO: this should be another component.
   filters() {
     switch (this.state.filterToShow) {
 
@@ -302,7 +329,8 @@ class TeamForm extends React.Component {
       <AutocompleteComponent label="Select Filter" source={sourceData} initialValue=''
                              onValueChange={this.handleChange.bind(this, 'filterToAddValue')}/>
     );
-  };
+  }
+  ;
 
   filterLabels() {
     return Object.keys(this.state.filters).map((key) => {
@@ -321,7 +349,7 @@ class TeamForm extends React.Component {
         <ListItem key={generateUUID()}
                   avatar='https://dl.dropboxusercontent.com/u/2247264/assets/m.jpg'
                   caption={[user.username, [user.name, user.lastName].join(" ")].join(": ")}
-                  legend='Here will be the feedback points'
+                  legend={'Score: ' + user.score}
                   onClick={this.selectUser.bind(this, user.username)}
                   rightIcon='star'/>
       )
@@ -334,7 +362,7 @@ class TeamForm extends React.Component {
         <ListItem key={generateUUID()}
                   avatar='https://dl.dropboxusercontent.com/u/2247264/assets/m.jpg'
                   caption={[user.username, [user.name, user.lastName].join(" ")].join(": ")}
-                  legend='Here will be the feedback points'
+                  legend={'Score: ' + user.score}
                   onClick={this.removeUser.bind(this, user.username)}
                   rightIcon='star'/>
       )
@@ -344,9 +372,11 @@ class TeamForm extends React.Component {
   rangeFilter() {
     return (
       <div className="row">
-        <InputComponent label="From" type="number" value={this.state.rangeFrom.toString()}
+        <InputComponent label="From" type="number" value={this.state.rangeFrom.toString()} minValue={0}
+                        onValueError={this.validateField(this.state.rangeFrom)}
                         onValueChange={this.handleChange.bind(this, "rangeFrom")} className="col-md-6"/>
-        <InputComponent label="To" type="number" value={this.state.rangeTo.toString()}
+        <InputComponent label="To" type="number" value={this.state.rangeTo.toString()} minValue={0}
+                        onValueError={this.validateField(this.state.rangeTo)}
                         onValueChange={this.handleChange.bind(this, "rangeTo")} className="col-md-6"/>
       </div>
     )
