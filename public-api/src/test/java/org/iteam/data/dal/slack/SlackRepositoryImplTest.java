@@ -20,9 +20,11 @@ import com.github.seratch.jslack.Slack;
 import com.github.seratch.jslack.api.methods.MethodsClient;
 import com.github.seratch.jslack.api.methods.SlackApiException;
 import com.github.seratch.jslack.api.methods.request.chat.ChatPostMessageRequest;
+import com.github.seratch.jslack.api.methods.request.groups.GroupsInviteRequest;
 import com.github.seratch.jslack.api.methods.request.pins.PinsAddRequest;
 import com.github.seratch.jslack.api.methods.response.chat.ChatPostMessageResponse;
 import com.github.seratch.jslack.api.methods.response.groups.GroupsCreateResponse;
+import com.github.seratch.jslack.api.methods.response.groups.GroupsInviteResponse;
 import com.github.seratch.jslack.api.methods.response.pins.PinsAddResponse;
 import com.github.seratch.jslack.api.methods.response.users.UsersListResponse;
 import com.github.seratch.jslack.api.model.Group;
@@ -58,19 +60,6 @@ public class SlackRepositoryImplTest {
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
-    }
-
-    @Test
-    public void createAndInviteToMeetingGroupSuccess() throws IOException, SlackApiException {
-        givenAMeetingTopic();
-        givenATeamId();
-        givenSlackCreteGroupMock("This is an id");
-        givenSlackChatResponseMock(TIMESTAMP_CHAT_POST_MESSAGE);
-        givenSlackPinResponseMock();
-        // givenSlackInviteResponseMock();
-        // whenCreateAndInviteToMeetingIsCalled();
-        // thenVerifyCreateGroupCalls(1);
-        // thenVerifyInviteAndPinCalls(1);
     }
 
     @Test
@@ -151,6 +140,39 @@ public class SlackRepositoryImplTest {
         givenAPinsAddResponse();
         whenPinMeetingInfoIsCalled();
         thenVerifyCallsPin();
+    }
+
+    @Test
+    @Ignore
+    public void inviteUserToUserGroupSuccess() throws IOException, SlackApiException {
+        givenAToken();
+        givenAMeetingTopic();
+        givenATeamId();
+        givenAListOfUserDTO();
+        givenAListOfSlackUsers("this@mail.com");
+        givenATeamRepository(userList);
+        givenSlackUserData(slackUserList);
+        givenSlackInviteResponseMock();
+        whenInviteUserToUserGroupIsCalled();
+        thenVerifyCallsInvite();
+    }
+
+    private void thenVerifyCallsInvite() {
+        // TODO: verify how can verify stubbing calls
+    }
+
+    private void givenSlackInviteResponseMock() throws IOException, SlackApiException {
+        GroupsInviteResponse response = Mockito.mock(GroupsInviteResponse.class);
+        MethodsClient methods = Mockito.mock(MethodsClient.class);
+
+        Mockito.when(methods.groupsInvite((GroupsInviteRequest) Mockito.anyObject())).thenReturn(response);
+
+        Mockito.when(slack.methods()).thenReturn(methods);
+
+    }
+
+    private void whenInviteUserToUserGroupIsCalled() {
+        underTest.inviteUsersToMeetingGroup(teamId, meetingTopic);
     }
 
     private void thenVerifyCallsPin() {
