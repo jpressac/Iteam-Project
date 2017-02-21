@@ -42,7 +42,7 @@ const mapStateToProps = (state) => {
   return {
     user: state.loginUser.user.username,
     meetingId: state.myMeetingReducer.meetingId,
-    connected: state.myMeetingReducer,
+    connected: state.meetingUser,
     meetingConfiguration: state.myMeetingReducer.meetingConfig
   }
 };
