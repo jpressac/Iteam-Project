@@ -79,7 +79,7 @@ class RegistrationForm extends React.Component {
   }
 
   validateMinLength(key, value) {
-    if (0 == value.length || value.length >= MIN_LENGTH) {
+    if (value.length == 0 || value.length >= MIN_LENGTH) {
       return '';
     }
     else {
