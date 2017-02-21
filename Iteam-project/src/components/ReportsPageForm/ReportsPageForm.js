@@ -18,7 +18,7 @@ import {
 const mapStateToProps = (state) => {
   return {
     user: state.loginUser.user.username,
-    meetingConfiguration: state.meetingReducer,
+    meetingConfiguration: state.reportConfigurationReducer,
     reportType: state.reportReducer,
     byMeeting: state.mixMeetingReducer
   }

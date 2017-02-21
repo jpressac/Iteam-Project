@@ -26,8 +26,8 @@ class MeetingHistory extends Component {
     this.loadMeetings();
   }
 
-  calculateTotalPages() {
-    let total = calculateTotalPages(this.state.totalMeetings, ITEMS_PER_PAGE);
+  calculateTotalPages(){
+    let total = Math.ceil(this.state.totalMeetings / ITEMS_PER_PAGE);
     this.setState({totalPages: total});
   }
 

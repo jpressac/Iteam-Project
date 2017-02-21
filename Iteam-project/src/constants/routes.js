@@ -26,9 +26,10 @@ export const PATHS = {
     MEETCONFIG: 'meetingconfig',
     TEAMLIST: 'myteams',
     REPORTS: 'reports',
-REPORTSPAGE: 'reportspage',
+    REPORTSPAGE: 'reportspage',
     CHAT: 'chat',
     HISTORY: 'history',
+    SLACKUSERSINFO: 'slackusersinfo',
   },
   PERSONALBOARD: {
     ROOT: 'member/pboard',
@@ -57,7 +58,7 @@ REPORTSPAGE: 'reportspage',
     MEETING: 'application/member/meeting',
     BOARD: 'application/member/personalboard',
     MYMEETINGS: 'application/member/mymeeting',
-    MEETCONFIG: 'application/member/meetingconfig',
+    SLACKUSERSINFO: 'application/member/slackusersinfo',
     TEAMLIST: 'application/member/myteams',
     REPORTS: 'application/member/reports',
     REPORTSPAGE: 'application/member/reportspage',
@@ -65,6 +66,7 @@ REPORTSPAGE: 'reportspage',
     SHAREDBOARD: 'application/member/sboard/shared',
     CHAT: 'application/member/chat',
     HISTORY: 'application/member/history'
+
   },
   SHARED_REPORT: {
     REPORT_NOT_LOGGEDIN: 'application/nmember/report',

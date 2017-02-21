@@ -45,9 +45,10 @@ dependencies {
 	compile("com.google.apis:google-api-services-gmail:${googleAPIMailVersion}"){
 		exclude module: "guava-jdk5"
 	}
-	
 	compile ("com.auth0:java-jwt:${jwtVersion}")
-	
+	compile("javax.websocket:javax.websocket-api:1.1")
+	compile("org.glassfish.tyrus.bundles:tyrus-standalone-client:1.13")
+	compile("com.github.seratch:jslack:1.0.8")
 	
 	compile("javax.mail:mail:${javaMailVersion}")
 	compile("org.springframework.boot:spring-boot-starter-security"){

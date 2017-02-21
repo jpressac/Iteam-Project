@@ -274,6 +274,35 @@ public class TeamRepositoryImpl implements TeamRepository {
 
     }
 
+    public List<UserDTO> getTeamUsers(String teamId) {
+        List<UserDTO> usersList = new ArrayList<>();
+
+        GetResponse teamResponse = elasticsearchClient.getDocument(StringUtilities.INDEX_TEAM,
+                StringUtilities.INDEX_TYPE_TEAM, teamId);
+
+        if (teamResponse.isExists()) {
+
+            LOGGER.debug("Team retrieved '{}'", teamResponse.toString());
+
+            Team team = (Team) JSONUtils.JSONToObject(teamResponse.getSourceAsString(), Team.class);
+
+            BoolQueryBuilder query = QueryBuilders.boolQuery();
+            query.should(QueryBuilders.termsQuery(USER_USERNAME_FIELD, team.getMembers()));
+            // This could change in the future.
+            query.minimumNumberShouldMatch(1);
+
+            SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_USER, query);
+
+            if (response.getHits().getTotalHits() > 0) {
+                for (SearchHit hit : response.getHits()) {
+                    UserDTO user = (UserDTO) JSONUtils.JSONToObject(hit.getSourceAsString(), UserDTO.class);
+                    usersList.add(user);
+                }
+            }
+        }
+        return usersList;
+    }
+
     @Autowired
     private void setElasticsearchClient(ElasticsearchClientImpl elasticsearchClient) {
         this.elasticsearchClient = elasticsearchClient;

@@ -62,7 +62,7 @@ class MeetingConfigForm extends Component {
       });
     }
     else {
-      this.setState({tags: [], deletable: true, disabled: false}, () => {
+      this.setState({tags: new Set(), deletable: true, disabled: false}, () => {
         this.handleChangeTags(this.state.tags);
       });
     }
@@ -75,6 +75,7 @@ class MeetingConfigForm extends Component {
         this.handleChangeTechnic(this.state.technic);
         this.props.onSetConfig('technic', value);
       }
+
       if (key == 'votes') {
         this.props.onSetConfig('votes', value)
       }
@@ -89,7 +90,7 @@ class MeetingConfigForm extends Component {
     if (this.state.tag !== '') {
 
       let newTags = this.state.tags;
-      newTags.add((this.state.tag));
+      newTags.add(this.state.tag);
 
       this.setState({tags: newTags, tag: ''});
       this.props.onSetConfig('tags', newTags);

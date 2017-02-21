@@ -16,7 +16,7 @@ import ProfileView from '../views/ProfileView/ProfileView'
 import SharedBoardView from '../views/SharedBoardView/SharedBoardView'
 import MyTeamView from '../views/MyTeamView/MyTeamView'
 import MymeetView from '../views/MymeetView/MymeetView'
-import MeetingConfigView from '../views/MeetingConfigView'
+import MeetingSlackInfoView from '../views/MeetingSlackInfoView'
 import ReportsView from '../views/ReportsView/ReportsView'
 import ReportsPageView from '../views/ReportsPageView/ReportsPageView'
 import ChatView from '../views/ChatView/ChatView'
@@ -45,7 +45,7 @@ export const createRoutes = (store) => (
       <Route path={PATHS.LOGGEDIN.SHAREDBOARD} component={SharedBoardView}/>
       <Route path={PATHS.LOGGEDIN.PROFILE} component={ProfileView}/>
       <Route path={PATHS.LOGGEDIN.MYMEETINGS} component={MymeetView}/>
-      <Route path={PATHS.LOGGEDIN.MEETCONFIG} component={MeetingConfigView}/>
+      <Route path={PATHS.LOGGEDIN.SLACKUSERSINFO} component={MeetingSlackInfoView}/>
       <Route path={PATHS.LOGGEDIN.REPORTS} component={ReportsView}/>
       <Route path={PATHS.LOGGEDIN.REPORTSPAGE} component={ReportsPageView}/>
       <Route path={PATHS.LOGGEDIN.TEAMLIST} component={MyTeamView}/>

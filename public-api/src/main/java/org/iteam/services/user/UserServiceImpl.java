@@ -5,6 +5,7 @@ import java.util.List;
 import org.iteam.data.dal.user.UserRepositoryImpl;
 import org.iteam.data.dto.UserDTO;
 import org.iteam.data.model.IdeasDTO;
+import org.iteam.services.slack.SlackServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,9 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
     private UserRepositoryImpl userRepository;
+    private SlackServiceImpl slackService;
+
+    private static String APP_TOKEN = "xoxp-140386445603-141146385335-141139898470-d07c0391cc828de808c1ca6832f0dbd8";
 
     @Override
     public UserDTO getUser(String username) {
@@ -24,6 +28,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public void setUser(UserDTO user) {
         userRepository.setUser(user);
+        if (user.isUseSlack()) {
+            slackService.addUserToSlackGroup(APP_TOKEN, user.getMail());
+        }
     }
 
     @Override
@@ -34,6 +41,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public void modifyUser(UserDTO user, String username) {
         userRepository.modifyUser(user, username);
+        // TODO we need to check if the useSlack as false before
+        if (user.isUseSlack()) {
+            slackService.addUserToSlackGroup(APP_TOKEN, user.getMail());
+        }
     }
 
     @Override
@@ -49,6 +60,11 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private void setUserRepository(UserRepositoryImpl userRepository) {
         this.userRepository = userRepository;
+    }
+
+    @Autowired
+    private void setSlackService(SlackServiceImpl slackService) {
+        this.slackService = slackService;
     }
 
     @Override

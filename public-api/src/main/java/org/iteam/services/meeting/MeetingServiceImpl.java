@@ -9,6 +9,7 @@ import org.iteam.data.dto.ViewedMeeting;
 import org.iteam.data.model.IdeasDTO;
 import org.iteam.data.model.MeetingUsers;
 import org.iteam.data.model.PaginationModel;
+import org.iteam.services.slack.SlackService;
 import org.iteam.services.team.TeamService;
 import org.iteam.services.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +21,13 @@ public class MeetingServiceImpl implements MeetingService {
     private MeetingRepository meetingRepositoryImpl;
     private TeamService teamServiceImpl;
     private UserService userServiceImpl;
+    private SlackService slackService;
 
     @Override
     public boolean createMeeting(Meeting meeting) {
+        if (meeting.isUseSlack()) {
+            slackService.inviteUsersToChannel(meeting.getTeamName(), meeting.getTopic());
+        }
         return meetingRepositoryImpl.createMeeting(meeting);
     }
 
@@ -146,5 +151,10 @@ public class MeetingServiceImpl implements MeetingService {
     @Autowired
     private void setUserServiceImpl(UserService userServiceImpl) {
         this.userServiceImpl = userServiceImpl;
+    }
+
+    @Autowired
+    private void setSlackServiceImpl(SlackService slackServiceImpl) {
+        this.slackService = slackServiceImpl;
     }
 }

@@ -5,17 +5,11 @@ import {push} from 'react-router-redux';
 export const UPDATE_MEETING_ID = 'UPDATE_MEETING_ID';
 export const SAVE_MEETING = 'SAVE_MEETING';
 
-export const updateMeetingId = (meetingId) => {
-  return function (dispatch) {
-    dispatch(updateMeeting(meetingId));
-    dispatch(push('/' + PATHS.MENULOGGEDIN.REPORTS))
-  }
-};
 
-export const meetingToMeetingConfig = (meeting) => {
+export const meetingSlackInfo = (meeting) => {
   return function (dispatch) {
     dispatch(saveMeetingInfo(meeting));
-    dispatch(push('/' + PATHS.MENULOGGEDIN.MEETCONFIG));
+    dispatch(push('/' + PATHS.MENULOGGEDIN.SLACKUSERSINFO));
   }
 };
 
@@ -38,5 +32,3 @@ export default function meetingReducer(state = null, action) {
 
 
 export const saveMeetingInfo = createAction('SAVE_MEETING', (meeting) => (meeting));
-export const updateMeeting = createAction('UPDATE_MEETING_ID', (meetingId) => (meetingId));
-
