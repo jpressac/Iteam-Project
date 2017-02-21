@@ -9,8 +9,6 @@ import org.springframework.stereotype.Service;
 public class SlackServiceImpl implements SlackService {
 
     private SlackRepositoryImpl slackRepository;
-    private static String BOT_TOKEN = "xoxb-141135744790-P7NOxQkNferYDZnZUAvF7M7W";
-    private static String APP_TOKEN = "xoxp-140386445603-141146385335-141139898470-d07c0391cc828de808c1ca6832f0dbd8";
 
     @Override
     public void createMeetingChannel(String meetingId, String token) {

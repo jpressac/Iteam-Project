@@ -28,7 +28,6 @@ import com.github.seratch.jslack.api.methods.request.groups.GroupsCreateRequest;
 import com.github.seratch.jslack.api.methods.request.groups.GroupsInviteRequest;
 import com.github.seratch.jslack.api.methods.request.pins.PinsAddRequest;
 import com.github.seratch.jslack.api.methods.request.users.UsersListRequest;
-import com.github.seratch.jslack.api.methods.response.channels.ChannelsInviteResponse;
 import com.github.seratch.jslack.api.methods.response.channels.ChannelsListResponse;
 import com.github.seratch.jslack.api.methods.response.chat.ChatPostMessageResponse;
 import com.github.seratch.jslack.api.methods.response.groups.GroupsCreateResponse;
@@ -54,7 +53,7 @@ public class SlackRepositoryImpl implements SlackReposit {
     public void createAndinviteToMeetingGroup(String meetingTopic, String teamId) {
         String groupId = createMeetingGroup(meetingTopic, APP_TOKEN);
         if (!StringUtils.isEmpty(groupId)) {
-            pinMeetingInfo(groupId, "Meeting information", APP_TOKEN);
+            pinMeetingInfo(groupId, "Meeting information", BOT_TOKEN);
             inviteUsersToMeetingGroup(teamId, groupId);
         }
     }
@@ -83,6 +82,33 @@ public class SlackRepositoryImpl implements SlackReposit {
         } catch (Exception e) {
             LOGGER.error("Error when sending message to slack channel ", e);
         }
+    }
+
+    @Override
+    public boolean userIsTeamMember(String userMail, String teamToken) {
+        return getTeamSlackUsers(teamToken).contains(userMail);
+    }
+
+    @Override
+    public SlackModel getSlackAndNonSlackUsers(String teamToken, String teamId) {
+
+        List<String> slackUsers = getTeamSlackUsers(teamToken);
+        List<UserDTO> teamMembers = teamRepositoryImpl.getTeamUsers(teamId);
+        List<String> usersInSlack = new ArrayList<>();
+        List<String> usersWithoutSlack = new ArrayList<>();
+
+        if ((!CollectionUtils.isEmpty(slackUsers) && (!CollectionUtils.isEmpty(teamMembers)))) {
+            for (UserDTO user : teamMembers) {
+                if (slackUsers.contains(user.getMail())) {
+                    usersInSlack.add(user.getUsername());
+                } else {
+                    usersWithoutSlack.add(user.getUsername());
+                }
+            }
+        }
+        SlackModel model = new SlackModel(usersInSlack, usersWithoutSlack);
+
+        return model;
     }
 
     // Used by API
@@ -126,8 +152,12 @@ public class SlackRepositoryImpl implements SlackReposit {
     @Override
     public void pinMeetingInfo(String channelName, String message, String token) {
         try {
-            ChatPostMessageResponse postResponse = slack.methods().chatPostMessage(
-                    ChatPostMessageRequest.builder().token(token).channel(channelName).text(message).build());
+
+            ChatPostMessageRequest request = ChatPostMessageRequest.builder().token(token).channel(channelName)
+                    .text(message).build();
+
+            ChatPostMessageResponse postResponse = slack.methods().chatPostMessage(request);
+
             String timestamp = postResponse.getTs();
 
             if (StringUtils.isNotEmpty(timestamp)) {
@@ -154,23 +184,6 @@ public class SlackRepositoryImpl implements SlackReposit {
             LOGGER.error("Error when retrieving users", e);
         }
         return new UsersListResponse();
-    }
-
-    private List<String> getTeamSlackUsers(String teamToken) {
-        List<String> userEmails = new ArrayList<>();
-        List<User> allIteamSlackUsers = getIteamAppUsers(teamToken).getMembers();
-
-        if (!CollectionUtils.isEmpty(allIteamSlackUsers)) {
-            for (User user : allIteamSlackUsers) {
-                userEmails.add(user.getProfile().getEmail());
-            }
-        }
-        return userEmails;
-    }
-
-    @Override
-    public boolean userIsTeamMember(String userMail, String teamToken) {
-        return getTeamSlackUsers(teamToken).contains(userMail);
     }
 
     @Override
@@ -203,34 +216,12 @@ public class SlackRepositoryImpl implements SlackReposit {
     }
 
     @Override
-    public SlackModel getSlackAndNonSlackUsers(String teamToken, String teamId) {
-
-        List<String> slackUsers = getTeamSlackUsers(teamToken);
-        List<UserDTO> teamMembers = teamRepositoryImpl.getTeamUsers(teamId);
-        List<String> usersInSlack = new ArrayList<>();
-        List<String> usersWithoutSlack = new ArrayList<>();
-
-        if ((!CollectionUtils.isEmpty(slackUsers) && (!CollectionUtils.isEmpty(teamMembers)))) {
-            for (UserDTO user : teamMembers) {
-                if (slackUsers.contains(user.getMail())) {
-                    usersInSlack.add(user.getUsername());
-                } else {
-                    usersWithoutSlack.add(user.getUsername());
-                }
-            }
-        }
-        SlackModel model = new SlackModel(usersInSlack, usersWithoutSlack);
-
-        return model;
-    }
-
-    @Override
     public void inviteUserToChannel(String channelName, String userId, String token) {
 
         ChannelsInviteRequest inviteReq = ChannelsInviteRequest.builder().token(token)
                 .channel(getChannelId(channelName, token)).user(userId).build();
         try {
-            ChannelsInviteResponse inviteResponse = slack.methods().channelsInvite(inviteReq);
+            slack.methods().channelsInvite(inviteReq);
         } catch (Exception e) {
             LOGGER.error("Error when inviting user to channel", e);
         }
@@ -248,6 +239,18 @@ public class SlackRepositoryImpl implements SlackReposit {
         } catch (Exception e) {
             LOGGER.error("User could not be added to Iteam app slack group", e);
         }
+    }
+
+    private List<String> getTeamSlackUsers(String teamToken) {
+        List<String> userEmails = new ArrayList<>();
+        List<User> allIteamSlackUsers = getIteamAppUsers(teamToken).getMembers();
+
+        if (!CollectionUtils.isEmpty(allIteamSlackUsers)) {
+            for (User user : allIteamSlackUsers) {
+                userEmails.add(user.getProfile().getEmail());
+            }
+        }
+        return userEmails;
     }
 
     @Autowired

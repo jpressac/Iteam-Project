@@ -37,20 +37,17 @@ const NoteTarget = {
 };
 
 const mapStateToProps = (state) => {
-  if (state.meetingReducer != null) {
     return {
-      meetingId: state.meetingReducer.meetingId,
+      meetingId: state.myMeetingReducer.meetingId,
       connected: state.meetingUser,
       user: state.loginUser.user.username,
-      meetingConfiguration: state.meetingReducer.meetingConfig,
-      meetingOwner: state.meetingReducer.ownerName,
+      meetingConfiguration: state.myMeetingReducer.meetingConfig,
+      meetingOwner: state.myMeetingReducer.ownerName,
       votes: state.meetingsVotesReducer
     }
-  }
 };
 
 const mapDispatchToProps = (dispatch) => ({
-
   onClick: () => dispatch(push('/' + PATHS.MENULOGGEDIN.REPORTS)),
   home: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HOME)),
   personalBoard: () => dispatch(push('/' + PATHS.MENULOGGEDIN.PERSONALBOARD)),

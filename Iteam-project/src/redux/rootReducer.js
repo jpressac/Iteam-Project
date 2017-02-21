@@ -12,7 +12,7 @@ import meetingsNotViewed from './reducers/Meeting/MeetingNotViewedReducer'
 import mixMeetingReducer from './reducers/Report/ReportByMeetingReducer'
 import meetingsVotesReducer from './reducers/Meeting/MeetingVotesReducer'
 import viewReportReducer from './reducers/Report/ViewReportReducer'
-
+import myMeetingReducer from './reducers/Meeting/MyMeetingReducer'
 
 export default combineReducers({
   router,
@@ -28,4 +28,5 @@ export default combineReducers({
   meetingsVotesReducer,
   viewReportReducer,
   mixMeetingReducer,
+  myMeetingReducer
 })
