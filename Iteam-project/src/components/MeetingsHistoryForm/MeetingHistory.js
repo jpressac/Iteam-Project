@@ -1,11 +1,11 @@
 import React, {Component, PropTypes}  from 'react';
-import {MEETING} from '../../constants/HostConfiguration';
-import axios from 'axios';
 import MeetingCard from '../MeetingCard/MeetingCard';
 import InputComponent from "../InputComponent/InputComponent"
 import ButtonComponent from '../ButtonComponent/ButtonComponent'
 import ReactPagination from 'react-paginate'
 import pagination from './pagination.scss'
+import {calculateTotalPages, calculateOffset} from '../../utils/mathUtils'
+import {getMeetingPaginated, getMeetingByToken} from '../../utils/actions/historyActions'
 
 const ITEMS_PER_PAGE = 10;
 
@@ -26,7 +26,7 @@ class MeetingHistory extends Component {
     this.loadMeetings();
   }
 
-  calculateTotalPages() {
+  calculateTotalPages(){
     let total = Math.ceil(this.state.totalMeetings / ITEMS_PER_PAGE);
     this.setState({totalPages: total});
   }
@@ -46,15 +46,10 @@ class MeetingHistory extends Component {
 
   searchByToken() {
     if (this.state.searchField.length != 0) {
-      axios.get(MEETING.MEETING_SEARCH_HISTORY, {
-        params: {
-          token: this.state.searchField,
-          offset: this.state.offset,
-          limit: ITEMS_PER_PAGE
-        }
-      }).then(function (response) {
-        this.fillMeetings(response.data)
-      }.bind(this))
+      getMeetingByToken(this.state.searchField, this.state.offset, ITEMS_PER_PAGE)
+        .then(function (response) {
+          this.fillMeetings(response.data)
+        }.bind(this))
     }
     else {
       this.loadMeetings();
@@ -63,7 +58,7 @@ class MeetingHistory extends Component {
 
   handlePageClick = (data) => {
     let actualPageNumber = data.selected;
-    let offset = Math.ceil(actualPageNumber * ITEMS_PER_PAGE);
+    let offset = calculateOffset(actualPageNumber, ITEMS_PER_PAGE);
 
     this.setState({offset: offset}, () => {
       this.loadMeetings();
@@ -71,12 +66,7 @@ class MeetingHistory extends Component {
   };
 
   loadMeetings() {
-    axios.get(MEETING.MEETING_PAGINATED, {
-      params: {
-        offset: this.state.offset,
-        limit: ITEMS_PER_PAGE
-      }
-    }).then(function (response) {
+    getMeetingPaginated(this.state.offset, ITEMS_PER_PAGE).then(function (response) {
       this.fillMeetings(response.data);
     }.bind(this))
   }
@@ -91,31 +81,25 @@ class MeetingHistory extends Component {
   render() {
     return (
       <div className="container">
-        <div className="row">
+        <div>
           <InputComponent className="col-md-8" label='Meeting name' value={this.state.searchField}
                           onKeyPress={this.handleSubmit.bind(this)} onValueChange={this.handleChange.bind(this)}/>
-          <ButtonComponent className="col-md-4" onClick={this.searchByToken.bind(this)} value="Search"raisedValue iconButton='search'/>
-
+          <ButtonComponent className="col-md-4" onClick={this.searchByToken.bind(this)} value="Search"/>
         </div>
         <div className="col-md-12">
           <MeetingCard endedMeetings={this.state.meetings}/>
         </div>
         <div className="col-md-12">
-          <ReactPagination previousLabel={"<<"}
-                           nextLabel={">>"}
+          <ReactPagination previousLabel={"previous"}
+                           nextLabel={"next"}
                            pageCount={this.state.totalPages}
                            marginPagesDisplayed={2}
                            pageRangeDisplayed={5}
                            onPageChange={this.handlePageClick}
                            initialPage={0}
                            disableInitialCallback={false}
-                           pageClassName={pagination.li}
-                           previousClassName={pagination.li}
-                           nextClassName={pagination.li}
-                           containerClassName={pagination.ul}
-                           pageLinkClassName={pagination.link}
-                           activeClassName={pagination.liActive} />
-
+                           pageClassName={pagination.ul}
+          />
         </div>
       </div>
     )
