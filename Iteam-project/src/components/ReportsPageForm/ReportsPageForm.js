@@ -12,7 +12,8 @@ import {
   getReportByRanking,
   getReportByUser,
   getReportByMixMeetings,
-  generateSharedReport
+  generateSharedReport,
+  postReportIntoSlack
 } from '../../utils/actions/reportActions'
 
 const mapStateToProps = (state) => {
@@ -75,6 +76,8 @@ class ReportsPageForm extends Component {
       .catch(() => {
         //TODO: what we do here????
       })
+
+    this.postSharedBasicReport('Report By User')
   }
 
   generateTagReport() {
@@ -84,6 +87,9 @@ class ReportsPageForm extends Component {
       }.bind(this)).catch(function (response) {
       //TODO: what we do here????
     })
+
+    this.postSharedBasicReport('Report By Tag')
+
   };
 
   generateRankingReport() {
@@ -93,7 +99,16 @@ class ReportsPageForm extends Component {
       }.bind(this)).catch(function (response) {
       //TODO: what we do here???? WTF
     })
+
+    this.postSharedBasicReport('Report By Ranking')
   };
+
+  postSharedBasicReport(reportName){
+    postReportIntoSlack(this.props.meetingConfiguration.meetingId, this.props.meetingConfiguration.topic, reportName)
+      .catch((response) => {
+        //TODO: we don't need the 'then' promise we need to do something here
+      })
+  }
 
   renderTrees() {
     if (this.props.reportType == 'byranking') {

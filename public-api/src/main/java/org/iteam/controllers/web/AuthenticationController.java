@@ -29,6 +29,41 @@ public class AuthenticationController implements ErrorController {
         return "application";
     }
 
+    @RequestMapping("/application/member/report/shared")
+    public String sharedReport() {
+        return "application";
+    }
+
+    @RequestMapping("/application/member/report")
+    public String sharedReportBis() {
+        return "application";
+    }
+
+    @RequestMapping("/application/member/mymeeting")
+    public String myMeetings() {
+        return "application";
+    }
+
+    @RequestMapping("/application/member/meeting")
+    public String createMeeting() {
+        return "application";
+    }
+
+    @RequestMapping("/application/member/history")
+    public String meetingHistory() {
+        return "application";
+    }
+
+    @RequestMapping("/application/member/team")
+    public String createTeam() {
+        return "application";
+    }
+
+    @RequestMapping("/application/member/myteams")
+    public String mnyTeams() {
+        return "application";
+    }
+
     @RequestMapping(value = "/application/member/logout")
     public String logoutPage(HttpServletRequest request, HttpServletResponse response) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -47,14 +82,4 @@ public class AuthenticationController implements ErrorController {
     public String getErrorPath() {
         return "/error";
     }
-
-    // @RequestMapping("/application/**/*")
-    // public String rootLogged(Model model) {
-    // return "redirect:/application";
-    // }
-    //
-    // @RequestMapping("/")
-    // public String rootNotLogged(Model model) {
-    // return "redirect:/application";
-    // }
 }

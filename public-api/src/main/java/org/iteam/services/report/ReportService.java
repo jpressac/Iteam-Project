@@ -68,4 +68,16 @@ public interface ReportService {
      */
     public D3CollapseTreeModel getSharedReport(String token);
 
+    /**
+     * Post and pin the shared report to an specific channel in Slack
+     * 
+     * @param meetingId
+     *            the id of the meeting to generate the shared report
+     * @param meetingTopic
+     *            the topic name to look for the channel in Slack
+     * @param reportName
+     *            the report name
+     */
+    public void postSharedBasicReportToSlack(String meetingId, String meetingTopic, String reportName);
+
 }

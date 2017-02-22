@@ -25,19 +25,19 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import com.github.seratch.jslack.Slack;
 import com.github.seratch.jslack.api.methods.request.channels.ChannelsInviteRequest;
-import com.github.seratch.jslack.api.methods.request.channels.ChannelsListRequest;
 import com.github.seratch.jslack.api.methods.request.chat.ChatPostMessageRequest;
 import com.github.seratch.jslack.api.methods.request.groups.GroupsCreateRequest;
 import com.github.seratch.jslack.api.methods.request.groups.GroupsInviteRequest;
+import com.github.seratch.jslack.api.methods.request.groups.GroupsListRequest;
 import com.github.seratch.jslack.api.methods.request.pins.PinsAddRequest;
 import com.github.seratch.jslack.api.methods.request.users.UsersListRequest;
-import com.github.seratch.jslack.api.methods.response.channels.ChannelsListResponse;
 import com.github.seratch.jslack.api.methods.response.chat.ChatPostMessageResponse;
 import com.github.seratch.jslack.api.methods.response.groups.GroupsCreateResponse;
 import com.github.seratch.jslack.api.methods.response.groups.GroupsInviteResponse;
+import com.github.seratch.jslack.api.methods.response.groups.GroupsListResponse;
 import com.github.seratch.jslack.api.methods.response.pins.PinsAddResponse;
 import com.github.seratch.jslack.api.methods.response.users.UsersListResponse;
-import com.github.seratch.jslack.api.model.Channel;
+import com.github.seratch.jslack.api.model.Group;
 import com.github.seratch.jslack.api.model.User;
 
 @Repository
@@ -50,15 +50,19 @@ public class SlackRepositoryImpl implements SlackRepository {
     private static final String URI_TEMPLATE_SLACK_ADD_TEAM = "https://slack.com/api/users.admin.invite?token={token}&email={mail}";
 
     private static String BOT_TOKEN = "xoxb-141135744790-P7NOxQkNferYDZnZUAvF7M7W";
-    private static String BOT_USER_ID = "USLACKBOT";
+    private static String BOT_USER_ID = "U453ZMWP8";
     private static String APP_TOKEN = "xoxp-140386445603-141146385335-141139898470-d07c0391cc828de808c1ca6832f0dbd8";
 
     @Override
     public void createAndinviteToMeetingGroup(Meeting meeting, String teamId) {
         String groupId = createMeetingGroup(meeting.getTopic());
+
         if (!StringUtils.isEmpty(groupId)) {
-            pinMeetingInfo(meeting, groupId);
+            // invite all the users including the bot
             inviteUsersToMeetingGroup(teamId, groupId);
+
+            // the bot post the message and pinned with the meeting information
+            pinMeetingInfo(meeting, groupId);
         }
     }
 
@@ -146,12 +150,15 @@ public class SlackRepositoryImpl implements SlackRepository {
         String channelId = StringUtils.EMPTY;
 
         try {
-            String newChannelName = channelName.replace(" ", "-");
-            ChannelsListResponse channelsResponse = slack.methods()
-                    .channelsList(ChannelsListRequest.builder().token(APP_TOKEN).build());
+            String newChannelName = channelName.replace(" ", "-").toLowerCase();
 
-            Channel channel = channelsResponse.getChannels().stream().filter(c -> c.getName().equals(newChannelName))
-                    .findFirst().get();
+            GroupsListRequest groupsListRequests = GroupsListRequest.builder().token(BOT_TOKEN).build();
+
+            GroupsListResponse groupsListResponse = slack.methods().groupsList(groupsListRequests);
+
+            Group channel = groupsListResponse.getGroups().stream()
+                    .filter(group -> group.getName().equals(newChannelName)).findFirst().get();
+
             channelId = channel.getId();
         } catch (Exception e) {
             LOGGER.error("Error when retrieving channel id", e);
@@ -269,12 +276,13 @@ public class SlackRepositoryImpl implements SlackRepository {
 
     private String formatMessageMeetingInfo(Meeting meeting) {
 
+        // TODO: this message can be improved
         StringBuffer message = new StringBuffer();
         message.append("_*MEETING INFORMATION:*_ \n");
         message.append(String.format("_Topic:_ %s\n", meeting.getTopic()));
         message.append("_Description:_\n");
-        message.append(String.format("> %s \n", meeting.getDescription()));
-        message.append(String.format("_Programmed date:_ %s \n",
+        message.append(String.format(">>> %s \n", meeting.getDescription()));
+        message.append(String.format("_Programmed date (UTC-Time):_ %s \n",
                 new ISO8601DateFormat().format(new DateTime(meeting.getProgrammedDate()).toDate())));
 
         return message.toString();

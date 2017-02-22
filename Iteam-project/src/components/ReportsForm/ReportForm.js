@@ -16,6 +16,7 @@ import {saveMixMeeting} from '../../redux/reducers/Report/ReportByMeetingReducer
 import BootstrapModal from '../BootstrapModal/BootstrapModal'
 import {cleanMeetingChats} from '../../redux/reducers/Meeting/MeetingChatMessagesReducer'
 
+
 const mapDispatchToProps = dispatch => ({
   saveMeetingConfigInformation: (reportType) => dispatch(reportsToReportsView(reportType)),
   saveMeetingIdsForReports: (meetingIds) => dispatch(saveMixMeeting(meetingIds)),
@@ -116,14 +117,17 @@ class ReportForm extends Component {
     this.props.saveMeetingConfigInformation(reportType)
   }
 
+
   reportByMixing() {
 
-    if (this.state.meetingSelected.length > 0 || this.state.reportName != '') {
+    console.log(this.state.meetingSelected)
+    if (this.state.reportName != '' || this.state.meetingSelected.length > 0) {
 
       let meetingIds = this.state.meetingSelected.map((meeting) => meeting.meetingId)
 
       this.props.saveMeetingIdsForReports({'meetingIds': meetingIds, 'reportName': this.state.reportName})
       this.props.saveMeetingConfigInformation('bymixingmeeting')
+
     } else {
       this.setState({messageModal: '!Please fill the reportName field and select at least one meeting¡'})
       this.refs.formModal.openModal()
@@ -189,7 +193,6 @@ class ReportForm extends Component {
 ReportForm.propTypes = {
   saveMeetingConfigInformation: PropTypes.func,
   meetingId: PropTypes.string,
-  meetingConfiguration: PropTypes.any,
   goToReportsPage: PropTypes.func,
   saveMeetingIdsForReports: PropTypes.func,
   finishChat: PropTypes.any
