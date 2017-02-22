@@ -1,17 +1,7 @@
 import {createAction} from 'redux-actions';
-import {PATHS} from '../../../constants/routes'
-import {push} from 'react-router-redux';
 
 export const UPDATE_MEETING_ID = 'UPDATE_MEETING_ID';
 export const SAVE_MEETING = 'SAVE_MEETING';
-
-
-export const meetingSlackInfo = (meeting) => {
-  return function (dispatch) {
-    dispatch(saveMeetingInfo(meeting));
-    dispatch(push('/' + PATHS.MENULOGGEDIN.SLACKUSERSINFO));
-  }
-};
 
 export function saveMeeting(meeting) {
   return function (dispatch) {
@@ -29,6 +19,5 @@ export default function meetingReducer(state = null, action) {
       return state;
   }
 }
-
 
 export const saveMeetingInfo = createAction('SAVE_MEETING', (meeting) => (meeting));
