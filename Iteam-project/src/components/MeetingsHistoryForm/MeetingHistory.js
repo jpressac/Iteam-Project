@@ -5,6 +5,7 @@ import MeetingCard from '../MeetingCard/MeetingCard';
 import InputComponent from "../InputComponent/InputComponent"
 import ButtonComponent from '../ButtonComponent/ButtonComponent'
 import ReactPagination from 'react-paginate'
+import pagination from './pagination.scss'
 
 const ITEMS_PER_PAGE = 10;
 
@@ -90,24 +91,31 @@ class MeetingHistory extends Component {
   render() {
     return (
       <div className="container">
-        <div>
+        <div className="row">
           <InputComponent className="col-md-8" label='Meeting name' value={this.state.searchField}
                           onKeyPress={this.handleSubmit.bind(this)} onValueChange={this.handleChange.bind(this)}/>
-          <ButtonComponent className="col-md-4" onClick={this.searchByToken.bind(this)} value="Search"/>
+          <ButtonComponent className="col-md-4" onClick={this.searchByToken.bind(this)} value="Search"raisedValue iconButton='search'/>
+
         </div>
         <div className="col-md-12">
           <MeetingCard endedMeetings={this.state.meetings}/>
         </div>
         <div className="col-md-12">
-          <ReactPagination previousLabel={"previous"}
-                           nextLabel={"next"}
+          <ReactPagination previousLabel={"<<"}
+                           nextLabel={">>"}
                            pageCount={this.state.totalPages}
                            marginPagesDisplayed={2}
                            pageRangeDisplayed={5}
                            onPageChange={this.handlePageClick}
-                           initialPage={1}
-                           disableInitialCallback={true}
-          />
+                           initialPage={0}
+                           disableInitialCallback={false}
+                           pageClassName={pagination.li}
+                           previousClassName={pagination.li}
+                           nextClassName={pagination.li}
+                           containerClassName={pagination.ul}
+                           pageLinkClassName={pagination.link}
+                           activeClassName={pagination.liActive} />
+
         </div>
       </div>
     )

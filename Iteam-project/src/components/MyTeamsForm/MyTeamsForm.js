@@ -10,7 +10,7 @@ import {TEAM} from '../../constants/HostConfiguration'
 import Spinner from '../Spinner/Spinner';
 import ReactPagination from 'react-paginate'
 import InputComponent from '../InputComponent'
-import pagination from './pagination.scss'
+import pagination from '../MeetingsHistoryForm/pagination.scss'
 import {calculateTotalPages, calculateOffset} from '../../utils/mathUtils'
 import {getTeamByOwner, getTeamByOwnerPaginated} from '../../utils/actions/teamActions'
 
@@ -128,16 +128,23 @@ class MyTeamsForm extends Component {
                 );
               })}
             </List>
-            <ReactPagination previousLabel={"Previous"}
-                             nextLabel={"Next"}
+            <ReactPagination previousLabel={"<<"}
+                             nextLabel={">>"}
                              pageCount={this.state.totalPages}
                              marginPagesDisplayed={2}
                              pageRangeDisplayed={5}
                              onPageChange={this.handlePageClick}
                              initialPage={0}
                              disableInitialCallback={false}
-                             pageClassName={pagination.ul}
+                             pageClassName={pagination.li}
+                             previousClassName={pagination.li}
+                             nextClassName={pagination.li}
+                             containerClassName={pagination.ul}
+                             pageLinkClassName={pagination.link}
+                             activeClassName={pagination.liActive}
+
             />
+
           </div>
         </div>
       )

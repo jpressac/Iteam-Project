@@ -34,9 +34,9 @@ class D3Tree extends React.Component {
     }
     else {
       width = window.innerWidth - margin.right + 100//TODO: this is hardcoded so it antoher screen it will not work
-      height = window.innerHeight + 1000;
+      height = window.innerHeight + 1500;
       if (type == 'bytag') {
-        height = height - 500;
+        height = height - 700;
       }
 
     }
@@ -47,7 +47,7 @@ class D3Tree extends React.Component {
     // declares a tree layout and assigns the size
     treemap = d3.tree()
       .size([width + 100, height])
-      .nodeSize([40, 30]);
+      .nodeSize([30, 20]);
 
 
     // remove the last SVG Node, just to create a new one

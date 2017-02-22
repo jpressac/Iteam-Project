@@ -25,7 +25,7 @@ import {validateDate, validateStart, validateHour, changeEndDate, checkDate} fro
 import {calculateTotalPages, calculateOffset} from '../../utils/mathUtils'
 import ButtonComponent from '../ButtonComponent/'
 import ReactPagination from 'react-paginate'
-import pagination from './pagination.scss'
+import pagination from '../MeetingsHistoryForm/pagination.scss'
 import dialogTheme from './dialog.scss'
 import {getProgrammedMeetings, getSearchProgrammed} from '../../utils/actions/meetingActions'
 import {cleanMeetingChats} from '../../redux/reducers/Meeting/MeetingChatMessagesReducer'
@@ -540,16 +540,20 @@ class MymeetForm extends Component {
             )}
             {this.showDialog()}
           </List>
-          <ReactPagination previousLabel={"Previous"}
-                           nextLabel={"Next"}
+          <ReactPagination previousLabel={"<<"}
+                           nextLabel={">>"}
                            pageCount={this.state.totalPages}
                            marginPagesDisplayed={2}
                            pageRangeDisplayed={5}
                            onPageChange={this.handlePageClick}
                            initialPage={0}
                            disableInitialCallback={false}
-                           pageClassName={pagination.ul}
-          />
+                           pageClassName={pagination.li}
+                           previousClassName={pagination.li}
+                           nextClassName={pagination.li}
+                           containerClassName={pagination.ul}
+                           pageLinkClassName={pagination.link}
+                           activeClassName={pagination.liActive} />
         </div>
       )
     } else {
