@@ -3,7 +3,6 @@ package org.iteam.controllers.web;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.boot.autoconfigure.web.ErrorController;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -12,7 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-public class AuthenticationController implements ErrorController {
+public class AuthenticationController {
 
     @RequestMapping("/application")
     public String index(Model model) {
@@ -72,14 +71,14 @@ public class AuthenticationController implements ErrorController {
         }
         return "redirect:/application";
     }
-
-    @RequestMapping("/error")
-    public String errorPage() {
-        return "error";
-    }
-
-    @Override
-    public String getErrorPath() {
-        return "/error";
-    }
+    //
+    // @RequestMapping("/error")
+    // public String errorPage() {
+    // return "error";
+    // }
+    //
+    // @Override
+    // public String getErrorPath() {
+    // return "/error";
+    // }
 }

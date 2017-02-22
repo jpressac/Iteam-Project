@@ -55,11 +55,10 @@ export const REPORT = {
 
 export const SLACK = {
   SLACK_CREATE_CHANNEL : URL + '/slack/createchannel',
-  SLACK_MESSAGE : URL + '/slack/sendmessage',
+  SLACK_MESSAGE : URL + '/slack/post/message',
   SLACK_VERIFY_USERS :URL + '/slack/teamusers',
   SLACK_INVITE_USERS : URL + '/slack/inviteusers', //NOT USED
-  SLACK_IS_GROUP_MEMBER : URL + '/slack/ismember', //NOT USED
-
+  SLACK_IS_GROUP_MEMBER : URL + '/slack/ismember' //NOT USED
 }
 
 export const UTILITIES = {

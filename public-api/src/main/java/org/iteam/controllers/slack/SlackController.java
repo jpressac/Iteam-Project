@@ -25,14 +25,15 @@ public class SlackController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @RequestMapping(value = "/slack/sendmessage", method = RequestMethod.POST)
-    public ResponseEntity<Void> sendMessageToChannel(
-            @RequestParam(value = "channelName", required = true) String channelName,
+    @RequestMapping(value = "/slack/post/message", method = RequestMethod.GET)
+    public ResponseEntity<Void> postMessageToChannel(@RequestParam(value = "channelName") String channelName,
             @RequestParam(value = "message") String message,
             @RequestParam(value = "remark", defaultValue = "false") Boolean remark,
             @RequestParam(value = "title", defaultValue = "Slack message") String title,
             @RequestParam(value = "description", defaultValue = "Description") String description) {
+
         slackService.postMesageToChannel(channelName, message, title, description, remark);
+
         return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }
 
