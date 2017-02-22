@@ -1,5 +1,6 @@
 export const PORT = '8080';
 //201.220.156.168
+//www.iteam.com.ar
 export const HOST = 'localhost';
 export const URL = 'http://' + HOST + ':' + PORT;
 
@@ -55,9 +56,9 @@ export const SLACK = {
   SLACK_CREATE_CHANNEL : URL + '/slack/createchannel',
   SLACK_MESSAGE : URL + '/slack/sendmessage',
   SLACK_VERIFY_USERS :URL + '/slack/teamusers',
-  SLACK_INVITE_USERS : URL + '/slack/inviteusers',
-  SLACK_IS_GROUP_MEMBER : URL + '/slack/ismember',
-  
+  SLACK_INVITE_USERS : URL + '/slack/inviteusers', //NOT USED
+  SLACK_IS_GROUP_MEMBER : URL + '/slack/ismember', //NOT USED
+
 }
 
 export const UTILITIES = {

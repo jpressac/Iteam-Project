@@ -26,7 +26,7 @@ public class MeetingServiceImpl implements MeetingService {
     @Override
     public boolean createMeeting(Meeting meeting) {
         if (meeting.isUseSlack()) {
-            slackService.inviteUsersToChannel(meeting.getTeamName(), meeting.getTopic());
+            slackService.inviteUsersToChannel(meeting, meeting.getTeamName());
         }
         return meetingRepositoryImpl.createMeeting(meeting);
     }
