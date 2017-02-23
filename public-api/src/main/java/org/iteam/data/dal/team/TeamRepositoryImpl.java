@@ -92,6 +92,7 @@ public class TeamRepositoryImpl implements TeamRepository {
 
     @Override
     public List<UserDTO> filterToCreateTeam(FilterList filterList) {
+
         List<UserDTO> userList = new ArrayList<>();
 
         SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_USER,
@@ -256,8 +257,8 @@ public class TeamRepositoryImpl implements TeamRepository {
 
             if (filter.getField().equals("Scoring")) {
 
-                Long from = (long) Integer.parseInt(filter.getValues().get(0));
-                Long to = (long) Integer.parseInt(filter.getValues().get(1));
+                Long from = new DateTime().minusYears(Integer.parseInt((filter.getValues().get(0)))).getMillis();
+                Long to = new DateTime().minusYears(Integer.parseInt((filter.getValues().get(1)))).getMillis();
 
                 queryBuilder.should(QueryBuilders.rangeQuery(SCORING_FIELD).to(to).from(from));
             }
@@ -273,7 +274,6 @@ public class TeamRepositoryImpl implements TeamRepository {
 
     }
 
-    @Override
     public List<UserDTO> getTeamUsers(String teamId) {
         List<UserDTO> usersList = new ArrayList<>();
 

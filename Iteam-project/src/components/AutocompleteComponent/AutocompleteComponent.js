@@ -1,7 +1,6 @@
 import React, {PropTypes, Component} from 'react'
 import Autocomplete from 'react-toolbox/lib/autocomplete'
 import theme from './theme.scss'
-import {validateExistenceField} from '../../utils/validationUtils'
 
 class AutocompleteComponent extends React.Component {
 
@@ -20,26 +19,15 @@ class AutocompleteComponent extends React.Component {
   }
 
   handleChange(key, value) {
-    this.props.onValueChange(value);
+    this.props.onValueChange(value)
     this.setState({[key]: value})
-  }
-
-  handleError() {
-    var sourceArray = this.props.source;
-    if (validateExistenceField(sourceArray, this.state.value)) {
-      this.setState({error: ''});
-    }
-    else {
-      this.setState({error: 'You have to select one option of the list'});
-    }
   }
 
   render() {
     return (
       <Autocomplete theme={theme} direction="down" selectedPosition="none" suggestionMatch="anywhere" multiple={false}
                     onChange={this.handleChange.bind(this, 'value')} label={this.props.label} source={this.props.source}
-                    value={this.state.value} disabled={this.state.disabled}
-                    error={this.state.error} onBlur={this.handleError.bind(this)}/>
+                    value={this.state.value} disabled={this.state.disabled}/>
     )
   }
 }

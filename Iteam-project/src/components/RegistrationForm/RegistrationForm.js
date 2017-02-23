@@ -18,7 +18,6 @@ import {connect} from 'react-redux'
 import {push} from 'react-router-redux'
 import Spinner from '../Spinner/Spinner'
 import Checkbox from 'react-toolbox/lib/checkbox'
-import {canSaveString} from '../../utils/validationUtils'
 
 const TooltipInput = Tooltip(Input);
 const TooltipCheckbox = Tooltip(Checkbox);
@@ -90,9 +89,7 @@ class RegistrationForm extends React.Component {
 
 
   saveUser() {
-    if (canSaveString(this.state.firstName, this.state.lastName, this.state.profession, this.state.username,
-        this.state.mail, this.state.hobbies, this.state.nationality)
-      && this.validateFields(this.state.password, this.state.repeatPassword)) {
+    if (this.validateFields(this.state.password, this.state.repeatPassword)) {
       this.setState({showSpinner: true});
       submitUser(this.state, this.state.nationality, this.state.profession)
         .then(() => {
@@ -104,7 +101,7 @@ class RegistrationForm extends React.Component {
         });
     }
     else {
-      this.setState({messageModal: 'You must complete the required fields'});
+      this.setState({messageModal: 'Passwords must match'});
       this.refs.registrationModal.openModal();
     }
   }
@@ -128,7 +125,6 @@ class RegistrationForm extends React.Component {
         this.setState({userExists: ''})
       })
   }
-
 
   render() {
     if (!this.state.showSpinner) {
@@ -178,13 +174,11 @@ class RegistrationForm extends React.Component {
               <div className="row">
                 <div className="col-md-6">
                   <AutocompleteComponent onValueChange={this.handleChange.bind(this, 'profession')}
-                                         initialValue={this.state.profession} label="Select Profession"
-                                         source={this.state.dropDownSourceProfession}/>
+                                         label="Select Profession" source={this.state.dropDownSourceProfession}/>
                 </div>
                 <div className="col-md-6">
                   <AutocompleteComponent onValueChange={this.handleChange.bind(this, 'nationality')}
-                                         initialValue={this.state.nationality} label="Select Nationality"
-                                         source={this.state.dropDownSourceNationalities}/>
+                                         label="Select Nationality" source={this.state.dropDownSourceNationalities}/>
                 </div>
               </div>
             </div>

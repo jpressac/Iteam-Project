@@ -13,7 +13,7 @@ export function getMeetingPaginated(offset, itemsPerPage) {
 }
 
 export function getMeetingByToken(searchField, offset, itemsPerPage) {
-  return axios.get(MEETING.MEETING_SEARCH_HISTORY, {
+  axios.get(MEETING.MEETING_SEARCH_HISTORY, {
     params: {
       token: searchField,
       offset: offset,
