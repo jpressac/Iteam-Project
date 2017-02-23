@@ -65,8 +65,12 @@ class RegistrationForm extends React.Component {
       });
   }
 
+  validateFields(field1, field2) {
+    return (field1 === field2)
+  }
+
   validatePassword() {
-    if (this.state.password === this.state.repeatPassword) {
+    if (this.validateFields(this.state.password, this.state.repeatPassword)) {
       return '';
     }
     else {
@@ -74,26 +78,32 @@ class RegistrationForm extends React.Component {
     }
   }
 
-  validateMinLength(key, value){
-    if (0 == value.length || value.length >= MIN_LENGTH) {
+  validateMinLength(key, value) {
+    if (value.length == 0 || value.length >= MIN_LENGTH) {
       return '';
     }
     else {
       return 'Your ' + key + ' is too short. It should have ' + MIN_LENGTH + ' characters.'
     }
-  };
+  }
 
 
   saveUser() {
-    this.setState({showSpinner: true});
-    submitUser(this.state, this.state.nationality, this.state.profession)
-      .then(() => {
-        this.props.goToHome()
-      })
-      .catch(() => {
-        this.setState({messageModal: 'User cannot be created at this moment, try again later'});
-        this.refs.registrationModal.openModal();
-      });
+    if (this.validateFields(this.state.password, this.state.repeatPassword)) {
+      this.setState({showSpinner: true});
+      submitUser(this.state, this.state.nationality, this.state.profession)
+        .then(() => {
+          this.props.goToHome()
+        })
+        .catch(() => {
+          this.setState({messageModal: 'User cannot be created at this moment, try again later, thanks'});
+          this.refs.registrationModal.openModal();
+        });
+    }
+    else {
+      this.setState({messageModal: 'Passwords must match'});
+      this.refs.registrationModal.openModal();
+    }
   }
 
   handleChange = (key, value) => {
