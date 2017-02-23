@@ -42,10 +42,13 @@ const ITEMS_PER_PAGE = 10;
 
 //Technics
 const technics = ['Brainstorming', 'SCAMPER', 'Starfish Retrospective'];
+
 //Startfish retrospective tags
-const retroTags = new Set(['Start', 'Stop', 'Keep', 'More', 'Less']);
+const retroTags = new Set(['start', 'stop', 'keep', 'more', 'less'])
+
 //Scamper tags
-const scamperTags = new Set(['Sustitute', 'Combine', 'Adapt', 'Modify', 'Put to others use', 'Eliminate', 'Rearrange']);
+const scamperTags = new Set(['substitute', 'combine', 'adapt', 'modify', 'put to others use', 'eliminate', 'rearrange'])
+
 
 
 const mapStateToProps = (state) => {
@@ -90,34 +93,14 @@ class MymeetForm extends Component {
       totalMeetings: 0,
       totalPages: 0,
       disabled: true,
-      deletable: false
+      deletable: false,
+      useSlack: false
     }
   }
 
   componentDidMount() {
     this.getAllProgrammedMeetings();
   }
-
-  // shouldComponentUpdate(nextProps, nextState) {
-  //
-  //
-  //   if(this.state.editable == nextState.editable)
-  //
-  //
-  //   /*
-  //    * If the state of the dialog (active) or (editable) change it will trigger the render
-  //    * If the state of the spinner changes it will trigger the render
-  //    * If the state of the offset (page change) change it will trigger the render
-  //    * If the state of the input tag (deletable) changes it will trigger the render
-  //    */
-  //   return this.state.editable != nextState.editable || this.state.offset != nextState.offset
-  //     || this.state.showSpinner != nextState.showSpinner || this.state.active != nextState.active
-  //     || this.state.deletable != nextState.deletable
-  // }
-  //
-  // componentDidUpdate() {
-  //   this.getAllProgrammedMeetings();
-  // }
 
   adminActionsEdit = [
     {label: "Cancel", onClick: this.handleToggle.bind(this)},
@@ -171,8 +154,8 @@ class MymeetForm extends Component {
       editable: true,
       votes: meeting.meetingConfig.votes,
       technic: meeting.meetingConfig.technic,
-      tags: meeting.meetingConfig.tags
-
+      tags: meeting.meetingConfig.tags,
+      useSlack: meeting.useSlack
     });
     this.props.saveMeeting(meeting);
 
@@ -256,6 +239,7 @@ class MymeetForm extends Component {
       description: this.state.description,
       programmedDate: new Date(programDate).getTime(),
       endDate: new Date(endDate).getTime(),
+      useSlack: this.state.useSlack,
       meetingConfig: {
         votes: this.state.votes,
         technic: this.state.technic,

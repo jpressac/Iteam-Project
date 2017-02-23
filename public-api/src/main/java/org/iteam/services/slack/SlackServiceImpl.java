@@ -1,6 +1,7 @@
 package org.iteam.services.slack;
 
 import org.iteam.data.dal.slack.SlackRepositoryImpl;
+import org.iteam.data.dto.Meeting;
 import org.iteam.data.model.SlackModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,38 +12,44 @@ public class SlackServiceImpl implements SlackService {
     private SlackRepositoryImpl slackRepository;
 
     @Override
-    public void createMeetingChannel(String meetingId, String token) {
-        slackRepository.createMeetingGroup(meetingId, token);
+    public void createMeetingChannel(String meetingId) {
+        slackRepository.createMeetingGroup(meetingId);
     }
 
     @Override
-    public void postMesageToChannel(String channelName, String token, String message) {
-        slackRepository.postMessageToChannel(channelName, token, message);
+    public void postMesageToChannel(String channelName, String message, String title, String description,
+            boolean remark) {
+        slackRepository.postMessageToChannel(channelName, message, title, description, remark);
     }
 
     @Override
-    public void inviteUserToChannel(String channelName, String userId, String token) {
-        slackRepository.inviteUserToChannel(channelName, userId, token);
+    public void inviteUserToChannel(String channelName, String userId) {
+        slackRepository.inviteUserToChannel(channelName, userId);
     }
 
     @Override
-    public boolean isTeamMember(String userMail, String teamToken) {
-        return slackRepository.userIsTeamMember(userMail, teamToken);
+    public boolean isTeamMember(String userMail) {
+        return slackRepository.userIsTeamMember(userMail);
     }
 
     @Override
-    public void addUserToSlackGroup(String token, String email) {
-        slackRepository.addUserToSlackGroup(token, email);
+    public void addUserToSlackGroup(String email) {
+        slackRepository.addUserToSlackGroup(email);
     }
 
     @Override
-    public SlackModel getTeamUsers(String teamToken, String teamName) {
-        return slackRepository.getSlackAndNonSlackUsers(teamToken, teamName);
+    public SlackModel getTeamUsers(String teamName) {
+        return slackRepository.getSlackAndNonSlackUsers(teamName);
     }
 
     @Override
-    public void inviteUsersToChannel(String teamId, String meetingTopic) {
-        slackRepository.createAndinviteToMeetingGroup(meetingTopic, teamId);
+    public void inviteUsersToChannel(Meeting meeting, String teamId) {
+        slackRepository.createAndinviteToMeetingGroup(meeting, teamId);
+    }
+
+    @Override
+    public void postMessageUpdateMeeting(Meeting meeting) {
+        slackRepository.postMessageUpdateMeeting(meeting);
     }
 
     @Autowired

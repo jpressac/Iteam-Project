@@ -108,6 +108,12 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
     }
 
     @Override
+    public SearchResponse search(String index, QueryBuilder queryBuilder, Integer size, Integer from,
+            SortBuilder sortBuilder) {
+        return search(index, queryBuilder, null, size, from, sortBuilder);
+    }
+
+    @Override
     public SearchResponse search(String indexTeam, QueryBuilder queryBuilder) {
         return search(indexTeam, queryBuilder, null, null, null, null);
     }

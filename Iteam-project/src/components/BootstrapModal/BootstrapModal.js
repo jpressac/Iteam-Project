@@ -41,6 +41,5 @@ export default class BootstrapModal extends React.Component {
   }
   }
   BootstrapModal.propTypes ={
-    message: React.PropTypes.string,
-    onOk: React.PropTypes.func
+    message: React.PropTypes.string
 }

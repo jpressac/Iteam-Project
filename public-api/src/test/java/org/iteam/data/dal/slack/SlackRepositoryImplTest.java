@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.assertj.core.util.Lists;
 import org.iteam.data.dal.team.TeamRepositoryImpl;
+import org.iteam.data.dto.Meeting;
 import org.iteam.data.dto.UserDTO;
 import org.junit.Assert;
 import org.junit.Before;
@@ -180,7 +181,7 @@ public class SlackRepositoryImplTest {
     }
 
     private void whenPinMeetingInfoIsCalled() {
-        underTest.pinMeetingInfo(channelName, TIMESTAMP_CHAT_POST_MESSAGE, teamToken);
+        underTest.pinMeetingInfo(new Meeting(), TIMESTAMP_CHAT_POST_MESSAGE, true);
     }
 
     private void givenAPinsAddResponse() throws IOException, SlackApiException {
@@ -236,7 +237,7 @@ public class SlackRepositoryImplTest {
     }
 
     private void whenGetUserSlackIdsIsCalled() {
-        users = underTest.getUsersSlackIds(teamToken, teamId, meetingTopic);
+        users = underTest.getUsersSlackIds(teamId, meetingTopic);
     }
 
     private void givenAListOfUserDTO() {
