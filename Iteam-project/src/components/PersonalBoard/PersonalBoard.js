@@ -58,13 +58,22 @@ class PersonalBoard extends Component {
     this.state = {
       notes: {},
       mapTag: [],
+      noteTags:[],
       tagValue: '',
-      tagName: 'All'
+      tagName: 'All',
+
     }
   };
 
   componentWillMount() {
-    this.setState({mapTag: this.props.meetingConfiguration.tags})
+    let newMapTag = this.props.meetingConfiguration.tags
+    newMapTag.splice(newMapTag.length - 1, 1)
+     this.setState({
+      mapTag: this.props.meetingConfiguration.tags,
+      noteTags: newMapTag
+    });
+    console.log(newMapTag)
+    console.log(this.state.noteTags)
   }
 
   componentDidMount() {
@@ -130,7 +139,7 @@ class PersonalBoard extends Component {
             boardType={noteMap[key].boardType}
             title={noteMap[key].title}
             tag={noteMap[key].tag}
-            tagMap={this.props.meetingConfiguration.tags}
+            tagMap={this.state.noteTags}
       />
     );
   }

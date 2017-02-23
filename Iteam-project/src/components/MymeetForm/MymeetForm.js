@@ -198,25 +198,17 @@ class MymeetForm extends Component {
   showActions(meetingOwner, meetingDate) {
     if (this.isAdmin(meetingOwner)) {
       //fecha ya paso, puede ver reportes
-      if (!validateDate(meetingDate)) {
         if (validateStart(meetingDate)) {
           return this.userActionsJoin;
         }
         return this.adminActionsEdit; //TODO borra cuando ande el history
-      }
-      //fecha mayor, puede editar
-      return this.userActionsView;
+
     }
     else {
-      //fecha ya paso
-      if (!validateDate(meetingDate)) {
         //rango de tiempo aceptable para unirse reunion
         if (validateStart(meetingDate)) {
           return this.userActionsJoin;
         }
-      }
-      // fecha mayor, puede poner ver
-      return this.userActionsView;
     }
   }
 
@@ -426,19 +418,19 @@ class MymeetForm extends Component {
             <DatePicker label='Date' sundayFirstDayOfWeek value={new Date(this.state.datetime)}
                         readonly={this.state.editable} onChange={this.onChangeProgrammedDate.bind(this)}
                         minDate={new Date()}
-                        theme={datesInput}/>
+                        theme={themeLabel}/>
           </div>
           <div className="col-md-3">
             <TimePicker label='Start Time'
                         value={isNaN(new Date(this.state.time)) ? 0 : new Date(this.state.time)}
                         readonly={this.state.editable} onChange={this.onChangeProgrammedTime.bind(this)}
-                        theme={datesInput}/>
+                        theme={themeLabel}/>
           </div>
           <div className="col-md-3">
             <TimePicker label='End Time'
                         value={isNaN(new Date(this.state.endTime)) ? 0 : new Date(this.state.endTime)}
                         readonly={this.state.editable} onChange={this.onChangeEndTime.bind(this)}
-                        theme={datesInput}/>
+                        theme={themeLabel}/>
           </div>
         </div>
         <div className="row col-md-12">

@@ -34,11 +34,11 @@ class Note extends Component {
       board: props.boardType,
       title: "",
       comments: "",
-      mapTag: props.tagMap.splice(props.tagMap.length - 1, 1),
+      mapTag: [],
       tagName: 'Miscellaneous'
     }
   }
-
+  
   render() {
     const {connectDragSource, isDragging, left, top} = this.props;
     if (isDragging) {

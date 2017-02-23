@@ -347,7 +347,7 @@ class SharedBoard extends Component {
   }
 
   onUpdateRanking(id, vote) {
-    if (this.state.votes < this.props.meetingConfiguration.votes) {
+    if (this.state.votes <= this.props.meetingConfiguration.votes) {
       let map = this.state.notes;
       let note = map[id];
       if (note.ranking + vote >= 0) {
