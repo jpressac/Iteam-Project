@@ -43,6 +43,7 @@ public class UserSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/utilities/nationality/get").permitAll()
                 .antMatchers(HttpMethod.GET, "/utilities/professions").permitAll()
                 .antMatchers(HttpMethod.POST, "/utilities/nationality/insert").permitAll()
+                .antMatchers(HttpMethod.GET, "/slack/post/message").permitAll()
                 .antMatchers(HttpMethod.GET, "/report/shared").permitAll().antMatchers(HttpMethod.OPTIONS, "/**/*")
                 .permitAll().anyRequest().authenticated().and().formLogin().loginPage("/application/nmember/home")
                 .defaultSuccessUrl("/application/member/home", true).permitAll().and().httpBasic().and().csrf()

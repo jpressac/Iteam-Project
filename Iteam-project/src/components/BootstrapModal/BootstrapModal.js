@@ -25,7 +25,7 @@ export default class BootstrapModal extends React.Component {
   }
   render() {
     return (
-      <Modal show={this.state.show} onHide={this.closeModal.bind(this)}>
+      <Modal className={classes.modal} show={this.state.show} onHide={this.closeModal.bind(this)}>
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-lg" ><img className={classes.logo} src={logo} />
           </Modal.Title>
@@ -41,6 +41,5 @@ export default class BootstrapModal extends React.Component {
   }
   }
   BootstrapModal.propTypes ={
-    message: React.PropTypes.string,
-    onOk: React.PropTypes.func
+    message: React.PropTypes.string
 }

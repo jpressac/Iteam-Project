@@ -105,6 +105,16 @@ public class ReportsController {
         return new ResponseEntity<D3CollapseTreeModel>(report, HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/report/shared/postmessage", method = RequestMethod.GET)
+    public ResponseEntity<Void> postSharedReportToSlack(@RequestParam(value = "meetingId") String meetingId,
+            @RequestParam(value = "meetingTopic") String meetingTopic,
+            @RequestParam(value = "reportName") String reportName) {
+
+        reportServiceImpl.postSharedBasicReportToSlack(meetingId, meetingTopic, reportName);
+
+        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+    }
+
     @Autowired
     public void setReportServiceImpl(ReportService reportServiceImpl) {
         this.reportServiceImpl = reportServiceImpl;

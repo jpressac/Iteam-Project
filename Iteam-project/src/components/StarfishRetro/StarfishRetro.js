@@ -1,6 +1,5 @@
 import React, {Component, PropTypes} from "react";
 import classes from './StarfishRetro.scss'
-import ProgressBar from 'react-toolbox/lib/progress_bar';
 
 
 const mapStateToProps = (state) => {
@@ -40,14 +39,14 @@ class StarfishRetro extends Component {
           <div className={classes.square}>
             <div className={classes.content}>
               <label className={classes.letterRetro}>What should we START doing? </label>
-              {this.props.renderNotes(this.state.notes, 'Start', 'All')}
+              {this.props.renderNotes(this.state.notes, 'start', this.props.user)}
 
             </div>
           </div>
           <div className={classes.square}>
             <div className={classes.content}>
               <label className={classes.letterRetro}>What should we STOP doing?</label>
-              {this.props.renderNotes(this.state.notes, 'Stop', 'All')}
+              {this.props.renderNotes(this.state.notes, 'stop', this.props.user)}
 
             </div>
           </div>
@@ -56,21 +55,21 @@ class StarfishRetro extends Component {
           <div className={classes.squareMiddle}>
             <div className={classes.content}>
               <label className={classes.letterRetro}>What should we KEEP doing?</label>
-              {this.props.renderNotes(this.state.notes, 'Keep', 'All')}
+              {this.props.renderNotes(this.state.notes, 'keep', this.props.user)}
 
             </div>
           </div>
           <div className={classes.squareMiddle}>
             <div className={classes.content}>
               <label className={classes.letterRetro}>What should we do MORE of? </label>
-              {this.props.renderNotes(this.state.notes, 'More', 'All')}
+              {this.props.renderNotes(this.state.notes, 'more', this.props.user)}
 
             </div>
           </div>
           <div className={classes.squareMiddle}>
             <div className={classes.content}>
               <label className={classes.letterRetro}> What should we do LESS of?</label>
-              {this.props.renderNotes(this.state.notes, 'Less', 'All')}
+              {this.props.renderNotes(this.state.notes, 'less', this.props.user)}
 
             </div>
           </div>

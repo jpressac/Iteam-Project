@@ -37,14 +37,14 @@ const NoteTarget = {
 };
 
 const mapStateToProps = (state) => {
-    return {
-      meetingId: state.myMeetingReducer.meetingId,
-      connected: state.meetingUser,
-      user: state.loginUser.user.username,
-      meetingConfiguration: state.myMeetingReducer.meetingConfig,
-      meetingOwner: state.myMeetingReducer.ownerName,
-      votes: state.meetingsVotesReducer
-    }
+  return {
+    meetingId: state.myMeetingReducer.meetingId,
+    connected: state.meetingUser,
+    user: state.loginUser.user.username,
+    meetingConfiguration: state.myMeetingReducer.meetingConfig,
+    meetingOwner: state.myMeetingReducer.ownerName,
+    votes: state.meetingsVotesReducer
+  }
 };
 
 const mapDispatchToProps = (dispatch) => ({
@@ -124,13 +124,14 @@ class SharedBoard extends Component {
         break;
       case 'SCAMPER':
         return (
-          <Scamper renderNotes={this.renderNotes.bind(this)} notes={this.state.notes}/>
+          <Scamper renderNotes={this.renderNotes.bind(this)}
+                   notes={this.state.notes} user={this.state.userName}/>
         );
         break;
 
       case 'Starfish Retrospective':
         return (
-          <StarfishRetro renderNotes={this.renderNotes.bind(this)} notes={this.state.notes}/>
+          <StarfishRetro renderNotes={this.renderNotes.bind(this)} notes={this.state.notes} user={this.state.userName}/>
         );
         break;
       //return this.renderRetrospective();
@@ -354,7 +355,7 @@ class SharedBoard extends Component {
         note.ranking += vote;
         this.sendUpdate("updateSharedBoardCache", id)
       }
-      this.setState({note: map, votes: votes += 1})
+      this.setState({note: map, votes: this.state.votes += 1})
     }
     else {
       this.setState({modalMessage: 'You do not have more votes!'});
@@ -572,4 +573,3 @@ export default flow(
           connectDropTarget: connect.dropTarget()
         }
       )), connect(mapStateToProps, mapDispatchToProps))(SharedBoard);
-

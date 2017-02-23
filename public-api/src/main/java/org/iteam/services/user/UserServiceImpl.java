@@ -15,8 +15,6 @@ public class UserServiceImpl implements UserService {
     private UserRepositoryImpl userRepository;
     private SlackServiceImpl slackService;
 
-    private static String APP_TOKEN = "xoxp-140386445603-141146385335-141139898470-d07c0391cc828de808c1ca6832f0dbd8";
-
     @Override
     public UserDTO getUser(String username) {
         UserDTO user = userRepository.getUser(username);
@@ -29,7 +27,7 @@ public class UserServiceImpl implements UserService {
     public void setUser(UserDTO user) {
         userRepository.setUser(user);
         if (user.isUseSlack()) {
-            slackService.addUserToSlackGroup(APP_TOKEN, user.getMail());
+            slackService.addUserToSlackGroup(user.getMail());
         }
     }
 
@@ -43,7 +41,7 @@ public class UserServiceImpl implements UserService {
         userRepository.modifyUser(user, username);
         // TODO we need to check if the useSlack as false before
         if (user.isUseSlack()) {
-            slackService.addUserToSlackGroup(APP_TOKEN, user.getMail());
+            slackService.addUserToSlackGroup(user.getMail());
         }
     }
 

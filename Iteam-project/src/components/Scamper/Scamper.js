@@ -39,16 +39,16 @@ class Scamper extends Component {
         <div className="row">
           <div className={classes.square}>
             <div className={classes.content}>
-              <label className={classes.letter}>S </label>
+              <label className={classes.letter}>S</label>
               <label>(substitute)</label>
-              {this.props.renderNotes(this.state.notes, 'Substitute', 'All')}
+              {this.props.renderNotes(this.state.notes, 'Substitute', this.props.user)}
             </div>
           </div>
           <div className={classes.square}>
             <div className={classes.content}>
               <label className={classes.letter}>C</label>
               <label>(combine)</label>
-              {this.props.renderNotes(this.state.notes, 'Combine', 'All')}
+              {this.props.renderNotes(this.state.notes, 'Combine', this.props.user)}
             </div>
           </div>
         </div>
@@ -57,21 +57,21 @@ class Scamper extends Component {
             <div className={classes.content}>
               <label className={classes.letter}>A </label>
               <label>(adapt)</label>
-              {this.props.renderNotes(this.state.notes, 'Adapt', 'All')}
+              {this.props.renderNotes(this.state.notes, 'Adapt', this.props.user)}
             </div>
           </div>
           <div className={classes.squareMiddle}>
             <div className={classes.content}>
               <label className={classes.letter}>M </label>
               <label>(modify)</label>
-              {this.props.renderNotes(this.state.notes, 'Modify', 'All')}
+              {this.props.renderNotes(this.state.notes, 'Modify', this.props.user)}
             </div>
           </div>
           <div className={classes.squareMiddle}>
             <div className={classes.content}>
               <label className={classes.letter}>P </label>
               <label>(put to other use)</label>
-              {this.props.renderNotes(this.state.notes, 'Put to others use', 'All')}
+              {this.props.renderNotes(this.state.notes, 'Put to others use', this.props.user)}
 
             </div>
           </div>
@@ -81,7 +81,7 @@ class Scamper extends Component {
             <div className={classes.content}>
               <label className={classes.letter}>E </label>
               <label>(eliminate)</label>
-              {this.props.renderNotes(this.state.notes, 'Eliminate', 'All')}
+              {this.props.renderNotes(this.state.notes, 'Eliminate', this.props.user)}
 
             </div>
           </div>
@@ -89,7 +89,7 @@ class Scamper extends Component {
             <div className={classes.content}>
               <label className={classes.letter}>R </label>
               <label>(rearrange)</label>
-              {this.props.renderNotes(this.state.notes, 'Rearrange', 'All')}
+              {this.props.renderNotes(this.state.notes, 'Rearrange', this.props.user)}
 
             </div>
           </div>

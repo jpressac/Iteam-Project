@@ -6,8 +6,10 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.iteam.data.dal.team.TeamRepositoryImpl;
+import org.iteam.data.dto.Meeting;
 import org.iteam.data.dto.UserDTO;
 import org.iteam.data.model.SlackModel;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,25 +22,26 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import com.github.seratch.jslack.Slack;
 import com.github.seratch.jslack.api.methods.request.channels.ChannelsInviteRequest;
-import com.github.seratch.jslack.api.methods.request.channels.ChannelsListRequest;
 import com.github.seratch.jslack.api.methods.request.chat.ChatPostMessageRequest;
 import com.github.seratch.jslack.api.methods.request.groups.GroupsCreateRequest;
 import com.github.seratch.jslack.api.methods.request.groups.GroupsInviteRequest;
+import com.github.seratch.jslack.api.methods.request.groups.GroupsListRequest;
 import com.github.seratch.jslack.api.methods.request.pins.PinsAddRequest;
 import com.github.seratch.jslack.api.methods.request.users.UsersListRequest;
-import com.github.seratch.jslack.api.methods.response.channels.ChannelsListResponse;
 import com.github.seratch.jslack.api.methods.response.chat.ChatPostMessageResponse;
 import com.github.seratch.jslack.api.methods.response.groups.GroupsCreateResponse;
 import com.github.seratch.jslack.api.methods.response.groups.GroupsInviteResponse;
+import com.github.seratch.jslack.api.methods.response.groups.GroupsListResponse;
 import com.github.seratch.jslack.api.methods.response.pins.PinsAddResponse;
 import com.github.seratch.jslack.api.methods.response.users.UsersListResponse;
-import com.github.seratch.jslack.api.model.Channel;
+import com.github.seratch.jslack.api.model.Group;
 import com.github.seratch.jslack.api.model.User;
 
 @Repository
-public class SlackRepositoryImpl implements SlackReposit {
+public class SlackRepositoryImpl implements SlackRepository {
 
     private TeamRepositoryImpl teamRepositoryImpl;
     private Slack slack = Slack.getInstance();
@@ -47,21 +50,26 @@ public class SlackRepositoryImpl implements SlackReposit {
     private static final String URI_TEMPLATE_SLACK_ADD_TEAM = "https://slack.com/api/users.admin.invite?token={token}&email={mail}";
 
     private static String BOT_TOKEN = "xoxb-141135744790-P7NOxQkNferYDZnZUAvF7M7W";
+    private static String BOT_USER_ID = "U453ZMWP8";
     private static String APP_TOKEN = "xoxp-140386445603-141146385335-141139898470-d07c0391cc828de808c1ca6832f0dbd8";
 
     @Override
-    public void createAndinviteToMeetingGroup(String meetingTopic, String teamId) {
-        String groupId = createMeetingGroup(meetingTopic, APP_TOKEN);
+    public void createAndinviteToMeetingGroup(Meeting meeting, String teamId) {
+        String groupId = createMeetingGroup(meeting.getTopic());
+
         if (!StringUtils.isEmpty(groupId)) {
-            pinMeetingInfo(groupId, "Meeting information", BOT_TOKEN);
+            // invite all the users including the bot
             inviteUsersToMeetingGroup(teamId, groupId);
+
+            // the bot post the message and pinned with the meeting information
+            pinMeetingInfo(meeting, groupId, false);
         }
     }
 
     @Override
-    public String createMeetingGroup(String meetingId, String token) {
+    public String createMeetingGroup(String meetingId) {
         String groupId = StringUtils.EMPTY;
-        GroupsCreateRequest groupCreateRequest = GroupsCreateRequest.builder().token(token).name(meetingId).build();
+        GroupsCreateRequest groupCreateRequest = GroupsCreateRequest.builder().token(APP_TOKEN).name(meetingId).build();
         try {
             GroupsCreateResponse response = slack.methods().groupsCreate(groupCreateRequest);
             LOGGER.info("Slack group for meeting {} ", meetingId);
@@ -73,11 +81,17 @@ public class SlackRepositoryImpl implements SlackReposit {
     }
 
     @Override
-    public void postMessageToChannel(String channelId, String token, String message) {
+    public void postMessageToChannel(String channelName, String message, String title, String description,
+            boolean remark) {
+
+        String channelId = getChannelId(channelName);
+
+        String formattedMessage = formatRawMessage(title, description, message, remark);
 
         try {
-            ChatPostMessageResponse postResponse = slack.methods().chatPostMessage(
-                    ChatPostMessageRequest.builder().token(token).channel(channelId).text(message).build());
+            ChatPostMessageResponse postResponse = slack.methods().chatPostMessage(ChatPostMessageRequest.builder()
+                    .token(BOT_TOKEN).channel(channelId).text(formattedMessage).build());
+
             LOGGER.info(postResponse.toString());
         } catch (Exception e) {
             LOGGER.error("Error when sending message to slack channel ", e);
@@ -85,14 +99,14 @@ public class SlackRepositoryImpl implements SlackReposit {
     }
 
     @Override
-    public boolean userIsTeamMember(String userMail, String teamToken) {
-        return getTeamSlackUsers(teamToken).contains(userMail);
+    public boolean userIsTeamMember(String userMail) {
+        return getTeamSlackUsers().contains(userMail);
     }
 
     @Override
-    public SlackModel getSlackAndNonSlackUsers(String teamToken, String teamId) {
+    public SlackModel getSlackAndNonSlackUsers(String teamId) {
 
-        List<String> slackUsers = getTeamSlackUsers(teamToken);
+        List<String> slackUsers = getTeamSlackUsers();
         List<UserDTO> teamMembers = teamRepositoryImpl.getTeamUsers(teamId);
         List<String> usersInSlack = new ArrayList<>();
         List<String> usersWithoutSlack = new ArrayList<>();
@@ -114,7 +128,7 @@ public class SlackRepositoryImpl implements SlackReposit {
     // Used by API
     @Override
     public void inviteUsersToMeetingGroup(String teamId, String meetingTopic) {
-        List<String> userIds = getUsersSlackIds(APP_TOKEN, teamId, meetingTopic);
+        List<String> userIds = getUsersSlackIds(teamId, meetingTopic);
 
         if (!CollectionUtils.isEmpty(userIds)) {
             for (String id : userIds) {
@@ -132,15 +146,19 @@ public class SlackRepositoryImpl implements SlackReposit {
     }
 
     @Override
-    public String getChannelId(String channelName, String token) {
+    public String getChannelId(String channelName) {
         String channelId = StringUtils.EMPTY;
 
         try {
-            ChannelsListResponse channelsResponse = slack.methods()
-                    .channelsList(ChannelsListRequest.builder().token(token).build());
+            String newChannelName = channelName.replace(" ", "-").toLowerCase();
 
-            Channel channel = channelsResponse.getChannels().stream().filter(c -> c.getName().equals(channelName))
-                    .findFirst().get();
+            GroupsListRequest groupsListRequests = GroupsListRequest.builder().token(BOT_TOKEN).build();
+
+            GroupsListResponse groupsListResponse = slack.methods().groupsList(groupsListRequests);
+
+            Group channel = groupsListResponse.getGroups().stream()
+                    .filter(group -> group.getName().equals(newChannelName)).findFirst().get();
+
             channelId = channel.getId();
         } catch (Exception e) {
             LOGGER.error("Error when retrieving channel id", e);
@@ -150,18 +168,20 @@ public class SlackRepositoryImpl implements SlackReposit {
     }
 
     @Override
-    public void pinMeetingInfo(String channelName, String message, String token) {
-        try {
+    public void pinMeetingInfo(Meeting meeting, String channelId, Boolean updateMeeting) {
 
-            ChatPostMessageRequest request = ChatPostMessageRequest.builder().token(token).channel(channelName)
-                    .text(message).build();
+        try {
+            String formattedMessage = formatMessageMeetingInfo(meeting, updateMeeting);
+
+            ChatPostMessageRequest request = ChatPostMessageRequest.builder().token(BOT_TOKEN).channel(channelId)
+                    .text(formattedMessage).build();
 
             ChatPostMessageResponse postResponse = slack.methods().chatPostMessage(request);
 
             String timestamp = postResponse.getTs();
 
             if (StringUtils.isNotEmpty(timestamp)) {
-                PinsAddRequest pinAddRequest = PinsAddRequest.builder().token(token).channel(channelName)
+                PinsAddRequest pinAddRequest = PinsAddRequest.builder().token(BOT_TOKEN).channel(channelId)
                         .timestamp(timestamp).build();
                 PinsAddResponse pinAddResponse = slack.methods().pinsAdd(pinAddRequest);
 
@@ -174,9 +194,9 @@ public class SlackRepositoryImpl implements SlackReposit {
     }
 
     @Override
-    public UsersListResponse getIteamAppUsers(String teamToken) {
+    public UsersListResponse getIteamAppUsers() {
 
-        UsersListRequest userListRequest = UsersListRequest.builder().token(teamToken).build();
+        UsersListRequest userListRequest = UsersListRequest.builder().token(APP_TOKEN).build();
         try {
             UsersListResponse response = slack.methods().usersList(userListRequest);
             return response;
@@ -187,8 +207,8 @@ public class SlackRepositoryImpl implements SlackReposit {
     }
 
     @Override
-    public HashMap<String, String> getTeamSlackUsersData(String teamId, String teamToken) {
-        List<User> allSlackUsers = getIteamAppUsers(teamToken).getMembers();
+    public HashMap<String, String> getTeamSlackUsersData(String teamId) {
+        List<User> allSlackUsers = getIteamAppUsers().getMembers();
         HashMap<String, String> slackUserData = new HashMap<>();
 
         if (!CollectionUtils.isEmpty(allSlackUsers)) {
@@ -200,9 +220,9 @@ public class SlackRepositoryImpl implements SlackReposit {
     }
 
     @Override
-    public List<String> getUsersSlackIds(String teamToken, String teamId, String meetingTopic) {
+    public List<String> getUsersSlackIds(String teamId, String meetingTopic) {
         List<UserDTO> users = teamRepositoryImpl.getTeamUsers(teamId);
-        HashMap<String, String> allIteamSlackUsersData = getTeamSlackUsersData(teamId, teamToken);
+        HashMap<String, String> allIteamSlackUsersData = getTeamSlackUsersData(teamId);
         List<String> usersSlackIds = new ArrayList<>();
 
         if ((!CollectionUtils.isEmpty(users)) && (!CollectionUtils.isEmpty(allIteamSlackUsersData))) {
@@ -211,15 +231,16 @@ public class SlackRepositoryImpl implements SlackReposit {
                     usersSlackIds.add(allIteamSlackUsersData.get(user.getMail()));
                 }
             }
+            usersSlackIds.add(BOT_USER_ID);
         }
         return usersSlackIds;
     }
 
     @Override
-    public void inviteUserToChannel(String channelName, String userId, String token) {
+    public void inviteUserToChannel(String channelName, String userId) {
 
-        ChannelsInviteRequest inviteReq = ChannelsInviteRequest.builder().token(token)
-                .channel(getChannelId(channelName, token)).user(userId).build();
+        ChannelsInviteRequest inviteReq = ChannelsInviteRequest.builder().token(APP_TOKEN)
+                .channel(getChannelId(channelName)).user(userId).build();
         try {
             slack.methods().channelsInvite(inviteReq);
         } catch (Exception e) {
@@ -228,22 +249,22 @@ public class SlackRepositoryImpl implements SlackReposit {
     }
 
     @Override
-    public void addUserToSlackGroup(String token, String email) {
+    public void addUserToSlackGroup(String email) {
 
         RestTemplate restTemplate = new RestTemplate();
         HttpEntity<?> entity = new HttpEntity<>(new HttpHeaders());
         try {
             HttpEntity<JsonNode> response = restTemplate.exchange(URI_TEMPLATE_SLACK_ADD_TEAM, HttpMethod.POST, entity,
-                    JsonNode.class, token, email);
+                    JsonNode.class, APP_TOKEN, email);
             LOGGER.info(response.toString());
         } catch (Exception e) {
             LOGGER.error("User could not be added to Iteam app slack group", e);
         }
     }
 
-    private List<String> getTeamSlackUsers(String teamToken) {
+    private List<String> getTeamSlackUsers() {
         List<String> userEmails = new ArrayList<>();
-        List<User> allIteamSlackUsers = getIteamAppUsers(teamToken).getMembers();
+        List<User> allIteamSlackUsers = getIteamAppUsers().getMembers();
 
         if (!CollectionUtils.isEmpty(allIteamSlackUsers)) {
             for (User user : allIteamSlackUsers) {
@@ -253,9 +274,45 @@ public class SlackRepositoryImpl implements SlackReposit {
         return userEmails;
     }
 
+    private String formatMessageMeetingInfo(Meeting meeting, boolean updateMeeting) {
+
+        StringBuffer message = new StringBuffer();
+        message.append(updateMeeting ? "_*MEETING UPDATED:*_ \n" : "_*MEETING INFORMATION:*_ \n");
+        message.append(String.format("_Topic:_ %s\n", meeting.getTopic()));
+        message.append("_Description:_\n");
+        message.append(String.format(">>> %s \n", meeting.getDescription()));
+        message.append(String.format("_Programmed date (UTC-Time):_ %s \n",
+                new ISO8601DateFormat().format(new DateTime(meeting.getProgrammedDate()).toDate())));
+        message.append(String.format("_Technic:_ %s \n", meeting.getMeetingConfig().getTechnic()));
+        message.append(String.format("_Tag:_ %s \n", meeting.getMeetingConfig().getTags()));
+
+        return message.toString();
+    }
+
+    private String formatRawMessage(String messageTitle, String messageDescription, String message, boolean remark) {
+        StringBuffer messageBuilder = new StringBuffer();
+        messageBuilder.append(String.format("_*%s:*_ \n", messageTitle));
+        messageBuilder.append("_Description:_\n");
+        messageBuilder.append(String.format(">>> %s \n", messageDescription));
+
+        if (remark) {
+            messageBuilder.append(String.format(">`%s`\n", message));
+        } else {
+            messageBuilder.append(String.format(">%s\n", message));
+        }
+
+        return messageBuilder.toString();
+    }
+
+    @Override
+    public void postMessageUpdateMeeting(Meeting updatedMeeting) {
+        String groupId = getChannelId(updatedMeeting.getTopic());
+
+        pinMeetingInfo(updatedMeeting, groupId, true);
+    }
+
     @Autowired
     private void setTeamRepository(TeamRepositoryImpl teamRepository) {
         this.teamRepositoryImpl = teamRepository;
     }
-
 }

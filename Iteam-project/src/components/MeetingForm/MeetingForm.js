@@ -10,7 +10,7 @@ import InputComponent from '../InputComponent/InputComponent'
 import AutocompleteComponent from '../AutocompleteComponent/AutocompleteComponent'
 import ButtonComponent from '../ButtonComponent/ButtonComponent'
 import Spinner from '../Spinner/Spinner'
-import {saveMeeting, meetingSlackInfo} from '../../redux/reducers/Meeting/MeetingReducer'
+import {saveMeeting, saveMeetingInfo} from '../../redux/reducers/Meeting/MeetingReducer'
 import {meetingToNewTeam, meetingCreated} from '../../redux/reducers/Meeting/MeetingForTeamReducer'
 import themeLabel from './label.scss'
 import Avatar from 'react-toolbox/lib/avatar'
@@ -29,8 +29,9 @@ const TooltipCheckbox = Tooltip(Checkbox);
 const mapDispatchToProps = dispatch => ({
   saveMeetingInfo: (meeting) => dispatch(saveMeeting(meeting)),
   meetingToCreateNewTeam: () => dispatch(meetingToNewTeam()),
-  goToSlackInfo: (meeting) => dispatch(meetingSlackInfo(meeting)),
+  goToSlackInfo: (meeting) => dispatch(saveMeetingInfo(meeting)),
   home: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HOME)),
+  slackInfo: () => dispatch(push('/' + PATHS.MENULOGGEDIN.SLACKUSERSINFO)),
   myMeetings: () => dispatch(push('/' + PATHS.MENULOGGEDIN.MYMEETINGS)),
   meetingCreatedok: () => dispatch(meetingCreated())
 });
@@ -116,9 +117,9 @@ class MeetingView extends Component {
       this.setState({
         topic: this.props.meetingInfoSave.topic,
         description: this.props.meetingInfoSave.description,
-        programmedDate: new Date(this.props.meetingInfoSave.time),
-        ownerName: this.props.meetingInfoSave.ownerName,
+        programmedDate: new Date(this.props.meetingInfoSave.programmedDate),
         time: this.props.meetingInfoSave.time,
+        ownerName: this.props.meetingInfoSave.ownerName,
         endTime: new Date(this.props.meetingInfoSave.endDate),
         votes: this.props.meetingInfoSave.meetingConfig.votes,
         tags: this.props.meetingInfoSave.meetingConfig.tags,
@@ -137,6 +138,7 @@ class MeetingView extends Component {
   getSlackInfo() {
     let meetingInfo = this.setReducerInfo();
     this.props.goToSlackInfo(meetingInfo);
+    this.props.slackInfo();
   }
 
   fillTeam(data) {
@@ -199,6 +201,7 @@ class MeetingView extends Component {
       ownerName: this.props.user,
       programmedDate: this.state.programmedDate.getTime(),
       endDate: this.state.endDate.getTime(),
+      time:this.state.time,
       teamName: teamId,
       meetingConfig: {
         votes: this.state.votes,
@@ -311,6 +314,7 @@ MeetingView.propTypes = {
   meetingInfoSave: PropTypes.any,
   fromMeeting: PropTypes.bool,
   home: PropTypes.func,
+  slackInfo:PropTypes.func,
   myMeetings: PropTypes.func,
   meetingCreatedok: PropTypes.func
 };

@@ -14,10 +14,10 @@ const TooltipButton = Tooltip(Button);
 const technics = ['Brainstorming', 'SCAMPER', 'Starfish Retrospective']
 
 //Startfish retrospective tags
-const retroTags = new Set(['Start', 'Stop', 'Keep', 'More', 'Less'])
+const retroTags = new Set(['start', 'stop', 'keep', 'more', 'less'])
 
 //Scamper tags
-const scamperTags = new Set(['Substitute', 'Combine', 'Adapt', 'Modify', 'Put to others use', 'Eliminate', 'Rearrange'])
+const scamperTags = new Set(['substitute', 'combine', 'adapt', 'modify', 'put to others use', 'eliminate', 'rearrange'])
 
 
 class MeetingConfigForm extends Component {
