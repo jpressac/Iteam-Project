@@ -58,22 +58,13 @@ class PersonalBoard extends Component {
     this.state = {
       notes: {},
       mapTag: [],
-      noteTags:[],
       tagValue: '',
-      tagName: 'All',
-
+      tagName: 'All'
     }
   };
 
   componentWillMount() {
-    let newMapTag = this.props.meetingConfiguration.tags
-    newMapTag.splice(newMapTag.length - 1, 1)
-     this.setState({
-      mapTag: this.props.meetingConfiguration.tags,
-      noteTags: newMapTag
-    });
-    console.log(newMapTag)
-    console.log(this.state.noteTags)
+    this.setState({mapTag: this.props.meetingConfiguration.tags})
   }
 
   componentDidMount() {
@@ -139,7 +130,7 @@ class PersonalBoard extends Component {
             boardType={noteMap[key].boardType}
             title={noteMap[key].title}
             tag={noteMap[key].tag}
-            tagMap={this.state.noteTags}
+            tagMap={this.props.meetingConfiguration.tags}
       />
     );
   }
@@ -161,18 +152,18 @@ class PersonalBoard extends Component {
     let map = this.state.notes;
     let id = generateUUID();
     map[id] =
-    {
-      id: id,
-      left: generateRandomNumber(),
-      top: generateRandomNumber(),
-      username: this.props.user,
-      title: text,
-      comments: "",
-      tag: this.state.mapTag[0],
-      ranking: 0,
-      meetingId: this.props.meetingId,
-      boardType: "personal"
-    };
+      {
+        id: id,
+        left: generateRandomNumber(),
+        top: generateRandomNumber(),
+        username: this.props.user,
+        title: text,
+        comments: "",
+        tag: this.state.mapTag[0],
+        ranking: 0,
+        meetingId: this.props.meetingId,
+        boardType: "personal"
+      };
     this.updateNotesCacheByUser(map);
 
     this.setState({notes: map});
@@ -314,6 +305,6 @@ export default flow(
   DropTarget(ItemTypes.NOTE, NoteTarget,
     connection =>
       ( {
-        connectDropTarget: connection.dropTarget()
-      }
+          connectDropTarget: connection.dropTarget()
+        }
       )), connect(mapStateToProps, mapDispatchToProps))(PersonalBoard);

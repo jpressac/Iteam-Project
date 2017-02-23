@@ -197,18 +197,17 @@ class MymeetForm extends Component {
 
   showActions(meetingOwner, meetingDate) {
     if (this.isAdmin(meetingOwner)) {
-      //fecha ya paso, puede ver reportes
-        if (validateStart(meetingDate)) {
-          return this.userActionsJoin;
-        }
-        return this.adminActionsEdit; //TODO borra cuando ande el history
-
+      if (validateStart(meetingDate)) {
+        return this.userActionsJoin;
+      }
+      return this.adminActionsEdit; //TODO borra cuando ande el history
     }
+
     else {
-        //rango de tiempo aceptable para unirse reunion
-        if (validateStart(meetingDate)) {
-          return this.userActionsJoin;
-        }
+      //rango de tiempo aceptable para unirse reunion
+      if (validateStart(meetingDate)) {
+        return this.userActionsJoin;
+      }
     }
   }
 
@@ -418,19 +417,19 @@ class MymeetForm extends Component {
             <DatePicker label='Date' sundayFirstDayOfWeek value={new Date(this.state.datetime)}
                         readonly={this.state.editable} onChange={this.onChangeProgrammedDate.bind(this)}
                         minDate={new Date()}
-                        theme={themeLabel}/>
+                        theme={datesInput}/>
           </div>
           <div className="col-md-3">
             <TimePicker label='Start Time'
                         value={isNaN(new Date(this.state.time)) ? 0 : new Date(this.state.time)}
                         readonly={this.state.editable} onChange={this.onChangeProgrammedTime.bind(this)}
-                        theme={themeLabel}/>
+                        theme={datesInput}/>
           </div>
           <div className="col-md-3">
             <TimePicker label='End Time'
                         value={isNaN(new Date(this.state.endTime)) ? 0 : new Date(this.state.endTime)}
                         readonly={this.state.editable} onChange={this.onChangeEndTime.bind(this)}
-                        theme={themeLabel}/>
+                        theme={datesInput}/>
           </div>
         </div>
         <div className="row col-md-12">

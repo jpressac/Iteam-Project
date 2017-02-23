@@ -35,10 +35,11 @@ class Note extends Component {
       title: "",
       comments: "",
       mapTag: [],
+      tagValue: '',
       tagName: 'Miscellaneous'
     }
   }
-  
+
   render() {
     const {connectDragSource, isDragging, left, top} = this.props;
     if (isDragging) {
@@ -51,9 +52,9 @@ class Note extends Component {
             <div className={classes.card} style={{...style, left, top}}>
               <Card theme={CardYellow}>
                 <AutocompleteComponent label="Select Tag" onValueChange={this.handleChange.bind(this, 'tagName')}
-                                       source={this.state.tagMap} initialValue={this.state.tagName}/>
+                                       source={this.props.tagMap} initialValue=''/>
                 <Input theme={inputSize} type='text' label='Title' value={this.state.title} required
-                       onChange={this.handleChange.bind(this, 'title')} maxLength={200} multiline={'True'}/>
+                       onChange={this.handleChange.bind(this, 'title')} maxLength={140} multiline={'True'}/>
                 <CardActions theme={cardActionsscss}>
                   <IconButton icon="save" onClick={this.save.bind(this)}/>
                   <IconButton icon="clear" onClick={this.cancelComment.bind(this)}/>
@@ -183,7 +184,6 @@ Note.propTypes = {
   id: PropTypes.any.isRequired,
   left: PropTypes.any.isRequired,
   top: PropTypes.any.isRequired,
-  size:PropTypes.any,
   username: PropTypes.string,
   boardType: PropTypes.string,
   comments: PropTypes.string,
