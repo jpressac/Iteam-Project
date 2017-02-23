@@ -13,6 +13,14 @@ import InputComponent from '../InputComponent'
 import pagination from '../MeetingsHistoryForm/pagination.scss'
 import {calculateTotalPages, calculateOffset} from '../../utils/mathUtils'
 import {getTeamByOwner, getTeamByOwnerPaginated} from '../../utils/actions/teamActions'
+import cssClasses from '../ComponentCSSForms/componentCSS.scss'
+import Tooltip from 'react-toolbox/lib/tooltip'
+import {Button} from 'react-toolbox/lib/button'
+
+import ButtonComponent from '../ButtonComponent/ButtonComponent'
+
+const TooltipButton = Tooltip(Button);
+
 
 const mapStateToProps = (state) => {
   if (state.loginUser !== null) {
@@ -106,11 +114,16 @@ class MyTeamsForm extends Component {
             <div className={classes.label2}>
               <label>MY TEAMS</label>
             </div>
-            <div>
-              <InputComponent label='Team Name' name="searchField" value={this.state.searchField}
+            <div className={"row " + cssClasses.form}>
+              <div  className={"col-md-12" + cssClasses.contentSearch}>
+              <InputComponent className="col-md-10" label='Team Name' name="searchField" value={this.state.searchField}
                               onKeyPress={this.handleSubmit.bind(this)}
                               onValueChange={this.handleChange.bind(this,'searchField')}/>
-            </div>
+                <TooltipButton className ="col-md-2" icon='search' tooltip='Search teams'
+                               style={{background: '#900C3F', color: 'white'}}
+                               floating onClick={this.searchByToken.bind(this)} />
+
+              </div>
             <List theme={listFormat} ripple>
               <ListSubHeader />
               {Object.keys(teamMap).map((key) => {
@@ -128,6 +141,7 @@ class MyTeamsForm extends Component {
                 );
               })}
             </List>
+              </div>
             <ReactPagination previousLabel={"<<"}
                              nextLabel={">>"}
                              pageCount={this.state.totalPages}

@@ -269,18 +269,18 @@ class MeetingView extends Component {
             </div>
             <ButtonComponent className={"col-md-4 " + cssClasses.paddingInnerElements} raisedValue
                              onClick={this.createTeamAction.bind(this)} value="Create Team"/>
+
             <div className={"col-md-12 " + cssClasses.paddingInnerElements}>
-              <div className={"col-md-12 " + cssClasses.paddingInnerElements}>
-                <div className={"col-md-6 " + cssClasses.labelInfo}>
+                <div className={"col-md-3 " + cssClasses.labelInfo}>
                   <TooltipCheckbox label='Use a Slack channel'
                                    checked={this.state.useSlack}
                                    onChange={this.handleChange.bind(this, 'useSlack')}
                                    tooltip='Use a slack channel for meeting updates and communication'/>
                 </div>
-                <ButtonComponent className={"col-md-6 " + cssClasses.paddingInnerElements} raisedValue
+                <ButtonComponent className={"col-md-3 "} raisedValue
                                  onClick={this.getSlackInfo.bind(this)} value="Slack info"/>
+            </div>
                 <MeetingConfigForm onSetConfig={this.handleConfigChange.bind(this)}/>
-              </div>
 
               <div className={"col-md-12 " + cssClasses.paddingInnerElements}>
                 <ButtonComponent className="col-md-6" onClick={this.props.home} iconButton="navigate_before"
@@ -289,7 +289,7 @@ class MeetingView extends Component {
                                  onClick={this.createNewMeeting.bind(this)} iconButton="navigate_next"
                                  value="Create Meeting"/>
               </div>
-            </div>
+
           </div>
         </div>
       )

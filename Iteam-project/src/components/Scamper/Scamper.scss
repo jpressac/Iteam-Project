@@ -5,6 +5,8 @@
   padding-bottom: 40%; /* = width for a 1:1 aspect ratio */
   margin:0.5%;
   overflow:hidden;
+  text-align:center;
+
 
 }
 .squareMiddle {
@@ -14,6 +16,8 @@
   padding-bottom: 40%; /* = width for a 1:1 aspect ratio */
   margin:0.4%;
   overflow:hidden;
+  text-align:center;
+
 
 }
 
@@ -25,6 +29,8 @@
   background: rgba(168, 153, 161, 0.43);
   font-size: 20px;
   color:#FFFFFF;
+  text-align:center;
+
 }
 
 .letter{
@@ -34,4 +40,10 @@
 .letterRetro {
   font-size: 40px;
   align-items: center;
+}
+@media only screen and (max-width: 479px){
+  .square { width: 90%; }
+}
+@media only screen and (max-width: 479px){
+  .squareMiddle { width: 90%; }
 }

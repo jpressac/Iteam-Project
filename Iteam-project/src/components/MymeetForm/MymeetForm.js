@@ -33,6 +33,7 @@ import AutocompleteComponent from '../AutocompleteComponent/AutocompleteComponen
 import generateUUID from '../../constants/utils/GetUUID'
 
 
+
 var programDate = new Date();
 var endDate = new Date();
 
@@ -511,11 +512,14 @@ class MymeetForm extends Component {
           <div className={cssClasses.labelMainTitle}>
             <label>MY MEETINGS</label>
           </div>
-          <div>
-            <InputComponent label="Meeting topic" name="searchField" value={this.state.searchField}
+          <div className={"row " + cssClasses.form}>
+            <div className={"col-md-12" + cssClasses.contentSearch}>
+            <InputComponent className="col-md-10" label="Meeting topic" name="searchField" value={this.state.searchField}
                             onKeyPress={this.handleSubmit.bind(this)}
                             onValueChange={this.handleChange.bind(this, 'searchField')}/>
-            <ButtonComponent onClick={this.searchByToken.bind(this)} value="Search"/>
+              <TooltipButton className ="col-md-2" icon='search' tooltip='Search teams'
+                             style={{background: '#900C3F', color: 'white'}}
+                             floating onClick={this.searchByToken.bind(this)} />
           </div>
           <BootstrapModal ref="mymeetingModal" message={this.state.message}/>
           <List theme={listFormat} selectable ripple>
@@ -554,6 +558,7 @@ class MymeetForm extends Component {
                            containerClassName={pagination.ul}
                            pageLinkClassName={pagination.link}
                            activeClassName={pagination.liActive} />
+            </div>
         </div>
       )
     } else {

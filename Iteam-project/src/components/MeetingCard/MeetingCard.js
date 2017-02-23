@@ -8,6 +8,8 @@ import divCss from '../MeetingsHistoryForm/formContainer.scss'
 import getUUID from '../../constants/utils/GetUUID'
 import {saveMeetingInfoForReports} from '../../redux/reducers/Report/ReportConfigReducer'
 import {PATHS} from '../../constants/routes'
+import ButtonComponent from '../ButtonComponent/ButtonComponent'
+
 
 const mapDispatchToProps = (dispatch) => ({
   updateMyMeeting: (meetingId) => dispatch(saveMeetingInfoForReports(meetingId)),
@@ -49,7 +51,7 @@ class MeetingCard extends Component {
                 <CardTitle className="col-md-3" title='Date' subtitle={this.renderDate(meetings[key].endDate)}/>
                 <CardActions className="col-md-3">
                   <ButtonComponent onClick={this.viewReports.bind(this, meetings[key])}
-                                   value="View Reports" raisedValue />
+                                   value="View Reports"  />
 
                 </CardActions>
                 <CardTitle className="col-md-12" title='Description' subtitle={meetings[key].description}/>

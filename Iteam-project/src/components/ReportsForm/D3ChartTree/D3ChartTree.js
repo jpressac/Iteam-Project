@@ -25,7 +25,7 @@ class D3ChartTree extends React.Component {
 
     let margin = {top: 20, right: 90, bottom: 30, left: 90},
       width = window.innerWidth - 400, //TODO: this is hardcoded so it antoher screen it will not work
-      height = window.innerHeight + 400 ;
+      height = window.innerHeight + 500 ;
 
 
     //Remove all elements before render

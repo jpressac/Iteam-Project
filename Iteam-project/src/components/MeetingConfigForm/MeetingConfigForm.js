@@ -124,22 +124,26 @@ class MeetingConfigForm extends Component {
 
   render() {
     return (
-      <div className="col-md-12">
+      <div className="col-md-12" style={{marginTop:10}}>
         <div className={cssClasses.labelInfo}>
           <label>Meeting Configuration</label>
         </div>
-        <div className={"row col-md-12 " + cssClasses.form}>
+        <div className={"row " + cssClasses.form}>
+          <div  className={"col-md-12" + cssClasses.contentSearch}>
           <div className="col-md-8">
             <AutocompleteComponent label="Select Technic" onValueChange={this.handleChange.bind(this, 'technic')}
                                    source={technics} initialValue={this.state.technic}/>
           </div>
-          <InputComponent className={"col-md-4"}
+            <div className="col-md-4">
+            <InputComponent
                           onValueChange={this.handleChange.bind(this, "votes")} value={this.state.votes.toString()}
                           label="Select amount of votes" type="number" minValue={"0"}/>
+              </div>
+            </div>
           <div className="row col-md-12">
             <InputComponent className={"col-md-6"} label="Tag" value={this.state.tag} disable={this.state.disabled}
                             maxLength={30} onValueChange={this.handleChange.bind(this, "tag")}/>
-            <div className={"col-md-6 " + cssClasses.paddingInnerElements}>
+            <div className={"col-md-2 " + cssClasses.paddingInnerElements}>
               <TooltipButton icon='add' tooltip='Add tag' floating mini disabled={this.state.disabled}
                              onClick={this.handleAddTag.bind(this)}/>
             </div>
