@@ -11,7 +11,6 @@ class D3Tree extends React.Component {
 
     if (nextProps.treeData != this.props.treeData
       || nextProps.technic != this.props.technic || nextProps.type != this.props.type) {
-      console.log("pase por aca la concha de tu hermana")
       //this.renderTreeCollapse(nextProps.treeData, ReactDom.findDOMNode(this));
       this.renderTreeExpand(nextProps.treeData, ReactDom.findDOMNode(this),
         this.props.technic, this.props.type);
@@ -26,17 +25,17 @@ class D3Tree extends React.Component {
       width, height;
     if (technic == 'Brainstorming') {
       width = window.innerWidth - margin.right + 200 //TODO: this is hardcoded so it antoher screen it will not work
-      height = window.innerHeight + 400;
+      height = window.innerHeight + 1200;
       if (type == 'bytag') {
-        height = height - 400;
+        height = height - 800;
       }
 
     }
     else {
       width = window.innerWidth - margin.right + 100//TODO: this is hardcoded so it antoher screen it will not work
-      height = window.innerHeight + 1000;
+      height = window.innerHeight + 2000;
       if (type == 'bytag') {
-        height = height - 500;
+        height = height - 1000;
       }
 
     }
@@ -46,29 +45,29 @@ class D3Tree extends React.Component {
 
     // declares a tree layout and assigns the size
     treemap = d3.tree()
-      .size([width + 100, height])
-      .nodeSize([40, 30]);
+      .size([width +100 , height])
+      .nodeSize([30, 20]);
 
 
     // remove the last SVG Node, just to create a new one
     d3.select(svgNode)
       .selectAll("*")
-      .remove();
+  .remove();
 
 
     svg = d3.select(svgNode)
       .attr("width", width - 300)
-      .attr("height", height + 300)
+      .attr("height", height )
       .attr("align", "center")
       .append("g")
       .attr("transform", "translate("
-        + margin.left + "," + height * 0.6 + ")");
+        + margin.left + "," + height * 0.5 + ")")
 
 
     root = d3.hierarchy(treeData, function (d) {
       return d.children;
     });
-    root.x0 = height + 300;
+    root.x0 = height +300;
     root.y0 = 0;
 
 // Collapse after the second level
@@ -131,20 +130,7 @@ class D3Tree extends React.Component {
           return "translate(" + d.y + "," + source.x0 + ")";
         })
         .on('click', click);
-      // .on("mouseover", function (d) {
-      //   div.transition()
-      //     .style("opacity", .9);
-      //
-      //   div.html(d.data.name)
-      //     .style("display", "inline-block")
-      //     .style("left", (d3.event.pageX - 35 ) + "px")
-      //     .style("top", (d3.event.pageY - 30) + "px");
-      //
-      //
-      // })
-      // .on("mouseout", function (d) {
-      //   div.style("display", "none");
-      // });
+
 
       // Add Circle for the nodes
       nodeEnter.append('circle')
@@ -242,7 +228,7 @@ class D3Tree extends React.Component {
       let linkEnter = link.enter().insert('path', "g")
         .classed(classes.link, true)
         .attr('d', function (d) {
-          let o = {x: source.x0, y: source.y0};
+          let o = {x: source.x0 , y: source.y0 };
           return diagonal(o, o)
         });
 

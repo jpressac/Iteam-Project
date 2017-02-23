@@ -25,12 +25,15 @@ import {validateDate, validateStart, validateHour, changeEndDate, checkDate} fro
 import {calculateTotalPages, calculateOffset} from '../../utils/mathUtils'
 import ButtonComponent from '../ButtonComponent/'
 import ReactPagination from 'react-paginate'
-import pagination from './pagination.scss'
+import pagination from '../MeetingsHistoryForm/pagination.scss'
 import dialogTheme from './dialog.scss'
 import {getProgrammedMeetings, getSearchProgrammed} from '../../utils/actions/meetingActions'
 import {cleanMeetingChats} from '../../redux/reducers/Meeting/MeetingChatMessagesReducer'
 import AutocompleteComponent from '../AutocompleteComponent/AutocompleteComponent'
 import generateUUID from '../../constants/utils/GetUUID'
+import Avatar from 'react-toolbox/lib/avatar'
+import avatarTheme from './avatarTheme.scss'
+
 
 
 var programDate = new Date();
@@ -485,12 +488,17 @@ class MymeetForm extends Component {
         <div className={"container " + cssClasses.containerForm}>
           <div className={cssClasses.labelMainTitle}>
             <label>MY MEETINGS</label>
+            <Avatar theme={avatarTheme} icon="supervisor_account"/>
+
           </div>
-          <div>
-            <InputComponent label="Meeting topic" name="searchField" value={this.state.searchField}
+          <div className={"row " + cssClasses.form}>
+            <div className={"col-md-12" + cssClasses.contentSearch}>
+            <InputComponent className="col-md-10" label="Meeting topic" name="searchField" value={this.state.searchField}
                             onKeyPress={this.handleSubmit.bind(this)}
                             onValueChange={this.handleChange.bind(this, 'searchField')}/>
-            <ButtonComponent onClick={this.searchByToken.bind(this)} value="Search"/>
+              <TooltipButton className ="col-md-2" icon='search' tooltip='Search teams'
+                             style={{background: '#900C3F', color: 'white'}}
+                             floating onClick={this.searchByToken.bind(this)} />
           </div>
           <BootstrapModal ref="mymeetingModal" message={this.state.message}/>
           <List theme={listFormat} selectable ripple>
@@ -515,16 +523,22 @@ class MymeetForm extends Component {
             )}
             {this.showDialog()}
           </List>
-          <ReactPagination previousLabel={"Previous"}
-                           nextLabel={"Next"}
+            </div>
+          <ReactPagination previousLabel={"<<"}
+                           nextLabel={">>"}
                            pageCount={this.state.totalPages}
                            marginPagesDisplayed={2}
                            pageRangeDisplayed={5}
                            onPageChange={this.handlePageClick}
                            initialPage={0}
                            disableInitialCallback={false}
-                           pageClassName={pagination.ul}
-          />
+                           pageClassName={pagination.li}
+                           previousClassName={pagination.li}
+                           nextClassName={pagination.li}
+                           containerClassName={pagination.ul}
+                           pageLinkClassName={pagination.link}
+                           activeClassName={pagination.liActive} />
+
         </div>
       )
     } else {

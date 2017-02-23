@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import MeetingHistory from '../../components/MeetingsHistoryForm/MeetingHistory'
-import classes from './HistoryView.scss'
+import classes from '../../views/ViewContainerCSS/ViewContainer.scss'
 
 class HistoryView extends React.Component {
   render(){

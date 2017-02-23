@@ -26,7 +26,7 @@ import TokenReportView from '../views/SharedReportView/TokenReportView/TokenRepo
 
 export const createRoutes = (store) => (
 
-  <Route path={PATHS.ROOT_APPLICATION}>
+  <Route path={PATHS.ROOT_APPLICATION} >
     <Route path={PATHS.COMMON.ROOT} component={NotLoggedIn}>
       <IndexRoute component={HomeView}/>
       <Route path={PATHS.COMMON.HOME} component={HomeView}/>
@@ -41,7 +41,7 @@ export const createRoutes = (store) => (
       <Route path={PATHS.LOGGEDIN.NEWTEAM} component={TeamCreationView}/>
       <Route path={PATHS.LOGGEDIN.HOME} component={HomeView}/>
       <Route path={PATHS.LOGGEDIN.MEETING} component={MeetingView}/>
-      <Route path={PATHS.LOGGEDIN.PERSONALBOARD} component={PersonalBoardView}/>
+      <Route path={PATHS.LOGGEDIN.PERSONALBOARD} component={PersonalBoardView} />
       <Route path={PATHS.LOGGEDIN.SHAREDBOARD} component={SharedBoardView}/>
       <Route path={PATHS.LOGGEDIN.PROFILE} component={ProfileView}/>
       <Route path={PATHS.LOGGEDIN.MYMEETINGS} component={MymeetView}/>

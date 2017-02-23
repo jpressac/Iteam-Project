@@ -6,6 +6,17 @@ import ReactPagination from 'react-paginate'
 import pagination from './pagination.scss'
 import {calculateTotalPages, calculateOffset} from '../../utils/mathUtils'
 import {getMeetingPaginated, getMeetingByToken} from '../../utils/actions/historyActions'
+import cssClasses from '../ComponentCSSForms/componentCSS.scss'
+import Tooltip from 'react-toolbox/lib/tooltip'
+import Avatar from 'react-toolbox/lib/avatar'
+import avatarTheme from './avatarTheme.scss'
+import {Button} from 'react-toolbox/lib/button'
+
+
+
+
+const TooltipButton = Tooltip(Button);
+
 
 const ITEMS_PER_PAGE = 10;
 
@@ -80,25 +91,40 @@ class MeetingHistory extends Component {
 
   render() {
     return (
-      <div className="container">
-        <div>
-          <InputComponent className="col-md-8" label='Meeting name' value={this.state.searchField}
+    <div className={"container " + cssClasses.containerForm}>
+      <div className={cssClasses.labelMainTitle}>
+        <label>MEETING HISTORY</label>
+        <Avatar theme={avatarTheme} icon="format_list_bulleted"/>
+
+      </div>
+      <div className={"col-md-12"}>
+
+          <InputComponent className="col-md-10" label='Meeting name' value={this.state.searchField}
                           onKeyPress={this.handleSubmit.bind(this)} onValueChange={this.handleChange.bind(this)}/>
-          <ButtonComponent className="col-md-4" onClick={this.searchByToken.bind(this)} value="Search"/>
+          <TooltipButton className ="col-md-2" icon='search' tooltip='Search teams'
+                         style={{background: '#900C3F', color: 'white'}}
+                         floating onClick={this.searchByToken.bind(this)} />
+
         </div>
         <div className="col-md-12">
           <MeetingCard endedMeetings={this.state.meetings}/>
         </div>
         <div className="col-md-12">
-          <ReactPagination previousLabel={"previous"}
-                           nextLabel={"next"}
+          <ReactPagination previousLabel={"<<"}
+                           nextLabel={">>"}
                            pageCount={this.state.totalPages}
                            marginPagesDisplayed={2}
                            pageRangeDisplayed={5}
                            onPageChange={this.handlePageClick}
                            initialPage={0}
                            disableInitialCallback={false}
-                           pageClassName={pagination.ul}
+                           pageClassName={pagination.li}
+                           previousClassName={pagination.li}
+                           nextClassName={pagination.li}
+                           containerClassName={pagination.ul}
+                           pageLinkClassName={pagination.link}
+                           activeClassName={pagination.liActive}
+
           />
         </div>
       </div>

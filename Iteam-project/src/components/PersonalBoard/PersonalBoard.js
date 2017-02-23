@@ -251,7 +251,7 @@ class PersonalBoard extends Component {
 
   render() {
     return this.props.connectDropTarget(
-      <div name="Personal Board Component" className={cssClasses.containerBoard}>
+      <div name="Personal Board Component" className={classes.board}>
         <Layout >
           <NavDrawer active={true}
                      pinned={true} permanentAt='lg' theme={navTheme}>

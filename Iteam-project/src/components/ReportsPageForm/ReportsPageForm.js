@@ -5,6 +5,7 @@ import D3Tree from '../ReportsForm/D3tree/D3Tree'
 import D3ChartTree from '../ReportsForm/D3ChartTree/D3ChartTree'
 import {PATHS} from './../../constants/routes'
 import ButtonComponent from '../ButtonComponent/ButtonComponent'
+import buttonTheme from './button.scss'
 import BootstrapModal from '../BootstrapModal/BootstrapModal'
 import {push} from 'react-router-redux'
 import {
@@ -150,8 +151,8 @@ class ReportsPageForm extends Component {
         {this.generateReport(this.props.reportType)}
         {this.renderTrees()}
         <ButtonComponent className="col-md-6" value='BACK TO REPORT' raisedValue
-                         onClick={this.props.report} iconButton='backspace'/>
-        <ButtonComponent className="col-md-6" value='SHARE REPORT'
+                         onClick={this.props.report} iconButton='backspace' theme={buttonTheme}/>
+        <ButtonComponent className="col-md-6" value='SHARE REPORT' theme={buttonTheme}
                          onClick={this.shareReport.bind(this)} raisedValue iconButton='share'/>
       </div>
     );
