@@ -21,6 +21,8 @@ import {createMeeting} from '../../utils/actions/meetingActions'
 import Tooltip from 'react-toolbox/lib/tooltip'
 import Checkbox from 'react-toolbox/lib/checkbox'
 import MeetingConfigForm from '../MeetingConfigForm/MeetingConfigForm'
+import {canSaveString} from '../../utils/validationUtils'
+
 
 const TooltipCheckbox = Tooltip(Checkbox);
 
@@ -167,12 +169,7 @@ class MeetingView extends Component {
   }
 
   createNewMeeting() {
-    if (this.state.topic === '' || this.state.description === '' || this.state.teamSelectedName === '') {
-      this.setState({message: '¡You have to complete the form!'});
-      this.refs.meetingModal.openModal();
-
-    } else {
-
+    if (canSaveString(this.state.topic, this.state.description, this.state.teamSelectedName)) {
       this.addTagMiscellaneous();
       this.setState({showSpinner: true});
       let meetingInfo = this.setReducerInfo();
@@ -184,6 +181,10 @@ class MeetingView extends Component {
       });
       //REDUCER
       //this.props.goToMeetingConfig(meetingInfo);
+    }
+    else {
+      this.setState({message: '¡You have to complete the form!'});
+      this.refs.meetingModal.openModal();
     }
   }
 

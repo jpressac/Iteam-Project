@@ -4,9 +4,14 @@
 }
 
 .verticalbarright {
-  border-right: thick solid #ff0000;
+  margin-left: 1%;
+  min-height: 5%;
+  height: auto;
+
 }
 
 .verticalbarleft {
-  border-left: thick solid #ff0000;
+  margin-right: 1%;
+  min-height: 5%;
+  height: auto;
 }
