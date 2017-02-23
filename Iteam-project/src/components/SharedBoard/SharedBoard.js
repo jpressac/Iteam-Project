@@ -573,4 +573,3 @@ export default flow(
           connectDropTarget: connect.dropTarget()
         }
       )), connect(mapStateToProps, mapDispatchToProps))(SharedBoard);
-

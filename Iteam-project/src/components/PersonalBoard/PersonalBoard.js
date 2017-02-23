@@ -152,18 +152,18 @@ class PersonalBoard extends Component {
     let map = this.state.notes;
     let id = generateUUID();
     map[id] =
-    {
-      id: id,
-      left: generateRandomNumber(),
-      top: generateRandomNumber(),
-      username: this.props.user,
-      title: text,
-      comments: "",
-      tag: this.state.mapTag[0],
-      ranking: 0,
-      meetingId: this.props.meetingId,
-      boardType: "personal"
-    };
+      {
+        id: id,
+        left: generateRandomNumber(),
+        top: generateRandomNumber(),
+        username: this.props.user,
+        title: text,
+        comments: "",
+        tag: this.state.mapTag[0],
+        ranking: 0,
+        meetingId: this.props.meetingId,
+        boardType: "personal"
+      };
     this.updateNotesCacheByUser(map);
 
     this.setState({notes: map});
@@ -305,6 +305,6 @@ export default flow(
   DropTarget(ItemTypes.NOTE, NoteTarget,
     connection =>
       ( {
-        connectDropTarget: connection.dropTarget()
-      }
+          connectDropTarget: connection.dropTarget()
+        }
       )), connect(mapStateToProps, mapDispatchToProps))(PersonalBoard);

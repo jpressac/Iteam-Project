@@ -55,6 +55,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
     private static final String MEETING_STATE_NAME_FIELD = "ended";
     private static final String MEETING_OWNER_NAME_FIELD = "ownerName";
     private static final String PROGRAMMED_DATE_FIELD = "programmedDate";
+    private static final String END_DATE_FIELD = "endDate";
     private static final String MEETING_TOPIC = "topic";
     private static final String MEETING_VIEWED_USERS = "viewedUsers";
     private static final String MEETING_NOT_VIEWED_USERS = "users";
@@ -361,10 +362,10 @@ public class MeetingRepositoryImpl implements MeetingRepository {
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
         queryBuilder.mustNot(QueryBuilders.existsQuery(MEETING_STATE_NAME_FIELD))
-                .must(QueryBuilders.rangeQuery(PROGRAMMED_DATE_FIELD).to(DateTime.now().getMillis()));
+                .must(QueryBuilders.rangeQuery(END_DATE_FIELD).to(DateTime.now().getMillis()));
 
         SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING, queryBuilder,
-                SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD).order(SortOrder.DESC));
+                SortBuilders.fieldSort(END_DATE_FIELD).order(SortOrder.ASC));
 
         if (response.getHits().getTotalHits() > 0) {
 

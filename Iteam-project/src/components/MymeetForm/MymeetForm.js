@@ -180,26 +180,17 @@ class MymeetForm extends Component {
 
   showActions(meetingOwner, meetingDate) {
     if (this.isAdmin(meetingOwner)) {
-      //fecha ya paso, puede ver reportes
-      if (!validateDate(meetingDate)) {
-        if (validateStart(meetingDate)) {
-          return this.userActionsJoin;
-        }
-        return this.adminActionsEdit; //TODO borra cuando ande el history
+      if (validateStart(meetingDate)) {
+        return this.userActionsJoin;
       }
-      //fecha mayor, puede editar
-      return this.userActionsView;
+      return this.adminActionsEdit; //TODO borra cuando ande el history
     }
+
     else {
-      //fecha ya paso
-      if (!validateDate(meetingDate)) {
-        //rango de tiempo aceptable para unirse reunion
-        if (validateStart(meetingDate)) {
-          return this.userActionsJoin;
-        }
+      //rango de tiempo aceptable para unirse reunion
+      if (validateStart(meetingDate)) {
+        return this.userActionsJoin;
       }
-      // fecha mayor, puede poner ver
-      return this.userActionsView;
     }
   }
 

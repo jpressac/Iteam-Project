@@ -7,7 +7,7 @@ import Spinner from '../Spinner/Spinner'
 
 const mapStateToProps = (state) => {
   return {
-    meetingInfo: state.meetingReducer.meeting
+    meetingInfo: state.meetingReducer
   }
 };
 
