@@ -8,6 +8,8 @@ import {calculateTotalPages, calculateOffset} from '../../utils/mathUtils'
 import {getMeetingPaginated, getMeetingByToken} from '../../utils/actions/historyActions'
 import cssClasses from '../ComponentCSSForms/componentCSS.scss'
 import Tooltip from 'react-toolbox/lib/tooltip'
+import Avatar from 'react-toolbox/lib/avatar'
+import avatarTheme from './avatarTheme.scss'
 import {Button} from 'react-toolbox/lib/button'
 
 
@@ -92,6 +94,8 @@ class MeetingHistory extends Component {
     <div className={"container " + cssClasses.containerForm}>
       <div className={cssClasses.labelMainTitle}>
         <label>MEETING HISTORY</label>
+        <Avatar theme={avatarTheme} icon="format_list_bulleted"/>
+
       </div>
       <div className={"col-md-12"}>
 

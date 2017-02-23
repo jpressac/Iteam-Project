@@ -4,7 +4,7 @@ import {DragDropContext} from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 
 
-class PersonalBoardView extends React.Component {
+class SharedBoardView extends React.Component {
 
   render() {
     return (
@@ -13,4 +13,4 @@ class PersonalBoardView extends React.Component {
   }
 }
 
-export default DragDropContext(HTML5Backend)(PersonalBoardView);
+export default DragDropContext(HTML5Backend)(SharedBoardView);

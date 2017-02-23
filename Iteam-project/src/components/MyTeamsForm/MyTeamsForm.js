@@ -16,6 +16,10 @@ import {getTeamByOwner, getTeamByOwnerPaginated} from '../../utils/actions/teamA
 import cssClasses from '../ComponentCSSForms/componentCSS.scss'
 import Tooltip from 'react-toolbox/lib/tooltip'
 import {Button} from 'react-toolbox/lib/button'
+import avatarTheme from './avatarTheme.scss'
+import Avatar from 'react-toolbox/lib/avatar'
+
+
 
 import ButtonComponent from '../ButtonComponent/ButtonComponent'
 
@@ -113,6 +117,7 @@ class MyTeamsForm extends Component {
           <div className={classes.content}>
             <div className={classes.label2}>
               <label>MY TEAMS</label>
+              <Avatar theme={avatarTheme} icon="supervisor_account"/>
             </div>
             <div className={"row " + cssClasses.form}>
               <div  className={"col-md-12" + cssClasses.contentSearch}>

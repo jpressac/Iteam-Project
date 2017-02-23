@@ -31,6 +31,8 @@ import {getProgrammedMeetings, getSearchProgrammed} from '../../utils/actions/me
 import {cleanMeetingChats} from '../../redux/reducers/Meeting/MeetingChatMessagesReducer'
 import AutocompleteComponent from '../AutocompleteComponent/AutocompleteComponent'
 import generateUUID from '../../constants/utils/GetUUID'
+import Avatar from 'react-toolbox/lib/avatar'
+import avatarTheme from './avatarTheme.scss'
 
 
 
@@ -511,6 +513,8 @@ class MymeetForm extends Component {
         <div className={"container " + cssClasses.containerForm}>
           <div className={cssClasses.labelMainTitle}>
             <label>MY MEETINGS</label>
+            <Avatar theme={avatarTheme} icon="supervisor_account"/>
+
           </div>
           <div className={"row " + cssClasses.form}>
             <div className={"col-md-12" + cssClasses.contentSearch}>
@@ -544,6 +548,7 @@ class MymeetForm extends Component {
             )}
             {this.showDialog()}
           </List>
+            </div>
           <ReactPagination previousLabel={"<<"}
                            nextLabel={">>"}
                            pageCount={this.state.totalPages}
@@ -558,7 +563,7 @@ class MymeetForm extends Component {
                            containerClassName={pagination.ul}
                            pageLinkClassName={pagination.link}
                            activeClassName={pagination.liActive} />
-            </div>
+
         </div>
       )
     } else {

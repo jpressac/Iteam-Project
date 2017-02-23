@@ -8,6 +8,8 @@ import ButtonComponent from '../../components/ButtonComponent/ButtonComponent'
 import {saveTokenSharedReport} from '../../redux/reducers/Report/TokenReducer'
 import {PATHS} from '../../constants/routes'
 import Avatar from 'react-toolbox/lib/avatar'
+import avatarTheme from './avatarTheme.scss'
+
 
 const mapStateToProps = (state) => {
   return ({})
@@ -47,10 +49,11 @@ class SharedReportView extends React.Component {
 
   render() {
     return (
+
       <div className={"container " + classes.containerForm}>
         <div className={cssClasses.labelMainTitle}>
           <label>SHARED REPORT</label>
-          <Avatar icon="supervisor_account"/>
+          <Avatar theme={avatarTheme} icon="supervisor_account"/>
         </div>
         <div className={cssClasses.form}>
           <label>Copy link here to share report</label>
@@ -60,6 +63,7 @@ class SharedReportView extends React.Component {
           <ButtonComponent className="col-md-12" raisedValue value="GO" onClick={this.saveToken.bind(this)}/>
         </div>
       </div>
+
     )
   }
 }

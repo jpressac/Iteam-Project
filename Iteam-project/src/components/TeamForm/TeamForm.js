@@ -19,6 +19,8 @@ import {List, ListItem, ListSubHeader} from 'react-toolbox/lib/list'
 import generateUUID from '../../constants/utils/GetUUID'
 import listSubheader from './ListSubheader.scss'
 import {validateNumber} from '../../utils/validationUtils'
+import Avatar from 'react-toolbox/lib/avatar'
+import avatarTheme from './avatarTheme.scss'
 
 
 const mapStateToProps = (state) => {
@@ -385,6 +387,8 @@ class TeamForm extends React.Component {
         <div className={"container " + cssClasses.containerForm}>
           <div className={cssClasses.labelMainTitle}>
             <label>CREATE TEAM</label>
+            <Avatar theme={avatarTheme} icon="supervisor_account"/>
+
           </div>
           <div className={"row " + cssClasses.form}>
             <InputComponent className={"row col-md-12 " + cssClasses.paddingInnerElements} label='Team name' type='type'
