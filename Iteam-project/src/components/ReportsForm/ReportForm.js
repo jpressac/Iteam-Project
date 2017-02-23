@@ -121,7 +121,12 @@ class ReportForm extends Component {
   reportByMixing() {
 
     console.log(this.state.meetingSelected)
-    if (this.state.reportName != '' || this.state.meetingSelected.length > 0) {
+    console.log(this.state.reportName)
+    console.log(this.state.meetingSelected.length > 0)
+    console.log(this.state.reportName != '')
+
+
+    if (this.state.reportName != '' && this.state.meetingSelected.length > 0) {
 
       let meetingIds = this.state.meetingSelected.map((meeting) => meeting.meetingId)
 
