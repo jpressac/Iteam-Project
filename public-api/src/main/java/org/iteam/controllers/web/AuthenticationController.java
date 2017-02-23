@@ -58,6 +58,16 @@ public class AuthenticationController {
         return "application";
     }
 
+    @RequestMapping("/application/member")
+    public String redirectToHomeMember() {
+        return "application";
+    }
+
+    @RequestMapping("/application/nmember")
+    public String redirectToHomeNotMember() {
+        return "application";
+    }
+
     @RequestMapping("/application/member/myteams")
     public String mnyTeams() {
         return "application";

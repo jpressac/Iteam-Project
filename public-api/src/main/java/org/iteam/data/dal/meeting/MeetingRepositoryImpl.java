@@ -406,7 +406,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         }
 
         SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_MEETING, queryBuilder, size,
-                from);
+                from, SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD));
 
         List<Meeting> meetings = new ArrayList<>();
 

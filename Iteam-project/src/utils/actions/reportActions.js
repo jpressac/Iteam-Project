@@ -66,9 +66,9 @@ export function getReportByMixMeetings(meetingIds, reportName){
 }
 
 export function postReportIntoSlack(meetingIds, meetingTopic, reportName){
-  return axios.post(REPORT.POST_SHARED_REPORT_SLACK, {
+  return axios.get(REPORT.POST_SHARED_REPORT_SLACK, {
     params:{
-      meetingIds: meetingIds,
+      meetingId: meetingIds,
       meetingTopic: meetingTopic,
       reportName: reportName
     }

@@ -118,6 +118,18 @@ public interface ElasticsearchClient {
     public SearchResponse search(String index, QueryBuilder queryBuilder, SortBuilder sort, Integer size, Integer from);
 
     /**
+     * 
+     * @param index
+     * @param queryBuilder
+     * @param size
+     * @param from
+     * @param sortBuilder
+     * @return
+     */
+    public SearchResponse search(String index, QueryBuilder queryBuilder, Integer size, Integer from,
+            SortBuilder sortBuilder);
+
+    /**
      * Search for documents, given an index, a type and a query.
      * 
      * @param index

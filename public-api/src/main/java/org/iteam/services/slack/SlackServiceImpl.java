@@ -47,6 +47,11 @@ public class SlackServiceImpl implements SlackService {
         slackRepository.createAndinviteToMeetingGroup(meeting, teamId);
     }
 
+    @Override
+    public void postMessageUpdateMeeting(Meeting meeting) {
+        slackRepository.postMessageUpdateMeeting(meeting);
+    }
+
     @Autowired
     private void setSlackRepository(SlackRepositoryImpl slackRepository) {
         this.slackRepository = slackRepository;

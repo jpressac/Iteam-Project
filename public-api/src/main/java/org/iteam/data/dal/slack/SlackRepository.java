@@ -50,7 +50,7 @@ public interface SlackRepository {
     /*
      * Pins a message of a certain channel
      */
-    public void pinMeetingInfo(Meeting meeting, String channelId);
+    public void pinMeetingInfo(Meeting meeting, String channelId, Boolean updateMeeting);
 
     /*
      * Returns a channel id for a channel name
@@ -78,5 +78,11 @@ public interface SlackRepository {
      * information
      */
     public void createAndinviteToMeetingGroup(Meeting meeting, String teamId);
+
+    /**
+     * 
+     * @param updatedMeeting
+     */
+    public void postMessageUpdateMeeting(Meeting updatedMeeting);
 
 }

@@ -181,7 +181,7 @@ public class SlackRepositoryImplTest {
     }
 
     private void whenPinMeetingInfoIsCalled() {
-        underTest.pinMeetingInfo(new Meeting(), TIMESTAMP_CHAT_POST_MESSAGE);
+        underTest.pinMeetingInfo(new Meeting(), TIMESTAMP_CHAT_POST_MESSAGE, true);
     }
 
     private void givenAPinsAddResponse() throws IOException, SlackApiException {

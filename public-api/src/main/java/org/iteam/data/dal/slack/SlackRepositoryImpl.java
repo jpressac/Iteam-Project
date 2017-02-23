@@ -62,7 +62,7 @@ public class SlackRepositoryImpl implements SlackRepository {
             inviteUsersToMeetingGroup(teamId, groupId);
 
             // the bot post the message and pinned with the meeting information
-            pinMeetingInfo(meeting, groupId);
+            pinMeetingInfo(meeting, groupId, false);
         }
     }
 
@@ -168,10 +168,10 @@ public class SlackRepositoryImpl implements SlackRepository {
     }
 
     @Override
-    public void pinMeetingInfo(Meeting meeting, String channelId) {
+    public void pinMeetingInfo(Meeting meeting, String channelId, Boolean updateMeeting) {
 
         try {
-            String formattedMessage = formatMessageMeetingInfo(meeting);
+            String formattedMessage = formatMessageMeetingInfo(meeting, updateMeeting);
 
             ChatPostMessageRequest request = ChatPostMessageRequest.builder().token(BOT_TOKEN).channel(channelId)
                     .text(formattedMessage).build();
@@ -274,16 +274,17 @@ public class SlackRepositoryImpl implements SlackRepository {
         return userEmails;
     }
 
-    private String formatMessageMeetingInfo(Meeting meeting) {
+    private String formatMessageMeetingInfo(Meeting meeting, boolean updateMeeting) {
 
-        // TODO: this message can be improved
         StringBuffer message = new StringBuffer();
-        message.append("_*MEETING INFORMATION:*_ \n");
+        message.append(updateMeeting ? "_*MEETING UPDATED:*_ \n" : "_*MEETING INFORMATION:*_ \n");
         message.append(String.format("_Topic:_ %s\n", meeting.getTopic()));
         message.append("_Description:_\n");
         message.append(String.format(">>> %s \n", meeting.getDescription()));
         message.append(String.format("_Programmed date (UTC-Time):_ %s \n",
                 new ISO8601DateFormat().format(new DateTime(meeting.getProgrammedDate()).toDate())));
+        message.append(String.format("_Technic:_ %s \n", meeting.getMeetingConfig().getTechnic()));
+        message.append(String.format("_Tag:_ %s \n", meeting.getMeetingConfig().getTags()));
 
         return message.toString();
     }
@@ -303,9 +304,15 @@ public class SlackRepositoryImpl implements SlackRepository {
         return messageBuilder.toString();
     }
 
+    @Override
+    public void postMessageUpdateMeeting(Meeting updatedMeeting) {
+        String groupId = getChannelId(updatedMeeting.getTopic());
+
+        pinMeetingInfo(updatedMeeting, groupId, true);
+    }
+
     @Autowired
     private void setTeamRepository(TeamRepositoryImpl teamRepository) {
         this.teamRepositoryImpl = teamRepository;
     }
-
 }

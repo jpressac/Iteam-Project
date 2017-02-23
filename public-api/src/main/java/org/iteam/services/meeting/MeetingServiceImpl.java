@@ -33,6 +33,9 @@ public class MeetingServiceImpl implements MeetingService {
 
     @Override
     public void updateMeeting(Meeting updatedMeeting) {
+        if (updatedMeeting.isUseSlack()) {
+            slackService.postMessageUpdateMeeting(updatedMeeting);
+        }
         meetingRepositoryImpl.updateMeeting(updatedMeeting);
     }
 
