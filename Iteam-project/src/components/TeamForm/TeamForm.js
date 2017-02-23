@@ -18,6 +18,8 @@ import {createTeam, teamNameExistence, selectTeam} from '../../utils/actions/tea
 import {List, ListItem, ListSubHeader} from 'react-toolbox/lib/list'
 import generateUUID from '../../constants/utils/GetUUID'
 import listSubheader from './ListSubheader.scss'
+import {validateNumber} from '../../utils/validationUtils'
+
 
 const mapStateToProps = (state) => {
   if (state.loginUser !== null) {
@@ -107,8 +109,8 @@ class TeamForm extends React.Component {
     let update = false;
 
 
-    if (this.validateNumber(this.state.rangeFrom) && this.validateNumber(this.state.rangeTo)
-      && this.state.rangeFrom < this.state.rangeTo) {
+    if (validateNumber(this.state.rangeFrom) && validateNumber(this.state.rangeTo)
+      && this.state.rangeFrom <= this.state.rangeTo) {
       update = true;
       rangeFilterName = rangeFilterName.concat(" from:", this.state.rangeFrom.toString());
       rangeFilterName = rangeFilterName.concat(" to:", this.state.rangeTo.toString());
@@ -125,8 +127,8 @@ class TeamForm extends React.Component {
 
         this.setState({
           filters: newFilters,
-          rangeFrom: '',
-          rangeTo: '',
+          rangeFrom: 0,
+          rangeTo: 0,
           incorrectFields: false
         })
       }
@@ -219,16 +221,12 @@ class TeamForm extends React.Component {
   };
 
   validateField(value) {
-    if (this.validateNumber(value)) {
+    if (validateNumber(value)) {
       return '';
     }
     else {
       return 'Incorrect number'
     }
-  }
-
-  validateNumber(value) {
-    return (!isNaN(value) && value < Number.MAX_VALUE && value >= 0)
   }
 
   checkName() {
@@ -326,7 +324,7 @@ class TeamForm extends React.Component {
 
   dropdownObjectFilteredValues(sourceData) {
     return (
-      <AutocompleteComponent label="Select Filter" source={sourceData} initialValue=''
+      <AutocompleteComponent label="Select Filter" source={sourceData} initialValue={this.state.filterToAddValue}
                              onValueChange={this.handleChange.bind(this, 'filterToAddValue')}/>
     );
   }
@@ -347,11 +345,10 @@ class TeamForm extends React.Component {
     return this.state.userInformation.map((user) => {
       return (
         <ListItem key={generateUUID()}
-                  avatar='https://dl.dropboxusercontent.com/u/2247264/assets/m.jpg'
+                  leftIcon="account_circle"
                   caption={[user.username, [user.name, user.lastName].join(" ")].join(": ")}
                   legend={'Score: ' + user.score}
-                  onClick={this.selectUser.bind(this, user.username)}
-                  rightIcon='star'/>
+                  onClick={this.selectUser.bind(this, user.username)}/>
       )
     })
   }
@@ -360,11 +357,10 @@ class TeamForm extends React.Component {
     return this.state.usersSelected.map((user) => {
       return (
         <ListItem key={generateUUID()}
-                  avatar='https://dl.dropboxusercontent.com/u/2247264/assets/m.jpg'
+                  leftIcon="account_circle"
                   caption={[user.username, [user.name, user.lastName].join(" ")].join(": ")}
                   legend={'Score: ' + user.score}
-                  onClick={this.removeUser.bind(this, user.username)}
-                  rightIcon='star'/>
+                  onClick={this.removeUser.bind(this, user.username)}/>
       )
     })
   }
