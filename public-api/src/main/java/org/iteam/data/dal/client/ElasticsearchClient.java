@@ -5,6 +5,7 @@ import java.util.List;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.action.get.MultiGetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateResponse;
@@ -251,5 +252,14 @@ public interface ElasticsearchClient {
      * @return a bulk response with the information about the request.
      */
     public BulkResponse updateScore(@SuppressWarnings("rawtypes") List<BiFieldModel> data, String index, String type);
+
+    /**
+     * Retrieve the all the information for the given document ids.
+     * 
+     * @param documentIds
+     *            the ids of the documens to get information.
+     * @return a multi get response with the information about the request.
+     */
+    public MultiGetResponse multiGet(List<String> documentIds);
 
 }

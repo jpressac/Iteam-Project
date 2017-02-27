@@ -13,6 +13,8 @@ import org.elasticsearch.action.bulk.BulkRequestBuilder;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.action.get.MultiGetRequestBuilder;
+import org.elasticsearch.action.get.MultiGetResponse;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
@@ -127,7 +129,7 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
     @Override
     public SearchResponse search(String index, QueryBuilder queryBuilder, AbstractAggregationBuilder aggregationBuilder,
             Integer size) {
-        return search(index, queryBuilder, aggregationBuilder, SIZE_RESPONSE, null, null);
+        return search(index, queryBuilder, aggregationBuilder, size, null, null);
     }
 
     @Override
@@ -197,21 +199,6 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
         return indexRequest.setSource(data);
     }
 
-    @Autowired
-    private void setConfiguration(ExternalConfigurationProperties configuration) {
-        this.configuration = configuration;
-    }
-
-    private BulkResponse updateData(List<UpdateRequest> data) {
-        BulkRequestBuilder updateBulk = client.prepareBulk();
-
-        data.forEach((request) -> {
-            updateBulk.add(request);
-        });
-
-        return updateBulk.execute().actionGet();
-    }
-
     @Override
     public BulkResponse bulkUpdate(List<BiFieldModel<String>> data, String index, String type) {
 
@@ -242,11 +229,37 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
 
     }
 
+    @Override
+    public MultiGetResponse multiGet(List<String> documentIds) {
+        MultiGetRequestBuilder multiGetRequest = client.prepareMultiGet();
+
+        for (String documentId : documentIds) {
+            multiGetRequest.add("meeting", "meetingdata", documentId);
+        }
+
+        return multiGetRequest.execute().actionGet();
+    }
+
+    private BulkResponse updateData(List<UpdateRequest> data) {
+        BulkRequestBuilder updateBulk = client.prepareBulk();
+
+        data.forEach((request) -> {
+            updateBulk.add(request);
+        });
+
+        return updateBulk.execute().actionGet();
+    }
+
     private Script getScript(Double score) {
         Map<String, Object> scriptParams = new HashMap<>();
         scriptParams.put(P_SCORE, score);
 
         return new Script(ES_SCRIPT_COMMANDS.toString(), ScriptType.INLINE, "groovy", scriptParams);
+    }
+
+    @Autowired
+    private void setConfiguration(ExternalConfigurationProperties configuration) {
+        this.configuration = configuration;
     }
 
 }

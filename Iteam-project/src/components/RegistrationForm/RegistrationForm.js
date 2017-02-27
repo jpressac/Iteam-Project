@@ -216,7 +216,6 @@ class RegistrationForm extends React.Component {
                               value={this.state.username}
                               onValueChange={this.handleChange.bind(this, 'username')} required
                               onBlur={this.checkUsername.bind(this)}
-                              onValueError={this.state.userExists}
                               maxLength={10}
                               onValueError={this.validateMinLength('username',this.state.username)}/>
             </div>

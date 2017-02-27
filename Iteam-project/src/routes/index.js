@@ -23,6 +23,7 @@ import ChatView from '../views/ChatView/ChatView'
 import HistoryView from '../views/HistoryView/HistoryView'
 import SharedReportView from '../views/SharedReportView/SharedReportView'
 import TokenReportView from '../views/SharedReportView/TokenReportView/TokenReportView'
+import MetricsView from '../views/MetricsView/MetricsView'
 
 export const createRoutes = (store) => (
 
@@ -52,6 +53,7 @@ export const createRoutes = (store) => (
       <Route path={PATHS.LOGGEDIN.CHAT} component={ChatView}/>
       <Route path={PATHS.LOGGEDIN.HISTORY} component={HistoryView}/>
       <Route path={PATHS.REPORT_NOT_LOGGEDIN.ROOT} component={SharedReportView}/>
+      <Route path={PATHS.LOGGEDIN.METRICS} components={MetricsView}/>
     </Route>
     <Route path={PATHS.PERSONALBOARD.ROOT} component={PersonalBoardLayout}>
       <Route path={PATHS.PERSONALBOARD.PERSONAL} component={PersonalBoardView}/>

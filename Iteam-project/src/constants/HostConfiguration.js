@@ -61,6 +61,10 @@ export const SLACK = {
   SLACK_IS_GROUP_MEMBER : URL + '/slack/ismember' //NOT USED
 }
 
+export const METRICS = {
+  PIE_CHART_MEETING_BY_OWNER : URL + '/metrics/pie/meetingbyowner'
+}
+
 export const UTILITIES = {
   PROFESSIONS : URL + '/utilities/professions',
   NATIONALITIES : URL + '/utilities/nationality/get'

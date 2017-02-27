@@ -30,6 +30,7 @@ export const PATHS = {
     CHAT: 'chat',
     HISTORY: 'history',
     SLACKUSERSINFO: 'slackusersinfo',
+    METRICS: 'metrics'
   },
   PERSONALBOARD: {
     ROOT: 'member/pboard',
@@ -65,7 +66,8 @@ export const PATHS = {
     PERSONALBOARD: 'application/member/pboard/personal',
     SHAREDBOARD: 'application/member/sboard/shared',
     CHAT: 'application/member/chat',
-    HISTORY: 'application/member/history'
+    HISTORY: 'application/member/history',
+    METRICS: 'application/member/metrics'
 
   },
   SHARED_REPORT: {

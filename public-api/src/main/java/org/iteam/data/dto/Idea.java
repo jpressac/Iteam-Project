@@ -23,6 +23,7 @@ public class Idea {
     private String subtitle;
     private Long left;
     private Long top;
+    private Long insertionDate;
 
     // TODO: check what is better, where do we store the images, in the database
     // or file-system.
@@ -115,6 +116,14 @@ public class Idea {
 
     public void setTop(Long top) {
         this.top = top;
+    }
+
+    public Long getInsertionDate() {
+        return insertionDate;
+    }
+
+    public void setInsertionDate(Long insertionDate) {
+        this.insertionDate = insertionDate;
     }
 
     @Override
