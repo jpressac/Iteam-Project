@@ -230,11 +230,11 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
     }
 
     @Override
-    public MultiGetResponse multiGet(List<String> documentIds) {
+    public MultiGetResponse multiGet(String index, String type, List<String> documentIds) {
         MultiGetRequestBuilder multiGetRequest = client.prepareMultiGet();
 
         for (String documentId : documentIds) {
-            multiGetRequest.add("meeting", "meetingdata", documentId);
+            multiGetRequest.add(index, type, documentId);
         }
 
         return multiGetRequest.execute().actionGet();

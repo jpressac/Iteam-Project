@@ -28,6 +28,13 @@ public class MetricsController {
         return metricsRepository.getPieChartMeetingByOwner(timeframe);
     }
 
+    @RequestMapping(value = "/metrics/pie/ideabyteam", method = RequestMethod.GET)
+    public GoogleChartModel getPieChartIdeasByTeam(
+            @RequestParam(value = "timeframe", defaultValue = "ONE_DAY") Timeframe timeframe) {
+
+        return metricsRepository.getPieChartIdeasByTeam(timeframe);
+    }
+
     @Autowired
     public void setMetricsRepository(MetricsRepositoryImpl metricsRepository) {
         this.metricsRepository = metricsRepository;

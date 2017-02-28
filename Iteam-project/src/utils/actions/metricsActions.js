@@ -8,3 +8,19 @@ export function getPieInformationMeetingByOwner (timeframe){
     }
   })
 }
+
+export function getHistogramInformationIdeasByMeeting(timeframe) {
+  return axios.get(METRICS.HISTOGRAM_IDEAS_BY_MEETING, {
+    params: {
+      timeframe: timeframe
+    }
+  })
+}
+
+export function getPieInformationIdeasByTeam(timeframe){
+  return axios.get(METRICS.PIE_CHART_IDEAS_BY_TEAM, {
+    params: {
+      timeframe: timeframe
+    }
+  })
+}

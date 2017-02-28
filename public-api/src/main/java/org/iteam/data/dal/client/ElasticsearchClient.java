@@ -260,6 +260,6 @@ public interface ElasticsearchClient {
      *            the ids of the documens to get information.
      * @return a multi get response with the information about the request.
      */
-    public MultiGetResponse multiGet(List<String> documentIds);
+    public MultiGetResponse multiGet(String index, String type, List<String> documentIds);
 
 }
