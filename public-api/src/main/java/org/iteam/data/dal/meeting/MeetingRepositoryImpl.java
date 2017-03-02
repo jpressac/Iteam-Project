@@ -392,7 +392,8 @@ public class MeetingRepositoryImpl implements MeetingRepository {
             boolean ended) {
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
-        queryBuilder.must(QueryBuilders.termQuery(MEETING_OWNER_NAME_FIELD, username));
+        // queryBuilder.must(QueryBuilders.termQuery(MEETING_OWNER_NAME_FIELD,
+        // username));
 
         // Add token search
         if (!ObjectUtils.isEmpty(token)) {

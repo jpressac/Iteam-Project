@@ -94,10 +94,14 @@ class RegistrationForm extends React.Component {
     if (canSaveString(this.state.firstName, this.state.lastName, this.state.profession, this.state.username,
         this.state.mail, this.state.hobbies, this.state.nationality)
       && this.validateFields(this.state.password, this.state.repeatPassword)) {
+
       this.setState({showSpinner: true});
+
       submitUser(this.state, this.state.nationality, this.state.profession)
         .then(() => {
+        
           this.props.goToHome()
+
         })
         .catch(() => {
           this.setState({messageModal: 'User cannot be created at this moment, try again later, thanks'});
@@ -217,7 +221,7 @@ class RegistrationForm extends React.Component {
                               onValueChange={this.handleChange.bind(this, 'username')} required
                               onBlur={this.checkUsername.bind(this)}
                               onValueError={this.state.userExists}
-                              maxLength={10}
+                              maxLength={25}
                               onValueError={this.validateMinLength('username',this.state.username)}/>
             </div>
             <div className="row col-md-12">

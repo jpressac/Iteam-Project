@@ -4,6 +4,8 @@ import ReactDom from 'react-dom'
 
 import classes from './D3ChartTree.scss'
 
+
+
 class D3ChartTree extends React.Component {
 
   componentWillReceiveProps(nextProps) {
@@ -36,7 +38,11 @@ class D3ChartTree extends React.Component {
       .attr("width", width +300)
       .attr("height", height)
       .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    console.log("esto es g" + g);
+
+
 
     // x-scale and x-axis
     let experienceName = [""];
@@ -44,10 +50,7 @@ class D3ChartTree extends React.Component {
       return experienceName[d % 6];
     };
 
-    var array = getRankingData =>{
-      return treeData.children.map((value) => (value.children.map((childrenValue) => (childrenValue.value))[0] ))
 
-    }
 
     let xScale = d3.scaleLinear()
       .domain([0, 10]) //d3.max(array(), function(d) { return d })]) //This depends on the max ranking number
@@ -112,29 +115,32 @@ class D3ChartTree extends React.Component {
     // Setup G for every leaf datum.
     let leafNodeG = svg.selectAll("." + classes.j)
       .append("g")
-      .attr("class", classes.j)
-      .attr("transform", "translate(8,-13)");
+      .attr("class", classes.j )
+      .attr("transform", "translate(" + 8 + "," + -13 + ")");
 
-    leafNodeG.append("text")
-      .attr("dy", 19.5)
-      .attr("x", 8)
-      .attr("overflow",'hidden')
-      .attr("color",'black')
-      .style("text-anchor", "start")
-    ;
+    // leafNodeG.append("text")
+    //   .attr("dy", 19.5)
+    //   .attr("x", 8)
+    //   .attr("overflow",'hidden')
+    //   .attr("color",'black')
+    //   .style("text-anchor", "start")
+    // ;
 
     leafNodeG.append("rect")
       .attr("class", classes.shadow)
       .style("fill", function (d) {
         return d.data.color;
       })
-      .attr("width", 2)
+      .attr("width",2)
       .attr("height", 30)
       .attr("rx", 2)
       .attr("ry", 2)
       .transition()
       .duration(800)
-      .attr("width", function (d) {
+      .attr("width", function (d) { console.log(xScale(d.data.value));
+        if (d.data.name=='miscellaneous' ||d.data.name=='all')
+          return 0;
+        else
         return xScale(d.data.value);
       });
 
@@ -149,8 +155,8 @@ class D3ChartTree extends React.Component {
           .html((d.data.name));
       });
       leafNodeG.on("mouseout", function(){
-        div.style("display", "none")
-          .style("visibility","hidden");
+        div.style("display", "none");
+
       });
 
 
@@ -186,9 +192,8 @@ class D3ChartTree extends React.Component {
     // Emphasize the y-axis baseline.
     svg.selectAll("." + classes.grid).select("line")
       .style("stroke-dasharray", "20,1")
-      .style("stroke", "black")
-  .on("mousemove", function(d){
-      div.style("display", "none");});
+      .style("stroke", "black");
+
 
     // The moving ball
     let ballG = svg.insert("g")
