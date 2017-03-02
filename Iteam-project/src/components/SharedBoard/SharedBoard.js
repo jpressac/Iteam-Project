@@ -306,7 +306,7 @@ class SharedBoard extends Component {
           username: this.props.user,
           meetingId: this.props.meetingId
         }
-      }).then(function (reponse) {
+      }).then(function (response) {
         //TODO: see what we do here
       }.bind(this));
     }

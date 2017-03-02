@@ -34,12 +34,12 @@ export default class BootstrapModal extends React.Component {
           <h4 className={classes.overflowAuto}>{this.props.message}</h4>
         </Modal.Body>
         <Modal.Footer>
-
-          <Button onClick={this.closeModal.bind(this)} theme={themeButton}>OK</Button>
+          <Button onClick={this.props.onOk ? this.props.onOk : this.closeModal.bind(this)} theme={themeButton}>OK</Button>
         </Modal.Footer>
       </Modal>);
   }
   }
   BootstrapModal.propTypes ={
-    message: React.PropTypes.string
+    message: React.PropTypes.string,
+    onOk: React.PropTypes.func
 }
