@@ -3,6 +3,7 @@ package org.iteam.data.dal.user;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
@@ -124,7 +125,7 @@ public class UserRepositoryImpl implements UserRepsoitory {
 
     @Override
     public void generateScore(IdeasDTO ideas, List<String> userList) {
-        List<BiFieldModel> dataToUpdate = new ArrayList<>();
+        List<BiFieldModel<String>> dataToUpdate = new ArrayList<>();
         List<String> tags = new ArrayList<>();
 
         for (String userName : userList) {
@@ -146,11 +147,15 @@ public class UserRepositoryImpl implements UserRepsoitory {
             Long totalTags = (long) (tags.size() * 0.2 * 10);
             Long finalScore = partialScore + totalTags;
 
-            BiFieldModel userToUpdate = new BiFieldModel(userName, finalScore.toString());
+            BiFieldModel<String> userToUpdate = new BiFieldModel<String>(userName, finalScore.toString());
             dataToUpdate.add(userToUpdate);
         }
 
-        elasticsearchClient.updateScore(dataToUpdate, StringUtilities.INDEX_USER, StringUtilities.INDEX_TYPE_USER);
+        BulkResponse bulkResponse = elasticsearchClient.updateScore(dataToUpdate, StringUtilities.INDEX_USER, StringUtilities.INDEX_TYPE_USER);
+        
+        if(bulkResponse.hasFailures()){
+        	LOGGER.info("Error in bulk request execution '{}'", bulkResponse.buildFailureMessage());
+        }
 
         LOGGER.info("Updating user score");
         LOGGER.debug("User scores: '{}'", dataToUpdate.toString());

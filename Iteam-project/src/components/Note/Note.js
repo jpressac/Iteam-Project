@@ -189,7 +189,7 @@ Note.propTypes = {
   comments: PropTypes.string,
   title: PropTypes.string,
   tag: PropTypes.string,
-  ranking: PropTypes.string,
+  ranking: PropTypes.number,
   tagMap: PropTypes.any,
   onAddComment: PropTypes.func,
   onRemove: PropTypes.func,

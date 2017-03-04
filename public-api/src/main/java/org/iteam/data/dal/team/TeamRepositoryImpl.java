@@ -34,278 +34,286 @@ import org.springframework.util.ObjectUtils;
 @Repository
 public class TeamRepositoryImpl implements TeamRepository {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TeamRepositoryImpl.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(TeamRepositoryImpl.class);
 
-    private static final String OWNER_NAME_FIELD = "ownerName";
-    private static final String LOGICAL_DELETE_FIELD = "logicalDelete";
-    private static final String TEAM_NAME_FIELD = "name";
-    private static final String TEAM_MEMBERS_FIELD = "members";
-    private static final String USER_USERNAME_FIELD = "username";
-    private static final String BORN_DATE_FIELD = "bornDate";
-    private static final String SCORING_FIELD = "score";
+	private static final String OWNER_NAME_FIELD = "ownerName";
+	private static final String LOGICAL_DELETE_FIELD = "logicalDelete";
+	private static final String TEAM_NAME_FIELD = "name";
+	private static final String TEAM_MEMBERS_FIELD = "members";
+	private static final String USER_USERNAME_FIELD = "username";
+	private static final String BORN_DATE_FIELD = "bornDate";
+	private static final String SCORING_FIELD = "score";
 
-    private ElasticsearchClientImpl elasticsearchClient;
+	private ElasticsearchClientImpl elasticsearchClient;
 
-    @Override
-    public boolean putTeam(Team team) {
+	@Override
+	public boolean putTeam(Team team) {
 
-        // adds creation Date time epoch-millis
-        team.setCreationDate(DateTime.now().getMillis());
-        String data = JSONUtils.ObjectToJSON(team);
+		// adds creation Date time epoch-millis
+		team.setCreationDate(DateTime.now().getMillis());
+		String data = JSONUtils.ObjectToJSON(team);
 
-        IndexResponse response = elasticsearchClient.insertData(data, StringUtilities.INDEX_TEAM,
-                StringUtilities.INDEX_TYPE_TEAM, UUID.randomUUID().toString());
+		IndexResponse response = elasticsearchClient.insertData(data, StringUtilities.INDEX_TEAM,
+				StringUtilities.INDEX_TYPE_TEAM, UUID.randomUUID().toString());
 
-        if (response.isCreated()) {
-            LOGGER.info("Team successfully created");
-            return true;
-        }
-        LOGGER.warn("The team could not be created");
-        return false;
-    }
+		if (response.isCreated()) {
+			LOGGER.info("Team successfully created");
+			return true;
+		}
+		LOGGER.warn("The team could not be created");
+		return false;
+	}
 
-    @Override
-    public boolean deleteTeam(String ownerName, String teamName) {
+	@Override
+	public boolean deleteTeam(String ownerName, String teamName) {
 
-        BoolQueryBuilder query = QueryBuilders.boolQuery();
+		BoolQueryBuilder query = QueryBuilders.boolQuery();
 
-        query.must(QueryBuilders.termQuery(OWNER_NAME_FIELD, ownerName))
-                .must(QueryBuilders.termQuery(TEAM_NAME_FIELD, teamName));
+		query.must(QueryBuilders.termQuery(OWNER_NAME_FIELD, ownerName))
+				.must(QueryBuilders.termQuery(TEAM_NAME_FIELD, teamName));
 
-        SearchResponse searchResponse = elasticsearchClient.search(StringUtilities.INDEX_TEAM, query);
+		SearchResponse searchResponse = elasticsearchClient.search(StringUtilities.INDEX_TEAM, query);
 
-        DeleteResponse deleteResponse = null;
+		DeleteResponse deleteResponse = null;
 
-        if (searchResponse.getHits().getTotalHits() == 1) {
-            deleteResponse = elasticsearchClient.delete(StringUtilities.INDEX_TEAM, StringUtilities.INDEX_TYPE_TEAM,
-                    searchResponse.getHits().getAt(0).getId());
-        }
+		if (searchResponse.getHits().getTotalHits() == 1) {
+			deleteResponse = elasticsearchClient.delete(StringUtilities.INDEX_TEAM, StringUtilities.INDEX_TYPE_TEAM,
+					searchResponse.getHits().getAt(0).getId());
+		}
 
-        if (deleteResponse != null && deleteResponse.isFound()) {
-            LOGGER.info("Team was successfully deleted");
-            return true;
-        }
+		if (deleteResponse != null && deleteResponse.isFound()) {
+			LOGGER.info("Team was successfully deleted");
+			return true;
+		}
 
-        LOGGER.warn("Team could not be deleted");
-        return false;
-    }
+		LOGGER.warn("Team could not be deleted");
+		return false;
+	}
 
-    @Override
-    public List<UserDTO> filterToCreateTeam(FilterList filterList) {
+	@Override
+	public List<UserDTO> filterToCreateTeam(FilterList filterList) {
 
-        List<UserDTO> userList = new ArrayList<>();
+		List<UserDTO> userList = new ArrayList<>();
 
-        SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_USER,
-                applyFiltersToQuery(filterList));
-        if (response.getHits().getTotalHits() > 0) {
-            for (SearchHit hit : response.getHits()) {
-                UserDTO user = (UserDTO) JSONUtils.JSONToObject(hit.getSourceAsString(), UserDTO.class);
-                userList.add(user);
-            }
-        }
+		SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_USER,
+				applyFiltersToQuery(filterList));
+		if (response.getHits().getTotalHits() > 0) {
+			for (SearchHit hit : response.getHits()) {
+				UserDTO user = (UserDTO) JSONUtils.JSONToObject(hit.getSourceAsString(), UserDTO.class);
+				userList.add(user);
+			}
+		}
 
-        return userList;
-    }
+		return userList;
+	}
 
-    @Override
-    public PaginationModel<TeamModel> getTeamsByToken(String ownerName, String token, Integer size, Integer from) {
+	@Override
+	public PaginationModel<TeamModel> getTeamsByToken(String ownerName, String token, Integer size, Integer from) {
 
-        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
-        queryBuilder.must(QueryBuilders.termQuery(OWNER_NAME_FIELD, ownerName));
+		BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+		queryBuilder.must(QueryBuilders.termQuery(OWNER_NAME_FIELD, ownerName));
 
-        if (!ObjectUtils.isEmpty(token)) {
-            queryBuilder.must(QueryBuilders.matchQuery(TEAM_NAME_FIELD, token));
-        }
+		if (!ObjectUtils.isEmpty(token)) {
+			queryBuilder.must(QueryBuilders.matchQuery(TEAM_NAME_FIELD, token));
+		}
 
-        List<TeamModel> teamList = new ArrayList<>();
+		List<TeamModel> teamList = new ArrayList<>();
 
-        try {
+		try {
 
-            SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_TEAM, queryBuilder, size, from);
+			SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_TEAM, queryBuilder, size, from);
 
-            if (response.getHits().getTotalHits() > 0) {
-                for (SearchHit hit : response.getHits()) {
-                    teamList.add(new TeamModel(hit.getId(),
-                            (Team) JSONUtils.JSONToObject(hit.getSourceAsString(), Team.class)));
-                }
-            }
+			if (response.getHits().getTotalHits() > 0) {
+				for (SearchHit hit : response.getHits()) {
+					teamList.add(new TeamModel(hit.getId(),
+							(Team) JSONUtils.JSONToObject(hit.getSourceAsString(), Team.class)));
+				}
+			}
 
-            return new PaginationModel<TeamModel>(response.getHits().getTotalHits(), teamList);
-        } catch (IndexNotFoundException e) {
-            LOGGER.error("Index not found exception - while retrieving teams ", e);
-        }
+			return new PaginationModel<TeamModel>(response.getHits().getTotalHits(), teamList);
+		} catch (IndexNotFoundException e) {
+			LOGGER.error("Index not found exception - while retrieving teams ", e);
+		}
 
-        return new PaginationModel<>(0, teamList);
+		return new PaginationModel<>(0, teamList);
 
-    }
+	}
 
-    @Override
-    public PaginationModel<TeamModel> getTeamsByToken(String ownerName, Integer size, Integer from) {
-        return getTeamsByToken(ownerName, null, size, from);
-    }
+	@Override
+	public PaginationModel<TeamModel> getTeamsByToken(String ownerName, Integer size, Integer from) {
+		return getTeamsByToken(ownerName, null, size, from);
+	}
 
-    @Override
-    public List<TeamModel> getAllTeams(String ownerName) {
-        PaginationModel<TeamModel> paginationModel = getTeamsByToken(ownerName, null, null, null);
-        return paginationModel.getModel();
-    }
+	@Override
+	public List<TeamModel> getAllTeams(String ownerName) {
+		PaginationModel<TeamModel> paginationModel = getTeamsByToken(ownerName, null, null, null);
+		return paginationModel.getModel();
+	}
 
-    @Override
-    public List<String> getTeamByUser(String username, int size, int from) {
-        LOGGER.info("Getting teams by user: '{}'", username);
+	@Override
+	public List<String> getTeamByUser(String username, int size, int from) {
+		LOGGER.info("Getting teams by user: '{}'", username);
 
-        SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_TEAM,
-                QueryBuilders.termQuery(TEAM_MEMBERS_FIELD, username), size, from);
+		SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_TEAM,
+				QueryBuilders.termQuery(TEAM_MEMBERS_FIELD, username), size, from);
 
-        List<String> teamList = new ArrayList<>();
+		List<String> teamList = new ArrayList<>();
 
-        if (response != null) {
-            for (SearchHit hit : response.getHits()) {
-                LOGGER.debug("User '{}' teams: '{}'", username, hit.getSourceAsString());
-                teamList.add(hit.getId());
-                LOGGER.debug("teams: " + hit.getId());
-            }
-        }
-        return teamList;
+		if (response != null) {
+			for (SearchHit hit : response.getHits()) {
+				LOGGER.debug("User '{}' teams: '{}'", username, hit.getSourceAsString());
+				teamList.add(hit.getId());
+				LOGGER.debug("teams: " + hit.getId());
+			}
+		}
+		return teamList;
 
-    }
+	}
 
-    @Override
-    public TeamUserModel getTeamUsersByMeeting(String meetingId) {
-        LOGGER.info("Retrieving team id for meeting '{}'", meetingId);
+	@Override
+	public TeamUserModel getTeamUsersByMeeting(String meetingId) {
+		LOGGER.info("Retrieving team id for meeting '{}'", meetingId);
 
-        GetResponse meetingResponse = elasticsearchClient.getDocument(StringUtilities.INDEX_MEETING,
-                StringUtilities.INDEX_TYPE_MEETING, meetingId);
+		GetResponse meetingResponse = elasticsearchClient.getDocument(StringUtilities.INDEX_MEETING,
+				StringUtilities.INDEX_TYPE_MEETING, meetingId);
 
-        TeamUserModel teamUserModel = new TeamUserModel();
+		TeamUserModel teamUserModel = new TeamUserModel();
 
-        if (meetingResponse.isExists()) {
-            Meeting meeting = (Meeting) JSONUtils.JSONToObject(meetingResponse.getSourceAsString(), Meeting.class);
+		if (meetingResponse.isExists()) {
+			Meeting meeting = (Meeting) JSONUtils.JSONToObject(meetingResponse.getSourceAsString(), Meeting.class);
 
-            LOGGER.debug("Meeting retrieved '{}'", meeting.toString());
+			LOGGER.debug("Meeting retrieved '{}'", meeting.toString());
 
-            GetResponse teamResponse = elasticsearchClient.getDocument(StringUtilities.INDEX_TEAM,
-                    StringUtilities.INDEX_TYPE_TEAM, meeting.getTeamName());
+			GetResponse teamResponse = elasticsearchClient.getDocument(StringUtilities.INDEX_TEAM,
+					StringUtilities.INDEX_TYPE_TEAM, meeting.getTeamName());
 
-            if (teamResponse.isExists()) {
+			if (teamResponse.isExists()) {
 
-                LOGGER.debug("Team retrieved '{}'", teamResponse.toString());
+				LOGGER.debug("Team retrieved '{}'", teamResponse.toString());
 
-                Team team = (Team) JSONUtils.JSONToObject(teamResponse.getSourceAsString(), Team.class);
+				Team team = (Team) JSONUtils.JSONToObject(teamResponse.getSourceAsString(), Team.class);
 
-                teamUserModel.setTeamId(team.getName());
+				teamUserModel.setTeamId(team.getName());
 
-                BoolQueryBuilder query = QueryBuilders.boolQuery();
+				BoolQueryBuilder query = QueryBuilders.boolQuery();
 
-                query.should(QueryBuilders.termsQuery(USER_USERNAME_FIELD, team.getMembers()));
+				query.should(QueryBuilders.termsQuery(USER_USERNAME_FIELD, team.getMembers()));
 
-                // This could change in the future.
-                query.minimumNumberShouldMatch(1);
+				// This could change in the future.
+				query.minimumNumberShouldMatch(1);
 
-                SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_USER, query);
+				SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_USER, query);
 
-                List<UserDTO> usersList = new ArrayList<>();
+				List<UserDTO> usersList = new ArrayList<>();
 
-                if (response.getHits().getTotalHits() > 0) {
+				if (response.getHits().getTotalHits() > 0) {
 
-                    for (SearchHit hit : response.getHits()) {
+					for (SearchHit hit : response.getHits()) {
 
-                        UserDTO user = (UserDTO) JSONUtils.JSONToObject(hit.getSourceAsString(), UserDTO.class);
+						UserDTO user = (UserDTO) JSONUtils.JSONToObject(hit.getSourceAsString(), UserDTO.class);
 
-                        usersList.add(user);
-                    }
-                }
+						usersList.add(user);
+					}
+				}
 
-                teamUserModel.setTeamUsers(usersList);
-            }
-        }
+				teamUserModel.setTeamUsers(usersList);
+			}
+		}
 
-        return teamUserModel;
-    }
+		return teamUserModel;
+	}
 
-    @Override
-    public boolean checkTeamNameExistent(String teamName, String teamOwner) {
+	@Override
+	public boolean checkTeamNameExistent(String teamName, String teamOwner) {
 
-        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+		BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
 
-        queryBuilder.must(QueryBuilders.termQuery(OWNER_NAME_FIELD, teamOwner));
-        queryBuilder.must(QueryBuilders.termQuery(TEAM_NAME_FIELD, teamName));
+		queryBuilder.must(QueryBuilders.termQuery(OWNER_NAME_FIELD, teamOwner));
+		queryBuilder.must(QueryBuilders.termQuery(TEAM_NAME_FIELD, teamName));
 
-        try {
-            SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_TEAM, queryBuilder);
+		try {
+			SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_TEAM, queryBuilder);
 
-            return response.getHits().getTotalHits() > 0;
-        } catch (IndexNotFoundException e) {
-            LOGGER.warn("The team index doesn't exists");
-        }
+			return response.getHits().getTotalHits() > 0;
+		} catch (IndexNotFoundException e) {
+			LOGGER.warn("The team index doesn't exists");
+		}
 
-        return false;
-    }
+		return false;
+	}
 
-    private QueryBuilder applyFiltersToQuery(FilterList filterList) {
-        BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
+	private QueryBuilder applyFiltersToQuery(FilterList filterList) {
+		BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
 
-        for (Filter filter : filterList.getFilters()) {
+		for (Filter filter : filterList.getFilters()) {
 
-            if (filter.getField().equals("Age")) {
+			if (filter.getField().equals("Age")) {
 
-                Long from = new DateTime().minusYears(Integer.parseInt((filter.getValues().get(0)))).getMillis();
-                Long to = new DateTime().minusYears(Integer.parseInt((filter.getValues().get(1)))).getMillis();
+				Long from = new DateTime().minusYears(Integer.parseInt((filter.getValues().get(0)))).getMillis();
+				Long to = new DateTime().minusYears(Integer.parseInt((filter.getValues().get(1)))).getMillis();
 
-                queryBuilder.should(QueryBuilders.rangeQuery(BORN_DATE_FIELD).to(from).from(to));
-            }
+				queryBuilder.should(QueryBuilders.rangeQuery(BORN_DATE_FIELD).to(from).from(to));
+			}
 
-            if (filter.getField().equals("Scoring")) {
+			if (filter.getField().equals("Scoring")) {
 
-                Long from = (long) Integer.parseInt(filter.getValues().get(0));
-                Long to = (long) Integer.parseInt(filter.getValues().get(1));
+				Long from = (long) Integer.parseInt(filter.getValues().get(0));
+				Long to = (long) Integer.parseInt(filter.getValues().get(1));
 
-                queryBuilder.should(QueryBuilders.rangeQuery(SCORING_FIELD).to(to).from(from));
-            }
+				queryBuilder.should(QueryBuilders.rangeQuery(SCORING_FIELD).to(to).from(from));
+			}
 
-            if (filter.getField().equals("Profession") || filter.getField().equals("Nationality")) {
-                queryBuilder
-                        .should(QueryBuilders.termsQuery(filter.getField().toLowerCase(), filter.getValues().get(0)));
-            }
-        }
+			if (filter.getField().equals("Profession") || filter.getField().equals("Nationality")) {
+				queryBuilder
+						.should(QueryBuilders.termsQuery(filter.getField().toLowerCase(), filter.getValues().get(0)));
+			}
+		}
 
-        queryBuilder.must(QueryBuilders.termQuery(LOGICAL_DELETE_FIELD, false));
-        return queryBuilder.minimumNumberShouldMatch(1);
+		queryBuilder.must(QueryBuilders.termQuery(LOGICAL_DELETE_FIELD, false));
+		return queryBuilder.minimumNumberShouldMatch(1);
 
-    }
+	}
 
-    @Override
-    public List<UserDTO> getTeamUsers(String teamId) {
-        List<UserDTO> usersList = new ArrayList<>();
+	@Override
+	public List<UserDTO> getTeamUsers(String teamId) {
+		List<UserDTO> usersList = new ArrayList<>();
 
-        GetResponse teamResponse = elasticsearchClient.getDocument(StringUtilities.INDEX_TEAM,
-                StringUtilities.INDEX_TYPE_TEAM, teamId);
+		GetResponse teamResponse = elasticsearchClient.getDocument(StringUtilities.INDEX_TEAM,
+				StringUtilities.INDEX_TYPE_TEAM, teamId);
 
-        if (teamResponse.isExists()) {
+		if (teamResponse.isExists()) {
 
-            LOGGER.debug("Team retrieved '{}'", teamResponse.toString());
+			LOGGER.debug("Team retrieved '{}'", teamResponse.toString());
 
-            Team team = (Team) JSONUtils.JSONToObject(teamResponse.getSourceAsString(), Team.class);
+			Team team = (Team) JSONUtils.JSONToObject(teamResponse.getSourceAsString(), Team.class);
 
-            BoolQueryBuilder query = QueryBuilders.boolQuery();
-            query.should(QueryBuilders.termsQuery(USER_USERNAME_FIELD, team.getMembers()));
-            // This could change in the future.
-            query.minimumNumberShouldMatch(1);
+			BoolQueryBuilder query = QueryBuilders.boolQuery();
+			query.should(QueryBuilders.termsQuery(USER_USERNAME_FIELD, team.getMembers()));
+			// This could change in the future.
+			query.minimumNumberShouldMatch(1);
 
-            SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_USER, query);
+			SearchResponse response = elasticsearchClient.search(StringUtilities.INDEX_USER, query);
 
-            if (response.getHits().getTotalHits() > 0) {
-                for (SearchHit hit : response.getHits()) {
-                    UserDTO user = (UserDTO) JSONUtils.JSONToObject(hit.getSourceAsString(), UserDTO.class);
-                    usersList.add(user);
-                }
-            }
-        }
-        return usersList;
-    }
+			if (response.getHits().getTotalHits() > 0) {
+				for (SearchHit hit : response.getHits()) {
+					UserDTO user = (UserDTO) JSONUtils.JSONToObject(hit.getSourceAsString(), UserDTO.class);
+					usersList.add(user);
+				}
+			}
+		}
+		return usersList;
+	}
 
-    @Autowired
-    private void setElasticsearchClient(ElasticsearchClientImpl elasticsearchClient) {
-        this.elasticsearchClient = elasticsearchClient;
-    }
+	public List<String> getTeamUsernames(List<UserDTO> teamUsers){
+		List<String> teamUsernames = new ArrayList<>();
+		for(UserDTO user: teamUsers){
+			teamUsernames.add(user.getUsername());
+		}
+		return teamUsernames;
+	}
+	
+	@Autowired
+	private void setElasticsearchClient(ElasticsearchClientImpl elasticsearchClient) {
+		this.elasticsearchClient = elasticsearchClient;
+	}
 }
