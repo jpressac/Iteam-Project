@@ -158,12 +158,8 @@ class SharedBoard extends Component {
   }
 
   renderNotes(noteMap, valueForTagFilter, valueForUserFilter) {
-
-    console.log(noteMap)
-    console.log(valueForTagFilter)
-    console.log(valueForUserFilter)
-
     //First get notes that have the selected tag
+    console.debug(noteMap)
     let filteredNotes = Object.values(noteMap).filter((note) => {
         if (valueForTagFilter === this.state.mapTag[this.state.mapTag.length - 1]) {
 

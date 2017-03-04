@@ -215,23 +215,6 @@ class PersonalBoard extends Component {
 
   }
 
-  renderStarfishGuide(technic) {
-    if (technic == 'Starfish Retrospective') {
-      return (
-        <div>
-          <label className={classes.guide}>
-            <p>GUIDE</p>
-            <p> What should we START doing?</p>
-            <p> What should we STOP doing?</p>
-            <p>What should we KEEP doing?</p>
-            <p>What should we do MORE of?</p>
-            <p>What should we do LESS of?</p>
-          </label>
-        </div>
-      )
-    }
-  }
-
   deleteAll() {
     sendMessage("insertCache", this.props.meetingId, JSON.stringify(
       {
@@ -287,7 +270,6 @@ class PersonalBoard extends Component {
   }
 }
 
-//{this.renderStarfishGuide(this.props.meetingConfiguration.technic)}
 
 PersonalBoard.propTypes = {
   connectDropTarget: PropTypes.func.isRequired,
