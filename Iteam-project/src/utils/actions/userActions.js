@@ -19,6 +19,8 @@ export function submitUser(data, nationality, profession) {
     score: data.score,
     useSlack : data.useSlack
   })
+  
+  
 }
 
 export function updateUser(data, profession) {
