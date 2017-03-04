@@ -32,13 +32,13 @@ class AutocompleteComponent extends React.Component {
       this.setState({error: ''});
     }
     else {
-      this.setState({error: 'You have to select one option of the list'});
+      this.setState({error: '¡You have to select at least one option!'});
     }
   }
 
   render() {
     return (
-      <Autocomplete theme={theme} direction="down" selectedPosition="none" suggestionMatch="anywhere" multiple={false}
+      <Autocomplete theme={theme} direction="down" selectedPosition="below" suggestionMatch="anywhere" multiple={false}
                     onChange={this.handleChange.bind(this, 'value')} label={this.props.label} source={this.props.source}
                     value={this.state.value} disabled={this.state.disabled}
                     error={this.state.error} onBlur={this.handleError.bind(this)}/>

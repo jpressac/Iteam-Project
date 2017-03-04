@@ -244,18 +244,17 @@ class MeetingView extends Component {
           <BootstrapModal ref="meetingModal" message={this.state.message}/>
           <div className={"row " + cssClasses.form}>
             <div className={"row col-md-12 " + cssClasses.paddingInnerElements}>
-              <InputComponent className={"col-md-12 " + cssClasses.paddingInnerElements} label="Topic"
+              <InputComponent className={"col-md-12 " + cssClasses.paddingInnerElements} label="Topic" type="text"
                               value={this.state.topic}
                               onValueChange={this.handleChange.bind(this, 'topic')} maxLength={60}/>
-              <InputComponent className={"col-md-12 " + cssClasses.paddingInnerElements} label="Description"
+              <InputComponent className={"col-md-12 " + cssClasses.paddingInnerElements} label="Description" type="text"
                               maxLength={400}
                               onValueChange={this.handleChange.bind(this, 'description')}
                               value={this.state.description}/>
             </div>
             <div className={"col-md-12 " + cssClasses.paddingInnerElements}>
               <div className={"col-md-4"}>
-                <DatePicker label='Select date' sundayFirstDayOfWeek
-                            onChange={this.dateChange} minDate={new Date()} theme={themeLabel}
+                <DatePicker label='Select date' onChange={this.dateChange} minDate={new Date()} theme={themeLabel}
                             value={this.state.programmedDate}/>
               </div>
               <div className={"col-md-4 "}>
@@ -275,12 +274,7 @@ class MeetingView extends Component {
                              onClick={this.createTeamAction.bind(this)} value="Create Team"/>
 
             <div className={"col-md-12 " + cssClasses.paddingInnerElements}>
-                <div className={"col-md-3 " + cssClasses.labelInfo}>
-                  <TooltipCheckbox label='Use a Slack channel'
-                                   checked={this.state.useSlack}
-                                   onChange={this.handleChange.bind(this, 'useSlack')}
-                                   tooltip='Use a slack channel for meeting updates and communication'/>
-                </div>
+
                 <ButtonComponent className={"col-md-3 "} raisedValue
                                  onClick={this.getSlackInfo.bind(this)} value="Slack info"/>
             </div>
