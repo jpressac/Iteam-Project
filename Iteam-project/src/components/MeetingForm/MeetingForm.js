@@ -11,7 +11,7 @@ import AutocompleteComponent from '../AutocompleteComponent/AutocompleteComponen
 import ButtonComponent from '../ButtonComponent/ButtonComponent'
 import Spinner from '../Spinner/Spinner'
 import {saveMeeting, saveMeetingInfo} from '../../redux/reducers/Meeting/MeetingReducer'
-import {meetingToNewTeam, meetingCreated} from '../../redux/reducers/Meeting/MeetingForTeamReducer'
+import {meetingToNewTeam, meetingCreated, meetingToSlack} from '../../redux/reducers/Meeting/MeetingForTeamReducer'
 import themeLabel from './label.scss'
 import Avatar from 'react-toolbox/lib/avatar'
 import avatarTheme from './avatarTheme.scss'
@@ -31,7 +31,7 @@ const mapDispatchToProps = dispatch => ({
   meetingToCreateNewTeam: () => dispatch(meetingToNewTeam()),
   goToSlackInfo: (meeting) => dispatch(saveMeetingInfo(meeting)),
   home: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HOME)),
-  slackInfo: () => dispatch(push('/' + PATHS.MENULOGGEDIN.SLACKUSERSINFO)),
+  slackInfo: () => dispatch(meetingToSlack()),
   myMeetings: () => dispatch(push('/' + PATHS.MENULOGGEDIN.MYMEETINGS)),
   meetingCreatedok: () => dispatch(meetingCreated())
 });
@@ -113,7 +113,7 @@ class MeetingView extends Component {
 
   componentWillMount() {
 
-    if (this.props.meetingInfoSave != null) {
+    if (this.props.meetingInfoSave != null && this.props.fromMeeting === true) {
       this.setState({
         topic: this.props.meetingInfoSave.topic,
         description: this.props.meetingInfoSave.description,

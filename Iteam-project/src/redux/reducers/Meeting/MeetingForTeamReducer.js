@@ -5,6 +5,7 @@ import {PATHS} from '../../../constants/routes';
 export const MEETING_NEW_TEAM = 'MEETING_NEW_TEAM';
 export const NEW_TEAM_OR_MEETING = 'NEW_TEAM_OR_MEETING';
 export const CLEAN_MEETING_INFO = 'CLEAN_MEETING_INFO';
+export const MEETING_SLACK= 'MEETING_SLACK';
 
 export const meetingToNewTeam = () => {
   return function (dispatch) {
@@ -13,9 +14,19 @@ export const meetingToNewTeam = () => {
   }
 };
 
+export const meetingToSlack=()=>{
+  return function (dispatch) {
+    dispatch(fromSlack());
+    dispatch(push('/' + PATHS.MENULOGGEDIN.SLACKUSERSINFO));
+  }
+};
+
+
 export default function meetingForTeamReducer(state = null, action) {
   switch (action.type) {
     case MEETING_NEW_TEAM:
+      return true;
+    case MEETING_SLACK:
       return true;
     case NEW_TEAM_OR_MEETING:
       return false;
@@ -31,3 +42,4 @@ export default function meetingForTeamReducer(state = null, action) {
 export const createTeam = createAction(MEETING_NEW_TEAM);
 export const fromMeetingOrTeam = createAction(NEW_TEAM_OR_MEETING);
 export const meetingCreated = createAction(CLEAN_MEETING_INFO);
+export const fromSlack = createAction(MEETING_SLACK);
