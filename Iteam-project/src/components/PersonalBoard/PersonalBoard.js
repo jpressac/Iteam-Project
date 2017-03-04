@@ -276,6 +276,7 @@ class PersonalBoard extends Component {
           </NavDrawer>
           <Panel>
             <div name="Notes container" className={classes.noteContainer}>
+              {this.renderStarfishGuide(this.props.meetingConfiguration.technic)}
               {this.renderNotes(this.state.notes, this.state.tagName)}
             </div>
           </Panel>
@@ -287,7 +288,6 @@ class PersonalBoard extends Component {
   }
 }
 
-//{this.renderStarfishGuide(this.props.meetingConfiguration.technic)}
 
 PersonalBoard.propTypes = {
   connectDropTarget: PropTypes.func.isRequired,

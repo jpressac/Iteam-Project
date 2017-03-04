@@ -228,13 +228,13 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
     }
 
     @Override
-    public BulkResponse updateScore(@SuppressWarnings("rawtypes") List<BiFieldModel> data, String index, String type) {
+    public BulkResponse updateScore(List<BiFieldModel<String>> data, String index, String type) {
         List<UpdateRequest> updateList = new ArrayList<>();
 
         data.forEach((dataToUpdate) -> {
 
             UpdateRequest updateRequest = new UpdateRequest(index, type, dataToUpdate.getKey());
-            updateRequest.script(getScript(Double.parseDouble((String) dataToUpdate.getValue())));
+            updateRequest.script(getScript(Double.parseDouble(dataToUpdate.getValue())));
             updateList.add(updateRequest);
         });
 

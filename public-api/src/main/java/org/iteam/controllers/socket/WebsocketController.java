@@ -47,7 +47,7 @@ public class WebsocketController {
             meetingService.saveMeetingInfoPersonalBoard(message.getTopic(), payload);
             break;
         case UPDATE_SHARED_BOARD_CACHE:
-            meetingService.saveMeetingInfoPersonalBoard(message.getTopic(), payload);
+            meetingService.updateSharedBoardCache(message.getTopic(), payload);
             break;
         case UPDATE_DELETE_CACHE:
             meetingService.removeIdeasFromCacheSharedBoard(message.getTopic(), payload);

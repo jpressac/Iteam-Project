@@ -27,7 +27,7 @@ const mapStateToProps = (state) => {
   if (state.loginUser !== null) {
     return {
       user: state.loginUser.user.username,
-      fromMeeting: state.meetingForTeamReducer,
+      fromMeeting: state.meetingForTeamReducer
     }
   }
 };

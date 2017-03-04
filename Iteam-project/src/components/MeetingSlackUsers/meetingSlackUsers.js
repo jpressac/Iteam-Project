@@ -36,10 +36,34 @@ class MeetingSlackUsers extends Component {
     });
   }
 
+  renderUsers(){
+    let slackUsers = this.state.slackUsersList;
+    if (slackUsers != null) {
+      slackUsers.map((key) => {
+        return (
+          <ListItem
+            caption={key}
+            rightIcon='person'/>
+        );
+      })
+    }
+  }
+
+  renderNonSlack(){
+    let nonSlackUsers = this.state.nonSlackUsers;
+    if(nonSlackUsers != null){
+      nonSlackUsers.map((key) => {
+        return (
+          <ListItem
+            caption={key}
+            rightIcon='person'/>
+        );
+      })
+    }
+  }
+
   render() {
     if(!this.state.showSpinner) {
-      let slackUsers = this.state.slackUsersList;
-      let nonSlackUsers = this.state.nonSlackUsers;
       return (
         <div className={"container " + cssClasses.containerForm}>
           <div className={cssClasses.labelMainTitle}>
@@ -50,26 +74,14 @@ class MeetingSlackUsers extends Component {
                   <label>Users in Slack group</label>
                   <List selectable ripple>
                     <ListSubHeader />
-                    {slackUsers.map((key) => {
-                      return (
-                        <ListItem
-                          caption={key}
-                          rightIcon='person'/>
-                      );
-                    })}
+                    {this.renderUsers()}
                   </List>
                 </div>
                 <div className="col-md-6">
                   <label>Users not in Slack group</label>
                   <List selectable ripple>
                     <ListSubHeader />
-                    {nonSlackUsers.map((key) => {
-                      return (
-                        <ListItem
-                          caption={key}
-                          rightIcon='person'/>
-                      );
-                    })}
+                    {this.renderNonSlack()}
                   </List>
                   <div>
                   </div>
