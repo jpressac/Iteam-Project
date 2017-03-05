@@ -24,52 +24,49 @@ class Scamper extends Component {
 
   render() {
     return (
-      <div >
-        <div className="row">
+      <div className="container" >
           <div className={classes.square}>
             <div className={classes.content}>
               <label className={classes.letter}>S</label>
-              <label>(substitute)</label>
+              <label className={classes.letterRetro} >(substitute)</label>
               {this.props.renderNotes(this.state.notes, 'substitute', this.props.user)}
             </div>
           </div>
           <div className={classes.square}>
             <div className={classes.content}>
               <label className={classes.letter}>C</label>
-              <label>(combine)</label>
+              <label className={classes.letterRetro}>(combine)</label>
               {this.props.renderNotes(this.state.notes, 'combine', this.props.user)}
             </div>
           </div>
-        </div>
-        <div className="row">
+
           <div className={classes.squareMiddle}>
             <div className={classes.content}>
               <label className={classes.letter}>A </label>
-              <label>(adapt)</label>
+              <label className={classes.letterRetro}>(adapt)</label>
               {this.props.renderNotes(this.state.notes, 'adapt', this.props.user)}
             </div>
           </div>
           <div className={classes.squareMiddle}>
             <div className={classes.content}>
               <label className={classes.letter}>M </label>
-              <label>(modify)</label>
+              <label className={classes.letterRetro}>(modify)</label>
               {this.props.renderNotes(this.state.notes, 'modify', this.props.user)}
             </div>
           </div>
           <div className={classes.squareMiddle}>
             <div className={classes.content}>
               <label className={classes.letter}>P </label>
-              <label>(put to other use)</label>
+              <label className={classes.letterRetro}>(put to other use)</label>
               {this.props.renderNotes(this.state.notes, 'put to others use', this.props.user)}
 
             </div>
           </div>
-        </div>
-        <div className="row">
+
           <div className={classes.square}>
             <div className={classes.content}>
               <label className={classes.letter}>E </label>
-              <label>(eliminate)</label>
+              <label className={classes.letterRetro}>(eliminate)</label>
               {this.props.renderNotes(this.state.notes, 'eliminate', this.props.user)}
 
             </div>
@@ -77,12 +74,11 @@ class Scamper extends Component {
           <div className={classes.square}>
             <div className={classes.content}>
               <label className={classes.letter}>R </label>
-              <label>(rearrange)</label>
+              <label className={classes.letterRetro}>(rearrange)</label>
               {this.props.renderNotes(this.state.notes, 'rearrange', this.props.user)}
 
             </div>
           </div>
-        </div>
       </div>)
   }
 }

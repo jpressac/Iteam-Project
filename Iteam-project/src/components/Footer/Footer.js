@@ -4,7 +4,7 @@ import facebook from './image/facebook.png'
 import twitter from './image/twitter.png'
 import google from './image/google.png'
 import mail from './image/mail.png'
-import logo from './image/iteamLogo.jpg'
+import logo from './image/LogoBordo.png'
 import slack from './image/slack.png'
 
 class Footer extends React.Component {

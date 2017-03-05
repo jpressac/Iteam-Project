@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import logo from '../image/iteamLogo.jpg'
+import logo from '../image/LogoBordo.png'
 import {PATHS} from '../../../constants/routes'
 import AppBar from 'react-toolbox/lib/app_bar'
 import Navigation from 'react-toolbox/lib/navigation'

@@ -13,7 +13,7 @@ import {MEETING} from '../../constants/HostConfiguration'
 import generateUUID from '../../constants/utils/GetUUID'
 import {userConnection} from '../../redux/reducers/Meeting/MeetingUserConnected'
 import {Layout, NavDrawer, Panel, Sidebar} from 'react-toolbox'
-import logo from '../Header/image/iteamLogo.jpg'
+import logo from '../Header/image/LogoBordo.png'
 import {PATHS} from '../../constants/routes'
 import {push} from 'react-router-redux'
 import navTheme from './NavDrawer.scss'
@@ -255,14 +255,15 @@ class PersonalBoard extends Component {
     return this.props.connectDropTarget(
       <div name="Personal Board Component" className={classes.board}>
         <Layout >
-          <NavDrawer active={true} pinned={true} permanentAt='lg' theme={navTheme}>
-            <div style={{background: 'white', width: '100%'}}><img src={logo} style={{
+          <NavDrawer active={true}
+                     pinned={true} permanentAt='lg' theme={navTheme}>
+            <div>
+              <img style={{
               height: '10%',
               width: '50%',
-              marginLeft: '20%'
-            }} onClick={this.props.home}/>
-             </div>
-            <MenuItem value='meetingTopic' caption={this.props.meetingTopic.toUpperCase()} theme={menuItemTheme} disabled={true} />
+              marginLeft: '20%'}}src={logo} onClick={this.props.home}/>
+            </div>
+
             <label className={cssClasses.labelBoards}>
               PERSONAL BOARD
             </label>

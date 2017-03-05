@@ -49,7 +49,7 @@ class D3ChartTree extends React.Component {
 
     // declares a tree layout and assigns the size
     let tree = d3.cluster()                 // This D3 API method setup the Dendrogram datum position.
-      .size([height, width - 600])    // Total width - bar chart width = Dendrogram chart width
+      .size([height-300, width - 600])    // Total width - bar chart width = Dendrogram chart width
       .separation(function separate(a, b) {
         return a.parent == b.parent            // 2 levels tree grouping for category
         || a.parent.parent == b.parent

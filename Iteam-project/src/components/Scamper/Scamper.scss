@@ -5,7 +5,9 @@
   padding-bottom: 40%; /* = width for a 1:1 aspect ratio */
   margin:0.5%;
   overflow:hidden;
-  text-align:center;
+  display:inline-block;
+
+
 
 
 }
@@ -16,7 +18,8 @@
   padding-bottom: 40%; /* = width for a 1:1 aspect ratio */
   margin:0.4%;
   overflow:hidden;
-  text-align:center;
+  display:inline-block;
+
 
 
 }
@@ -40,12 +43,6 @@
 
 }
 .letterRetro {
-  font-size: 40px;
+  color:white;
   align-items: center;
-}
-@media only screen and (max-width: 479px){
-  .square { width: 90%; }
-}
-@media only screen and (max-width: 479px){
-  .squareMiddle { width: 90%; }
 }
