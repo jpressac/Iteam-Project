@@ -24,6 +24,7 @@ import org.iteam.data.dal.client.ElasticsearchClientImpl;
 import org.iteam.data.dal.team.TeamRepository;
 import org.iteam.data.dto.Idea;
 import org.iteam.data.dto.Meeting;
+import org.iteam.data.dto.UserDTO;
 import org.iteam.data.dto.ViewedMeeting;
 import org.iteam.data.model.BiFieldModel;
 import org.iteam.data.model.IdeasDTO;
@@ -393,7 +394,6 @@ public class MeetingRepositoryImpl implements MeetingRepository {
             boolean ended) {
 
         BoolQueryBuilder queryBuilder = QueryBuilders.boolQuery();
-        queryBuilder.must(QueryBuilders.termQuery(MEETING_OWNER_NAME_FIELD, username));
 
         // Add token search
         if (!ObjectUtils.isEmpty(token)) {
@@ -411,10 +411,16 @@ public class MeetingRepositoryImpl implements MeetingRepository {
                 from, SortBuilders.fieldSort(PROGRAMMED_DATE_FIELD).order(SortOrder.DESC));
 
         List<Meeting> meetings = new ArrayList<>();
-
+        List<String> members = new ArrayList<>();
+        
         if (response.getHits().getTotalHits() > 0) {
             for (SearchHit hit : response.getHits()) {
-                meetings.add((Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class));
+            	Meeting meeting = (Meeting) JSONUtils.JSONToObject(hit.getSourceAsString(), Meeting.class);
+            	members = teamRepository.getTeamUsernames(teamRepository.getTeamUsersByMeeting(meeting.getMeetingId()).getTeamUsers());
+            	
+            	if(members.contains(username)){
+            		meetings.add(meeting);
+            	}
             }
 
         }
@@ -592,6 +598,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         }
     }
 
+   
     @Autowired
     public void setTeamRepository(TeamRepository teamRepository) {
         this.teamRepository = teamRepository;

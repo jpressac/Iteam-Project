@@ -20,6 +20,7 @@ import navTheme from './NavDrawer.scss'
 import {MenuItem, MenuDivider} from 'react-toolbox/lib/menu'
 import Chat from '../Chat/Chat'
 import Modal from '../BootstrapModal/BootstrapModal'
+import menuItemTheme from '../PersonalBoard/menuItem.scss'
 
 const NoteTarget = {
   drop(props, monitor, component) {
@@ -41,6 +42,7 @@ const mapDispatchToProps = (dispatch) => ({
 const mapStateToProps = (state) => {
   return {
     user: state.loginUser.user.username,
+    meetingTopic: state.myMeetingReducer.topic,
     meetingId: state.myMeetingReducer.meetingId,
     connected: state.meetingUser,
     meetingConfiguration: state.myMeetingReducer.meetingConfig
@@ -253,12 +255,14 @@ class PersonalBoard extends Component {
     return this.props.connectDropTarget(
       <div name="Personal Board Component" className={classes.board}>
         <Layout >
-          <NavDrawer active={true}
-                     pinned={true} permanentAt='lg' theme={navTheme}>
-            <div>
-              <img className={cssClasses.imageAvatar} src={logo} onClick={this.props.home}/>
-            </div>
-
+          <NavDrawer active={true} pinned={true} permanentAt='lg' theme={navTheme}>
+            <div style={{background: 'white', width: '100%'}}><img src={logo} style={{
+              height: '10%',
+              width: '50%',
+              marginLeft: '20%'
+            }} onClick={this.props.home}/>
+             </div>
+            <MenuItem value='meetingTopic' caption={this.props.meetingTopic.toUpperCase()} theme={menuItemTheme} disabled={true} />
             <label className={cssClasses.labelBoards}>
               PERSONAL BOARD
             </label>
@@ -276,6 +280,7 @@ class PersonalBoard extends Component {
           </NavDrawer>
           <Panel>
             <div name="Notes container" className={classes.noteContainer}>
+              {this.renderStarfishGuide(this.props.meetingConfiguration.technic)}
               {this.renderNotes(this.state.notes, this.state.tagName)}
             </div>
           </Panel>
@@ -287,7 +292,6 @@ class PersonalBoard extends Component {
   }
 }
 
-//{this.renderStarfishGuide(this.props.meetingConfiguration.technic)}
 
 PersonalBoard.propTypes = {
   connectDropTarget: PropTypes.func.isRequired,
@@ -296,6 +300,7 @@ PersonalBoard.propTypes = {
   sharedBoard: PropTypes.func,
   user: PropTypes.any,
   meetingId: PropTypes.string,
+  meetingTopic: PropTypes.string,
   connected: PropTypes.bool,
   meetingConfiguration: PropTypes.any,
   meeting: PropTypes.func

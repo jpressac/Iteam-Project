@@ -11,7 +11,7 @@ import AutocompleteComponent from '../AutocompleteComponent/AutocompleteComponen
 import ButtonComponent from '../ButtonComponent/ButtonComponent'
 import Spinner from '../Spinner/Spinner'
 import {saveMeeting, saveMeetingInfo} from '../../redux/reducers/Meeting/MeetingReducer'
-import {meetingToNewTeam, meetingCreated} from '../../redux/reducers/Meeting/MeetingForTeamReducer'
+import {meetingToNewTeam, meetingCreated, meetingToSlack} from '../../redux/reducers/Meeting/MeetingForTeamReducer'
 import themeLabel from './label.scss'
 import Avatar from 'react-toolbox/lib/avatar'
 import avatarTheme from './avatarTheme.scss'
@@ -31,7 +31,7 @@ const mapDispatchToProps = dispatch => ({
   meetingToCreateNewTeam: () => dispatch(meetingToNewTeam()),
   goToSlackInfo: (meeting) => dispatch(saveMeetingInfo(meeting)),
   home: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HOME)),
-  slackInfo: () => dispatch(push('/' + PATHS.MENULOGGEDIN.SLACKUSERSINFO)),
+  slackInfo: () => dispatch(meetingToSlack()),
   myMeetings: () => dispatch(push('/' + PATHS.MENULOGGEDIN.MYMEETINGS)),
   meetingCreatedok: () => dispatch(meetingCreated())
 });
@@ -113,7 +113,7 @@ class MeetingView extends Component {
 
   componentWillMount() {
 
-    if (this.props.meetingInfoSave != null) {
+    if (this.props.meetingInfoSave != null && this.props.fromMeeting === true) {
       this.setState({
         topic: this.props.meetingInfoSave.topic,
         description: this.props.meetingInfoSave.description,
@@ -244,18 +244,17 @@ class MeetingView extends Component {
           <BootstrapModal ref="meetingModal" message={this.state.message}/>
           <div className={"row " + cssClasses.form}>
             <div className={"row col-md-12 " + cssClasses.paddingInnerElements}>
-              <InputComponent className={"col-md-12 " + cssClasses.paddingInnerElements} label="Topic"
+              <InputComponent className={"col-md-12 " + cssClasses.paddingInnerElements} label="Topic" type="text"
                               value={this.state.topic}
                               onValueChange={this.handleChange.bind(this, 'topic')} maxLength={60}/>
-              <InputComponent className={"col-md-12 " + cssClasses.paddingInnerElements} label="Description"
+              <InputComponent className={"col-md-12 " + cssClasses.paddingInnerElements} label="Description" type="text"
                               maxLength={400}
                               onValueChange={this.handleChange.bind(this, 'description')}
                               value={this.state.description}/>
             </div>
             <div className={"col-md-12 " + cssClasses.paddingInnerElements}>
               <div className={"col-md-4"}>
-                <DatePicker label='Select date' sundayFirstDayOfWeek
-                            onChange={this.dateChange} minDate={new Date()} theme={themeLabel}
+                <DatePicker label='Select date' onChange={this.dateChange} minDate={new Date()} theme={themeLabel}
                             value={this.state.programmedDate}/>
               </div>
               <div className={"col-md-4 "}>
@@ -273,19 +272,17 @@ class MeetingView extends Component {
             </div>
             <ButtonComponent className={"col-md-4 " + cssClasses.paddingInnerElements} raisedValue
                              onClick={this.createTeamAction.bind(this)} value="Create Team"/>
-
             <div className={"col-md-12 " + cssClasses.paddingInnerElements}>
-                <div className={"col-md-3 " + cssClasses.labelInfo}>
-                  <TooltipCheckbox label='Use a Slack channel'
-                                   checked={this.state.useSlack}
-                                   onChange={this.handleChange.bind(this, 'useSlack')}
-                                   tooltip='Use a slack channel for meeting updates and communication'/>
-                </div>
+              <div className={"col-md-3 " + cssClasses.labelInfo}>
+                <TooltipCheckbox label='Use a Slack channel'
+                                 checked={this.state.useSlack}
+                                 onChange={this.handleChange.bind(this, 'useSlack')}
+                                 tooltip='Use a slack channel for meeting updates and communication'/>
+              </div>
                 <ButtonComponent className={"col-md-3 "} raisedValue
                                  onClick={this.getSlackInfo.bind(this)} value="Slack info"/>
             </div>
                 <MeetingConfigForm onSetConfig={this.handleConfigChange.bind(this)}/>
-
               <div className={"col-md-12 " + cssClasses.paddingInnerElements}>
                 <ButtonComponent className="col-md-6" onClick={this.props.home} iconButton="navigate_before"
                                  value="Cancel"/>

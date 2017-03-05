@@ -17,6 +17,8 @@ import {
   postReportIntoSlack
 } from '../../utils/actions/reportActions'
 
+
+
 const mapStateToProps = (state) => {
   return {
     user: state.loginUser.user.username,
@@ -104,7 +106,7 @@ class ReportsPageForm extends Component {
     this.postSharedBasicReport('Report By Ranking')
   };
 
-  postSharedBasicReport(reportName){
+  postSharedBasicReport(reportName) {
     postReportIntoSlack(this.props.meetingConfiguration.meetingId, this.props.meetingConfiguration.topic, reportName)
       .catch((response) => {
         //TODO: we don't need the 'then' promise we need to do something here
@@ -113,11 +115,13 @@ class ReportsPageForm extends Component {
 
   renderTrees() {
     if (this.props.reportType == 'byranking') {
-      console.log(this.state.treeData)
       return (
-        <D3ChartTree treeData={this.state.treeData}/>
+
+        <D3ChartTree treeData={this.state.treeData} />
       )
     } else {
+      
+
       return (
         <D3Tree treeData={this.state.treeData} technic={this.props.meetingConfiguration.meetingConfig.technic}
                 type={this.props.reportType}/>
@@ -146,7 +150,7 @@ class ReportsPageForm extends Component {
           className={classes.title}> {
           this.props.reportType == 'byuser' ?
             'Report By User' : this.props.reportType == 'byranking' ?
-              'Report by Ranking' : this.props.reportType == 'bytag' ? 'Report by Tag' : 'Report By Mix Meetings'
+            'Report by Ranking' : this.props.reportType == 'bytag' ? 'Report by Tag' : 'Report By Mix Meetings'
         }
         </label>
         {this.generateReport(this.props.reportType)}

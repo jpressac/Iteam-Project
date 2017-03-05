@@ -114,4 +114,11 @@ public interface TeamRepository {
      * @return
      */
     public List<UserDTO> getTeamUsers(String teamId);
+    
+    /**
+     * 
+     * @param teamUsers
+     * @return
+     */
+    public List<String> getTeamUsernames(List<UserDTO> teamUsers);
 }

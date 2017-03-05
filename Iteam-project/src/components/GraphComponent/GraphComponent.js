@@ -81,8 +81,6 @@ class GraphComponent extends React.Component {
       chartData.push([chartInfo.labelChart, chartInfo.amount])
     })
 
-    console.log(chartData)
-
     this.setState({[chart]: chartData, showSpinner: false})
   }
 
