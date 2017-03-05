@@ -60,7 +60,7 @@ class ProfileForm extends React.Component {
           username: response.data.username,
           nationality: response.data.nationality,
           profession: response.data.profession,
-          score: 0 //response.data.score.toString()
+          score: response.data.score.toString()
         })
       })
   }

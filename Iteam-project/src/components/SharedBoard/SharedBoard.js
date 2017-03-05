@@ -25,6 +25,7 @@ import Scamper from '../Scamper/Scamper'
 import {meetingsVotes} from '../../redux/reducers/Meeting/MeetingVotesReducer'
 import StarfishRetro from '../StarfishRetro/StarfishRetro'
 import {saveMeetingInfoForReports} from '../../redux/reducers/Report/ReportConfigReducer'
+import menuItemTheme from '../SharedBoard/menuItem.scss'
 
 const NoteTarget = {
   drop(props, monitor, component) {
@@ -39,6 +40,7 @@ const NoteTarget = {
 const mapStateToProps = (state) => {
   return {
     meetingId: state.myMeetingReducer.meetingId,
+    meetingTopic: state.myMeetingReducer.topic,
     connected: state.meetingUser,
     user: state.loginUser.user.username,
     meetingConfiguration: state.myMeetingReducer.meetingConfig,
@@ -505,13 +507,14 @@ class SharedBoard extends Component {
       <div className={classes.board} name="Shared Board Component">
         <Layout>
           <NavDrawer active={true}
-                     pinned={true} permanentAt='lg' theme={navTheme}>
-            <div ><img src={logo} style={{
+                     pinned={true}  theme={navTheme}>
+            <div><img src={logo} style={{
               height: '10%',
               width: '50%',
               marginLeft: '20%'
             }} onClick={this.props.home}/>
             </div>
+            <MenuItem value='meetingTopic' caption={this.props.meetingTopic.toUpperCase()} theme={menuItemTheme} disabled={true} />
             <label className={classes.label1}>SHARED BOARD</label>
             <MenuItem value='personalBoard' icon='people'
                       caption='Personal Board' onClick={this.goToPersonal.bind(this)}/>
@@ -558,6 +561,7 @@ SharedBoard.propTypes = {
   meetingEndingDate: PropTypes.any,
   meetingOwner: PropTypes.string,
   meetingsVotesUpdate: PropTypes.any,
+  meetingTopic: PropTypes.any,
   votes: PropTypes.func,
   saveReportInformation: PropTypes.func
 };

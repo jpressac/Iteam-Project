@@ -8,6 +8,7 @@ import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.iteam.configuration.ExternalConfigurationProperties;
@@ -221,7 +222,8 @@ public class TeamRepositoryImplTest {
     }
 
     private void thenVerifySearchCall(int times) {
-        Mockito.verify(elasticsearchClientImpl, Mockito.times(times)).search(Mockito.anyString(), Mockito.anyObject());
+        Mockito.verify(elasticsearchClientImpl, Mockito.times(times)).search(Mockito.anyString(),
+                (QueryBuilder) Mockito.anyObject());
     }
 
     private void thenVerifyGetTeamCall(int times) {
@@ -341,7 +343,8 @@ public class TeamRepositoryImplTest {
         Mockito.when(hitIterator.next()).thenReturn(hit);
         Mockito.when(hit.getSourceAsString()).thenReturn(jsonRepresentation);
 
-        Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
+        Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), (QueryBuilder) Mockito.anyObject()))
+                .thenReturn(response);
     }
 
     private void givenAnElasticsearchSearchResponseOk(String jsonRepresentation, long totalHits) {
@@ -378,7 +381,8 @@ public class TeamRepositoryImplTest {
         Mockito.when(searchHits.getAt(0)).thenReturn(hit);
         Mockito.when(hit.getId()).thenReturn("12345-abcde");
 
-        Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
+        Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), (QueryBuilder) Mockito.anyObject()))
+                .thenReturn(response);
 
         DeleteResponse deleteResponse = Mockito.mock(DeleteResponse.class);
 
@@ -400,7 +404,8 @@ public class TeamRepositoryImplTest {
         Mockito.when(searchHits.getAt(0)).thenReturn(hit);
         Mockito.when(hit.getId()).thenReturn("12345-abcde");
 
-        Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
+        Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), (QueryBuilder) Mockito.anyObject()))
+                .thenReturn(response);
 
         ReflectionTestUtils.setField(underTest, "elasticsearchClient", elasticsearchClientImpl);
     }
@@ -415,7 +420,8 @@ public class TeamRepositoryImplTest {
         Mockito.when(searchHits.getAt(0)).thenReturn(hit);
         Mockito.when(hit.getId()).thenReturn("12345-abcde");
 
-        Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
+        Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), (QueryBuilder) Mockito.anyObject()))
+                .thenReturn(response);
 
         DeleteResponse deleteResponse = Mockito.mock(DeleteResponse.class);
 

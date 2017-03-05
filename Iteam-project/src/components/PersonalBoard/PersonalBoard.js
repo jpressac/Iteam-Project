@@ -20,6 +20,7 @@ import navTheme from './NavDrawer.scss'
 import {MenuItem, MenuDivider} from 'react-toolbox/lib/menu'
 import Chat from '../Chat/Chat'
 import Modal from '../BootstrapModal/BootstrapModal'
+import menuItemTheme from '../PersonalBoard/menuItem.scss'
 
 const NoteTarget = {
   drop(props, monitor, component) {
@@ -41,6 +42,7 @@ const mapDispatchToProps = (dispatch) => ({
 const mapStateToProps = (state) => {
   return {
     user: state.loginUser.user.username,
+    meetingTopic: state.myMeetingReducer.topic,
     meetingId: state.myMeetingReducer.meetingId,
     connected: state.meetingUser,
     meetingConfiguration: state.myMeetingReducer.meetingConfig
@@ -299,6 +301,7 @@ PersonalBoard.propTypes = {
   sharedBoard: PropTypes.func,
   user: PropTypes.any,
   meetingId: PropTypes.string,
+  meetingTopic: PropTypes.string,
   connected: PropTypes.bool,
   meetingConfiguration: PropTypes.any,
   meeting: PropTypes.func

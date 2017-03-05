@@ -1,22 +1,11 @@
 import React, {Component, PropTypes} from 'react';
 import * as d3 from 'd3'
 import ReactDom from 'react-dom'
-import d3tip from 'd3-tip'
-
-
-
-
-
 import classes from './D3ChartTree.scss'
 
 class D3ChartTree extends React.Component {
 
   componentWillReceiveProps(nextProps) {
-
-    console.log('puto pase por aca')
-    console.log(nextProps)
-    console.log(this.props)
-
     if (nextProps.treeData != this.props.treeData) {
       this.renderTree(nextProps.treeData, ReactDom.findDOMNode(this));
     }
@@ -28,7 +17,6 @@ class D3ChartTree extends React.Component {
       <svg/>
     );
   } ;
-
 
   renderTree(treeData, svgDomNode) {
 
@@ -59,7 +47,7 @@ class D3ChartTree extends React.Component {
       .range([0, 500]);
 
 
-// declares a tree layout and assigns the size
+    // declares a tree layout and assigns the size
     let tree = d3.cluster()                 // This D3 API method setup the Dendrogram datum position.
       .size([height-300, width - 600])    // Total width - bar chart width = Dendrogram chart width
       .separation(function separate(a, b) {
@@ -75,7 +63,7 @@ class D3ChartTree extends React.Component {
 
     tree(root);
 
-     var div = d3.select("body").append("div").classed(classes.toolTip, true).style("opacity", 0);
+    var div = d3.select("body").append("div").classed(classes.toolTip, true).style("opacity", 0);
 
 
     let link = svg.selectAll("." + classes.link)
@@ -110,18 +98,12 @@ class D3ChartTree extends React.Component {
       .attr("class", classes.j)
       .attr("transform", "translate(8,-13)")
 
-
-
-
-
-
     leafNodeG.append("text")
       .attr("dy", 19.5)
       .attr("x", 8)
       .attr("overflow", 'hidden')
       .attr("color", 'black')
       .style("text-anchor", "start");
-
 
 
     leafNodeG.append("rect")
@@ -135,8 +117,9 @@ class D3ChartTree extends React.Component {
       .attr("ry", 2)
       .transition()
       .duration(800)
-      .attr("width", function (d) { console.log( d.data.name, xScale(d.data.value));
-        if (d.data.name=='miscellaneous' || d.data.name=='all')
+      .attr("width", function (d) {
+        console.log(d.data.name, xScale(d.data.value));
+        if (d.data.name == 'miscellaneous' || d.data.name == 'all')
           return 0;
         else
           return xScale(d.data.value);
@@ -144,43 +127,32 @@ class D3ChartTree extends React.Component {
 
     leafNodeG.selectAll("rect")
       .on("mouseover", mouseover)
-      .on("mousemove", function(d){mousemove(d);})
+      .on("mousemove", function (d) {
+        mousemove(d);
+      })
       .on("mouseout", mouseout);
 
-    function mousemove(d){
+    function mousemove(d) {
       div
-        .text( d.data.name )
+        .text(d.data.name)
         .style("left", d3.event.pageX - 100 + "px")
-          .style("top", d3.event.pageY - 70 + "px")
+        .style("top", d3.event.pageY - 70 + "px")
         .style("width", "400px")
-       .style("font-size", "smaller");
+        .style("font-size", "smaller");
 
     }
+
     function mouseover() {
       div.transition()
         .duration(300)
         .style("opacity", 1);
     }
+
     function mouseout() {
       div.transition()
         .duration(300)
         .style("opacity", 1e-6);
     }
-    // leafNodeG.select("rect")
-    //   .on("mousemove", function (d) {
-    //     div
-    //       .style("left", d3.event.pageX - 100 + "px")
-    //       .style("top", d3.event.pageY - 70 + "px")
-    //       .style("opacity", .9)
-    //       .style("width", "400px")
-    //       .style("font-size", "smaller")
-    //       .html( d.data.name )})
-    //   .on("mouseout", function () {
-    //     div.transition()
-    //       .style("display","none")
-    //       .style("opacity", 0);
-    //   });
-
 
     // Write down text for every parent datum
     let internalNode = svg.selectAll("." + classes.a);
@@ -193,15 +165,11 @@ class D3ChartTree extends React.Component {
 
     // Attach axis on top of the first leaf datum.
     let firstEndNode = svg.select("." + classes.j);
-    // firstEndNode.insert("g")
-    //   .attr("class",classes.b)
-    //   .attr("transform", "translate(7,14)")
-    //   .call(xAxis);
 
     // tick mark for x-axis
     firstEndNode.insert("g")
       .attr("class", classes.grid)
-      .attr("transform", "translate(7," + (height/2 -400) + ")")
+      .attr("transform", "translate(7," + (height / 2 - 400) + ")")
       .call(d3.axisBottom()
         .scale(xScale)
         .ticks(10)
@@ -213,7 +181,7 @@ class D3ChartTree extends React.Component {
     svg.selectAll("." + classes.grid).select("line")
       .style("stroke-dasharray", "20,1")
       .style("stroke", "black")
-     ;
+    ;
 
     // The moving ball
     let ballG = svg.insert("g")

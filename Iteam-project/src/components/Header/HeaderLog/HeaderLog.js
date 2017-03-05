@@ -13,7 +13,6 @@ import classes from './theme.scss'
 import {fromMeetingOrTeam} from '../../../redux/reducers/Meeting/MeetingForTeamReducer'
 import {meetingsNotViewed} from '../../../redux/reducers/Meeting/MeetingNotViewedReducer'
 import themeButton from './button.scss'
-import Inbox from '../../Inbox/Inbox'
 import InboxList from '../../Inbox/InboxList';
 import meetingScheduler from '../../../utils/actions/getMeetingTask'
 import Avatar from 'react-toolbox/lib/avatar';
@@ -29,7 +28,8 @@ const mapDispatchToProps = dispatch => ({
   team: () => dispatch(push('/' + PATHS.MENULOGGEDIN.NEWTEAM)),
   newMeeting: () => dispatch(fromMeetingOrTeam()),
   meetingHistory: () => dispatch(push('/' + PATHS.MENULOGGEDIN.HISTORY)),
-  sharedReport: () => dispatch(push('/' + PATHS.SHARED_REPORT.REPORT_LOGGEDIN))
+  sharedReport: () => dispatch(push('/' + PATHS.SHARED_REPORT.REPORT_LOGGEDIN)),
+  metrics: () => dispatch(push('/' + PATHS.MENULOGGEDIN.METRICS))
 });
 
 const mapStateToProps = (state) => {
@@ -132,6 +132,8 @@ class HeaderLog extends Component {
                           onClick={this.goTo.bind(this, this.props.teamList)}/></li>
               <li><Button label='SHARED REPORT' theme={themeButton}
                           onClick={this.goTo.bind(this, this.props.sharedReport)}/></li>
+              <li><Button label='METRICS' theme={themeButton}
+                          onClick={this.goTo.bind(this, this.props.metrics)}/></li>
               <li><Button  onClick={this.goTo.bind(this, this.props.profile)} neutral={false}><Chip>
                 <Avatar icon="account_circle" />
                 <span className={classes.span}><label>{this.props.user}</label></span >
@@ -163,6 +165,7 @@ HeaderLog.propTypes = {
   meetingHistory: PropTypes.func,
   meetings: PropTypes.any,
   sharedReport: PropTypes.func,
+  metrics: PropTypes.func
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(HeaderLog)

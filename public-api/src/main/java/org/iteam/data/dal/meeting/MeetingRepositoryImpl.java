@@ -107,6 +107,7 @@ public class MeetingRepositoryImpl implements MeetingRepository {
         List<String> dataToInsert = new ArrayList<>();
 
         ideas.getIdeas().forEach((idea) -> {
+            idea.setInsertionDate(DateTime.now().getMillis());
             dataToInsert.add(JSONUtils.ObjectToJSON(idea));
         });
 
