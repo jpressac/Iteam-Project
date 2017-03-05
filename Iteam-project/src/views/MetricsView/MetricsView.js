@@ -1,5 +1,5 @@
 import React from 'react'
-import classes from '../ViewContainerCSS/ViewContainer.scss'
+import classes from './MetricsView.scss'
 import MeetingComponent from '../../components/MetricsComponent/MetricsComponent'
 
 class MetricsView extends React.Component {

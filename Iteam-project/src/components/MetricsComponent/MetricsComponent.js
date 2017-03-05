@@ -27,7 +27,7 @@ class MetricsComponent extends React.Component {
     this.state = {
       histogramOptions: {
         hAxis: {title: 'Ideas'},
-        vAxis: {title: 'Ideas by Meeting'},
+        vAxis: {title: 'Meetings'},
         legend: 'none'
       },
       pieChartIdeasByTeamOptions: {
@@ -37,6 +37,8 @@ class MetricsComponent extends React.Component {
         pieHole: 0.4
       },
       columnChartScoreUsersOptions: {
+        hAxis: {title: 'Users'},
+        vAxis: {title: 'Score'},
         legend: {position: 'none'}
       },
       timeframe: ONE_DAY
