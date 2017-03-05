@@ -5,6 +5,7 @@ import java.util.List;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetResponse;
+import org.elasticsearch.action.get.MultiGetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.update.UpdateResponse;
@@ -203,6 +204,18 @@ public interface ElasticsearchClient {
      * 
      * @param index
      *            the index name.
+     * @param sortBuilder
+     *            the result order.
+     * @return a search response with the information of all the documents that
+     *         match the search.
+     */
+    public SearchResponse search(String index, SortBuilder sortBuilder);
+
+    /**
+     * Search for documents, given an index, a type, a query and an aggregation.
+     * 
+     * @param index
+     *            the index name.
      * @param aggregationBuilder,
      *            the aggregation for grouping.
      * @param size
@@ -251,5 +264,14 @@ public interface ElasticsearchClient {
      * @return a bulk response with the information about the request.
      */
     public BulkResponse updateScore(List<BiFieldModel<String>> data, String index, String type);
+
+    /**
+     * Retrieve the all the information for the given document ids.
+     * 
+     * @param documentIds
+     *            the ids of the documens to get information.
+     * @return a multi get response with the information about the request.
+     */
+    public MultiGetResponse multiGet(String index, String type, List<String> documentIds);
 
 }

@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.iteam.data.dal.client.ElasticsearchClientImpl;
@@ -264,7 +265,8 @@ public class ReportRepositoryImplTest {
         Mockito.when(iterator.next()).thenReturn(hit);
         Mockito.when(hit.getSourceAsString()).thenReturn(idea);
 
-        Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
+        Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), (QueryBuilder) Mockito.anyObject()))
+                .thenReturn(response);
 
     }
 

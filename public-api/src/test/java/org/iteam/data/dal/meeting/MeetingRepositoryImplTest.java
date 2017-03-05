@@ -12,6 +12,7 @@ import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.sort.SortBuilder;
@@ -373,6 +374,7 @@ public class MeetingRepositoryImplTest {
         meetingsViewedByUser = Lists.emptyList();
     }
 
+    @SuppressWarnings("unchecked")
     private void thenVerifyCallsBulkUpdateMeetingNotViewed(int times) {
         Mockito.verify(elasticsearchClientImpl, Mockito.times(times)).bulkUpdate(Mockito.anyList(), Mockito.anyString(),
                 Mockito.anyString());
@@ -396,7 +398,8 @@ public class MeetingRepositoryImplTest {
     }
 
     private void thenVerifyCalls(int times) {
-        Mockito.verify(elasticsearchClientImpl, Mockito.times(times)).search(Mockito.anyString(), Mockito.anyObject());
+        Mockito.verify(elasticsearchClientImpl, Mockito.times(times)).search(Mockito.anyString(),
+                (QueryBuilder) Mockito.anyObject());
     }
 
     private void whenGetMeetingsNotViewedIsCalled() {
@@ -421,7 +424,8 @@ public class MeetingRepositoryImplTest {
 
         Mockito.when(response.getHits()).thenReturn(hits);
 
-        Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
+        Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), (QueryBuilder) Mockito.anyObject()))
+                .thenReturn(response);
     }
 
     private void givenAUsername() {
@@ -461,7 +465,8 @@ public class MeetingRepositoryImplTest {
     }
 
     private void thenVerifySearchCalls(int times) {
-        Mockito.verify(elasticsearchClientImpl, Mockito.times(times)).search(Mockito.anyString(), Mockito.anyObject());
+        Mockito.verify(elasticsearchClientImpl, Mockito.times(times)).search(Mockito.anyString(),
+                (QueryBuilder) Mockito.anyObject());
     }
 
     @SuppressWarnings("unchecked")
@@ -583,7 +588,8 @@ public class MeetingRepositoryImplTest {
 
         Mockito.when(response.getHits()).thenReturn(hits);
 
-        Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), Mockito.anyObject())).thenReturn(response);
+        Mockito.when(elasticsearchClientImpl.search(Mockito.anyString(), (QueryBuilder) Mockito.anyObject()))
+                .thenReturn(response);
 
     }
 
