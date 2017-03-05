@@ -1,6 +1,11 @@
 import React, {Component, PropTypes} from 'react';
 import * as d3 from 'd3'
 import ReactDom from 'react-dom'
+import d3tip from 'd3-tip'
+
+
+
+
 
 import classes from './D3ChartTree.scss'
 
@@ -8,7 +13,11 @@ class D3ChartTree extends React.Component {
 
   componentWillReceiveProps(nextProps) {
 
-    if(nextProps.treeData != this.props.treeData){
+    console.log('puto pase por aca')
+    console.log(nextProps)
+    console.log(this.props)
+
+    if (nextProps.treeData != this.props.treeData) {
       this.renderTree(nextProps.treeData, ReactDom.findDOMNode(this));
     }
   };
@@ -25,7 +34,7 @@ class D3ChartTree extends React.Component {
 
     let margin = {top: 20, right: 90, bottom: 30, left: 90},
       width = window.innerWidth - 400, //TODO: this is hardcoded so it antoher screen it will not work
-      height = window.innerHeight + 500 ;
+      height = window.innerHeight + 500;
 
 
     //Remove all elements before render
@@ -33,7 +42,7 @@ class D3ChartTree extends React.Component {
 
     //Make the new SVG
     let svg = d3.select(svgDomNode)
-      .attr("width", width +300)
+      .attr("width", width + 300)
       .attr("height", height)
       .append("g")
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -44,44 +53,30 @@ class D3ChartTree extends React.Component {
       return experienceName[d % 6];
     };
 
-    var array = getRankingData =>{
-      return treeData.children.map((value) => (value.children.map((childrenValue) => (childrenValue.value))[0] ))
-
-    }
 
     let xScale = d3.scaleLinear()
       .domain([0, 10]) //d3.max(array(), function(d) { return d })]) //This depends on the max ranking number
       .range([0, 500]);
 
-    let xAxis = d3.axisTop()
-      .scale(xScale)
-      .ticks(10)
-      .tickFormat(formatSkillPoints);
 
 // declares a tree layout and assigns the size
     let tree = d3.cluster()                 // This D3 API method setup the Dendrogram datum position.
-      .size([height,width - 600])    // Total width - bar chart width = Dendrogram chart width
+      .size([height, width - 600])    // Total width - bar chart width = Dendrogram chart width
       .separation(function separate(a, b) {
         return a.parent == b.parent            // 2 levels tree grouping for category
         || a.parent.parent == b.parent
         || a.parent == b.parent.parent ? 0.4 : 0.8;
       });
 
-    let root = d3.hierarchy(treeData, function (d) { console.log(d);
+    let root = d3.hierarchy(treeData, function (d) {
+      console.log(d);
       return d.children;
     });
 
     tree(root);
 
+     var div = d3.select("body").append("div").classed(classes.toolTip, true).style("opacity", 0);
 
-    // add the tool tip
-    // var div = d3.select("body").append("div")
-    //   .style('position', 'absolute')
-    //   .style('padding', '0 10px')
-    //   .style('background', '#FFFEAB')
-    //   .style('opacity', 0);
-
-    var div =  d3.select("body").append("div").classed( classes.toolTip, true);
 
     let link = svg.selectAll("." + classes.link)
       .data(root.descendants().slice(1))
@@ -89,8 +84,8 @@ class D3ChartTree extends React.Component {
       .classed(classes.link, true)
       .attr("d", function (d) {
         return "M" + d.y + "," + d.x
-          + "C" + (d.parent.y +100) + "," + d.x
-          + " " + (d.parent.y +100) + "," + d.parent.x
+          + "C" + (d.parent.y + 100) + "," + d.x
+          + " " + (d.parent.y + 100) + "," + d.parent.x
           + " " + d.parent.y + "," + d.parent.x;
       });
 
@@ -113,15 +108,21 @@ class D3ChartTree extends React.Component {
     let leafNodeG = svg.selectAll("." + classes.j)
       .append("g")
       .attr("class", classes.j)
-      .attr("transform", "translate(8,-13)");
+      .attr("transform", "translate(8,-13)")
+
+
+
+
+
 
     leafNodeG.append("text")
       .attr("dy", 19.5)
       .attr("x", 8)
-      .attr("overflow",'hidden')
-      .attr("color",'black')
-      .style("text-anchor", "start")
-    ;
+      .attr("overflow", 'hidden')
+      .attr("color", 'black')
+      .style("text-anchor", "start");
+
+
 
     leafNodeG.append("rect")
       .attr("class", classes.shadow)
@@ -134,26 +135,51 @@ class D3ChartTree extends React.Component {
       .attr("ry", 2)
       .transition()
       .duration(800)
-      .attr("width", function (d) {
-        return xScale(d.data.value);
+      .attr("width", function (d) { console.log( d.data.name, xScale(d.data.value));
+        if (d.data.name=='miscellaneous' || d.data.name=='all')
+          return 0;
+        else
+          return xScale(d.data.value);
       });
 
-    leafNodeG
-      .on("mouseover", function(d){
-        div
-          .style("left", d3.event.pageX - 100 + "px")
+    leafNodeG.selectAll("rect")
+      .on("mouseover", mouseover)
+      .on("mousemove", function(d){mousemove(d);})
+      .on("mouseout", mouseout);
+
+    function mousemove(d){
+      div
+        .text( d.data.name )
+        .style("left", d3.event.pageX - 100 + "px")
           .style("top", d3.event.pageY - 70 + "px")
-          .style("display", "inline-block")
-          .style("width", "400px")
-          .style("font-size","smaller")
-          .html((d.data.name));
-      });
-      leafNodeG.on("mouseout", function(){
-        div.style("display", "none")
-          .style("visibility","hidden");
-      });
+        .style("width", "400px")
+       .style("font-size", "smaller");
 
-
+    }
+    function mouseover() {
+      div.transition()
+        .duration(300)
+        .style("opacity", 1);
+    }
+    function mouseout() {
+      div.transition()
+        .duration(300)
+        .style("opacity", 1e-6);
+    }
+    // leafNodeG.select("rect")
+    //   .on("mousemove", function (d) {
+    //     div
+    //       .style("left", d3.event.pageX - 100 + "px")
+    //       .style("top", d3.event.pageY - 70 + "px")
+    //       .style("opacity", .9)
+    //       .style("width", "400px")
+    //       .style("font-size", "smaller")
+    //       .html( d.data.name )})
+    //   .on("mouseout", function () {
+    //     div.transition()
+    //       .style("display","none")
+    //       .style("opacity", 0);
+    //   });
 
 
     // Write down text for every parent datum
@@ -175,7 +201,7 @@ class D3ChartTree extends React.Component {
     // tick mark for x-axis
     firstEndNode.insert("g")
       .attr("class", classes.grid)
-      .attr("transform", "translate(7," + (height - 15) + ")")
+      .attr("transform", "translate(7," + (height/2 -400) + ")")
       .call(d3.axisBottom()
         .scale(xScale)
         .ticks(10)
@@ -187,8 +213,7 @@ class D3ChartTree extends React.Component {
     svg.selectAll("." + classes.grid).select("line")
       .style("stroke-dasharray", "20,1")
       .style("stroke", "black")
-  .on("mousemove", function(d){
-      div.style("display", "none");});
+     ;
 
     // The moving ball
     let ballG = svg.insert("g")
@@ -203,8 +228,8 @@ class D3ChartTree extends React.Component {
     ballG.insert("text")
       .style("text-anchor", "middle")
       .attr("dy", 5)
-      .style("font-size","12px")
-      .style("font-weight",700)
+      .style("font-size", "12px")
+      .style("font-weight", 700)
       .text("0.0");
 
     // Animation functions for mouse on and off events.

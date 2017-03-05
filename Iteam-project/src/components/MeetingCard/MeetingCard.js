@@ -48,7 +48,7 @@ class MeetingCard extends Component {
               <Card key={getUUID()} theme={card}>
                 <CardTitle className="col-md-3" title='Name' subtitle={meetings[key].topic}/>
                 <CardTitle className="col-md-3" title='Organizer' subtitle={meetings[key].ownerName}/>
-                <CardTitle className="col-md-3" title='Date' subtitle={this.renderDate(meetings[key].endDate)}/>
+                <CardTitle className="col-md-3" title='Date' subtitle={this.renderDate(meetings[key].programmedDate)}/>
                 <CardActions className="col-md-3">
                   <ButtonComponent onClick={this.viewReports.bind(this, meetings[key])}
                                    value="View Reports"  />

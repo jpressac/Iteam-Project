@@ -2,16 +2,6 @@ import React, {Component, PropTypes} from "react";
 import classes from './StarfishRetro.scss'
 
 
-const mapStateToProps = (state) => {
-  if (state.meetingReducer != null) {
-    return {
-      meetingId: state.meetingReducer.meetingId,
-      connected: state.meetingUser,
-      user: state.loginUser.user.username
-    }
-  }
-};
-
 class StarfishRetro extends Component {
   constructor(props){
     super(props)
@@ -80,11 +70,9 @@ class StarfishRetro extends Component {
   }
 }
 StarfishRetro.propTypes = {
-
   user: PropTypes.string,
   notes: PropTypes.any,
   renderNotes: PropTypes.func
-
 };
 
 export default StarfishRetro;

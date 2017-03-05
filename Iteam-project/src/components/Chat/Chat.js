@@ -6,6 +6,7 @@ import MessageList from './ChatMessageList'
 import {joinChat, connectChat, initWebSocketChat, sendMessageToChat, disconnectChat} from '../../websocket/websocket';
 import classes from './ChatStyle.scss';
 import {saveMeetingChats} from '../../redux/reducers/Meeting/MeetingChatMessagesReducer';
+import buttonTheme from './Button.scss'
 
 
 const mapDispatchToProps = dispatch => ({
@@ -114,7 +115,7 @@ class Chat extends Component {
         <div className={classes.chatContainerMin}>
           <div className={classes.msgWgtHeaderMin} onClick={this.onChangeSize.bind(this)}>CHAT
             <IconButton icon={this.state.expandButton} style={{float: 'right'}} onClick={this.onChangeSize.bind(this)}/>
-            <Button label={this.state.count.toString()} style={{background:'yellow', color:'black', float:'left'}} mini floating disabled/>
+            <Button label={this.state.count.toString()} theme={buttonTheme} mini floating disabled/>
           </div>
         </div>
       )
