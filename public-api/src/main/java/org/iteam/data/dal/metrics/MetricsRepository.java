@@ -30,8 +30,15 @@ public interface MetricsRepository {
      * 
      * @param timeframe
      *            the timeframe to generate the chart
-     * @return a model representation to generate de chart
+     * @return a model representation to generate the chart
      */
     public GoogleChartModel getPieChartIdeasByTeam(Timeframe timeframe);
+
+    /**
+     * Get the top ten users based on his historical score
+     * 
+     * @return the model representation to generate the chart
+     */
+    public GoogleChartModel getUsersByScore();
 
 }

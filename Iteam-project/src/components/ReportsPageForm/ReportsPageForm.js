@@ -113,6 +113,7 @@ class ReportsPageForm extends Component {
 
   renderTrees() {
     if (this.props.reportType == 'byranking') {
+      console.log(this.state.treeData)
       return (
         <D3ChartTree treeData={this.state.treeData}/>
       )

@@ -24,3 +24,7 @@ export function getPieInformationIdeasByTeam(timeframe){
     }
   })
 }
+
+export function getBestUsers() {
+  return axios.get(METRICS.SCORE_BY_USER)
+}

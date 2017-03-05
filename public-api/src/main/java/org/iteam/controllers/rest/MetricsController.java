@@ -35,6 +35,11 @@ public class MetricsController {
         return metricsRepository.getPieChartIdeasByTeam(timeframe);
     }
 
+    @RequestMapping(value = "/metrics/score/byuser", method = RequestMethod.GET)
+    public GoogleChartModel getBestUsers() {
+        return metricsRepository.getUsersByScore();
+    }
+
     @Autowired
     public void setMetricsRepository(MetricsRepositoryImpl metricsRepository) {
         this.metricsRepository = metricsRepository;

@@ -13,16 +13,20 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.aggregations.AbstractAggregationBuilder;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms.Bucket;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.iteam.configuration.StringUtilities;
 import org.iteam.data.dal.client.ElasticsearchClient;
 import org.iteam.data.dto.GoogleChartDTO;
 import org.iteam.data.dto.Meeting;
 import org.iteam.data.dto.Team;
 import org.iteam.data.dto.Timeframe;
+import org.iteam.data.dto.UserDTO;
 import org.iteam.data.model.GoogleChartModel;
 import org.iteam.services.utils.JSONUtils;
 import org.joda.time.DateTime;
@@ -112,6 +116,25 @@ public class MetricsRepositoryImpl implements MetricsRepository {
         List<GoogleChartDTO> ideasByTeamModel = getIdeasTeamInfo(multiGetResponseTeams, ideasByTeamInformation);
 
         return new GoogleChartModel(ideasByTeamModel);
+    }
+
+    @Override
+    public GoogleChartModel getUsersByScore() {
+
+        SearchResponse response = elasticsearchClientImpl.search(StringUtilities.INDEX_USER,
+                SortBuilders.fieldSort("score").order(SortOrder.DESC));
+
+        List<GoogleChartDTO> userList = new ArrayList<>();
+
+        if (response.getHits().getTotalHits() > 0) {
+            for (SearchHit hit : response.getHits()) {
+                UserDTO user = (UserDTO) JSONUtils.JSONToObject(hit.getSourceAsString(), UserDTO.class);
+
+                userList.add(new GoogleChartDTO(user.getUsername(), user.getScore()));
+            }
+        }
+
+        return new GoogleChartModel(userList);
     }
 
     private List<GoogleChartDTO> getIdeasTeamInfo(MultiGetResponse response, List<GoogleChartDTO> ideasByTeamInfo) {

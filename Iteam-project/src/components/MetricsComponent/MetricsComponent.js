@@ -1,92 +1,81 @@
 import React, {PropTypes} from 'react'
 import {Chart} from 'react-google-charts/'
 import classes from './MetricsComponent.scss'
-import {
-  getPieInformationMeetingByOwner,
-  getHistogramInformationIdeasByMeeting,
-  getPieInformationIdeasByTeam
-} from '../../utils/actions/metricsActions'
-import Spinner from '../Spinner/Spinner'
+import cssClasses from '../ComponentCSSForms/componentCSS.scss'
+import avatarTheme from './avatarTheme.scss'
+import Avatar from 'react-toolbox/lib/avatar'
+import DropdownComponent from '../DropdownComponent/DropdownComponent'
+import GraphComponent from '../GraphComponent/GraphComponent'
+
+//FIXME: this should be in constant utils file
+const ONE_DAY = 'ONE_DAY'
+const ONE_WEEK = 'ONE_WEEK'
+const ONE_MONTH = 'ONE_MONTH'
+const ONE_YEAR = 'ONE_YEAR'
+
+const MEETING_BY_OWNER = 'MEETING_BY_OWNER'
+const IDEAS_BY_TEAM = 'IDEAS_BY_TEAM'
+const IDEAS_BY_MEETING = 'IDEAS_BY_MEETING'
+const SCORE_BY_USER = 'SCORE_BY_USER'
+
+const timeframeList = [ONE_DAY, ONE_WEEK, ONE_MONTH, ONE_YEAR]
 
 class MetricsComponent extends React.Component {
 
   constructor(props) {
     super(props)
     this.state = {
-      pieChartMeetingByOwner: [],
-      pieChartIdeasByTeam: [],
-      histogramIdeasByMeeting: [],
-      showSpinner: true,
       histogramOptions: {
-        title: 'Ideas by Meeting',
         hAxis: {title: 'Ideas'},
-        vAxis: {title: 'Meetings'},
-        legend: 'none',
+        vAxis: {title: 'Ideas by Meeting'},
+        legend: 'none'
       },
       pieChartIdeasByTeamOptions: {
-        title: 'Ideas by team',
-        is3D: true,
+        is3D: true
       },
       pieChartMeetingsByOwnerOptions: {
-        title: 'Meetings by owner',
         pieHole: 0.4
-      }
+      },
+      columnChartScoreUsersOptions: {
+        legend: {position: 'none'}
+      },
+      timeframe: ONE_DAY
     }
   }
 
-  componentWillMount() {
-    getPieInformationMeetingByOwner('ONE_DAY')
-      .then((response) => {
-        this.constructPieObject(response.data, 'pieChartMeetingByOwner')
-
-        //FIXME: we need to use Promises.all()
-        getPieInformationIdeasByTeam('ONE_YEAR')
-          .then((response) => {
-            this.constructPieObject(response.data, 'pieChartIdeasByTeam')
-
-            getHistogramInformationIdeasByMeeting('ONE_YEAR')
-              .then((response) => {
-                this.constructPieObject(response.data, 'histogramIdeasByMeeting')
-                this.setState({showSpinner: false})
-              })
-
-          })
-      })
+  handleChange(key, value) {
+    this.setState({[key]: value})
   }
-
-  constructPieObject(data, chart) {
-    let pieData = [['Meeting owners', 'Meetings']]
-
-    data.chartModel.map((chartInfo) => {
-      pieData.push([chartInfo.labelChart, chartInfo.amount])
-    })
-
-    this.setState({[chart]: pieData})
-  }
-
 
   render() {
-
-    if (!this.state.showSpinner) {
-      return (
-        <div className={"container " + classes.mainContainer}>
-          <div className={classes.graphContainer}>
-            <Chart chartType="Histogram" data={this.state.histogramIdeasByMeeting}
-                   options={this.state.histogramOptions} height="550px" width="600px"/>
-            <Chart chartType="PieChart" data={this.state.pieChartIdeasByTeam}
-                   options={this.state.pieChartIdeasByTeamOptions} height="550px" width="600px"/>
+    return (
+      <div className={"container " + classes.mainContainer}>
+        <div className={cssClasses.labelMainTitle}>
+          <label>METRICS DASHBOARD</label>
+          <Avatar theme={avatarTheme} icon="insert_chart"/>
+        </div>
+        <div>
+          <DropdownComponent initialValue={ONE_DAY} label='Dashboard timeframe' source={timeframeList}
+                             onValueChange={this.handleChange.bind(this, 'timeframe')}/>
+          <div className={classes.dashboardContainer}>
+            <GraphComponent title='IDEAS BY MEETING' chartType='Histogram' timeframe={this.state.timeframe}
+                            options={this.state.histogramOptions}
+                            type={IDEAS_BY_MEETING}/>
+            <GraphComponent title='USERS SCORE' chartType='ColumnChart'
+                            options={this.state.columnChartScoreUsersOptions}
+                            type={SCORE_BY_USER}/>
           </div>
-          <div className={classes.graphContainer}>
-            <Chart chartType="PieChart" data={this.state.pieChartMeetingByOwner}
-                   options={this.state.pieChartMeetingsByOwnerOptions} height="550px" width="600px"/>
+          <div className={classes.dashboardContainer}>
+            <GraphComponent title='IDEAS BY TEAM' chartType='PieChart' timeframe={this.state.timeframe}
+                            options={this.state.pieChartIdeasByTeamOptions}
+                            type={IDEAS_BY_TEAM}/>
+            <GraphComponent title='MEETING BY OWNER' chartType='PieChart' timeframe={this.state.timeframe}
+                            options={this.state.pieChartMeetingsByOwnerOptions}
+                            type={MEETING_BY_OWNER}/>
           </div>
         </div>
-      )
-    } else {
-      return (
-        <Spinner />
-      )
-    }
+      </div>
+    )
   }
 }
 

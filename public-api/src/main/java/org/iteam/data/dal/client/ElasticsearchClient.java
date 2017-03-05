@@ -204,6 +204,18 @@ public interface ElasticsearchClient {
      * 
      * @param index
      *            the index name.
+     * @param sortBuilder
+     *            the result order.
+     * @return a search response with the information of all the documents that
+     *         match the search.
+     */
+    public SearchResponse search(String index, SortBuilder sortBuilder);
+
+    /**
+     * Search for documents, given an index, a type, a query and an aggregation.
+     * 
+     * @param index
+     *            the index name.
      * @param aggregationBuilder,
      *            the aggregation for grouping.
      * @param size

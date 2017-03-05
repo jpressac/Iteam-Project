@@ -64,7 +64,8 @@ export const SLACK = {
 export const METRICS = {
   PIE_CHART_MEETING_BY_OWNER : URL + '/metrics/pie/meetingbyowner',
   HISTOGRAM_IDEAS_BY_MEETING: URL + '/metrics/histogram/ideabymeeting',
-  PIE_CHART_IDEAS_BY_TEAM: URL + '/metrics/pie/ideabyteam'
+  PIE_CHART_IDEAS_BY_TEAM: URL + '/metrics/pie/ideabyteam',
+  SCORE_BY_USER: URL + '/metrics/score/byuser'
 }
 
 export const UTILITIES = {

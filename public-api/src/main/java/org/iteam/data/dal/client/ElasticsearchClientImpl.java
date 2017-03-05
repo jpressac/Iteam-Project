@@ -138,6 +138,11 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
     }
 
     @Override
+    public SearchResponse search(String index, SortBuilder sortBuilder) {
+        return search(index, null, null, null, null, sortBuilder);
+    }
+
+    @Override
     public SearchResponse search(String index, QueryBuilder queryBuilder, AbstractAggregationBuilder aggregationBuilder,
             Integer size, Integer from, SortBuilder sort) {
 
@@ -261,5 +266,4 @@ public class ElasticsearchClientImpl implements ElasticsearchClient {
     private void setConfiguration(ExternalConfigurationProperties configuration) {
         this.configuration = configuration;
     }
-
 }
