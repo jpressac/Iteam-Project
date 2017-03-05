@@ -15,7 +15,7 @@ import Drawer from 'react-toolbox/lib/drawer'
 import {Layout, NavDrawer, Panel, Sidebar} from 'react-toolbox'
 import Clients from '../BoardSidebar/users'
 import {userDisconnection} from '../../redux/reducers/Meeting/MeetingUserConnected'
-import logo from '../Header/image/iteamLogo.jpg'
+import logo from '../Header/image/LogoBordo.png'
 import navTheme from './NavDrawer.scss'
 import {MenuItem, MenuDivider} from 'react-toolbox/lib/menu'
 import Chat from '../Chat/Chat'
@@ -506,7 +506,7 @@ class SharedBoard extends Component {
         <Layout>
           <NavDrawer active={true}
                      pinned={true} permanentAt='lg' theme={navTheme}>
-            <div style={{background: 'white', width: '100%'}}><img src={logo} style={{
+            <div ><img src={logo} style={{
               height: '10%',
               width: '50%',
               marginLeft: '20%'

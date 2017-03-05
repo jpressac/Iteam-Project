@@ -24,9 +24,9 @@ class StarfishRetro extends Component {
   }
   render() {
     return (
-      <div >
-        <div className="row">
-          <div className={classes.square}>
+      <div classNmae="container" >
+
+          <div className={ classes.square}>
             <div className={classes.content}>
               <label className={classes.letterRetro}>What should we START doing? </label>
               {this.props.renderNotes(this.state.notes, 'start', this.props.user)}
@@ -40,8 +40,8 @@ class StarfishRetro extends Component {
 
             </div>
           </div>
-        </div>
-        <div className="row">
+
+
           <div className={classes.squareMiddle}>
             <div className={classes.content}>
               <label className={classes.letterRetro}>What should we KEEP doing?</label>
@@ -64,7 +64,7 @@ class StarfishRetro extends Component {
             </div>
           </div>
 
-        </div>
+
       </div>
     );
   }

@@ -157,7 +157,7 @@ class D3Tree extends React.Component {
 
         .attr("dy", ".35em")
         .attr("x", function (d) {
-          return d.children || d._children ? -13 : 13;
+          return d.children || d._children ? -13 : -13;
         })
         .attr("text-anchor", "middle")
         .text(function (d) {

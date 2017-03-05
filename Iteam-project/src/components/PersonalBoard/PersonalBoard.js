@@ -13,7 +13,7 @@ import {MEETING} from '../../constants/HostConfiguration'
 import generateUUID from '../../constants/utils/GetUUID'
 import {userConnection} from '../../redux/reducers/Meeting/MeetingUserConnected'
 import {Layout, NavDrawer, Panel, Sidebar} from 'react-toolbox'
-import logo from '../Header/image/iteamLogo.jpg'
+import logo from '../Header/image/LogoBordo.png'
 import {PATHS} from '../../constants/routes'
 import {push} from 'react-router-redux'
 import navTheme from './NavDrawer.scss'
@@ -256,7 +256,10 @@ class PersonalBoard extends Component {
           <NavDrawer active={true}
                      pinned={true} permanentAt='lg' theme={navTheme}>
             <div>
-              <img className={cssClasses.imageAvatar} src={logo} onClick={this.props.home}/>
+              <img style={{
+              height: '10%',
+              width: '50%',
+              marginLeft: '20%'}}src={logo} onClick={this.props.home}/>
             </div>
 
             <label className={cssClasses.labelBoards}>
