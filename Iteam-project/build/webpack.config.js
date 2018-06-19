@@ -18,6 +18,9 @@ const webpackConfig = {
     root: paths.base(config.dir_client),
     extensions: ['', '.js', '.jsx', '.json']
   },
+  externals: [{
+    xmlhttprequest: '{XMLHttpRequest:XMLHttpRequest}'
+  }],
   module: {}
 }
 // ------------------------------------
@@ -46,7 +49,9 @@ webpackConfig.output = {
 // Plugins
 // ------------------------------------
 webpackConfig.plugins = [
-  new webpack.DefinePlugin(config.globals),
+  new webpack.DefinePlugin({
+    ...config.globals
+  }),
   new HtmlWebpackPlugin({
     template: paths.client('index.html'),
     hash: false,

@@ -23,3 +23,5 @@ Iteam/node_modules/
 Iteam-project/.idea/
 public-api/src/main/resources/static/
 node_modules/
+public-api/.idea/*
+public-api/out/*
